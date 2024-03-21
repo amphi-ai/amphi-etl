@@ -57,14 +57,7 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
           { value: "skip", label: "Skip: skip bad lines without raising or warning when they are encountered." }
         ],
         advanced: true
-      },
-      {
-        type: "boolean",
-        label: "Verbose",
-        id: "csvOptions.verbose",
-        placeholder: "false",
-        advanced: true
-      },
+      }
     ],
   };
 
