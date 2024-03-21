@@ -26,20 +26,20 @@ If you want to launch Jupyterlab + Amphi, you can run the following commands. It
 To install perform the following steps, with _pip_:
 
 ```bash
-pip install --upgrade jupyterlab amphi
+pip install --upgrade jupyterlab jupyterlab-amphi
 ```
 
 or with _conda_:
 
 ```bash
-conda install -c conda-forge jupyterlab amphi
+conda install -c conda-forge jupyterlab jupyterlab-amphi
 ```
 ## Install Amphi on an existing Jupyterlab instance
 
 If you already have a Jupyterlab instance, just install the amphi package:
 
 ```bash
-pip install --upgrade amphi
+pip install --upgrade jupyterlab-amphi
 ```
 
 Alternatively, you can search in the Extension Manager for Amphi.
