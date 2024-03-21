@@ -3,7 +3,7 @@
 ![jupyterlab-amphi-screenshot](https://github.com/amphi-ai/jupyterlab-amphi/assets/15718239/1a7edcb9-ca43-4d44-867d-4535229c4ed6)
 
 Amphi for JupyterLab is a Micro ETL designed for ingesting, cleansing, and processing data from files and databases.
-Amphi addresses use cases such as data extraction from structured and unstructured data, data preparation and enrichement, and data processing for LLMs-based systems. 
+Amphi addresses use cases such as data extraction from structured and unstructured data, data preparation and enrichment, and data processing for LLMs-based systems. 
 Use Amphi within the Jupyterlab environment to design your data pipelines with a graphical user-interface and generate native Python code you can deploy anywhere.
 
  - 📚 [Documentation](https://docs.amphi.ai)
