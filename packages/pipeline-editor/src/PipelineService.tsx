@@ -1,0 +1,156 @@
+
+import { PathExt } from '@jupyterlab/coreutils';
+
+
+
+export class PipelineService {
+
+  static filterPipeline(pipelineJson: string) {
+
+    const pipeline = JSON.parse(pipelineJson);
+    const pipelineFlow = pipeline.pipelines[0].flow;
+    const filteredNodes = pipelineFlow.nodes.map(({ id, type, data }) => ({ id, type, data }));
+    const filteredEdges = pipelineFlow.edges.map(({ id, source, target, data }) => ({ id, source, target, data }));
+
+    const flow: Flow = {
+      "nodes": filteredNodes,
+      "edges": filteredEdges
+    };
+
+    return flow;
+  }
+
+  static findStartNode = (flow: Flow): string | null => {
+    const targetMap = new Set<string>();
+    flow.edges.forEach(edge => targetMap.add(edge.target));
+
+    for (const node of flow.nodes) {
+      if (!targetMap.has(node.id)) {
+        return node.id;
+      }
+    }
+
+    return null; // No clear starting node found
+  };
+
+  static findPreviousNodeId = (flow, nodeId): string => {
+    // Find the ID of the previous node
+    let previousNodeId = '';
+    flow.edges.forEach(edge => {
+      if (edge.target === nodeId) {
+        previousNodeId = edge.source;
+      }
+    });
+    return previousNodeId;
+  }
+
+  static findTwoPreviousNodeIds = (flow, nodeId) => {
+    let previousNodeIds = [];
+    flow.edges.forEach(edge => {
+      if (edge.target === nodeId) {
+        previousNodeIds.push(edge.source);
+      }
+    });
+    if (previousNodeIds.length !== 2) {
+      throw new Error("Exactly two previous nodes are not found.");
+    }
+    return previousNodeIds;
+  };
+
+  static getInstallCommandsFromImports(imports: string[]): string[] {
+    const standardLibraries = new Set(['json', 'pandas']);
+    return imports.map((imp) => {
+      let packageName = "";
+      if (imp.startsWith("import ")) {
+        packageName = imp.split(" ")[1].split(" as ")[0]; // For "import packageName" format
+      } else if (imp.startsWith("from ")) {
+        packageName = imp.split(" ")[1]; // For "from packageName import something" format
+      } else {
+        packageName = imp; // Assuming direct package name
+      }
+      if (!standardLibraries.has(packageName)) {
+        return `!pip install ${packageName} -q -q`;
+      }
+      return ""; // Return an empty string for packages in the standardLibraries set
+    }).filter((cmd, index, self) => cmd && self.indexOf(cmd) === index); // Removing empty strings, duplicates
+  }
+
+  static extractPythonImportPackages(code: string): string[] {
+    // Regular expression to match Python import statements
+    const importRegex = /^(import .+|from .+? import .+)/gm;
+    let matches = code.match(importRegex) || [];
+    // Process each match to format correctly
+    return matches.map((importStatement) => {
+      if (importStatement.startsWith('from')) {
+        // If the statement starts with 'from', extract the package part before the first dot
+        return importStatement.split(' ')[1].split('.')[0];
+      } else {
+        // Otherwise, it's a regular import, extract everything after 'import '
+        return importStatement.split(' ')[1];
+      }
+    });
+  }
+
+  /**
+   * Check if a given file is allowed to be added to the pipeline
+   * @param item
+   */
+
+  static getPipelineRelativeNodePath(
+    pipelinePath: string,
+    nodePath: string
+  ): string {
+    const relativePath: string = PathExt.relative(
+      PathExt.dirname(pipelinePath),
+      nodePath
+    );
+    return relativePath;
+  }
+
+  static getComponentIdForFileExtension(item: { name: string }, componentService: any): { id: string | null, default: any | null } {
+    // Extract file extension from item.name
+    const fileExtension = item.name.split('.').pop();
+  
+    if (!fileExtension) return { id: null, default: null }; // Return nulls if there is no file extension
+  
+    // Retrieve all components
+    const components = componentService.getComponents();
+  
+    // Iterate through all components
+    for (const component of components) {
+      // Check if the component has the _fileDrop attribute and it contains the file extension
+      if (component._fileDrop && component._fileDrop.includes(fileExtension.toLowerCase())) {
+        // Return the component's _id and _default if the file extension matches
+        return { id: component._id, default: component._default || null };
+      }
+    }
+  
+    return { id: null, default: null }; // Return nulls if no matching component is found
+  }
+
+
+}
+
+export interface Node {
+  id: string;
+  type: string;
+  data: any;
+  [key: string]: any; // To include other properties with unknown names
+}
+
+export interface Edge {
+  id: string;
+  source: string;
+  target: string;
+  data: any;
+  [key: string]: any; // To include other properties with unknown names
+}
+
+export interface Flow {
+  nodes: Node[];
+  edges: Edge[];
+}
+
+export interface Pipeline {
+  flow: Flow;
+}

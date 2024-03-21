@@ -1,0 +1,106 @@
+{
+  "name": "@amphi/pipeline-editor",
+  "version": "0.1.3",
+  "description": "Amphi Pipeline Editor",
+  "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
+  "bugs": {
+    "url": "https://github.com/amphi-ai/jupyterlab-amphi/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amphi-ai/jupyterlab-amphi.git"
+  },
+  "license": "Elastic License 2.0",
+  "author": {
+    "name": "Thibaut Gourdel",
+    "email": "tgourdel@amphi.ai"
+  },
+  "sideEffects": [
+    "style/*.css",
+    "style/index.js"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "style": "style/index.css",
+  "styleModule": "style/index.js",
+  "directories": {
+    "lib": "lib/"
+  },
+  "files": [
+    "lib/*.d.ts",
+    "lib/*.js.map",
+    "lib/*.js",
+    "style/*.css",
+    "style/index.js"
+  ],
+  "scripts": {
+    "build": "npx tailwindcss -i ./style/canvas.css -o ./style/output.css && jlpm run build:lib && jlpm build:labextension:dev",
+    "build:prod": "npx tailwindcss -i ./style/canvas.css -o ./style/output.css && jlpm run build:lib && jlpm build:labextension && jlpm install",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "build:lib": "tsc --build --verbose",
+    "dist": "cd ../../dist && npm pack ../packages/pipeline-editor",
+    "clean": "jlpm clean:lib",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "clean:labextension": "rimraf ../../amphi/root",
+    "clean:all": "jlpm clean:lib && jlpm clean:labextension",
+    "docs": "typedoc src",
+    "watch": "run-p watch:src watch:labextension",
+    "watch:src": "tsc -w",
+    "watch:labextension": "jupyter labextension watch ."
+  },
+  "dependencies": {
+    "@amphi/pipeline-components-manager": "file:./../pipeline-components-manager",
+    "@headlessui/react": "^1.7.18",
+    "@jupyterlab/application": "^4.1.5",
+    "@jupyterlab/apputils": "^4.1.9",
+    "@jupyterlab/docmanager-extension": "^4.1.5",
+    "@jupyterlab/filebrowser": "^4.1.5",
+    "@jupyterlab/launcher": "^4.1.5",
+    "@jupyterlab/logconsole": "^4.1.5",
+    "@jupyterlab/mainmenu": "^4.1.5",
+    "@jupyterlab/services": "~7.1.5",
+    "@jupyterlab/settingregistry": "^4.1.5",
+    "@jupyterlab/ui-components": "^4.1.5",
+    "@lumino/dragdrop": "^2.0.0",
+    "@tailwindcss/forms": "^0.5.7",
+    "reactflow": "11.9.4",
+    "tailwindcss": "^3.4.1"
+  },
+  "resolutions": {
+    "@lumino/widgets": "^2.0.0",
+    "@types/react": "^18.2.7",
+    "@jupyterlab/services": "^7.1.5",
+    "@jupyterlab/rendermime-interfaces": "^4.1.5",
+    "@amphi/pipeline-components-manager": "file:./../pipeline-components-manager"
+  },
+  "devDependencies": {
+    "@jupyterlab/builder": "^4.1.5",
+    "@types/json-schema": "^7.0.11",
+    "@types/node": "^20.7.0",
+    "@types/react": "^18.0.26",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.0.0",
+    "react": "^18.2.0",
+    "rimraf": "^5.0.1",
+    "typescript": "~5.2.2",
+    "yarn-deduplicate": "^6.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "jupyterlab": {
+    "extension": true,
+    "outputDir": "../../amphi/pipeline-editor",
+    "sharedPackages": {
+      "@amphi/pipeline-components-manager": {
+        "bundled": false,
+        "singleton": true
+      },
+      "@amphi/pipeline-editor": {
+        "bundled": false,
+        "singleton": true
+      }
+    }
+  }
+}

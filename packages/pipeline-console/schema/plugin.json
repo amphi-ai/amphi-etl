@@ -1,0 +1,14 @@
+{
+    "title": "Amphi Pipeline Console",
+    "description": "Settings of Amphi Pipeline Console",
+    "properties": {
+        "maxPreview": {
+          "type": "integer",
+          "title": "Max sample size for console data",
+          "description": "This setting defines the maximum number of characters displayed in the data preview within the Pipeline Console.",
+          "default": 80
+        }
+      },
+    "additionalProperties": false,
+    "type": "object"
+}

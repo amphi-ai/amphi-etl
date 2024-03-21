@@ -1,0 +1,83 @@
+{
+    "name": "@amphi/jupyterlab-amphi",
+    "version": "0.1.3",
+    "keywords": [
+        "amphi",
+        "etl",
+        "micro etl",
+        "jupyterlab-extension",
+        "data integration",
+        "data pipelines"
+    ],
+    "homepage": "https://amphi.ai",
+    "bugs": {
+        "url": "https://github.com/amphi-ai/jupyterlab-amphi/issues"
+    },
+    "license": "Elastic License 2.0",
+    "author": {
+        "name": "Thibaut Gourdel",
+        "email": "tgourdel@amphi.ai"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/amphi-ai/jupyterlab-amphi.git"
+    },
+    "workspaces": {
+        "packages": [
+            "packages/pipeline-editor",
+            "packages/pipeline-components-manager",
+            "packages/pipeline-components-core",
+            "packages/pipeline-console",
+            "packages/pipeline-metadata-panel"
+        ]
+    },
+    "scripts": {
+        "build:prod": "lerna run --sort --stream build:prod",
+        "build:py": "lerna run --stream build:py",
+        "build": "lerna run --sort --stream build",
+        "bump:js:version": "lerna version --no-push --force-publish --no-git-tag-version --yes",
+        "clean:all": "jlpm clean:build && jlpm clean:dist && lerna run --stream clean:all && jlpm clean:cache",
+        "clean:build": "rimraf build",
+        "clean:cache": "rimraf node_modules/.cache build/.lite-cache examples/.jupyterlite.doit.db",
+        "clean:dist": "rimraf dist",
+        "clean": "lerna run --stream clean",
+        "deduplicate": "yarn-berry-deduplicate -s fewer --fail",
+        "dist:npm": "lerna run --stream dist",
+        "dist:pypi": "pyproject-build .",
+        "dist": "jlpm dist:pypi && jlpm dist:npm",
+        "docs:lite": "cd examples && jupyter lite build",
+        "docs:sphinx": "sphinx-build -W -b html docs build/docs",
+        "docs": "jlpm docs:lite && jlpm docs:sphinx",
+        "eslint:check": "eslint . --cache --cache-location=./build/.cache/eslint --ext .ts,.tsx",
+        "eslint": "jlpm eslint:check --fix",
+        "lint": "jlpm lint:js && jlpm lint:py",
+        "lint:check": "jlpm lint:js:check && jlpm lint:py:check",
+        "lint:js": "jlpm prettier && jlpm eslint",
+        "lint:js:check": "jlpm prettier:check && jlpm eslint:check",
+        "lint:py": "jlpm lint:py:black && jlpm lint:py:ruff --fix-only",
+        "lint:py:pip": "python -m pip check",
+        "lint:py:check": "jlpm lint:py:pip && jlpm lint:py:black --check && jlpm lint:py:ruff",
+        "prettier:base": "prettier \"**/*{.ts,.tsx,.js,.jsx,.css,.json,.md,.yml,.yaml}\"",
+        "prettier:check": "jlpm prettier:base --check",
+        "prettier": "jlpm prettier:base --write --list-different",
+        "quickstart": "npm run setup:py && jlpm && jlpm deduplicate && jlpm clean:all && jlpm lint && jlpm build:prod && jlpm dist && jlpm docs && jlpm test",
+        "setup:py": "python -m pip install -e \".[dev,lint,test,docs]\"",
+        "test:py": "pytest",
+        "test": "jlpm test:py"
+    },
+    "devDependencies": {
+        "@jupyterlab/builder": "^4.1.5",
+        "lerna": "^7.2.0",
+        "rimraf": "^5.0.1",
+        "typescript": "~5.2.2",
+        "yarn-berry-deduplicate": "^6.1.1"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "jupyterlab": {
+        "title": "Amphi",
+        "extension": true,
+        "outputDir": "./amphi"
+    }
+}

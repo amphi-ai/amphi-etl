@@ -1,0 +1,146 @@
+@import url('tailwinds_preflight.css');
+@tailwind components;
+@tailwind utilities;
+
+
+
+/*
+Editor components styles
+*/
+
+.component {
+  @apply w-[180px] min-h-[120px] p-[8px];
+}
+
+.react-flow__node {
+  @apply bg-[#F2F4F7] border-[#F0F5F7] rounded-[3px];
+  box-shadow: var(--jp-elevation-z1);
+  transition: 0.2s box-shadow;
+}
+
+.react-flow__node.selected .handle-right, .react-flow__node.selected .handle-left, .react-flow__node.selected .handle-bottom {
+  @apply visible;
+}
+
+.react-flow__node.selected {
+  @apply border-[#D6D8DC];
+}
+
+.component .handle-right {
+  @apply absolute top-[54px] right-[-3px] w-[6px] h-[25px] rounded-[2px] bg-[#778899];
+}
+
+.component .handle-left {
+  @apply absolute top-[54px] left-[-3px] w-[6px] h-[25px] rounded-[2px] bg-[#778899];
+}
+
+.component .handle-bottom {
+  @apply absolute bottom-[-3px] w-[25px] h-[6px] rounded-[2px] bg-[#c6cfd6];
+}
+
+.component_label {
+  @apply block mt-1 text-xs font-medium text-black;
+}
+    
+.component__header {
+  @apply p-[2px_0px] border-b border-[#e2e8f0] font-bold flex justify-between items-center text-[12px];
+}
+
+.component__body {
+  @apply pb-[3px] pt-[3px];
+}
+
+/* Components delete button */
+.component .deletebutton:hover {
+  cursor: pointer;
+}
+
+.placeholder {
+  @apply flex justify-center items-center align-middle h-[80px];
+}
+
+.placeholder svg {
+  @apply align-middle;
+}
+
+/*
+Components palette sidebar
+*/
+
+.palette {
+  @apply flex flex-col flex-grow h-full;
+}
+
+.palette aside {
+  @apply border-r border-l border-[#eee] border-l-[#E0E0E0] p-[20px_6px] text-[12px] bg-white;
+}
+
+.palette aside .description {
+  @apply mr-[8px] mb-[10px];
+}
+
+.palette .draggable_component {
+  @apply h-[30px] p-[4px] bg-[#F2F4F7] border border-[var(--jp-border-color2)] mb-[10px] flex items-center justify-start cursor-grab leading-[16px] rounded-[3px];
+}
+
+.palette .reactflow-wrapper {
+  @apply flex-grow h-full;
+}
+
+.palette .selectall {
+  @apply mt-[10px];
+}
+
+@media screen and (min-width: 768px) {
+  .palette {
+    @apply flex flex-row; /* Sets the flex direction to row */
+  }
+
+  .palette aside {
+   @apply fixed top-0 right-0 h-full w-[200px] z-10 overflow-auto
+  }
+}
+  
+/*
+Edges 
+*/
+
+.edgebutton {
+  @apply w-[20px] h-[20px] bg-[#eee] border border-white cursor-pointer rounded-full text-[12px] leading-none;
+}
+
+.edgebutton:hover {
+  @apply shadow-lg;
+}
+  
+/*
+Form inputs
+*/
+
+input:checked + label {
+  border-color: black;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.component_select__input  {
+  @apply focus:outline-none focus:[box-shadow:none] focus:border-none;
+}
+
+.form-indicator svg {
+  display: block;
+}
+
+
+/* Single Input Selects */
+
+.component_select__single-value {
+  @apply text-base leading-normal;
+}
+
+.component_select__option {
+  @apply text-base leading-normal; 
+}
+
+.component_select__indicator-separator {
+  @apply h-5;
+}

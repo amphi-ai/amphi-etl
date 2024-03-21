@@ -1,0 +1,80 @@
+.amphi-MetadataPanel {
+  flex-direction: column;
+  overflow: auto;
+  font-size: var(--jp-ui-font-size0);
+}
+
+.amphi-MetadataPanel-table {
+  font-family: monospace;
+  border-collapse: collapse;
+  margin: auto;
+  width: 100%;
+  color: var(--jp-content-font-color1);
+}
+
+.amphi-MetadataPanel-table td,
+.amphi-MetadataPanel-table thead {
+  border: 1px solid;
+  border-color: var(--jp-layout-color2);
+  padding: 8px;
+}
+
+.amphi-MetadataPanel-table tr:nth-child(even) {
+  background-color: var(--jp-layout-color1);
+}
+
+.amphi-MetadataPanel-content tr:hover {
+  background-color: var(--jp-layout-color2);
+}
+
+.amphi-MetadataPanel-table thead {
+  font-size: var(--jp-ui-font-size0);
+  text-align: center;
+  color: var(--jp-ui-font-color1);
+  background-color: var(--jp-ui-inverse-font-color0);
+  font-family: sans-serif;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.amphi-MetadataPanel-title {
+  font-size: var(--jp-ui-font-size1);
+  color: var(--jp-content-font-color1);
+  text-align: left;
+  padding-left: 10px;
+}
+
+.amphi-MetadataPanel-table-row-hidden {
+  display: none;
+}
+
+.amphi-MetadataPanel-deleteButton {
+  text-align: center;
+  width: 1em;
+}
+
+.amphi-MetadataPanel-deleteButton:hover {
+  cursor: pointer;
+}
+
+.amphi-MetadataPanel-inspectButton {
+  vertical-align: top;
+  text-align: center;
+  width: 1em;
+}
+
+.amphi-MetadataPanel-previewButton {
+  text-align: center;
+  vertical-align: top;
+  width: 1em;
+}
+
+.amphi-MetadataPanel-inspectButton:hover {
+  cursor: pointer;
+}
+
+.amphi-MetadataPanel-varName {
+  font-weight: 600;
+  vertical-align: top;
+}
