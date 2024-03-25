@@ -57,7 +57,8 @@ export class PipelineService {
     return previousNodeIds;
   };
 
-  static getInstallCommandsFromImports(imports: string[]): string[] {
+  // Function to retrieve the names of packages
+  static extractPackageNames(imports: string[]): string[] {
     const standardLibraries = new Set(['json', 'pandas']);
     return imports.map((imp) => {
       let packageName = "";
@@ -69,10 +70,15 @@ export class PipelineService {
         packageName = imp; // Assuming direct package name
       }
       if (!standardLibraries.has(packageName)) {
-        return `!pip install ${packageName} -q -q`;
+        return packageName;
       }
       return ""; // Return an empty string for packages in the standardLibraries set
-    }).filter((cmd, index, self) => cmd && self.indexOf(cmd) === index); // Removing empty strings, duplicates
+    }).filter((pkgName, index, self) => pkgName && self.indexOf(pkgName) === index); // Removing empty strings, duplicates
+  }
+
+  // Function to generate pip install commands from a list of package names
+  static getInstallCommandsFromPackageNames(packageNames: string[]): string[] {
+    return packageNames.map(pkgName => `!pip install ${pkgName} -q -q`);
   }
 
   static extractPythonImportPackages(code: string): string[] {

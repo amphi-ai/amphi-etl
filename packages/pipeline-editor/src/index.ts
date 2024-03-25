@@ -340,13 +340,59 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           return;
         }
 
+        // Second, install dependencies packages if needed
+        current.context.sessionContext.ready.then(async () => {
+
+          const code = args.code.toString();
+          let packages: string[];
+          const imports = PipelineService.extractPythonImportPackages(code);
+          packages = PipelineService.extractPackageNames(imports);
+          const lines = code.split(/\r?\n/); // Split the code into lines
+          const dependencyLine = lines[2]; // Extract dependencies from the third line (index 2, as arrays are zero-indexed)
+          const dependencies = dependencyLine.startsWith("# Additional imports: ") // Assuming the structure is "# Additional imports: package1, package2, ..."
+            ? dependencyLine.split(': ')[1].split(',').map(pkg => pkg.trim())
+            : [];
+          packages = [...packages, ...dependencies];
+
+          if (packages.length > 0 && packages[0] != null && packages[0] !== '') {
+            const pips_code = PipelineService.getInstallCommandsFromPackageNames(packages).join('\n');
+            // Install packages
+            try {
+
+              const future = current.context.sessionContext.session.kernel!.requestExecute({ code: pips_code });
+
+              future.onReply = reply => {
+
+                if (reply.content.status == "ok") {
+                  console.log("Dependencies installed successfully")
+                } else if (reply.content.status == "error") {
+                  console.log("Error when installing dependencies")
+                } else if (reply.content.status == "abort") {
+                  console.log("Error when installing dependencies")
+                } else {
+                  console.log("Error when installing dependencies")
+                }
+              };
+
+              await future.done;
+
+            } catch (error) {
+              console.error(error);
+            }
+          }
+        });
+
+        // Third, run pipeline code
+        current.context.sessionContext.ready.then(async () => {
+
+        try {
         // Create promise to track success or failure of the request
         const delegate = new PromiseDelegate<ReadonlyJSONValue>();
         const start = performance.now();
 
         Notification.promise(delegate.promise, {
           // Message when the task is pending
-          pending: { message: 'Waiting...', options: { autoClose: false } },
+          pending: { message: 'Running...', options: { autoClose: false } },
           // Message when the task finished successfully
           success: {
             message: (result: any) => `Pipeline execution successful after ${result.delayInSeconds} seconds.`,
@@ -376,21 +422,6 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           }
         });
 
-        // Second, install packages if needed
-        current.context.sessionContext.ready.then(async () => {
-
-          const imports = PipelineService.extractPythonImportPackages(args.code.toString());
-          const pips = PipelineService.getInstallCommandsFromImports(imports);
-          const pips_code = pips.join('\n');
-
-          // Install packages
-          current.context.sessionContext.session.kernel!.requestExecute({ code: pips_code });
-        });
-
-        // Third, run pipeline code
-        current.context.sessionContext.ready.then(async () => {
-
-          try {
             const future = current.context.sessionContext.session.kernel!.requestExecute({ code: args.code });
 
             future.onReply = reply => {

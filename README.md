@@ -7,7 +7,7 @@ Amphi addresses use cases such as data extraction from structured and unstructur
 Use Amphi within the Jupyterlab environment to design your data pipelines with a graphical user-interface and generate native Python code you can deploy anywhere.
 
  - 📚 [Documentation](https://docs.amphi.ai)
- - 🚀 [Getting Started](https://docs.amphi.ai/welcome) 
+ - 🚀 [Getting Started](https://docs.amphi.ai/getting-started/installation) 
 
 📣 **Beta release**
 
@@ -29,11 +29,8 @@ To install perform the following steps, with _pip_:
 pip install --upgrade jupyterlab jupyterlab-amphi
 ```
 
-or with _conda_:
+For more installation instructions, visit [the docs](https://docs.amphi.ai/getting-started/installation).
 
-```bash
-conda install -c conda-forge jupyterlab jupyterlab-amphi
-```
 ## Install Amphi on an existing Jupyterlab instance
 
 If you already have a Jupyterlab instance, just install the amphi package:

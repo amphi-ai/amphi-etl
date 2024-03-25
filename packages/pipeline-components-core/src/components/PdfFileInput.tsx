@@ -114,6 +114,17 @@ export class PdfFileInput extends PipelineComponent<ComponentItem>() {
     );
   }
 
+  public provideDependencies({config}): string[] {
+    let deps: string[] = [];
+    deps.push('pdf2image');
+    deps.push('pdfminer.six');
+    deps.push('pillow_heif');
+    deps.push('opencv-python');
+    deps.push('pypdf');
+    deps.push('pikepdf');
+    return deps;
+  }
+
   public provideImports({config}): string[] {
     let imports: string[] = [];
     imports.push('import pandas as pd');
@@ -132,7 +143,7 @@ export class PdfFileInput extends PipelineComponent<ComponentItem>() {
 ${outputName}_elements = partition_pdf(
   filename="${config.filePath}",
   strategy="${config.strategy}",
-  extract_images_in_pdf=True
+  extract_images_in_pdf=False
 )
 ${outputName} = convert_to_dataframe(${outputName}_elements)
 `
