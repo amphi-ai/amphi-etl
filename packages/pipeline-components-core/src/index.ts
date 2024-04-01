@@ -6,7 +6,7 @@ import {
 import { ComponentManager } from "@amphi/pipeline-components-manager";
 import { Annotation, Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
 SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, FilterColumns, GoogleSheetsInput, GoogleSheetsOutput,
-ParquetFileInput, ParquetFileOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery } from './components';
+ParquetFileInput, ParquetFileOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, EmailLogger, FileLogger } from './components';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-components-core',
@@ -57,8 +57,11 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
    // Other
    componentService.addComponent(Annotation.getInstance())
-   
-   
+   componentService.addComponent(EmailLogger.getInstance())
+   componentService.addComponent(FileLogger.getInstance())
+
+
+
    // componentService.addComponent(RestInput.getInstance())
       /*
    componentService.addComponent(FileOutput.getInstance())

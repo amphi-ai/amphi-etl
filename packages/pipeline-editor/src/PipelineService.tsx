@@ -22,14 +22,19 @@ export class PipelineService {
 
   static findStartNode = (flow: Flow): string | null => {
     const targetMap = new Set<string>();
-    flow.edges.forEach(edge => targetMap.add(edge.target));
-
+    const nodeWithOutgoingEdge = new Set<string>();
+  
+    flow.edges.forEach(edge => {
+      targetMap.add(edge.target);
+      nodeWithOutgoingEdge.add(edge.source);
+    });
+  
     for (const node of flow.nodes) {
-      if (!targetMap.has(node.id)) {
+      if (!targetMap.has(node.id) && nodeWithOutgoingEdge.has(node.id)) {
         return node.id;
       }
     }
-
+    
     return null; // No clear starting node found
   };
 

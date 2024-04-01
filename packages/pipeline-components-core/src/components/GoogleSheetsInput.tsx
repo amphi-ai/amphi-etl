@@ -21,7 +21,8 @@ export class GoogleSheetsInput extends PipelineComponent<ComponentItem>() {
         id: "filePath",
         placeholder: "Type file name",
         validation: "\\.(json)$",
-        validationMessage: "This field expects a file with a .json extension such as your-service-account-file.json."
+        validationMessage: "This field expects a file with a .json extension such as your-service-account-file.json.",
+        advanced: true
       },
       {
         type: "input",
@@ -128,30 +129,38 @@ export class GoogleSheetsInput extends PipelineComponent<ComponentItem>() {
   public generateComponentCode({ config, outputName }): string {
     // Initialize an object to modify without affecting the original config
     let sheetOptions = { ...config.sheetOptions };
-
-    // Validate and set the service account file path
-    const serviceAccountFilePath = config.filePath ? `'${config.filePath}'` : 'None';
-
+  
+    // Check if service account file path is provided and not empty
+    const isServiceAccountProvided = !!config.filePath && config.filePath.trim() !== '';
+  
     // Prepare options string for pd.read_gbq
     let optionsString = Object.entries(sheetOptions)
       .filter(([key, value]) => value !== null && value !== '')
       .map(([key, value]) => `${key}='${value}'`)
       .join(', ');
-
+  
     // Unique variables for each instance
     const uniqueClientVar = `${outputName}Client`;
     const uniqueSheetVar = `${outputName}Sheet`;
-
+  
+    // Conditional code based on service account availability
+    let authenticationCode = isServiceAccountProvided ? 
+`# Authentication with service account
+scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+creds = ServiceAccountCredentials.from_json_keyfile_name('${config.filePath}', scope)
+${uniqueClientVar} = gspread.authorize(creds)
+` :
+`# Accessing public sheet without authentication
+${uniqueClientVar} = gspread.service_account()
+`;
+  
     // Generate the Python code for reading data from Google Sheets
     const code = `
 # Reading data from Google Sheets
-scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name(${serviceAccountFilePath}, scope)
-${uniqueClientVar} = gspread.authorize(creds)
-
+${authenticationCode}
 # Open the spreadsheet
 ${uniqueSheetVar} = ${uniqueClientVar}.open_by_key(${sheetOptions.spreadsheetId ? `'${sheetOptions.spreadsheetId}'` : 'None'}).worksheet(${sheetOptions.range ? `'${sheetOptions.range.split('!')[0]}'` : 'None'})
-
+  
 # Convert to DataFrame
 ${outputName} = pd.DataFrame(${uniqueSheetVar}.get_all_records())
 `;

@@ -1285,7 +1285,7 @@ Make sure disabled buttons don't get the pointer cursor.
 }
 
 .\[-webkit-tap-highlight-color\:_transparent\] {
-  -webkit-tap-highlight-color: transparent;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
 /*
@@ -1543,7 +1543,7 @@ input:checked + label {
 }
 
 .focus\:\[box-shadow\:none\]:focus {
-  box-shadow: none;
+  box-shadow: none !important;
 }
 
 .group[open] .group-open\:-rotate-180 {

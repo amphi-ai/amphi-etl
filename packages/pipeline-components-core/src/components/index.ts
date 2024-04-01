@@ -30,6 +30,10 @@ export { XmlFileOutput } from './XmlFileOutput';
 export { HtmlFileInput } from './HtmlFileInput';
 export { PdfFileInput } from './PdfFileInput';
 export { SQLQuery } from './SqlQuery';
+export { EmailLogger } from './EmailLogger';
+export { FileLogger } from './FileLogger';
+
+
 
 
 
