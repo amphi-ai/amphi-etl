@@ -63,6 +63,15 @@ Editor components styles
   @apply align-middle;
 }
 
+.ant-form-item {
+  margin-bottom: 0px;
+}
+
+.ant-form-item-label {
+  font-size: 16px;
+  padding: 0 0 3px;
+}
+
 /*
 Components palette sidebar
 */
@@ -97,7 +106,7 @@ Components palette sidebar
   }
 
   .palette aside {
-   @apply fixed top-0 right-0 h-full w-[200px] z-10 overflow-auto
+   @apply fixed top-0 right-0 h-full w-[220px] z-10 overflow-auto
   }
 }
   
@@ -106,7 +115,7 @@ Edges
 */
 
 .edgebutton {
-  @apply w-[20px] h-[20px] bg-[#eee] border border-white cursor-pointer rounded-full text-[12px] leading-none;
+  @apply w-[20px] h-[20px] bg-[#eee] border border-white bg-[#F2F4F7] cursor-pointer rounded-full text-[12px] leading-none;
 }
 
 .edgebutton:hover {

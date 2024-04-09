@@ -1,0 +1,75 @@
+BEGIN:VCALENDAR
+PRODID:-//zoom.us//iCalendar Event//EN
+VERSION:2.0
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+CLASS:PUBLIC
+BEGIN:VTIMEZONE
+TZID:America/New_York
+LAST-MODIFIED:20231222T233358Z
+TZURL:https://www.tzurl.org/zoneinfo-outlook/America/New_York
+X-LIC-LOCATION:America/New_York
+BEGIN:DAYLIGHT
+TZNAME:EDT
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+DTSTART:19700308T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZNAME:EST
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+DTSTART:19701101T020000
+RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTAMP:20240403T170107Z
+DTSTART;TZID=America/New_York:20240411T120000
+DTEND;TZID=America/New_York:20240411T130000
+SUMMARY:Réaliser une levée de fonds aux USA: des 1ers investisseurs à la 
+ série A
+UID:20240403T170107Z-81932257803@fe80:0:0:0:ec92:71ff:fe71:2d8deth0
+TZID:America/New_York
+DESCRIPTION:Join from a PC\, Mac\, iPad\, iPhone or Android device:\n    
+ Please click this URL to join. https://us02web.zoom.us/w/81932257803?tk=
+ 8dm2lzY3iFDZ5JKVrxgTbc_8NSPTMKIdljVx6Q766xc.DQYAAAATE4sKCxZTS2ttY1RzRVRp
+ NlU4a0o5M0djTUV3AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&uuid=WN_lqWxpgs6R
+ SWW5llbVMIrbw\n	Description: Rejoignez-nous pour ce webinaire gratuit d'
+ une heure\, à destination des entrepreneurs et de toutes celles et ceux 
+ qui veulent lever des fonds aux États-Unis.\n\nAvec 4 experts du sujet\,
+  du "seed money" aux tours de table plus conséquents\, ils partageront l
+ eurs conseils pour bien lever\, et éviter les erreurs dans cette course 
+ d'obstacles.\n\nCe webinaire est organisé par French Morning avec le Fre
+ nch American Entrepreneurship Award (FAEA). Depuis quinze ans\, le FAEA 
+ donne un coup de pouce à des lauréats\, entrepreneurs francophones aux E
+ tats-Unis. Les trois lauréats reçoivent une aide financière mais aussi -
+ surtout- des conseils et un accompagnement pour accroître leur réseau et
+  leur visibilité et bien naviguer dans l’écosystème américain. Cette ann
+ ée\, la remise des prix aura lieu le 4 juin 2024 au Consulat Général de 
+ France à New York. Les dossiers sont à remettre avant le 7 mai 2024 ici 
+ : https://faea-us.com/apply/ \n\nIntervenants:\n- Virginie Raphael\, fon
+ datrice de FullCircle\n- Géraldine Le Meur\, Partner & General Manager @
+ Le Fonds by FrenchFounders\n- Paul Aubert\, cofondateur de Noovo\n- Brun
+ o Jactel\, fondateur d'Hypercell Technologies\n\nVous aurez l'occasion d
+ e leur poser toutes vos questions en direct.\n\nOr One tap mobile:\n    
+ +16699006833\,\,81932257803# US (San Jose)\n    +16694449171\,\,81932257
+ 803# US\n\nOr join by phone:\n    Dial(for higher quality\, dial a numbe
+ r based on your current location):\n        US: +1 669 900 6833  or +1 6
+ 69 444 9171  or +1 253 215 8782  or +1 346 248 7799  or +1 719 359 4580 
+  or +1 253 205 0468  or +1 301 715 8592  or +1 305 224 1968  or +1 309 2
+ 05 3325  or +1 312 626 6799  or +1 360 209 5623  or +1 386 347 5053  or 
+ +1 507 473 4847  or +1 564 217 2000  or +1 646 558 8656  or +1 646 931 3
+ 860  or +1 689 278 1000 \n    Webinar ID: 819 3225 7803\n    Internation
+ al numbers available: https://us02web.zoom.us/u/keoC5G6htC\n\n
+LOCATION:https://us02web.zoom.us/w/81932257803?tk=8dm2lzY3iFDZ5JKVrxgTbc_
+ 8NSPTMKIdljVx6Q766xc.DQYAAAATE4sKCxZTS2ttY1RzRVRpNlU4a0o5M0djTUV3AAAAAAA
+ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&uuid=WN_lqWxpgs6RSWW5llbVMIrbw
+BEGIN:VALARM
+TRIGGER:-PT10M
+ACTION:DISPLAY
+DESCRIPTION:Reminder
+END:VALARM
+END:VEVENT
+END:VCALENDAR

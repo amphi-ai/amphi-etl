@@ -26,12 +26,19 @@ import ReactFlow, {
   useReactFlow
 } from 'reactflow';
 
-import { CodeGenerator } from './CodeGenerator';
+import { Tree } from 'antd';
+import type { GetProps, TreeDataNode } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
+
+type DirectoryTreeProps = GetProps<typeof Tree.DirectoryTree>;
+
+const { DirectoryTree } = Tree;
+
+import { CodeGenerator, PipelineService } from '@amphi/pipeline-components-manager';
 import CustomEdge from './customEdge';
 import 'reactflow/dist/style.css';
 import '../style/output.css';
 import { pipelineIcon } from './icons';
-import { PipelineService } from './PipelineService';
 import { Dropzone } from './Dropzone';
 
 const PIPELINE_CLASS = 'amphi-PipelineEditor';
@@ -44,7 +51,7 @@ export const commandIDs = {
 
 export const FitViewOptions = {
   padding: 10,
-  maxZoom: 0.5
+  maxZoom: 1.0
 }
 
 /**
@@ -145,9 +152,9 @@ const PipelineWrapper: React.FC<IProps> = ({
 
   const nodeTypes = componentService.getComponents().reduce((acc, component: any) => {
     const id = component._id;
-    const ComponentUI = (props) => <component.UIComponent context={context} manager={manager} commands={commands} {...props} />;
+    const ComponentUI = (props) => <component.UIComponent context={context} componentService={componentService} manager={manager} commands={commands} {...props} />;
 
-    acc[id] = (props) => <ComponentUI context={context} manager={manager} commands={commands} {...props} />;
+    acc[id] = (props) => <ComponentUI context={context} componentService={componentService}  manager={manager} commands={commands} {...props} />;
     return acc;
   }, {});
 
@@ -300,7 +307,7 @@ const PipelineWrapper: React.FC<IProps> = ({
       [reactFlowInstance]
     );
 
-
+    
     return (
       <div className="reactflow-wrapper" ref={reactFlowWrapper}>
        <Dropzone onDrop={handleFileDrop}>
@@ -319,9 +326,10 @@ const PipelineWrapper: React.FC<IProps> = ({
           nodeTypes={nodeTypes}
           snapToGrid={true}
           snapGrid={[15, 15]}
-          fitViewOptions={{ minZoom: 0.5, maxZoom: 1.2 }}
+          fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0 }}
           fitView
           defaultViewport={defaultViewport}
+          deleteKeyCode={[]}
         > 
           <Panel position="top-right">
           </Panel>
@@ -350,8 +358,8 @@ const PipelineWrapper: React.FC<IProps> = ({
 
     const categorizedComponents = {
       input: [],
-      output: [],
       transform: [],
+      output: [],
       other: []
     };
 
@@ -359,6 +367,27 @@ const PipelineWrapper: React.FC<IProps> = ({
       const category = categorizedComponents[component._category] || categorizedComponents['other'];
       category.push(component);
     });
+
+
+    const treeData = Object.keys(categorizedComponents).map((category, index) => ({
+      title: category.charAt(0).toUpperCase() + category.slice(1),
+      key: `${index}`,
+      children: categorizedComponents[category].map((component, childIndex) => ({
+          title: (
+            <span
+              draggable
+              onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
+            >
+              {component._name}
+            </span>
+          ),
+          key: `${index}-${childIndex}`,
+          isLeaf: true,
+          icon: <component._icon.react height="14px" width="14px;"/>
+      }))
+  }));
+
+
 
     return (
 
@@ -368,49 +397,14 @@ const PipelineWrapper: React.FC<IProps> = ({
           <extensionIcon.react tag="span" width="24px" float="left" marginRight="8px" />
           Drag and drop components.
         </div>
+        <DirectoryTree
+          multiple
+          switcherIcon={<DownOutlined />}
+          showLine
+          defaultExpandAll
 
-        <ul className="mt-6 space-y-1">
-
-          {Object.keys(categorizedComponents).map((category, index) => (
-
-            <li key={category}>
-              <details className="group [&_summary::-webkit-details-marker]:hidden" open={index === 0 || index === 1 || index === 2}>
-
-                <summary
-                  className="flex cursor-pointer items-center justify-between rounded-lg px-4 py-2 text-gray-500 hover:bg-grey-100 hover:text-gray-700">
-                  <span className="text-sm font-medium"> {category.charAt(0).toUpperCase() + category.slice(1)}</span>
-                  <span className="shrink-0 transition duration-300 group-open:-rotate-180">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor">
-                      <path
-                        fillRule="evenodd"
-                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                        clipRule="evenodd"/>
-                    </svg>
-                  </span>
-                </summary>
-
-                <ul className="mt-2 space-y-1 px-4">
-                  {categorizedComponents[category].map(component => (
-                    <li key={component._id}>
-                      <div
-                        key={component._id}
-                        className="draggable_component"
-                        onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
-                        draggable
-                      >
-                        <component._icon.react height="16px" strokeWidth="1px" marginRight="8px" margin="0px" padding="0px" width="16px;" color="var(--cds-brand-01)" /> {component._name}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            </li>
-          ))}
-        </ul>
+          treeData={treeData}
+        />
       </aside>
     );
   }
@@ -459,7 +453,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       componentService: this.componentService,
     };
 
-    // context.sessionContext.kernelPreference = {autoStartDefault:true, name: 'python', shutdownOnDispose: true};
+    context.sessionContext.kernelPreference = {autoStartDefault:true, name: 'python', shutdownOnDispose: true};
 
     const content = new PipelineEditorWidget(props);
     const widget = new DocumentWidget({ content, context });

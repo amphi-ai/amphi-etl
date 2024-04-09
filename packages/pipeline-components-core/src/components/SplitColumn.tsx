@@ -54,6 +54,7 @@ export class SplitColumn extends PipelineComponent<ComponentItem>() {
     nodeId, 
     data,
     context,
+    componentService,
     manager,
     commands,
     store,
@@ -82,6 +83,7 @@ export class SplitColumn extends PipelineComponent<ComponentItem>() {
           form: this.Form,
           data: data,
           context: context,
+          componentService: componentService,
           manager: manager,
           commands: commands,
           handleChange: handleChange,
@@ -90,7 +92,7 @@ export class SplitColumn extends PipelineComponent<ComponentItem>() {
     );
 }
 
-public UIComponent({ id, data, context, manager, commands }) {
+public UIComponent({ id, data, context, componentService, manager, commands }) {
 
   const { setNodes, deleteElements, setViewport } = useReactFlow();
   const store = useStoreApi();
@@ -118,7 +120,7 @@ public UIComponent({ id, data, context, manager, commands }) {
         manager: manager,
         commands: commands,
         name: SplitColumn.Name,
-        ConfigForm: SplitColumn.ConfigForm({nodeId:id, data, context, manager, commands, store, setNodes}),
+        ConfigForm: SplitColumn.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
         Icon: SplitColumn.Icon,
         showContent: showContent,
         handle: handleElement,

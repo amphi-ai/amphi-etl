@@ -61,6 +61,7 @@ export class MySQLInput extends PipelineComponent<ComponentItem>() {
         nodeId, 
         data,
         context,
+        componentService,
         manager,
         commands,
         store,
@@ -89,6 +90,7 @@ export class MySQLInput extends PipelineComponent<ComponentItem>() {
               form: this.Form,
               data: data,
               context: context,
+              componentService: componentService,
               manager: manager,
               commands: commands,
               handleChange: handleChange,
@@ -97,7 +99,7 @@ export class MySQLInput extends PipelineComponent<ComponentItem>() {
         );
     }
   
-    public UIComponent({ id, data, context, manager, commands  }) {
+    public UIComponent({ id, data, context, componentService, manager, commands  }) {
   
       const { setNodes, deleteElements, setViewport } = useReactFlow();
       const store = useStoreApi();
@@ -124,7 +126,7 @@ export class MySQLInput extends PipelineComponent<ComponentItem>() {
             manager: manager,
             commands: commands,
             name: MySQLInput.Name,
-            ConfigForm: MySQLInput.ConfigForm({nodeId:id, data, context, manager, commands, store, setNodes}),
+            ConfigForm: MySQLInput.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
             Icon: MySQLInput.Icon,
             showContent: showContent,
             handle: handleElement,

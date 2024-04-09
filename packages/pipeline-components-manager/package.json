@@ -1,6 +1,6 @@
 {
   "name": "@amphi/pipeline-components-manager",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Amphi Pipeline Components Manager",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {
@@ -49,13 +49,16 @@
     "watch:src": "tsc -w"
   },
   "dependencies": {
-    "@headlessui/react": "^1.7.18",
     "@jupyterlab/application": "^4.1.5",
     "@jupyterlab/apputils": "^4.1.5",
     "@lumino/widgets": "^2.0.0",
+    "antd": "^5.16.0",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
     "react-flow-renderer": "^10.3.17",
-    "react-select": "^5.8.0"
+    "react-select": "^5.8.0",
+    "styled-components": "^6.1.8"
   },
   "resolutions": {
     "@jupyterlab/rendermime-interfaces": "^3.8.9",

@@ -8,7 +8,7 @@ export class XmlFileInput extends PipelineComponent<ComponentItem>() {
 
   public _name = 'XML File Input';
   public _id = 'xmlFileInput';
-  public _type = 'xml_input';
+  public _type = 'pandas_df_input';
   public _fileDrop = ["xml"];
   public _category = 'input';
   public _icon = fileTextIcon;
@@ -33,7 +33,7 @@ export class XmlFileInput extends PipelineComponent<ComponentItem>() {
     ],
   };
 
-  public static ConfigForm = ({ nodeId, data, context, manager, commands, store, setNodes }) => {
+  public static ConfigForm = ({ nodeId, data, context, componentService, manager, commands, store, setNodes }) => {
     const defaultConfig = this.Default; // Define your default config
 
     const handleSetDefaultConfig = useCallback(() => {
@@ -57,6 +57,7 @@ export class XmlFileInput extends PipelineComponent<ComponentItem>() {
           form: this.Form,
           data: data,
           context: context,
+          componentService: componentService,
           manager: manager,
           commands: commands,
           handleChange: handleChange,
@@ -65,7 +66,7 @@ export class XmlFileInput extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  public UIComponent({ id, data, context, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands }) {
 
     const { setNodes, deleteElements, setViewport } = useReactFlow();
     const store = useStoreApi();
@@ -92,7 +93,7 @@ export class XmlFileInput extends PipelineComponent<ComponentItem>() {
           manager: manager,
           commands: commands,
           name: XmlFileInput.Name,
-          ConfigForm: XmlFileInput.ConfigForm({nodeId:id, data, context, manager, commands, store, setNodes}),
+          ConfigForm: XmlFileInput.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
           Icon: XmlFileInput.Icon,
           showContent: showContent,
           handle: handleElement,

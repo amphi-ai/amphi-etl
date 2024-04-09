@@ -48,6 +48,7 @@ export class Extract extends PipelineComponent<ComponentItem>() {
     nodeId,
     data,
     context,
+    componentService,
     manager,
     commands,
     store,
@@ -76,6 +77,7 @@ export class Extract extends PipelineComponent<ComponentItem>() {
           form: this.Form,
           data: data,
           context: context,
+          componentService: componentService,
           manager: manager,
           commands: commands,
           handleChange: handleChange,
@@ -84,7 +86,7 @@ export class Extract extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  public UIComponent({ id, data, context, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands }) {
 
     const { setNodes, deleteElements, setViewport } = useReactFlow();
     const store = useStoreApi();
@@ -112,7 +114,7 @@ export class Extract extends PipelineComponent<ComponentItem>() {
           manager: manager,
           commands: commands,
           name: Extract.Name,
-          ConfigForm: Extract.ConfigForm({ nodeId: id, data, context, manager, commands, store, setNodes }),
+          ConfigForm: Extract.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes }),
           Icon: Extract.Icon,
           showContent: showContent,
           handle: handleElement,

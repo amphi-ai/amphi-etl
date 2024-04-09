@@ -1,30 +1,23 @@
 import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig } from '@amphi/pipeline-components-manager';
 import React, { useCallback, useEffect } from 'react';
 import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
-import { codeIcon } from '../icons';
+import { filterIcon } from '../icons';
 
-export class CustomTransformations extends PipelineComponent<ComponentItem>() {
+export class SchemaModeler extends PipelineComponent<ComponentItem>() {
 
-  public _name = "Custom Code";
-  public _id = "customTransformations";
+  public _name = "Schema Modeler";
+  public _id = "schemaModeler";
   public _type = "pandas_df_processor";
   public _category = "transform";
-  public _icon = codeIcon;
-  public _default = { code: "output = input"};
+  public _icon = filterIcon;
+  public _default = {};
   public _form = {
     idPrefix: "component__form",
     fields: [
       {
-        type: "textarea",
-        label: "Code",
-        id: "code",
-        placeholder: "output = input",
-      },
-      {
-        type: "textarea",
-        label: "Imports",
-        id: "import",
-        placeholder: "import library",
+        type: "transferData",
+        label: "Mapping",
+        id: "mapping",
         advanced: true
       }
     ],
@@ -70,9 +63,9 @@ export class CustomTransformations extends PipelineComponent<ComponentItem>() {
         })}
       </>
     );
-}
+  }
 
-public UIComponent({ id, data, context, componentService, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands }) {
 
   const { setNodes, deleteElements, setViewport } = useReactFlow();
   const store = useStoreApi();
@@ -86,7 +79,7 @@ public UIComponent({ id, data, context, componentService, manager, commands }) {
   
   // Create the handle element
   const handleElement = React.createElement(renderHandle, {
-    type: CustomTransformations.Type,
+    type: SchemaModeler.Type,
     Handle: Handle, // Make sure Handle is imported or defined
     Position: Position // Make sure Position is imported or defined
   });
@@ -99,25 +92,31 @@ public UIComponent({ id, data, context, componentService, manager, commands }) {
         context: context,
         manager: manager,
         commands: commands,
-        name: CustomTransformations.Name,
-        ConfigForm: CustomTransformations.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
-        Icon: CustomTransformations.Icon,
+        name: SchemaModeler.Name,
+        ConfigForm: SchemaModeler.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
+        Icon: SchemaModeler.Icon,
         showContent: showContent,
         handle: handleElement,
         deleteNode: deleteNode,
-        setViewport: setViewport,
+        setViewport: setViewport
       })}
     </>
   );
-}
+  }
 
-  public provideImports(config): string[] {
-    return config.imports ? config.imports.split('\n').filter(line => line.startsWith('import ')) : [];
+  public provideImports({config}): string[] {
+    return ["import pandas as pd"];
   }
 
   public generateComponentCode({config, inputName, outputName}): string {
-    let code = `\n${config.code}`.replace(/input/g, inputName);
-    code = code.replace(/output/g, outputName);
+    const columnsToKeep = config.mapping.targetKeys.map(key => `'${key.trim()}'`).join(', ');
+    const code = `
+# Schema modeling (filtering and ordering)
+${outputName} = ${inputName}[[${columnsToKeep}]]
+`;
     return code;
-  }
+}
+
+
+
 }

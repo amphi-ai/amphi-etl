@@ -48,6 +48,7 @@ export class FileLogger extends PipelineComponent<ComponentItem>() {
     nodeId, 
     data,
     context,
+    componentService,
     manager,
     commands,
     store,
@@ -76,6 +77,7 @@ export class FileLogger extends PipelineComponent<ComponentItem>() {
           form: this.Form,
           data: data,
           context: context,
+          componentService: componentService,
           manager: manager,
           commands: commands,
           handleChange: handleChange,
@@ -84,7 +86,7 @@ export class FileLogger extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  public UIComponent({ id, data, context, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands }) {
 
   const { setNodes, deleteElements, setViewport } = useReactFlow();
   const store = useStoreApi();
@@ -111,7 +113,7 @@ export class FileLogger extends PipelineComponent<ComponentItem>() {
         manager: manager,
         commands: commands,
         name: FileLogger.Name,
-        ConfigForm: FileLogger.ConfigForm({nodeId:id, data, context, manager, commands, store, setNodes}),
+        ConfigForm: FileLogger.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
         Icon: FileLogger.Icon,
         showContent: showContent,
         handle: handleElement,

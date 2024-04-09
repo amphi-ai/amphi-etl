@@ -22,11 +22,10 @@ import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { IStatusBar } from '@jupyterlab/statusbar';
 import { PromiseDelegate, ReadonlyJSONValue, ReadonlyPartialJSONObject, Token } from '@lumino/coreutils';
 
-import { ComponentManager } from '@amphi/pipeline-components-manager';
+import { ComponentManager, CodeGenerator, PipelineService } from '@amphi/pipeline-components-manager';
 import { pipelineCategoryIcon, pipelineBrandIcon } from './icons';
 import { PipelineEditorFactory, commandIDs } from './PipelineEditorWidget';
-import { CodeGenerator } from './CodeGenerator';
-import { PipelineService, Node, Flow } from './PipelineService';
+
 import { LabIcon } from '@jupyterlab/ui-components';
 import React from 'react';
 

@@ -20,7 +20,7 @@ import extractIconSvgStr from '../style/icons/scissors-24.svg';
 import googleSheetsIconSvgStr from '../style/icons/google-sheets-color-24.svg';
 import mySQLIconSvgStr from '../style/icons/mysql.svg';
 import boxIconSvgStr from '../style/icons/box-16.svg';
-
+import redditIconSvgStr from '../style/icons/reddit.svg';
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -120,6 +120,11 @@ export const mySQLIcon = new LabIcon({
 export const boxIcon = new LabIcon({
   name: 'amphi:box-icon',
   svgstr: boxIconSvgStr
+});
+
+export const redditIcon = new LabIcon({
+  name: 'amphi:redditIcon',
+  svgstr: redditIconSvgStr
 });
 
 

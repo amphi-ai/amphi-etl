@@ -1,8 +1,6 @@
 
 import { PathExt } from '@jupyterlab/coreutils';
 
-
-
 export class PipelineService {
 
   static filterPipeline(pipelineJson: string) {
@@ -20,23 +18,19 @@ export class PipelineService {
     return flow;
   }
 
-  static findStartNode = (flow: Flow): string | null => {
+  static findStartNode = (flow: Flow, componentService: any): string | null => {
     const targetMap = new Set<string>();
-    const nodeWithOutgoingEdge = new Set<string>();
-  
-    flow.edges.forEach(edge => {
-      targetMap.add(edge.target);
-      nodeWithOutgoingEdge.add(edge.source);
-    });
+    flow.edges.forEach(edge => targetMap.add(edge.target));
   
     for (const node of flow.nodes) {
-      if (!targetMap.has(node.id) && nodeWithOutgoingEdge.has(node.id)) {
+      const nodeType = componentService.getComponent(node.type)._type;
+      if (!targetMap.has(node.id) && nodeType === "pandas_df_input") {
         return node.id;
       }
     }
-    
-    return null; // No clear starting node found
-  };
+  
+    return null;
+  }
 
   static findPreviousNodeId = (flow, nodeId): string => {
     // Find the ID of the previous node

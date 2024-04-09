@@ -30,6 +30,7 @@ export class ParquetFileInput extends PipelineComponent<ComponentItem>() {
     nodeId,
     data,
     context,
+    componentService,
     manager,
     commands,
     store,
@@ -58,6 +59,7 @@ export class ParquetFileInput extends PipelineComponent<ComponentItem>() {
           form: this.Form,
           data: data,
           context: context,
+          componentService: componentService,
           manager: manager,
           commands: commands,
           handleChange: handleChange,
@@ -66,7 +68,7 @@ export class ParquetFileInput extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  public UIComponent({ id, data, context, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands }) {
 
     const { setNodes, deleteElements, setViewport } = useReactFlow();
     const store = useStoreApi();
@@ -94,7 +96,7 @@ export class ParquetFileInput extends PipelineComponent<ComponentItem>() {
           manager: manager,
           commands: commands,
           name: ParquetFileInput.Name,
-          ConfigForm: ParquetFileInput.ConfigForm({ nodeId: id, data, context, manager, commands, store, setNodes }),
+          ConfigForm: ParquetFileInput.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes }),
           Icon: ParquetFileInput.Icon,
           showContent: showContent,
           handle: handleElement,

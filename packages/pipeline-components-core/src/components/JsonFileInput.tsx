@@ -56,6 +56,7 @@ export class JsonFileInput extends PipelineComponent<ComponentItem>() {
       nodeId, 
       data,
       context,
+      componentService,
       manager,
       commands,
       store,
@@ -84,6 +85,7 @@ export class JsonFileInput extends PipelineComponent<ComponentItem>() {
             form: this.Form,
             data: data,
             context: context,
+            componentService: componentService,
             manager: manager,
             commands: commands,
             handleChange: handleChange,
@@ -92,7 +94,7 @@ export class JsonFileInput extends PipelineComponent<ComponentItem>() {
       );
   }
 
-  public UIComponent({ id, data, context, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands }) {
 
     const { setNodes, deleteElements, setViewport } = useReactFlow();
     const store = useStoreApi();
@@ -120,7 +122,7 @@ export class JsonFileInput extends PipelineComponent<ComponentItem>() {
           manager: manager,
           commands: commands,
           name: JsonFileInput.Name,
-          ConfigForm: JsonFileInput.ConfigForm({nodeId:id, data, context, manager, commands, store, setNodes}),
+          ConfigForm: JsonFileInput.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
           Icon: JsonFileInput.Icon,
           showContent: showContent,
           handle: handleElement,

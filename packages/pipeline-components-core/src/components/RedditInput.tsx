@@ -1,57 +1,50 @@
 import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig } from '@amphi/pipeline-components-manager';
 import React, { useCallback, useEffect } from 'react';
 import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
-import { mySQLIcon } from '../icons'; // Assuming databaseIcon is an available icon similar to filePlusIcon
+import { redditIcon } from '../icons';
 
-export class MySQLOutput extends PipelineComponent<ComponentItem>() {
-
-  public _name = "MySQL Output";
-  public _id = "mySQLOutput";
-  public _type = "pandas_df_output";
-  public _category = "output";
-  public _icon = mySQLIcon; // Adjust if there's a different icon for databases
-  public _default = { dbOptions: { host: "localhost", port: "3306", databaseName: "", tableName: "", username: "", password: "" } };
+export class RedditInput extends PipelineComponent<ComponentItem>() {
+  public _name = "Reddit Input";
+  public _id = "redditInput";
+  public _type = "pandas_df_input";
+  public _category = "input";
+  public _icon = redditIcon; // Placeholder for the Reddit icon
+  public _default = { submission: "all", limit: 20, sort: "hot", userAgent: "Sumbission extraction by Amphi" };
   public _form = {
     idPrefix: "component__form",
     fields: [
       {
         type: "input",
-        label: "Host",
-        id: "dbOptions.host",
-        placeholder: "Enter database host",
+        label: "Submission",
+        id: "submission",
+        placeholder: "URL or id",
+      },
+      {
+        type: "input",
+        label: "Limit",
+        id: "limit",
+        placeholder: "Number of posts to fetch",
         advanced: true
       },
       {
         type: "input",
-        label: "Port",
-        id: "dbOptions.port",
-        placeholder: "Enter database port",
+        label: "Client ID",
+        id: "clientId",
+        placeholder: "Reddit Client ID",
         advanced: true
       },
       {
         type: "input",
-        label: "Database Name",
-        id: "dbOptions.databaseName",
-        placeholder: "Enter database name"
-      },
-      {
-        type: "input",
-        label: "Table Name",
-        id: "dbOptions.tableName",
-        placeholder: "Enter table name",
-      },
-      {
-        type: "input",
-        label: "Username",
-        id: "dbOptions.username",
-        placeholder: "Enter username",
+        label: "Secret ID",
+        id: "secretId",
+        placeholder: "Reddit Secret ID",
         advanced: true
       },
       {
         type: "input",
-        label: "Password",
-        id: "dbOptions.password",
-        placeholder: "Enter password",
+        label: "User Agent",
+        id: "userAgent",
+        placeholder: "Sumbission extraction by username",
         advanced: true
       }
     ],
@@ -111,10 +104,11 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
     const zoomSelector = (s) => s.transform[2] >= 1;
     const showContent = useStore(zoomSelector);
 
+    // Create the handle element
     const handleElement = React.createElement(renderHandle, {
-      type: MySQLOutput.Type,
-      Handle: Handle,
-      Position: Position
+      type: RedditInput.Type,
+      Handle: Handle, // Make sure Handle is imported or defined
+      Position: Position // Make sure Position is imported or defined
     });
 
     return (
@@ -125,9 +119,9 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
           context: context,
           manager: manager,
           commands: commands,
-          name: MySQLOutput.Name,
-          ConfigForm: MySQLOutput.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes }),
-          Icon: MySQLOutput.Icon,
+          name: RedditInput.Name,
+          ConfigForm: RedditInput.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes }),
+          Icon: RedditInput.Icon,
           showContent: showContent,
           handle: handleElement,
           deleteNode: deleteNode,
@@ -138,18 +132,37 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "import sqlalchemy"];
+    return ["import pandas as pd", "import praw", "from praw.models import MoreComments"];
   }
 
-  public generateComponentCode({ config, inputName }): string {
-    const connectionString = `mysql+pymysql://${config.dbOptions.username}:${config.dbOptions.password}@${config.dbOptions.host}:${config.dbOptions.port}/${config.dbOptions.databaseName}`;
-    const uniqueEngineName = `${inputName}Engine`; // Unique engine name based on the inputName
+  public generateComponentCode({ config, outputName }): string {
+    const submission = config.submission;
+    const limit = config.limit || 10;
+
+    // Check if the subreddit is a URL or an ID
+    const isUrl = submission.startsWith('http') || submission.startsWith('www');
+    const submissionAccess = isUrl
+        ? `${outputName}_submission = ${outputName}_reddit.submission(url='${submission}')`
+        : `${outputName}_submission = ${outputName}_reddit.submission('${submission}')`;
+
     const code = `
-# Connect to MySQL and output into table
-${uniqueEngineName} = sqlalchemy.create_engine('${connectionString}')
-${inputName}.to_sql(name='${config.dbOptions.tableName}', con=${uniqueEngineName}, if_exists='replace', index=False)
+${outputName}_reddit = praw.Reddit(client_id='${config.clientId}', client_secret='${config.secretId}', user_agent='${config.userAgent}')
+${submissionAccess}
+
+${outputName}_comments_data = []
+${outputName}_submission.comments.replace_more(limit=${limit})
+for comment in ${outputName}_submission.comments.list():
+    ${outputName}_comments_data.append({
+        'comment_id': comment.id,
+        'comment_body': comment.body,
+        'comment_author': comment.author.name if comment.author else None,
+        'comment_score': comment.score,
+        'comment_created_utc': comment.created_utc,
+        'parent_id': comment.parent_id
+    })
+
+${outputName} = pd.DataFrame(${outputName}_comments_data)
 `;
     return code;
   }
-
 }

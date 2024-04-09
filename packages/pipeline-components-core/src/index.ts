@@ -5,8 +5,8 @@ import {
 
 import { ComponentManager } from "@amphi/pipeline-components-manager";
 import { Annotation, Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
-SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, FilterColumns, GoogleSheetsInput, GoogleSheetsOutput,
-ParquetFileInput, ParquetFileOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, EmailLogger, FileLogger } from './components';
+SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, SchemaModeler,
+ParquetFileInput, ParquetFileOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, EmailLogger, FileLogger, RedditInput } from './components';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-components-core',
@@ -28,7 +28,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(MySQLInput.getInstance())
    componentService.addComponent(HtmlFileInput.getInstance())
    componentService.addComponent(PdfFileInput.getInstance())
-
+   componentService.addComponent(PdfFileInput.getInstance())
+   componentService.addComponent(RedditInput.getInstance())
 
    // Outputs
    componentService.addComponent(CsvFileOutput.getInstance())
@@ -41,6 +42,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(Console.getInstance())
 
    // Processors
+   componentService.addComponent(SchemaModeler.getInstance())
    componentService.addComponent(Filter.getInstance())
    componentService.addComponent(Aggregate.getInstance())
    componentService.addComponent(SQLQuery.getInstance())
@@ -51,9 +53,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(Sample.getInstance())
    componentService.addComponent(Sort.getInstance())
    componentService.addComponent(RenameColumns.getInstance())
-   componentService.addComponent(FilterColumns.getInstance())
    componentService.addComponent(TypeConverter.getInstance())
    componentService.addComponent(Extract.getInstance())
+
 
    // Other
    componentService.addComponent(Annotation.getInstance())

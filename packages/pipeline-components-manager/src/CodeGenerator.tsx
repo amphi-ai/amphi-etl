@@ -145,7 +145,7 @@ export class CodeGenerator {
     };
 
     // Find the start node
-    const startNodeId = PipelineService.findStartNode(flow);
+    const startNodeId = PipelineService.findStartNode(flow, componentService);
     if (startNodeId) {
       traverse(startNodeId);
     } else {

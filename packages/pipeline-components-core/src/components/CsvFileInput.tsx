@@ -21,16 +21,18 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
         label: "File path",
         id: "filePath",
         placeholder: "Type file name",
+        required: true,
+        tooltip: "This field expects a file path with a csv, tsv or txt extension such as input.csv.",
         validation: "\\.(csv|tsv|txt)$",
-        validationMessage: "This field expects a file with a csv, tsv or txt extension such as input.csv."
       },
       {
-        type: "singleInputCreatableSelect",
+        type: "selectCustomizable",
         label: "Separator",
         id: "csvOptions.sep",
         placeholder: "default: ,",
+        required: true,
+        tooltip: "Select or provide a custom deilimiter.",
         options: [
-          { value: "null", label: "Select or type delimiter", isDisabled: true },
           { value: ",", label: "comma (,)" },
           { value: ";", label: "semicolon (;)" },
           { value: " ", label: "space" },
@@ -40,14 +42,16 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
         ],
       },
       {
-        type: "input",
+        type: "selectTokenization",
         label: "Header",
         id: "csvOptions.header",
-        placeholder: "infer",
+        placeholder: "Type header fields (ordered and comma-separated)",
+        options: [
+        ],
         advanced: true
       },
       {
-        type: "singleInputSelect",
+        type: "select",
         label: "On Bad Lines",
         id: "csvOptions.on_bad_lines",
         placeholder: "error",
@@ -65,6 +69,7 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
     nodeId,
     data,
     context,
+    componentService,
     manager,
     commands,
     store,
@@ -93,6 +98,7 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
           form: this.Form,
           data: data,
           context: context,
+          componentService: componentService,
           manager: manager,
           commands: commands,
           handleChange: handleChange,
@@ -101,7 +107,7 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  public UIComponent({ id, data, context, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands }) {
 
     const { setNodes, deleteElements, setViewport } = useReactFlow();
     const store = useStoreApi();
@@ -129,7 +135,7 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
           manager: manager,
           commands: commands,
           name: CsvFileInput.Name,
-          ConfigForm: CsvFileInput.ConfigForm({ nodeId: id, data, context, manager, commands, store, setNodes }),
+          ConfigForm: CsvFileInput.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes }),
           Icon: CsvFileInput.Icon,
           showContent: showContent,
           handle: handleElement,

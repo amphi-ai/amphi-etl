@@ -21,12 +21,13 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
         placeholder: "Column name",
       },
       {
-        type: "singleInputCreatableSelect",
+        type: "selectCustomizable",
         label: "Data Type to convert to",
         id: "dataType",
         placeholder: "Select column type to convert to",
+        required: true,
         options: [
-          { value: "null", label: "Select or specify type", isDisabled: true},
+          { value: "null", label: "Select or specify type", disabled: true},
           { value: "string", label: "string: For string data." },
           { value: "int", label: "int: For integer types (use int64, int32, int16, etc. for optimized memory usage)."},
           { value: "float", label: "float: For floating-point numbers (use float64, float32, etc. for optimized memory usage)." },
@@ -44,6 +45,7 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
     nodeId, 
     data,
     context,
+    componentService,
     manager,
     commands,
     store,
@@ -72,6 +74,7 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
           form: this.Form,
           data: data,
           context: context,
+          componentService: componentService,
           manager: manager,
           commands: commands,
           handleChange: handleChange,
@@ -80,7 +83,7 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  public UIComponent({ id, data, context, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands }) {
 
   const { setNodes, deleteElements, setViewport } = useReactFlow();
   const store = useStoreApi();
@@ -108,7 +111,7 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
         manager: manager,
         commands: commands,
         name: TypeConverter.Name,
-        ConfigForm: TypeConverter.ConfigForm({nodeId:id, data, context, manager, commands, store, setNodes}),
+        ConfigForm: TypeConverter.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
         Icon: TypeConverter.Icon,
         showContent: showContent,
         handle: handleElement,

@@ -10,18 +10,18 @@ export class Filter extends PipelineComponent<ComponentItem>() {
   public _type = "pandas_df_processor";
   public _category = "transform";
   public _icon = filterIcon;
-  public _default = {};
+  public _default = { condition: "=="};
   public _form = {
     idPrefix: "component__form",
     fields: [
       {
-        type: "input",
+        type: "column",
         label: "Column name",
         id: "columnName",
         placeholder: "Column name",
       },
       {
-        type: "singleInputSelect",
+        type: "select",
         label: "Condition",
         id: "condition",
         placeholder: "Select condition",
@@ -44,7 +44,7 @@ export class Filter extends PipelineComponent<ComponentItem>() {
       },
       {
         type: "input",
-        label: "Value the condition satisfies",
+        label: "Value",
         id: "conditionValue",
         placeholder: "Any string of characters (enforce numbers if needed)"
       },
@@ -61,6 +61,7 @@ export class Filter extends PipelineComponent<ComponentItem>() {
     nodeId, 
     data,
     context,
+    componentService,
     manager,
     commands,
     store,
@@ -89,6 +90,7 @@ export class Filter extends PipelineComponent<ComponentItem>() {
           form: this.Form,
           data: data,
           context: context,
+          componentService: componentService,
           manager: manager,
           commands: commands,
           handleChange: handleChange,
@@ -97,7 +99,7 @@ export class Filter extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  public UIComponent({ id, data, context, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands }) {
 
   const { setNodes, deleteElements, setViewport } = useReactFlow();
   const store = useStoreApi();
@@ -125,7 +127,7 @@ export class Filter extends PipelineComponent<ComponentItem>() {
         manager: manager,
         commands: commands,
         name: Filter.Name,
-        ConfigForm: Filter.ConfigForm({nodeId:id, data, context, manager, commands, store, setNodes}),
+        ConfigForm: Filter.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
         Icon: Filter.Icon,
         showContent: showContent,
         handle: handleElement,

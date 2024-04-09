@@ -51,6 +51,7 @@ export class CustomFunctions extends PipelineComponent<ComponentItem>() {
     nodeId, 
     data,
     context,
+    componentService,
     manager,
     commands,
     store,
@@ -79,6 +80,7 @@ export class CustomFunctions extends PipelineComponent<ComponentItem>() {
           form: this.Form,
           data: data,
           context: context,
+          componentService: componentService,
           manager: manager,
           commands: commands,
           handleChange: handleChange,
@@ -87,7 +89,7 @@ export class CustomFunctions extends PipelineComponent<ComponentItem>() {
     );
 }
 
-public UIComponent({ id, data, context, manager, commands }) {
+public UIComponent({ id, data, context, componentService, manager, commands }) {
 
   const { setNodes, deleteElements, setViewport } = useReactFlow();
   const store = useStoreApi();
@@ -115,7 +117,7 @@ public UIComponent({ id, data, context, manager, commands }) {
         manager: manager,
         commands: commands,
         name: CustomFunctions.Name,
-        ConfigForm: CustomFunctions.ConfigForm({nodeId:id, data, context, manager, commands, store, setNodes}),
+        ConfigForm: CustomFunctions.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
         Icon: CustomFunctions.Icon,
         showContent: showContent,
         handle: handleElement,

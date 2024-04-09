@@ -26,7 +26,7 @@ export class XmlFileOutput extends PipelineComponent<ComponentItem>() {
     ],
   };
 
-  public static ConfigForm = ({ nodeId, data, context, manager, commands, store, setNodes }) => {
+  public static ConfigForm = ({ nodeId, data, context, componentService, manager, commands, store, setNodes }) => {
       const defaultConfig = this.Default; // Define your default config
   
       const handleSetDefaultConfig = useCallback(() => {
@@ -50,6 +50,7 @@ export class XmlFileOutput extends PipelineComponent<ComponentItem>() {
             form: this.Form,
             data: data,
             context: context,
+            componentService: componentService,
             manager: manager,
             commands: commands,
             handleChange: handleChange,
@@ -58,7 +59,7 @@ export class XmlFileOutput extends PipelineComponent<ComponentItem>() {
       );
   }
 
-  public UIComponent({ id, data, context, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands }) {
 
     const { setNodes, deleteElements, setViewport } = useReactFlow();
     const store = useStoreApi();
@@ -85,7 +86,7 @@ export class XmlFileOutput extends PipelineComponent<ComponentItem>() {
           manager: manager,
           commands: commands,
           name: XmlFileOutput.Name,
-          ConfigForm: XmlFileOutput.ConfigForm({nodeId:id, data, context, manager, commands, store, setNodes}),
+          ConfigForm: XmlFileOutput.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
           Icon: XmlFileOutput.Icon,
           showContent: showContent,
           handle: handleElement,

@@ -27,6 +27,7 @@ export class ExpandList extends PipelineComponent<ComponentItem>() {
     nodeId,
     data,
     context,
+    componentService,
     manager,
     commands,
     store,
@@ -55,6 +56,7 @@ export class ExpandList extends PipelineComponent<ComponentItem>() {
           form: this.Form,
           data: data,
           context: context,
+          componentService: componentService,
           manager: manager,
           commands: commands,
           handleChange: handleChange,
@@ -63,7 +65,7 @@ export class ExpandList extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  public UIComponent({ id, data, context, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands }) {
 
     const { setNodes, deleteElements, setViewport } = useReactFlow();
     const store = useStoreApi();
@@ -91,7 +93,7 @@ export class ExpandList extends PipelineComponent<ComponentItem>() {
           manager: manager,
           commands: commands,
           name: ExpandList.Name,
-          ConfigForm: ExpandList.ConfigForm({ nodeId: id, data, context, manager, commands, store, setNodes }),
+          ConfigForm: ExpandList.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes }),
           Icon: ExpandList.Icon,
           showContent: showContent,
           handle: handleElement,

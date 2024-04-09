@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { FieldDescriptor } from '../configUtils'
 import { minusIcon, plusIcon } from '../icons';
+import { Form, Divider, Input, Select, Space, Button } from 'antd';
+import { MinusCircleOutlined, PlusOutlined, MenuOutlined } from '@ant-design/icons';
 
 // Define a type for your component's props
 interface KeyValueFormProps {
@@ -39,40 +41,37 @@ export const KeyValueForm: React.FC<KeyValueFormProps> = ({ field, handleChange,
   };
 
   return (
-    <div>
-      {keyValuePairs.map((pair, index) => (
-        <div key={index} className="col-span-1 flex items-center space-x-2">
-          <input
-            type="text"
-            name={`${field.id}_key_${index}`}
-            placeholder="Key"
-            id={`${field.id}_key_${index}`}
-            value={pair.key}
-            onChange={(e) => handleChangeKV(e, index, 'key')}
-            className="mt-1 h-6 w-full rounded-sm border-gray-200 shadow-sm sm:text-xs"
-          />
-          <input
-            type="text"
-            name={`${field.id}_value_${index}`}
-            placeholder="Value"
-            id={`${field.id}_value_${index}`}
-            value={pair.value}
-            onChange={(e) => handleChangeKV(e, index, 'value')}
-            className="mt-1 h-6 w-full rounded-sm border-gray-200 shadow-sm sm:text-xs"
-          />
-          <button type="button"
-            onClick={() => handleRemovePair(index)}
-            className="nodrag flex flex-col justify-center items-center mt-1 w-9 h-6 rounded-sm bg-gray-500 text-white shadow-sm sm:text-xs">
-            <minusIcon.react className="" />
-          </button>
-        </div>
-      ))}
-      <button type="button"
-        onClick={handleAddPair}
-        className="nodrag flex flex-col justify-center items-center mt-2 w-9 h-6 rounded-sm bg-gray-500 text-white shadow-sm sm:text-xs">
-        <plusIcon.react className="" />
-      </button>
-    </div>
+    <Form.List name="keyValue">
+      {(fields, { add, remove }) => (
+        <>
+          <Form.Item>
+            {keyValuePairs.map((pair, index) => (
+              <Space style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+                <Input
+                  name={`${field.id}_key_${index}`}
+                  placeholder={field.placeholder?.key || 'key'}
+                  id={`${field.id}_key_${index}`}
+                  value={pair.key}
+                  onChange={(e) => handleChangeKV(e, index, 'key')}
+                />
+                <Input
+                  name={`${field.id}_value_${index}`}
+                  placeholder={field.placeholder?.value || 'value'}
+                  id={`${field.id}_value_${index}`}
+                  value={pair.value}
+                  onChange={(e) => handleChangeKV(e, index, 'value')} />
+                <MinusCircleOutlined onClick={() => handleRemovePair(index)} />
+              </Space>
+            ))}
+          </Form.Item>
+          <Form.Item>
+            <Button type="dashed" onClick={handleAddPair} block icon={<PlusOutlined />}>
+              Add {field.elementName ? field.elementName : 'item'}
+            </Button>
+          </Form.Item>
+        </>
+      )}
+    </Form.List>
   );
 };
 

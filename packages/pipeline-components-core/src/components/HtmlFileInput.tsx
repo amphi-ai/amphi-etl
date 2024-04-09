@@ -31,6 +31,7 @@ export class HtmlFileInput extends PipelineComponent<ComponentItem>() {
       nodeId, 
       data,
       context,
+      componentService,
       manager,
       commands,
       store,
@@ -59,6 +60,7 @@ export class HtmlFileInput extends PipelineComponent<ComponentItem>() {
             form: this.Form,
             data: data,
             context: context,
+            componentService: componentService,
             manager: manager,
             commands: commands,
             handleChange: handleChange,
@@ -67,7 +69,7 @@ export class HtmlFileInput extends PipelineComponent<ComponentItem>() {
       );
   }
 
-  public UIComponent({ id, data, context, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands }) {
 
     const { setNodes, deleteElements, setViewport } = useReactFlow();
     const store = useStoreApi();
@@ -95,7 +97,7 @@ export class HtmlFileInput extends PipelineComponent<ComponentItem>() {
           manager: manager,
           commands: commands,
           name: HtmlFileInput.Name,
-          ConfigForm: HtmlFileInput.ConfigForm({nodeId:id, data, context, manager, commands, store, setNodes}),
+          ConfigForm: HtmlFileInput.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
           Icon: HtmlFileInput.Icon,
           showContent: showContent,
           handle: handleElement,

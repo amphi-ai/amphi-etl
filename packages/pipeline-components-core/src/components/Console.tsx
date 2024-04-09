@@ -29,6 +29,7 @@ export class Console extends PipelineComponent<ComponentItem>() {
     nodeId,
     data,
     context,
+    componentService,
     manager,
     commands,
     store,
@@ -57,6 +58,7 @@ export class Console extends PipelineComponent<ComponentItem>() {
           form: this.Form,
           data: data,
           context: context,
+          componentService: componentService,
           manager: manager,
           commands: commands,
           handleChange: handleChange,
@@ -65,7 +67,7 @@ export class Console extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  public UIComponent({ id, data, context, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands }) {
 
     const { setNodes, deleteElements, setViewport } = useReactFlow();
     const store = useStoreApi();
@@ -93,7 +95,7 @@ export class Console extends PipelineComponent<ComponentItem>() {
           manager: manager,
           commands: commands,
           name: Console.Name,
-          ConfigForm: Console.ConfigForm({ nodeId: id, data, context, manager, commands, store, setNodes }),
+          ConfigForm: Console.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes }),
           Icon: Console.Icon,
           showContent: showContent,
           handle: handleElement,

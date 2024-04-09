@@ -39,6 +39,7 @@ export class PdfFileInput extends PipelineComponent<ComponentItem>() {
       nodeId, 
       data,
       context,
+      componentService,
       manager,
       commands,
       store,
@@ -67,6 +68,7 @@ export class PdfFileInput extends PipelineComponent<ComponentItem>() {
             form: this.Form,
             data: data,
             context: context,
+            componentService: componentService,
             manager: manager,
             commands: commands,
             handleChange: handleChange,
@@ -75,7 +77,7 @@ export class PdfFileInput extends PipelineComponent<ComponentItem>() {
       );
   }
 
-  public UIComponent({ id, data, context, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands }) {
 
     const { setNodes, deleteElements, setViewport } = useReactFlow();
     const store = useStoreApi();
@@ -103,7 +105,7 @@ export class PdfFileInput extends PipelineComponent<ComponentItem>() {
           manager: manager,
           commands: commands,
           name: PdfFileInput.Name,
-          ConfigForm: PdfFileInput.ConfigForm({nodeId:id, data, context, manager, commands, store, setNodes}),
+          ConfigForm: PdfFileInput.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
           Icon: PdfFileInput.Icon,
           showContent: showContent,
           handle: handleElement,
@@ -120,7 +122,6 @@ export class PdfFileInput extends PipelineComponent<ComponentItem>() {
     deps.push('pdfminer.six');
     deps.push('pillow_heif');
     deps.push('opencv-python');
-    deps.push('pypdf');
     deps.push('pikepdf');
     return deps;
   }

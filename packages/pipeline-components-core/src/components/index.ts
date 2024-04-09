@@ -18,7 +18,6 @@ export { JsonFileOutput } from './JsonFileOutput';
 export { RenameColumns } from './RenameColumns';
 export { TypeConverter } from './TypeConverter';
 export { Extract } from './Extract';
-export { FilterColumns } from './FilterColumns';
 export { GoogleSheetsInput } from './GoogleSheetsInput';
 export { GoogleSheetsOutput } from './GoogleSheetsOutput';
 export { ParquetFileInput } from './ParquetFileInput';
@@ -32,6 +31,9 @@ export { PdfFileInput } from './PdfFileInput';
 export { SQLQuery } from './SqlQuery';
 export { EmailLogger } from './EmailLogger';
 export { FileLogger } from './FileLogger';
+export { RedditInput } from './RedditInput';
+export { SchemaModeler } from './SchemaModeler';
+
 
 
 
