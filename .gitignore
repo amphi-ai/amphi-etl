@@ -32,7 +32,7 @@ docs/source/_build
 
 lerna-debug.log
 yarn-error.log
-
+yarn.lock
 junit.xml
 
 *.tsbuildinfo
