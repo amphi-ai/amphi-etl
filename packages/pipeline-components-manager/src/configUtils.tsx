@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Button, Form, Input, Radio, Tag, Select, Space, Switch, Mentions, Modal } from 'antd';
-import { CheckOutlined, CloseOutlined, ClockCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Form, Input, Radio, Tag, Select, Space, Switch, InputNumber, Modal } from 'antd';
+import { CheckOutlined, CloseOutlined, ClockCircleOutlined, SearchOutlined, SettingOutlined } from '@ant-design/icons';
 
 import { PathExt } from '@jupyterlab/coreutils';
 
@@ -12,6 +12,8 @@ import SelectCustomizable from './forms/selectCustomizable';
 import SelectTokenization from './forms/selectTokenization';
 import SelectRegular from './forms/selectRegular';
 import SelectColumns from './forms/selectColumns';
+import KeyValueColumns from './forms/keyValueColumns';
+
 import TransferData from './forms/transferData';
 
 export const setDefaultConfig = ({ nodeId, store, setNodes, defaultConfig }: SetDefaultConfigProps): void => {
@@ -78,8 +80,8 @@ export const generateUIFormComponent = ({
   };
 
   return (
-    <Form       
-      layout="vertical" 
+    <Form
+      layout="vertical"
       size="small">
       {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: false })}
       <div className="flex justify-center mt-1 pt-1.5 space-x-4">
@@ -165,75 +167,75 @@ export const generateUIInputs = ({
           case "input":
             return (
               <Form.Item label={field.label} className="nodrag"  {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <Input  
-                    id={field.id}
-                    size={advanced ? "middle" : "small"}
-                    name={field.id} 
-                    placeholder={field.placeholder} 
-                    onChange={(e: any) => handleChange(e.target.value, field.id)}
-                    value={value}
-                    autoComplete="off"
-                  />
+                <Input
+                  id={field.id}
+                  size={advanced ? "middle" : "small"}
+                  name={field.id}
+                  placeholder={field.placeholder}
+                  onChange={(e: any) => handleChange(e.target.value, field.id)}
+                  value={value}
+                  autoComplete="off"
+                />
               </Form.Item>
             );
           case "file":
             return (
-                <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                  <Space.Compact style={{ width: '100%' }}>
-                  <Input  
+              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                <Space.Compact style={{ width: '100%' }}>
+                  <Input
                     id={field.id}
                     size={advanced ? "middle" : "small"}
-                    name={field.id} 
-                    placeholder={field.placeholder} 
+                    name={field.id}
+                    placeholder={field.placeholder}
                     onChange={(e: any) => handleChange(e.target.value, field.id)}
                     value={value}
                     {...(isInvalid ? { status: "warning" } : {})}
-                    />
+                  />
                   <Button type="primary" size={advanced ? "middle" : "small"} onClick={async () => {
-                      // TODO, there is something wrong here
-                      const workspacePath: string = PathExt.resolve(
-                        '/',
-                        PathExt.dirname(context.path)
-                      );
-                      const res = await showBrowseFileDialog(
-                        manager,
-                        {
-                          multiselect: false,
-                          includeDir: true,
-                          rootPath: PathExt.dirname(context.path),
-                          filter: (model: any): boolean => {
-                            return model.path !== context.path;
-                          }
-                        });
-                      handleChange(res.value[0].path, field.id);
-                    }}><SearchOutlined /></Button>
-                   </Space.Compact>
+                    // TODO, there is something wrong here
+                    const workspacePath: string = PathExt.resolve(
+                      '/',
+                      PathExt.dirname(context.path)
+                    );
+                    const res = await showBrowseFileDialog(
+                      manager,
+                      {
+                        multiselect: false,
+                        includeDir: true,
+                        rootPath: PathExt.dirname(context.path),
+                        filter: (model: any): boolean => {
+                          return model.path !== context.path;
+                        }
+                      });
+                    handleChange(res.value[0].path, field.id);
+                  }}><SearchOutlined /></Button>
+                </Space.Compact>
               </Form.Item>
             );
           case "column":
             return (
               <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <SelectColumns field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced}/>
-            </Form.Item>
+                <SelectColumns field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
+              </Form.Item>
             );
-            case "selectCustomizable":
-              return (
-                  <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                    <SelectCustomizable field={field} handleChange={handleChange} defaultValue={value} inDialog={advanced}/>
-                  </Form.Item>
-              );
-              case "selectTokenization":
-                return (
-                    <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                      <SelectTokenization field={field} handleChange={handleChange} defaultValue={value} inDialog={advanced}/>
-                    </Form.Item>
-                );
-                case "select":
-                  return (
-                      <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                        <SelectRegular field={field} handleChange={handleChange} defaultValue={value} inDialog={advanced}/>
-                      </Form.Item>
-                  );
+          case "selectCustomizable":
+            return (
+              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                <SelectCustomizable field={field} handleChange={handleChange} defaultValue={value} inDialog={advanced} />
+              </Form.Item>
+            );
+          case "selectTokenization":
+            return (
+              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                <SelectTokenization field={field} handleChange={handleChange} defaultValue={value} inDialog={advanced} />
+              </Form.Item>
+            );
+          case "select":
+            return (
+              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                <SelectRegular field={field} handleChange={handleChange} defaultValue={value} inDialog={advanced} />
+              </Form.Item>
+            );
           case "textarea":
             return (
               <div key={index} className="col-span-2">
@@ -250,56 +252,50 @@ export const generateUIInputs = ({
             );
           case "boolean":
             return (
-            <Form.Item 
-              label={field.label} 
-              {...(field.required ? { required: field.required } : {})}
-              {...(field.tooltip ? { tooltip: field.tooltip } : {})}
-            >
-              <Switch
-                onChange={(e: any) => handleChange(e.target.checked, field.id)}
-                checkedChildren={<CheckOutlined />}
-                unCheckedChildren={<CloseOutlined />}
-                defaultChecked={value === true} // Set defaultChecked based on field.value
-              />
-            </Form.Item>
+              <Form.Item
+                label={field.label}
+                {...(field.required ? { required: field.required } : {})}
+                {...(field.tooltip ? { tooltip: field.tooltip } : {})}
+              >
+                <Switch
+                  onChange={(e: any) => handleChange(e.target.checked, field.id)}
+                  checkedChildren={<CheckOutlined />}
+                  unCheckedChildren={<CloseOutlined />}
+                  defaultChecked={value === true} // Set defaultChecked based on field.value
+                />
+              </Form.Item>
             );
           case "keyvalue":
             return (
-              <div key={index} className="col-span-2">
-                <label className="component_label" htmlFor={field.id}>{field.label}</label>
+              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
                 <KeyValueForm field={field} handleChange={handleChange} initialValues={values} />
-              </div>
+              </Form.Item>
+            );
+          case "keyvalueColumns":
+            return (
+              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+
+                <KeyValueColumns field={field} handleChange={handleChange} initialValues={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
+              </Form.Item>
             );
           case "valuesList":
             return (
-              <div key={index} className="col-span-2">
-                <label className="component_label" htmlFor={field.id}>{field.label}</label>
+              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
                 <ValuesListForm field={field} handleChange={handleChange} initialValues={values} />
-              </div>
-            );
-          case "quantity":
-            return (
-              <div className="col-span-1">
-                <label className="component_label" htmlFor={field.id}>{field.label}</label>
-                <input
-                  id={field.id}
-                  name={field.id}
-                  onChange={(e) => handleChange(e.target.value, field.id)}
-                  value={value}
-                  placeholder={field.placeholder}
-                  inputMode="numeric"
-                  type="number"
-                  className="nodrag mt-1 sm:h-6 h-7 w-full rounded-sm border-gray-200 shadow-sm sm:text-xs text-sm"
-                />
-
-              </div>
-            );
-            case "transferData":
-              return (
-                <Form.Item label={field.label} {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <TransferData field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced}/>
               </Form.Item>
-              );
+            );
+          case "inputNumber":
+            return (
+              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                 <InputNumber min={0} max={100} id={field.id} name={field.id} value={value} onChange={value => handleChange(value, field.id)} changeOnWheel/>
+              </Form.Item>
+            );
+          case "transferData":
+            return (
+              <Form.Item label={field.label} {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                <TransferData field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
+              </Form.Item>
+            );
           default:
             return null;
         }
@@ -324,22 +320,21 @@ export default function ConfigModal({
   setModal2Open
 }: ConfigModalProps) {
   return (
-      <>
-        <Modal
-          title={name}
-          centered
-          open={modal2Open}
-          onOk={() => setModal2Open(false)}
-          onCancel={() => setModal2Open(false)}
-          width={800}
-        >
-      <Form       
-      layout="vertical" >
-        {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: true })}
+    <>
+      <Modal
+        title={name}
+        centered
+        open={modal2Open}
+        onOk={() => setModal2Open(false)}
+        onCancel={() => setModal2Open(false)}
+        width={800}
+      >
+        <Form
+          layout="vertical" >
+          {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: true })}
         </Form>
-        </Modal>
-        
-      </>
+      </Modal>
+    </>
   )
 }
 
@@ -404,7 +399,7 @@ export interface Option {
 }
 
 export interface FieldDescriptor {
-  type: 'file' | 'column' | 'column' | 'keyvalue' | 'valuesList' | 'input' | 'select' | 'textarea' | 'radio' | 'datalist' | 'boolean' | 'quantity' | 'selectCustomizable' | 'selectTokenization' | 'transferData';
+  type: 'file' | 'column' | 'column' | 'keyvalue' | 'valuesList' | 'input' | 'select' | 'textarea' | 'radio' | 'datalist' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns';
   label: string;
   id: string;
   placeholder?: any;
@@ -415,8 +410,6 @@ export interface FieldDescriptor {
   validation?: string;
   validationMessage?: string;
   elementName?: string;
-
-
 }
 
 interface ConfigModalProps {

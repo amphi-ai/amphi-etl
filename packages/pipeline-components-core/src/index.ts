@@ -28,10 +28,27 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(MySQLInput.getInstance())
    componentService.addComponent(HtmlFileInput.getInstance())
    componentService.addComponent(PdfFileInput.getInstance())
-   componentService.addComponent(PdfFileInput.getInstance())
    componentService.addComponent(RedditInput.getInstance())
 
-   // Outputs
+   // Processors
+   componentService.addComponent(SchemaModeler.getInstance())
+   componentService.addComponent(RenameColumns.getInstance())
+   componentService.addComponent(Filter.getInstance())
+   componentService.addComponent(Aggregate.getInstance())
+   componentService.addComponent(TypeConverter.getInstance())
+   componentService.addComponent(SplitColumn.getInstance())
+   componentService.addComponent(Extract.getInstance())
+   componentService.addComponent(Sort.getInstance())
+   componentService.addComponent(Deduplicate.getInstance())
+   componentService.addComponent(ExpandList.getInstance())
+   componentService.addComponent(Sample.getInstance())
+  
+   componentService.addComponent(SQLQuery.getInstance())
+   componentService.addComponent(CustomTransformations.getInstance())
+   
+   
+
+  // Outputs
    componentService.addComponent(CsvFileOutput.getInstance())
    componentService.addComponent(JsonFileOutput.getInstance())
    componentService.addComponent(ExcelFileOutput.getInstance())
@@ -40,22 +57,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(GoogleSheetsOutput.getInstance())
    componentService.addComponent(MySQLOutput.getInstance())
    componentService.addComponent(Console.getInstance())
-
-   // Processors
-   componentService.addComponent(SchemaModeler.getInstance())
-   componentService.addComponent(Filter.getInstance())
-   componentService.addComponent(Aggregate.getInstance())
-   componentService.addComponent(SQLQuery.getInstance())
-   componentService.addComponent(CustomTransformations.getInstance())
-   componentService.addComponent(SplitColumn.getInstance())
-   componentService.addComponent(Deduplicate.getInstance())
-   componentService.addComponent(ExpandList.getInstance())
-   componentService.addComponent(Sample.getInstance())
-   componentService.addComponent(Sort.getInstance())
-   componentService.addComponent(RenameColumns.getInstance())
-   componentService.addComponent(TypeConverter.getInstance())
-   componentService.addComponent(Extract.getInstance())
-
 
    // Other
    componentService.addComponent(Annotation.getInstance())

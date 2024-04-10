@@ -1147,10 +1147,6 @@ input:checked + label {
 }
 
 @media (min-width: 640px) {
-  .sm\:h-6 {
-    height: 1.5rem !important;
-  }
-
   .sm\:text-xs {
     font-size: 0.75rem !important;
     line-height: 1rem !important;

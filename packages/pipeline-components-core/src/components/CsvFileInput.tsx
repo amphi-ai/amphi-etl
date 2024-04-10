@@ -21,7 +21,6 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
         label: "File path",
         id: "filePath",
         placeholder: "Type file name",
-        required: true,
         tooltip: "This field expects a file path with a csv, tsv or txt extension such as input.csv.",
         validation: "\\.(csv|tsv|txt)$",
       },
@@ -30,7 +29,6 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
         label: "Separator",
         id: "csvOptions.sep",
         placeholder: "default: ,",
-        required: true,
         tooltip: "Select or provide a custom deilimiter.",
         options: [
           { value: ",", label: "comma (,)" },
@@ -42,9 +40,22 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
         ],
       },
       {
-        type: "selectTokenization",
+        type: "selectCustomizable",
+        tooltip: "Row number containing column labels and marking the start of the data (zero-indexed).",
         label: "Header",
         id: "csvOptions.header",
+        options: [
+          { value: "None", label: "None" },
+          { value: "0", label: "First line" },
+          { value: "1", label: "Second Line" }
+        ],
+        advanced: true
+      },
+      {
+        type: "selectTokenization",
+        tooltip: "Sequence of column labels to apply.",
+        label: "Column names",
+        id: "csvOptions.names",
         placeholder: "Type header fields (ordered and comma-separated)",
         options: [
         ],
@@ -154,25 +165,37 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
     // Initialize an object to modify without affecting the original config
     let csvOptions = { ...config.csvOptions };
 
-    // Special handling for 'infer' option
+    // Handle 'infer' option
     if (csvOptions.sep === 'infer') {
-      csvOptions.sep = 'None'; // Set sep to Python's None for code generation
-      csvOptions.engine = 'python'; // Ensure engine is set to 'python'
+        csvOptions.sep = 'None'; // Set sep to Python's None for code generation
+        csvOptions.engine = 'python'; // Ensure engine is set to 'python'
+    }
+
+    // Adjust handling for 'header' and 'names'
+    if (typeof config.header === 'number' || config.header === 'None') {
+        csvOptions.header = config.header; // Use the header value directly if it's a number or 'None'
+    }
+
+    if (config.names && Array.isArray(config.names)) {
+        csvOptions.names = `['${config.names.join("', '")}']`; // Format names as a Python list
+        csvOptions.header = 0; // Set header to 0 if names are provided
     }
 
     // Prepare options string for pd.read_csv
     let optionsString = Object.entries(csvOptions)
-      .filter(([key, value]) => value !== null && value !== '' && !(key === 'sep' && value === 'infer'))
-      .map(([key, value]) => {
-        // Correct handling for Python's None without quotes
-        if (value === 'None') {
-          return `${key}=${value}`;
-        } else {
-          // Handle other options normally
-          return `${key}='${value}'`;
-        }
-      })
-      .join(', ');
+        .filter(([key, value]) => value !== null && value !== '' && !(key === 'sep' && value === 'infer'))
+        .map(([key, value]) => {
+            if (key === 'header' && (typeof value === 'number' || value === 'None')) {
+                return `${key}=${value}`; // Handle header as number or None without quotes
+            } else if (key === 'names') {
+                return `${key}=${value}`; // Directly use the formatted names list
+            } else if (typeof value === 'string' && value !== 'None') {
+                return `${key}='${value}'`; // Handle strings with quotes, except for 'None'
+            } else {
+                return `${key}=${value}`; // Handle numbers and Python's None without quotes
+            }
+        })
+        .join(', ');
 
     // Generate the Python code
     const code = `
@@ -180,6 +203,6 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
 ${outputName} = pd.read_csv('${config.filePath}'${optionsString ? `, ${optionsString}` : ''}).convert_dtypes()
 `;
     return code;
-  }
+}
 
 }

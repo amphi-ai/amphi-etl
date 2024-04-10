@@ -21,7 +21,7 @@ export class SplitColumn extends PipelineComponent<ComponentItem>() {
         placeholder: "Type column name",
       },
       {
-        type: "singleInputCreatableSelect",
+        type: "select",
         label: "Delimiter",
         id: "delimiter",
         placeholder: "Select or type delimiter",

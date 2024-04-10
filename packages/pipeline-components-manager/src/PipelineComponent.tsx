@@ -9,7 +9,7 @@ export function PipelineComponent<T extends ComponentItem>() {
     public _name: string;
     public _id: string;
     public _type: string;
-    public _icon: LabIcon;
+    public _icon: any;
     public _default: object;
     public _form: object;
 

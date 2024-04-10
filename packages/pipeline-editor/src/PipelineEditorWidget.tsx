@@ -453,7 +453,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       componentService: this.componentService,
     };
 
-    context.sessionContext.kernelPreference = {autoStartDefault:true, name: 'python', shutdownOnDispose: true};
+    context.sessionContext.kernelPreference = {autoStartDefault:true, name: 'python', shutdownOnDispose: false};
 
     const content = new PipelineEditorWidget(props);
     const widget = new DocumentWidget({ content, context });

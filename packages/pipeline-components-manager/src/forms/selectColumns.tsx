@@ -4,7 +4,7 @@ import { CodeGenerator } from '../CodeGenerator';
 import { PipelineService } from '../PipelineService';
 import { KernelMessage } from '@jupyterlab/services';
 
-import { ConfigProvider, Divider, Input, Select, Space, Button, Tag } from 'antd';
+import { ConfigProvider, Divider, Input, Select, Space, Button, Tag, Empty } from 'antd';
 import type { InputRef } from 'antd';
 import { FieldDescriptor, Option } from '../configUtils';
 
@@ -38,6 +38,7 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
   const [name, setName] = useState('');
   const inputRef = useRef<InputRef>(null);
   const [selectedOption, setSelectedOption] = useState(findOptionByValue(defaultValue));
+  const [loadings, setLoadings] = useState<boolean>();
 
   let index = 0;
 
@@ -59,14 +60,16 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
     setName(event.target.value);
   };
 
+
   const customizeRenderEmpty = () => (
     <div style={{ textAlign: 'center' }}>
-      <SmileOutlined style={{ fontSize: 20 }} />
-      <Button type="primary" onClick={retrieveColumns} >Retrieve columns</Button>
+      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
+      <Button type="primary" onClick={retrieveColumns} loading={loadings}>Retrieve columns</Button>
     </div>
   );
 
   const retrieveColumns = (event: React.MouseEvent<HTMLElement>) => {
+    setLoadings(true);
     const flow = PipelineService.filterPipeline(context.model.toString());
     let code = CodeGenerator.generateCodeUntil(context.model.toString(), commands, componentService, PipelineService.findPreviousNodeId(flow, nodeId));
 
@@ -85,6 +88,7 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
             // Split the output string into fields and then map each field to an object
             const newItems = output.split(', ').map(field => {
               const [name, type] = field.split(' (');
+              setLoadings(false)
               return { value: name, label: `${name} (${type}` };
             });
 
@@ -97,8 +101,11 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
           }
         };
       } else if (reply.content.status == "error") {
+        setLoadings(false)
       } else if (reply.content.status == "abort") {
+        setLoadings(false)
       } else {
+        setLoadings(false)
       }
     };
 

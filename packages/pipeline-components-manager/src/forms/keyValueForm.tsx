@@ -53,13 +53,16 @@ export const KeyValueForm: React.FC<KeyValueFormProps> = ({ field, handleChange,
                   id={`${field.id}_key_${index}`}
                   value={pair.key}
                   onChange={(e) => handleChangeKV(e, index, 'key')}
+                  autoComplete="off"
                 />
                 <Input
                   name={`${field.id}_value_${index}`}
                   placeholder={field.placeholder?.value || 'value'}
                   id={`${field.id}_value_${index}`}
                   value={pair.value}
-                  onChange={(e) => handleChangeKV(e, index, 'value')} />
+                  onChange={(e) => handleChangeKV(e, index, 'value')} 
+                  autoComplete="off"
+                  />
                 <MinusCircleOutlined onClick={() => handleRemovePair(index)} />
               </Space>
             ))}

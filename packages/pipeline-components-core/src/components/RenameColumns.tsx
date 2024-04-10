@@ -15,7 +15,7 @@ export class RenameColumns extends PipelineComponent<ComponentItem>() {
     idPrefix: "component__form",
     fields: [
       {
-        type: "keyvalue",
+        type: "keyvalueColumns",
         label: "Columns",
         id: "columns",
         placeholders: { key: "column name", value: "new column name"},
