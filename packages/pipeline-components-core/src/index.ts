@@ -5,7 +5,7 @@ import {
 
 import { ComponentManager } from "@amphi/pipeline-components-manager";
 import { Annotation, Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
-SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, SchemaModeler,
+SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, SchemaModeler, Join,
 ParquetFileInput, ParquetFileOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, EmailLogger, FileLogger, RedditInput } from './components';
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -35,6 +35,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(RenameColumns.getInstance())
    componentService.addComponent(Filter.getInstance())
    componentService.addComponent(Aggregate.getInstance())
+   componentService.addComponent(Join.getInstance())
    componentService.addComponent(TypeConverter.getInstance())
    componentService.addComponent(SplitColumn.getInstance())
    componentService.addComponent(Extract.getInstance())
@@ -42,12 +43,10 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(Deduplicate.getInstance())
    componentService.addComponent(ExpandList.getInstance())
    componentService.addComponent(Sample.getInstance())
-  
    componentService.addComponent(SQLQuery.getInstance())
    componentService.addComponent(CustomTransformations.getInstance())
    
-   
-
+  
   // Outputs
    componentService.addComponent(CsvFileOutput.getInstance())
    componentService.addComponent(JsonFileOutput.getInstance())

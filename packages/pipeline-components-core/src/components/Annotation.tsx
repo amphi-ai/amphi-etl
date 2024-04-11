@@ -39,8 +39,18 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
 
   public UIComponent({ id, data, context, manager }) {
 
-    const zoomSelector = (s) => s.transform[2] >= 1;
-    const showContent = useStore(zoomSelector);
+  const zoomSelector = (s) => s.transform[2] >= 1;
+  const showContent = useStore(zoomSelector);
+  
+  const selector = (s) => ({
+    nodeInternals: s.nodeInternals,
+    edges: s.edges,
+  });
+
+  const { nodeInternals, edges } = useStore(selector);
+  const nodeId = id;
+  const internals = { nodeInternals, edges, nodeId }
+
 
     return (
       <>

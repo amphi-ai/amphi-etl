@@ -20,20 +20,22 @@ export class CodeGenerator {
     return code;
   }
 
-  static generateCodeForNodes = (flow: Flow, componentService: any, targetNode: string): string => {
+  static generateCodeForNodes = (flow: Flow, componentService: any, targetNodeId: string): string => {
 
+    console.log("generateCodeForNodes initialization")
     // Intialization
     let code: string = '';
     let counters = new Map<string, number>(); // Map with string as key and integer as value
     const nodesMap = new Map<string, Node>();
+    const nodeDependencies = new Map<string, string[]>(); // To keep track of node dependencies
+    const sortedNodes: string[] = []; // To store the topologically sorted nodes
     const loggersMap = new Map<string, Node>();
-    const visited = new Set<string>();
     const nodeOutputs = new Map<string, string>();
     const uniqueImports = new Set<string>();
     const uniqueDependencies = new Set<string>();
     const functions = new Set<string>();
 
-
+    // Helper function to increment counter
     function incrementCounter(key: string) {
       const count = counters.get(key) || 0;
       counters.set(key, count + 1);
@@ -51,45 +53,91 @@ export class CodeGenerator {
       }
     });
 
-    console.log("loggers %o", loggersMap);
-    console.log("NODES %o", nodesMap);
+    console.log("nodesMap %o", nodesMap)
 
-    // Helper function to check if target is reachable from the current node
-    const isTargetReachable = (currentNodeId, targetNodeId, flow) => {
-      if (!targetNodeId || targetNodeId === 'none') return true; // Assume it's reachable to traverse all nodes
+    // Topological sort with path tracking
+    const visited = new Set<string>();
+    const nodePaths = new Map<string, Set<string>>();
 
-      let reachable = false;
-      const explore = (nodeId) => {
-        if (nodeId === targetNodeId) {
-          reachable = true;
-          return;
+    const topologicalSortWithPathTracking = (node: string, path: Set<string>) => {
+        if (visited.has(node)) {
+            // Combine the current path with the existing path for the node
+            const existingPath = nodePaths.get(node) || new Set();
+            nodePaths.set(node, new Set([...existingPath, ...path]));
+            return;
         }
-        flow.edges.forEach(edge => {
-          if (edge.source === nodeId && !reachable) {
-            explore(edge.target);
-          }
+        visited.add(node);
+
+        const dependencies = flow.edges
+            .filter(edge => edge.target === node)
+            .map(edge => edge.source);
+
+        nodeDependencies.set(node, dependencies);
+
+        // Include the current node in the path for subsequent calls
+        const currentPath = new Set([...path, node]);
+        nodePaths.set(node, currentPath);
+
+        dependencies.forEach(dependency => {
+            topologicalSortWithPathTracking(dependency, currentPath);
         });
-      };
-      explore(currentNodeId);
-      return reachable;
+
+        sortedNodes.push(node);
     };
 
-    // Main recursive function -> traverse nodes
-    const traverse = (nodeId: string) => {
-      if (visited.has(nodeId) || !isTargetReachable(nodeId, targetNode, flow)) {
-        return;
+    // Perform topological sort with path tracking
+    flow.nodes.forEach(node => {
+        if (!visited.has(node.id)) {
+            topologicalSortWithPathTracking(node.id, new Set());
+        }
+    });
+
+    // Assume sortedNodes is already populated from the topological sort
+    let nodesToTraverse = [];
+
+    // After topological sorting and path tracking
+    if (targetNodeId !== 'none') {
+      let nodesToConsider = new Set<string>([targetNodeId]);
+      let pathToTarget = new Set<string>();
+
+      while (nodesToConsider.size > 0) {
+          let nextNodesToConsider = new Set<string>();
+
+          nodesToConsider.forEach(nodeId => {
+              pathToTarget.add(nodeId);
+              const dependencies = nodeDependencies.get(nodeId) || [];
+              dependencies.forEach(dep => {
+                  if (!pathToTarget.has(dep)) {
+                      nextNodesToConsider.add(dep);
+                  }
+              });
+          });
+
+          nodesToConsider = nextNodesToConsider;
       }
 
-      visited.add(nodeId);
+      // Filter the sortedNodes to include only those in pathToTarget, preserving the topological order
+      nodesToTraverse = sortedNodes.filter(nodeId => pathToTarget.has(nodeId));
+      console.log("nodesToTravser %o", nodesToTraverse)
+    } else {
+      nodesToTraverse = sortedNodes;
+      console.log("nodesToTravser %o", nodesToTraverse)
+    }
 
+    
+    // nodesToTraverse.reverse();
+
+    for (const nodeId of nodesToTraverse) {
       const node = nodesMap.get(nodeId);
-      if (!node) {
-        console.error(`Node with id ${nodeId} not found.`);
-        return;
-      }
+        if (!node) {
+            console.error(`Node with id ${nodeId} not found.`);
+            continue;
+        }
 
       let config: any = node.data as any; // Initialize config
       const component = componentService.getComponent(node.type);
+      const component_type = componentService.getComponent(node.type)._type;
+      const component_id = componentService.getComponent(node.type)._id;
 
       // Only gather additionnal dependencies if the function exists
       if (typeof component?.provideDependencies === 'function') {
@@ -104,58 +152,55 @@ export class CodeGenerator {
       let inputName = '';
       let outputName = '';
 
-      const component_type = componentService.getComponent(node.type)._type;
-      const component_id = componentService.getComponent(node.type)._id;
-
       switch (component_type) {
         case 'pandas_df_processor':
           incrementCounter(component_id);
-          inputName = nodeOutputs.get(PipelineService.findPreviousNodeId(flow, node.id));
+          inputName = nodeOutputs.get(PipelineService.findPreviousNodeId(flow, nodeId));
           outputName = `${node.type}${counters.get(component_id)}`;
-          nodeOutputs.set(node.id, outputName); // Map the source node to its output variable
+          nodeOutputs.set(nodeId, outputName); // Map the source node to its output variable
           code += componentService.getComponent(node.type).generateComponentCode({ config, inputName, outputName });
+          break;
+        case 'pandas_df_double_processor':
+          const [input1Id, input2Id] = PipelineService.findMultiplePreviousNodeIds(flow, nodeId);
+          incrementCounter(component_id);
+          outputName = `${node.type}${counters.get(component_id)}`;
+          nodeOutputs.set(node.id, outputName);
+          const inputName1 = nodeOutputs.get(input1Id);
+          const inputName2 = nodeOutputs.get(input2Id);
+          code += componentService.getComponent(node.type).generateComponentCode({
+            config,
+            inputName1,
+            inputName2,
+            outputName
+          });
+          console.log("pandas_df_double_processor")
           break;
         case 'pandas_df_input':
           incrementCounter(component_id);
           outputName = `${node.type}${counters.get(component_id)}`;
-          nodeOutputs.set(node.id, outputName); // Map the source node to its output variable
+          nodeOutputs.set(nodeId, outputName); // Map the source node to its output variable
           code += componentService.getComponent(node.type).generateComponentCode({ config, outputName });
           break;
         case 'pandas_df_output':
           incrementCounter(component_id);
-          inputName = nodeOutputs.get(PipelineService.findPreviousNodeId(flow, node.id));
+          inputName = nodeOutputs.get(PipelineService.findPreviousNodeId(flow, nodeId));
           code += componentService.getComponent(node.type).generateComponentCode({ config, inputName });
           break;
         default:
           console.error("Error generating code.");
       }
+      console.log("nodeId %o", nodeId)
+      console.log("targetNodeId %o", targetNodeId)
 
       // If target node....
-      if (nodeId === targetNode) {
-        code += '\n' + nodeOutputs.get(nodeId); // Call the last node that is run to output in console
-        return; // Stop traversing further if we've reached the target node
+      if (nodeId === targetNodeId) {
+        code += '\n' + nodeOutputs.get(nodeId);
+        console.log(code) // Call the last node that is run to output in console
+        // No need to continue after reaching the target node
       }
-
-      // Recursivity
-      flow.edges.forEach(edge => {
-        if (edge.source === nodeId) {
-          traverse(edge.target);
-        }
-      });
-    };
-
-    // Find the start node
-    const startNodeId = PipelineService.findStartNode(flow, componentService);
-    if (startNodeId) {
-      traverse(startNodeId);
-    } else {
-      // Create an error notification with an action button
-      Notification.error('Code cannot be generated because no input components have been found.', {
-        autoClose: 8000
-      });
     }
 
-    // Loggers
+    // Loggers when full pipeline execution
     if (loggersMap.size > 0) {
 
       let loggerCode = '';
@@ -205,6 +250,7 @@ ${loggerCode}
     const dateComment = `# Source code generated by Amphi\n# Date: ${dateString}`;
     const additionalImports = `# Additional dependencies: ${Array.from(uniqueDependencies).join(', ')}`;
     const generatedCode = `${dateComment}\n${additionalImports}\n${Array.from(uniqueImports).join('\n')}\n${Array.from(functions).join('\n\n')}\n${code}`;
+    // console.log("generated code %o", generatedCode)
 
     return generatedCode;
 

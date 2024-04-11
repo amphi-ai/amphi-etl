@@ -215,7 +215,7 @@ export const generateUIInputs = ({
           case "column":
             return (
               <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <SelectColumns field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
+                <SelectColumns field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced}/>
               </Form.Item>
             );
           case "selectCustomizable":
@@ -410,6 +410,7 @@ export interface FieldDescriptor {
   validation?: string;
   validationMessage?: string;
   elementName?: string;
+  inputNb?: number;
 }
 
 interface ConfigModalProps {

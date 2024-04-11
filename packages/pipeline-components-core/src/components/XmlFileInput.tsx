@@ -75,13 +75,24 @@ export class XmlFileInput extends PipelineComponent<ComponentItem>() {
       deleteElements({ nodes: [{ id }] });
     }, [id, deleteElements]);
 
-    const zoomSelector = (s) => s.transform[2] >= 1;
-    const showContent = useStore(zoomSelector);
+  const zoomSelector = (s) => s.transform[2] >= 1;
+  const showContent = useStore(zoomSelector);
+  
+  const selector = (s) => ({
+    nodeInternals: s.nodeInternals,
+    edges: s.edges,
+  });
+
+  const { nodeInternals, edges } = useStore(selector);
+  const nodeId = id;
+  const internals = { nodeInternals, edges, nodeId }
+
     
     const handleElement = React.createElement(renderHandle, {
       type: XmlFileInput.Type,
       Handle: Handle, // Make sure Handle is imported or defined
-      Position: Position // Make sure Position is imported or defined
+      Position: Position, // Make sure Position is imported or defined
+      internals: internals    
     });
     
     return (

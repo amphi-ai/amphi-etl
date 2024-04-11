@@ -98,10 +98,20 @@ export class FileLogger extends PipelineComponent<ComponentItem>() {
   const zoomSelector = (s) => s.transform[2] >= 1;
   const showContent = useStore(zoomSelector);
   
+  const selector = (s) => ({
+    nodeInternals: s.nodeInternals,
+    edges: s.edges,
+  });
+
+  const { nodeInternals, edges } = useStore(selector);
+  const nodeId = id;
+  const internals = { nodeInternals, edges, nodeId }
+  
   const handleElement = React.createElement(renderHandle, {
     type: FileLogger.Type,
     Handle: Handle,
-    Position: Position
+    Position: Position,
+    internals: internals
   });
   
   return (

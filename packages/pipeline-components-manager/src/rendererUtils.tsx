@@ -1,17 +1,39 @@
 // ConfigForm.tsx
 
-import React from 'react';
 // Import necessary hooks and other dependencies
 import { LabIcon } from '@jupyterlab/ui-components';
 import { xIcon } from './icons';
+import React, { useMemo } from 'react';
+import { getConnectedEdges, Handle, useNodeId, useStore } from 'reactflow';
 
 interface IHandleProps {
   type: string;
   Handle: any;
   Position: any;
+  internals: any;
 }
 
-export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position }) => {
+export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, internals }) => {
+
+  const CustomHandle = (props) => {
+    const { nodeInternals, edges, nodeId } = internals;
+    const isHandleConnectable = useMemo(() => {
+      if (typeof props.isConnectable === 'function') {
+        const node = nodeInternals.get(nodeId);
+        const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.sourceHandle === props.id || edge.targetHandle === props.id);
+        return props.isConnectable({ node, connectedEdges });
+      }
+      if (typeof props.isConnectable === 'number') {
+        const node = nodeInternals.get(nodeId);
+        const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.sourceHandle === props.id || edge.targetHandle === props.id);
+        return connectedEdges.length < props.isConnectable;
+      }
+      return props.isConnectable;
+    }, [nodeInternals, edges, nodeId, props.isConnectable, props.id]);
+  
+    return <Handle {...props} isConnectable={isHandleConnectable} />;
+  };
+  
   switch (type) {
     case "pandas_df_input":
       return (
@@ -25,23 +47,13 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position })
 
     case "pandas_df_output":
       return (
-        <Handle
-          className="handle-left"
-          type="target"
-          position={Position.Left}
-          id="int"
-        />
+        <CustomHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in" />
       );
-
     case "pandas_df_processor":
+
       return (
         <>
-          <Handle
-            className="handle-left"
-            type="target"
-            position={Position.Left}
-            id="in"
-          />
+          <CustomHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in"/>
           <Handle
             className="handle-right"
             type="source"
@@ -50,7 +62,19 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position })
           />
         </>
       );
-
+      case "pandas_df_double_processor":
+      return (
+        <>
+          <CustomHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in1"/>
+          <CustomHandle type="target" position={Position.Left} isConnectable={1} className="second-handle-left" id="in2"/>
+          <Handle
+            className="handle-right"
+            type="source"
+            position={Position.Right}
+            id="out"
+          />
+        </>
+      );
     default:
       return null;
   }
@@ -104,3 +128,10 @@ export interface UIComponentProps {
   deleteNode: any;
   setViewport: any;
 };
+
+interface ICustomHandleProps {
+  props: any;
+  nodeId: any;
+  nodeInternals: any;
+  edges: any;
+}

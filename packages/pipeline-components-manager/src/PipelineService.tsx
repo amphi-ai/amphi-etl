@@ -32,6 +32,34 @@ export class PipelineService {
     return null;
   }
 
+  static findStartNodes = (flow: Flow, componentService: any): string[] => {
+    const targetMap = new Set<string>();
+    flow.edges.forEach(edge => targetMap.add(edge.target));
+  
+    const startNodes: string[] = [];
+  
+    for (const node of flow.nodes) {
+      const nodeType = componentService.getComponent(node.type)._type;
+  
+      if (!targetMap.has(node.id) && nodeType === "pandas_df_input") {
+        startNodes.push(node.id);
+  
+        if (startNodes.length === 2) {
+          // If we've found two start nodes, assume it's the double processor case
+          return startNodes;
+        }
+      }
+    }
+  
+    if (startNodes.length === 1) {
+      // If there's only one start node, return it as an array
+      return startNodes;
+    }
+  
+    // If no start nodes are found, return an empty array
+    return [];
+  };
+
   static findPreviousNodeId = (flow, nodeId): string => {
     // Find the ID of the previous node
     let previousNodeId = '';
@@ -41,6 +69,30 @@ export class PipelineService {
       }
     });
     return previousNodeId;
+  }
+
+  static findMultiplePreviousNodeIds = (flow, nodeId) => {
+    const previousNodesMap = new Map();
+  
+    // Group incoming edges by targetHandle
+    flow.edges.forEach(edge => {
+      if (edge.target === nodeId) {
+        const handle = edge.targetHandle || 'default'; // Fallback to 'default' if no handle
+        if (!previousNodesMap.has(handle)) {
+          previousNodesMap.set(handle, []);
+        }
+        previousNodesMap.get(handle).push(edge.source);
+      }
+    });
+  
+    // Sort the map by targetHandle and flatten the result
+    const sortedPreviousNodeIds = Array.from(previousNodesMap.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([_, nodeIds]) => nodeIds)
+      .reduce((acc, val) => acc.concat(val), []);
+  
+      console.log("sortedPreviousNodeIds %o", sortedPreviousNodeIds)
+    return sortedPreviousNodeIds;
   }
 
   static findTwoPreviousNodeIds = (flow, nodeId) => {

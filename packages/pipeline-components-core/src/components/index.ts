@@ -33,6 +33,8 @@ export { EmailLogger } from './EmailLogger';
 export { FileLogger } from './FileLogger';
 export { RedditInput } from './RedditInput';
 export { SchemaModeler } from './SchemaModeler';
+export { Join } from './Join';
+
 
 
 

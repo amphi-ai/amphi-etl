@@ -182,8 +182,8 @@ export const KeyValueColumns: React.FC<KeyValueFormProps> = ({ field, handleChan
                   placeholder={field.placeholder?.value || 'value'}
                   id={`${field.id}_value_${index}`}
                   value={pair.value}
-                  onChange={(e) => handleChangeKV(e, index, 'value')} />
-                  autoComplete="off"
+                  onChange={(e) => handleChangeKV(e, index, 'value')} 
+                  autoComplete="off"/>
                 <MinusCircleOutlined onClick={() => handleRemovePair(index)} />
               </Space>
             ))}

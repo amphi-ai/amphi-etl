@@ -3,31 +3,41 @@ import React, { useCallback, useEffect } from 'react';
 import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
 import { filterIcon } from '../icons';
 
-export class Sample extends PipelineComponent<ComponentItem>() {
+export class Join extends PipelineComponent<ComponentItem>() {
 
-  public _name = "Sample";
-  public _id = "sample";
-  public _type = "pandas_df_processor";
+  public _name = "Join";
+  public _id = "join";
+  public _type = "pandas_df_double_processor";
   public _category = "transform";
   public _icon = filterIcon;
-  public _default = { "mode": "random" };
+  public _default = { condition: "=="};
   public _form = {
     idPrefix: "component__form",
     fields: [
       {
-        type: "quantity",
-        label: "Rows number",
-        id: "rows",
-        placeholder: "Rows number",
+        type: "column",
+        label: "First Input Column",
+        id: "leftKeyColumn",
+        placeholder: "Column name",
+        inputNb: 1
       },
       {
-        type: "radio",
-        label: "Mode",
-        id: "mode",
+        type: "column",
+        label: "Second Input Column",
+        id: "rightKeyColumn",
+        placeholder: "Column name",
+        inputNb: 2
+      },
+      {
+        type: "select",
+        label: "Join type",
+        id: "how",
+        placeholder: "Default: Inner",
         options: [
-          { key: "random", value: "random", text: "Random"},
-          { key: "head", value: "head", text: "First"},
-          { key: "tail", value: "tail", text: "Last" }
+          { value: "inner", label: "Inner: return only the rows with matching keys in both data frames (intersection)." },
+          { value: "left", label: "Left: return all rows from the left data frame and matched rows from the right data frame (including NaN for no match)." },
+          { value: "right", label: "Right: return all rows from the right data frame and matched rows from the left data frame (including NaN for no match)." },
+          { value: "outer", label: "Outer: return all rows from both data frames, with matches where available and NaN for no match (union)." }
         ],
         advanced: true
       }
@@ -97,10 +107,9 @@ export class Sample extends PipelineComponent<ComponentItem>() {
   const nodeId = id;
   const internals = { nodeInternals, edges, nodeId }
 
-  
   // Create the handle element
   const handleElement = React.createElement(renderHandle, {
-    type: Sample.Type,
+    type: Join.Type,
     Handle: Handle, // Make sure Handle is imported or defined
     Position: Position, // Make sure Position is imported or defined
     internals: internals
@@ -114,9 +123,9 @@ export class Sample extends PipelineComponent<ComponentItem>() {
         context: context,
         manager: manager,
         commands: commands,
-        name: Sample.Name,
-        ConfigForm: Sample.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
-        Icon: Sample.Icon,
+        name: Join.Name,
+        ConfigForm: Join.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
+        Icon: Join.Icon,
         showContent: showContent,
         handle: handleElement,
         deleteNode: deleteNode,
@@ -130,23 +139,15 @@ export class Sample extends PipelineComponent<ComponentItem>() {
     return ["import pandas as pd"];
   }
 
-  public generateComponentCode({config, inputName, outputName}): string {
-    let sampleCode = "";
-  
-    if (config.mode === "random") {
-      sampleCode = `${outputName} = ${inputName}.sample(n=${config.rows})`;
-    } else if (config.mode === "tail") {
-      sampleCode = `${outputName} = ${inputName}.tail(${config.rows})`;
-    } else if (config.mode === "head") {
-      sampleCode = `${outputName} = ${inputName}.head(${config.rows})`;
-    }
-  
-    // Template for the pandas query code
+  public generateComponentCode({config, inputName1, inputName2, outputName}): string {
+    const joinType = config.how ? `, how='${config.how}'` : '';
     const code = `
-${sampleCode}
-  `;
+# Merge two datasets
+${outputName} = pd.merge(${inputName1}, ${inputName2}, left_on='${config.leftKeyColumn}', right_on='${config.rightKeyColumn}'${joinType})
+`;
+
     return code;
-  }
+}
 
 
 

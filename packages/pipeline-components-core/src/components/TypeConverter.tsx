@@ -95,11 +95,22 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
   const zoomSelector = (s) => s.transform[2] >= 1;
   const showContent = useStore(zoomSelector);
   
+  const selector = (s) => ({
+    nodeInternals: s.nodeInternals,
+    edges: s.edges,
+  });
+
+  const { nodeInternals, edges } = useStore(selector);
+  const nodeId = id;
+  const internals = { nodeInternals, edges, nodeId }
+
+  
   // Create the handle element
   const handleElement = React.createElement(renderHandle, {
     type: TypeConverter.Type,
     Handle: Handle, // Make sure Handle is imported or defined
-    Position: Position // Make sure Position is imported or defined
+    Position: Position, // Make sure Position is imported or defined
+    internals: internals
   });
   
   return (

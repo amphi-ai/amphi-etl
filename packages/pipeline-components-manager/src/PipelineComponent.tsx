@@ -17,7 +17,7 @@ export function PipelineComponent<T extends ComponentItem>() {
 
     public static getInstance(): T {
       if (!this.instance) {
-        this.instance = new this() as T;
+        this.instance = new this() as unknown as T;
       }
       return this.instance;
     }
@@ -27,7 +27,6 @@ export function PipelineComponent<T extends ComponentItem>() {
       return instance._name;
     }
 
-    // Static getter for the icon
     public static get Type() {
       const instance = this.getInstance();
       return instance._type;

@@ -34,6 +34,10 @@ Editor components styles
   @apply absolute top-[54px] left-[-3px] w-[6px] h-[25px] rounded-[2px] bg-[#778899];
 }
 
+.component .second-handle-left {
+  @apply absolute top-[114px] left-[-3px] w-[6px] h-[25px] rounded-[2px] bg-[#778899];
+}
+
 .component .handle-bottom {
   @apply absolute bottom-[-3px] w-[25px] h-[6px] rounded-[2px] bg-[#c6cfd6];
 }

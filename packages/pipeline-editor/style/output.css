@@ -109,6 +109,10 @@
   top: 0px !important;
 }
 
+.top-\[114px\] {
+  top: 114px !important;
+}
+
 .top-\[54px\] {
   top: 54px !important;
 }
@@ -926,6 +930,17 @@ Editor components styles
 .component .handle-left {
   position: absolute;
   top: 54px;
+  left: -3px;
+  height: 25px;
+  width: 6px;
+  border-radius: 2px;
+  --tw-bg-opacity: 1;
+  background-color: rgb(119 136 153 / var(--tw-bg-opacity));
+}
+
+.component .second-handle-left {
+  position: absolute;
+  top: 114px;
   left: -3px;
   height: 25px;
   width: 6px;

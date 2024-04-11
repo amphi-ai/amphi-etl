@@ -17,7 +17,7 @@ interface SelectColumnsProps {
     componentService: any;
     commands: any;
     nodeId: string;
-    inDialog: boolean;
+    inDialog: boolean
   }
 
 export const SelectColumns: React.FC<SelectColumnsProps> = ({
@@ -39,6 +39,8 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
   const inputRef = useRef<InputRef>(null);
   const [selectedOption, setSelectedOption] = useState(findOptionByValue(defaultValue));
   const [loadings, setLoadings] = useState<boolean>();
+  const inputNb = field.inputNb ? field.inputNb - 1 : 1;
+
 
   let index = 0;
 
@@ -68,10 +70,11 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
     </div>
   );
 
+
   const retrieveColumns = (event: React.MouseEvent<HTMLElement>) => {
     setLoadings(true);
     const flow = PipelineService.filterPipeline(context.model.toString());
-    let code = CodeGenerator.generateCodeUntil(context.model.toString(), commands, componentService, PipelineService.findPreviousNodeId(flow, nodeId));
+    let code = CodeGenerator.generateCodeUntil(context.model.toString(), commands, componentService, PipelineService.findMultiplePreviousNodeIds(flow, nodeId)[inputNb]);
 
     const lines = code.split('\n');
     const output_df = lines.pop(); // Extract the last line and store it in output_df
