@@ -28,7 +28,7 @@ export const SelectMultiple: React.FC<SelectMultipleProps> = ({
 
   return (
     <Select
-      mode="tags"
+      mode="multiple"
       labelInValue
       size={inDialog ? "middle" : "small"}
       style={{ width: '100%' }}

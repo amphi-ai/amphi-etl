@@ -12,23 +12,23 @@ export class Sort extends PipelineComponent<ComponentItem>() {
   public _type = "pandas_df_processor";
   public _category = "transform";
   public _icon = sortIcon; // You should define this icon in your icons file
-  public _default = { "order":"true" };
+  public _default = { order: "True" };
   public _form = {
     idPrefix: "component__form",
     fields: [
       {
-        type: "input",
+        type: "columns",
         label: "Columns",
         id: "by",
-        placeholder: "Column name(s)",
+        placeholder: "Column names",
       },
       {
         type: "radio",
         label: "Order",
         id: "order",
         options: [
-          { key: "true", value: "True", text: "Asc." },
-          { key: "false", value: "False", text: "Desc." }
+          { value: "True", label: "Asc." },
+          { value: "False", label: "Desc." }
         ],
       },
       {
@@ -137,10 +137,10 @@ export class Sort extends PipelineComponent<ComponentItem>() {
   }
 
   public generateComponentCode({config, inputName, outputName}): string {
-    const byColumns = config.by ? `by=[${config.by.split(',').map(column => `'${column.trim()}'`).join(', ')}]` : '';
+    const byColumns = config.by ? `by=[${config.by.map(column => `'${column.trim()}'`).join(', ')}]` : '';
     const ascending = typeof config.order !== 'undefined' ? `, ascending=${config.order}` : '';
     const ignoreIndex = config.ignoreIndex ? `, ignore_index=${config.ignoreIndex}` : '';
-
+  
     const code = `${outputName} = ${inputName}.sort_values(${byColumns}${ascending}${ignoreIndex})`;
     return code;
   }

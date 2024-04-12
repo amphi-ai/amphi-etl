@@ -12,7 +12,7 @@ import { FieldDescriptor, Option } from '../configUtils';
 interface SelectColumnsProps {
     field: FieldDescriptor;
     handleChange: (values: any, fieldId: string) => void;
-    defaultValues: Option | Option[];
+    defaultValue: Option | Option[];
     context: any;
     componentService: any;
     commands: any;
@@ -20,19 +20,24 @@ interface SelectColumnsProps {
     inDialog: boolean;
   }
 
-export const SelectColumns: React.FC<SelectColumnsProps> = ({
-  field, handleChange, defaultValues, context, componentService, commands, nodeId, inDialog
+export const SelectColumn: React.FC<SelectColumnsProps> = ({
+  field, handleChange, defaultValue, context, componentService, commands, nodeId, inDialog
 }) => {
-      
-  const [items, setItems] = useState(field.options || []);
-  const [selectedOptions, setSelectedOptions] = useState(defaultValues);
+    
+  const initialOptions = field.options || [];
+  
+  const findOptionByValue = (value: any) => {
+    return initialOptions.find(option => option.value === value) || { value: value, label: value };
+  };
 
   useEffect(() => {
-    setSelectedOptions(defaultValues);
-  }, [defaultValues]);
+    setSelectedOption(findOptionByValue(defaultValue));
+  }, [defaultValue, field.options]);
 
+  const [items, setItems] = useState<Option[]>(initialOptions);
   const [name, setName] = useState('');
   const inputRef = useRef<InputRef>(null);
+  const [selectedOption, setSelectedOption] = useState(findOptionByValue(defaultValue));
   const [loadings, setLoadings] = useState<boolean>();
   const inputNb = field.inputNb ? field.inputNb - 1 : 0;
 
@@ -45,9 +50,9 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
     }, 0);
   };
 
-  const handleSelectChange = (selectedItems: Option[]) => {
-    setSelectedOptions(selectedItems);
-    handleChange(selectedItems.map(item => item.value), field.id);
+  const handleSelectChange = (option: { value: string; label: React.ReactNode }) => {
+    setSelectedOption(option);
+    handleChange(option?.value, field.id);
   };
 
   const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,13 +112,12 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
   return (
     <ConfigProvider renderEmpty={customizeRenderEmpty}>
       <Select
-      mode="multiple"
       labelInValue
       size={inDialog ? "middle" : "small"}
       style={{ width: '100%' }}
       className="nodrag"
       onChange={handleSelectChange}
-      value={selectedOptions}
+      value={selectedOption}
       placeholder={field.placeholder || 'Select ...'}
       {...(field.required ? { required: field.required } : {})}
       {...(field.tooltip ? { tooltip: field.tooltip } : {})}
@@ -147,4 +151,4 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
   );
 };
 
-export default SelectColumns;
+export default SelectColumn;

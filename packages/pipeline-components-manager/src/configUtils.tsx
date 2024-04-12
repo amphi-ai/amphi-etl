@@ -12,6 +12,7 @@ import SelectCustomizable from './forms/selectCustomizable';
 import SelectTokenization from './forms/selectTokenization';
 import SelectRegular from './forms/selectRegular';
 import SelectColumns from './forms/selectColumns';
+import SelectColumn from './forms/selectColumn';
 import KeyValueColumns from './forms/keyValueColumns';
 
 import TransferData from './forms/transferData';
@@ -227,13 +228,13 @@ export const generateUIInputs = ({
           case "columns":
             return (
               <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <SelectColumns field={field} handleChange={handleChange} defaultValue={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} multiple={true}/>
+                <SelectColumns field={field} handleChange={handleChange} defaultValues={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
               </Form.Item>
             );
           case "column":
             return (
               <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <SelectColumns field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} multiple={false}/>
+                <SelectColumn field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
               </Form.Item>
             );
           case "selectCustomizable":
