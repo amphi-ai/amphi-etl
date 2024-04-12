@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Button, Form, Input, Radio, Tag, Select, Space, Switch, InputNumber, Modal } from 'antd';
+import { Button, Form, Input, Radio, Flex, Cascader, Space, Switch, InputNumber, Modal } from 'antd';
 import { CheckOutlined, CloseOutlined, ClockCircleOutlined, SearchOutlined, SettingOutlined } from '@ant-design/icons';
 
 import { PathExt } from '@jupyterlab/coreutils';
@@ -178,6 +178,18 @@ export const generateUIInputs = ({
                 />
               </Form.Item>
             );
+            case "radio":
+              return (
+                <Form.Item label={field.label} className="nodrag"  {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                  <Flex vertical gap="middle">
+                    <Radio.Group defaultValue={value} onChange={(e: any) => handleChange(e.target.value, field.id)} buttonStyle="solid">
+                      {field.options.map(option => (
+                        <Radio.Button value={option.value}>{option.label}</Radio.Button>
+                      ))}
+                    </Radio.Group>
+                  </Flex>
+                </Form.Item>
+              );
           case "file":
             return (
               <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
@@ -212,10 +224,16 @@ export const generateUIInputs = ({
                 </Space.Compact>
               </Form.Item>
             );
+          case "columns":
+            return (
+              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                <SelectColumns field={field} handleChange={handleChange} defaultValue={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} multiple={true}/>
+              </Form.Item>
+            );
           case "column":
             return (
               <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <SelectColumns field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced}/>
+                <SelectColumns field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} multiple={false}/>
               </Form.Item>
             );
           case "selectCustomizable":
@@ -237,18 +255,19 @@ export const generateUIInputs = ({
               </Form.Item>
             );
           case "textarea":
+            const { TextArea } = Input;
             return (
-              <div key={index} className="col-span-2">
-                <label className="component_label" htmlFor={field.id}>{field.label}</label>
-                <textarea
+              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                <TextArea
                   id={field.id}
                   name={field.id}
-                  onChange={(e) => handleChange(e.target.value, field.id)}
-                  value={value}
-                  className="nodrag mt-2 w-full rounded-sm border-gray-200 align-top shadow-sm sm:text-xs text-sm "
                   placeholder={field.placeholder}
-                />
-              </div>
+                  onChange={(e: any) => handleChange(e.target.value, field.id)}
+                  value={value}
+                  autoComplete="off"
+                  rows={4}
+                />              
+              </Form.Item>
             );
           case "boolean":
             return (
@@ -258,13 +277,25 @@ export const generateUIInputs = ({
                 {...(field.tooltip ? { tooltip: field.tooltip } : {})}
               >
                 <Switch
-                  onChange={(e: any) => handleChange(e.target.checked, field.id)}
+                  onChange={(checked) => handleChange(checked, field.id)}
                   checkedChildren={<CheckOutlined />}
                   unCheckedChildren={<CloseOutlined />}
                   defaultChecked={value === true} // Set defaultChecked based on field.value
                 />
               </Form.Item>
             );
+            case "cascader":
+              const displayRender = (labels: string[]) => labels[labels.length - 1];
+              return (
+                <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                  <Cascader
+                    value={values}
+                    options={field.options}
+                    displayRender={displayRender}
+                    onChange={(e: any) => handleChange(e.target.value, field.id)}
+                    />                
+                </Form.Item>
+              );
           case "keyvalue":
             return (
               <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
@@ -284,18 +315,19 @@ export const generateUIInputs = ({
                 <ValuesListForm field={field} handleChange={handleChange} initialValues={values} />
               </Form.Item>
             );
-          case "inputNumber":
-            return (
-              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                 <InputNumber min={0} max={100} id={field.id} name={field.id} value={value} onChange={value => handleChange(value, field.id)} changeOnWheel/>
-              </Form.Item>
-            );
+            case "inputNumber":
+              return (
+                <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                   <InputNumber {...(field.min ? { min: field.min } : {})} {...(field.max ? { max: field.max } : {})} id={field.id} name={field.id} value={value} onChange={value => handleChange(value, field.id)} changeOnWheel/>
+                </Form.Item>
+              );            
           case "transferData":
             return (
               <Form.Item label={field.label} {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
                 <TransferData field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
               </Form.Item>
             );
+
           default:
             return null;
         }
@@ -396,10 +428,11 @@ export interface Option {
   label: string;
   selected?: boolean;
   disabled?: boolean;
+  type?: string
 }
 
 export interface FieldDescriptor {
-  type: 'file' | 'column' | 'column' | 'keyvalue' | 'valuesList' | 'input' | 'select' | 'textarea' | 'radio' | 'datalist' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns';
+  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'select' | 'textarea' | 'radio' | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns';
   label: string;
   id: string;
   placeholder?: any;
@@ -411,6 +444,8 @@ export interface FieldDescriptor {
   validationMessage?: string;
   elementName?: string;
   inputNb?: number;
+  min?: number;
+  max?: number;
 }
 
 interface ConfigModalProps {

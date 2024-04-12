@@ -25,7 +25,7 @@ export class PdfFileInput extends PipelineComponent<ComponentItem>() {
         validationMessage: "This field expects a file with a pdf extension such as file.pdf."
       },
       {
-        type: "singleInputSelect",
+        type: "select",
         label: "Strategy",
         id: "strategy",
         options: [

@@ -25,16 +25,16 @@ export class JsonFileInput extends PipelineComponent<ComponentItem>() {
         validationMessage: "This field expects a file with a json extension such as input.json."
       },
       {
-        type: "datalist",
+        type: "select",
         label: "Orientation",
         id: "jsonOptions.orient",
         placeholder: "default: columns",
         options: [
-          { key: 'columns', value: 'columns', text: 'Columns - JSON object with column labels as keys' },
-          { key: 'records', value: 'records', text: 'Records - List of rows as JSON objects' },
-          { key: 'index', value: 'index', text: 'Index - Dict with index labels as keys' },
-          { key: 'split', value: 'split', text: 'Split - Dict with "index", "columns", and "data" keys' },
-          { key: 'table', value: 'table', text: 'Table - Dict with "schema" and "data" keys, following the Table Schema' }
+          { value: 'columns', label: 'Columns - JSON object with column labels as keys' },
+          { value: 'records', label: 'Records - List of rows as JSON objects' },
+          { value: 'index', label: 'Index - Dict with index labels as keys' },
+          { value: 'split', label: 'Split - Dict with "index", "columns", and "data" keys' },
+          { value: 'table', label: 'Table - Dict with "schema" and "data" keys, following the Table Schema' }
         ],
       },
       {

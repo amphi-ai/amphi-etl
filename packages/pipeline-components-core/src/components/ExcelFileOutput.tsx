@@ -33,8 +33,8 @@ export class ExcelFileOutput extends PipelineComponent<ComponentItem>() {
         label: "Mode",
         id: "mode",
         options: [
-          { key: "write", value: "WRITE", text: "WRITE", selected: true },
-          { key: "append", value: "APPEND", text: "APPEND" }
+          { value: "write", label: "Write"},
+          { value: "append", label: "Append" }
         ],
         advanced: true
       },

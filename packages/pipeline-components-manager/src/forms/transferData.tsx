@@ -190,8 +190,12 @@ export const TransferData: React.FC<TransferDataProps> = ({
       console.log("defaultValye: %o", defaultValue);
       setSourceData(defaultValue.sourceData);
       setTargetKeys(defaultValue.targetKeys);
+    } else {
+      // Provide default initialization for sourceData and targetKeys if defaultValue doesn't exist
+      setSourceData([]);
+      setTargetKeys([]);
     }
-  }, [field.id, defaultValue]);
+  }, [defaultValue]);
 
   const retrieveColumns = (event: React.MouseEvent<HTMLElement>) => {
     const flow = PipelineService.filterPipeline(context.model.toString());
@@ -217,8 +221,7 @@ export const TransferData: React.FC<TransferDataProps> = ({
                 return { key: name, type: type.replace(')', ''), disabled: false };
               });
 
-              // Update the items array with the new items
-              console.log("pushhh items into sourceColumns")
+              // Update the source data
               setSourceData(newItems);
             });
           } else if (msg.header.msg_type === 'error') {

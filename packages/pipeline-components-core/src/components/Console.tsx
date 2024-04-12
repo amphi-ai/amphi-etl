@@ -17,10 +17,11 @@ export class Console extends PipelineComponent<ComponentItem>() {
     idPrefix: "component__form",
     fields: [
       {
-        type: "input",
+        type: "inputNumber",
         label: "Records limit",
         id: "limit",
         placeholder: "Number of records to print in console",
+        min: 0
       }
     ],
   };

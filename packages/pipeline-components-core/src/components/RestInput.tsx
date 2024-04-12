@@ -25,10 +25,10 @@ export class RestInput extends PipelineComponent<ComponentItem>() {
         label: "Method",
         id: "method",
         options: [
-          { key: "GET", value: "GET", text: "GET" },
-          { key: "PUT", value: "PUT", text: "PUT" },
-          { key: "POST", value: "POST", text: "POST" },
-          { key: "DELETE", value: "DELETE", text: "DELETE" }
+          { value: "GET", label: "GET" },
+          { value: "PUT", label: "PUT" },
+          { value: "POST", label: "POST" },
+          { value: "DELETE", label: "DELETE" }
         ],
         advanced: true
       },

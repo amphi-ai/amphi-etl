@@ -15,19 +15,20 @@ export class Sample extends PipelineComponent<ComponentItem>() {
     idPrefix: "component__form",
     fields: [
       {
-        type: "quantity",
+        type: "inputNumber",
         label: "Rows number",
         id: "rows",
-        placeholder: "Rows number",
+        placeholder: "0",
+        min: 0
       },
       {
         type: "radio",
         label: "Mode",
         id: "mode",
         options: [
-          { key: "random", value: "random", text: "Random"},
-          { key: "head", value: "head", text: "First"},
-          { key: "tail", value: "tail", text: "Last" }
+          { value: "random", label: "Random"},
+          { value: "head", label: "First"},
+          { value: "tail", label: "Last" }
         ],
         advanced: true
       }

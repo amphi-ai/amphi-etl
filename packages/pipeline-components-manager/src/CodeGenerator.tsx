@@ -94,6 +94,9 @@ export class CodeGenerator {
 
     // Assume sortedNodes is already populated from the topological sort
     let nodesToTraverse = [];
+    console.log("nodeDependencies %o", nodeDependencies)
+    console.log("nodePaths %o", nodePaths)
+
 
     // After topological sorting and path tracking
     if (targetNodeId !== 'none') {
@@ -115,7 +118,7 @@ export class CodeGenerator {
 
           nodesToConsider = nextNodesToConsider;
       }
-
+      console.log("nodesToConsider %o", nodesToConsider)
       // Filter the sortedNodes to include only those in pathToTarget, preserving the topological order
       nodesToTraverse = sortedNodes.filter(nodeId => pathToTarget.has(nodeId));
       console.log("nodesToTravser %o", nodesToTraverse)

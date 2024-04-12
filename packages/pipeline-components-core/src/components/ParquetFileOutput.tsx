@@ -11,7 +11,7 @@ export class ParquetFileOutput extends PipelineComponent<ComponentItem>() {
   public _type = "pandas_df_output";
   public _category = "output";
   public _icon = filePlusIcon;
-  public _default = {}; // No default options for Parquet as of now
+  public _default = { parquetOptions: { compression: "snappy"}}; // No default options for Parquet as of now
   public _form = {
     idPrefix: "component__form",
     fields: [
@@ -28,10 +28,10 @@ export class ParquetFileOutput extends PipelineComponent<ComponentItem>() {
         label: "Compression",
         id: "parquetOptions.compression",
         options: [
-          { key: "snappy", value: "snappy", text: "Snappy", selected: true },
-          { key: "gzip", value: "gzip", text: "GZip" },
-          { key: "brotli", value: "brotli", text: "Brotli" },
-          { key: "none", value: "None", text: "None" }
+          { value: "snappy", label: "Snappy" },
+          { value: "gzip", label: "GZip" },
+          { value: "brotli", label: "Brotli" },
+          {  value: "None", label: "None" }
         ],
         advanced: true
       }

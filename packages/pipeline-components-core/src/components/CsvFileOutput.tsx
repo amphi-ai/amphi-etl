@@ -23,16 +23,16 @@ export class CsvFileOutput extends PipelineComponent<ComponentItem>() {
         validationMessage: "This field expects a file with a csv, tsv or txt extension such as output.csv."
       },
       {
-        type: "datalist",
+        type: "selectCustomizable",
         label: "Separator",
         id: "csvOptions.sep",
         placeholder: "auto",
         options: [
-          { key: "comma", value: ",", text: "comma (,)" },
-          { key: "semicolon", value: ";", text: "semicolon (;)" },
-          { key: "space", value: " ", text: "space" },
-          { key: "tab", value: "  ", text: "tab" },
-          { key: "pipe", value: "|", text: "pipe (|)" }
+          { value: ",", label: "comma (,)" },
+          { value: ";", label: "semicolon (;)" },
+          { value: " ", label: "space" },
+          { value: "  ", label: "tab" },
+          { value: "|", label: "pipe (|)" }
         ],
       },
       {
@@ -40,9 +40,9 @@ export class CsvFileOutput extends PipelineComponent<ComponentItem>() {
         label: "Mode",
         id: "csvOptions.mode",
         options: [
-          { key: "w", value: "w", text: "Write" },
-          { key: "x", value: "x", text: "Exclusive Creation" },
-          { key: "a", value: "a", text: "Append" }
+          { value: "w", label: "Write" },
+          { value: "x", label: "Exclusive Creation" },
+          { value: "a", label: "Append" }
         ],
         advanced: true
       },

@@ -15,19 +15,19 @@ export class Aggregate extends PipelineComponent<ComponentItem>() {
       idPrefix: "component__form",
       fields: [
         {
-          type: "input",
-          label: "Column(s) to group by",
+          type: "columns",
+          label: "Columns to group by",
           id: "groupColumn",
-          placeholder: "column(s) name",
+          placeholder: "Select columns"
         },
         {
-          type: "input",
-          label: "Column(s) to apply operation",
+          type: "columns",
+          label: "Columns to apply operation",
           id: "aggColumns",
           placeholder: "column(s) name",
         },
         {
-          type: "datalist",
+          type: "select",
           label: "Operation function(s)",
           id: "aggFunctions",
           placeholder: "Select function(s) (comma separated for multiple functions",

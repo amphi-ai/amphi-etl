@@ -15,13 +15,13 @@ export class FileLogger extends PipelineComponent<ComponentItem>() {
     idPrefix: "component__form",
     fields: [
       {
-        type: "input",
+        type: "file",
         label: "Log File Path",
         id: "filePath",
         placeholder: "pipeline.log"
       },
       {
-        type: "singleInputSelect",
+        type: "select",
         label: "Log Level",
         id: "logLevel",
         placeholder: "default: ,",

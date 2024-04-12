@@ -24,12 +24,11 @@ export class JsonFileOutput extends PipelineComponent<ComponentItem>() {
         validationMessage: "This field expects a file with a json or jsonl extension such as output.json."
       },
       {
-        type: "singleInputSelect",
+        type: "select",
         label: "Orientation",
         id: "jsonOptions.orient",
-        placeholder: "default: columns",
+        placeholder: "Select orientation",
         options: [
-          { value: "null", label: "Select orientation", isDisabled: true},
           { value: "columns", label: "columns (JSON object with column labels as keys)" },
           { value: "records", label: "records (List of rows as JSON objects)" },
           { value: "index", label: "index (Dict with index labels as keys)" },
@@ -103,7 +102,6 @@ export class JsonFileOutput extends PipelineComponent<ComponentItem>() {
   const nodeId = id;
   const internals = { nodeInternals, edges, nodeId }
 
-    
     // Create the handle element
     const handleElement = React.createElement(renderHandle, {
       type: JsonFileOutput.Type,

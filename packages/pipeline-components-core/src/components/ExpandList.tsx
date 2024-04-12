@@ -15,10 +15,10 @@ export class ExpandList extends PipelineComponent<ComponentItem>() {
     idPrefix: "component__form",
     fields: [
       {
-        type: "input",
+        type: "column",
         label: "Column",
         id: "column",
-        placeholder: "Type column name",
+        placeholder: "Select column",
       }
     ]
   };

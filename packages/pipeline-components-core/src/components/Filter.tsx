@@ -26,12 +26,12 @@ export class Filter extends PipelineComponent<ComponentItem>() {
         id: "condition",
         placeholder: "Select condition",
         options: [
-          { "value": "==", "label": "Equals" },
-          { "value": "!=", "label": "Not Equals" },
-          { "value": ">", "label": "Greater Than (for numbers)" },
-          { "value": "<", "label": "Less Than (for numbers)" },
-          { "value": ">=", "label": "Greater Than or Equal To (numbers)" },
-          { "value": "<=", "label": "Less Than or Equal To (numbers)" },
+          { "value": "==", "label": "==" },
+          { "value": "!=", "label": "!=" },
+          { "value": ">", "label": ">" },
+          { "value": "<", "label": "<" },
+          { "value": ">=", "label": ">=" },
+          { "value": "<=", "label": "<=" },
           { "value": "notnull", "label": "Not Null" },
           { "value": "notempty", "label": "Not Empty" },
           { "value": "contains", "label": "Contains (string)" },
@@ -50,8 +50,8 @@ export class Filter extends PipelineComponent<ComponentItem>() {
       },
       {
         type: "boolean",
-        label: "Enforce value as number",
-        id: "enforceNumber",
+        label: "Enforce value as string",
+        id: "enforceString",
         advanced: true
       }
     ],
@@ -157,39 +157,40 @@ export class Filter extends PipelineComponent<ComponentItem>() {
     const columnName = config.columnName;
     const condition = config.condition;
     const conditionValue = config.conditionValue;
-    const enforceNumber = config.enforceNumber;
+    const enforceString = config.enforceNumber; // ensure this is correctly named as it seems to represent enforcing string type
 
-    // Formatting the condition value based on its type
-    const formattedConditionValue = enforceNumber ? conditionValue : `'${conditionValue}'`;
+    // Enhanced type detection and formatting
+    let formattedConditionValue: string;
+    if (!enforceString && !isNaN(Number(conditionValue))) {
+        // Treat as number if it's numeric and not enforcing string
+        formattedConditionValue = conditionValue.toString();
+    } else {
+        // Otherwise, treat as string and escape single quotes
+        formattedConditionValue = `'${conditionValue.toString().replace(/'/g, "\\'")}'`;
+    }
 
     // Constructing the query expression
-    let queryExpression;
+    let queryExpression: string;
     switch (condition) {
         case "==":
         case "!=":
-            // For string values or equality/inequality comparisons, always treat as string
             queryExpression = `\`${columnName}\` ${condition} ${formattedConditionValue}`;
             break;
         case "contains":
-            // Correcting the syntax for "contains" condition with backticks for column names
             queryExpression = `\`${columnName}\`.str.contains(${formattedConditionValue})`;
             break;
         case "not contains":
-            // Correcting the syntax for "not contains" condition with backticks for column names
             queryExpression = `~\`${columnName}\`.str.contains(${formattedConditionValue})`;
             break;
         case "startswith":
         case "endswith":
-            // For string starts with/ends with, always treat conditionValue as string, with backticks
             queryExpression = `\`${columnName}\`.str.${condition}(${formattedConditionValue})`;
             break;
         case "isna":
         case "notna":
-            // For NaN checks, no need for conditionValue, with backticks
             queryExpression = `\`${columnName}\`.${condition}()`;
             break;
         default:
-            // For numerical comparisons, with backticks for column names
             queryExpression = `\`${columnName}\` ${condition} ${formattedConditionValue}`;
     }
 
@@ -200,7 +201,6 @@ ${outputName} = ${inputName}.query("${queryExpression}")
 `;
     return code;
 }
-
 
 
 }

@@ -17,11 +17,12 @@ interface SelectColumnsProps {
     componentService: any;
     commands: any;
     nodeId: string;
-    inDialog: boolean
+    inDialog: boolean;
+    multiple: boolean;
   }
 
 export const SelectColumns: React.FC<SelectColumnsProps> = ({
-  field, handleChange, defaultValue, context, componentService, commands, nodeId, inDialog
+  field, handleChange, defaultValue, context, componentService, commands, nodeId, inDialog, multiple
 }) => {
     
   const initialOptions = field.options || [];
@@ -39,14 +40,14 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
   const inputRef = useRef<InputRef>(null);
   const [selectedOption, setSelectedOption] = useState(findOptionByValue(defaultValue));
   const [loadings, setLoadings] = useState<boolean>();
-  const inputNb = field.inputNb ? field.inputNb - 1 : 1;
+  const inputNb = field.inputNb ? field.inputNb - 1 : 0;
 
-
+  console.log("inputNB %o", inputNb)
   let index = 0;
 
   const addItem = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
     e.preventDefault();
-    setItems([...items, { value: name, label: name}]);
+    setItems([...items, { value: name, label: name }]);
     setName('');
     setTimeout(() => {
       inputRef.current?.focus();
@@ -74,8 +75,10 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
   const retrieveColumns = (event: React.MouseEvent<HTMLElement>) => {
     setLoadings(true);
     const flow = PipelineService.filterPipeline(context.model.toString());
+    console.log("PipelineService.findMultiplePreviousNodeIds(flow, nodeId) %o", PipelineService.findMultiplePreviousNodeIds(flow, nodeId))
+    console.log("PipelineService.findMultiplePreviousNodeIds(flow, nodeId)[inputNb] %o", PipelineService.findMultiplePreviousNodeIds(flow, nodeId)[inputNb])
     let code = CodeGenerator.generateCodeUntil(context.model.toString(), commands, componentService, PipelineService.findMultiplePreviousNodeIds(flow, nodeId)[inputNb]);
-
+    console.log("MY CODE %o", code);
     const lines = code.split('\n');
     const output_df = lines.pop(); // Extract the last line and store it in output_df
     code = lines.join('\n'); // Rejoin the remaining lines back into code
@@ -91,8 +94,8 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
             // Split the output string into fields and then map each field to an object
             const newItems = output.split(', ').map(field => {
               const [name, type] = field.split(' (');
-              setLoadings(false)
-              return { value: name, label: `${name} (${type}` };
+              const trimmedType = type.slice(0, -1); // Removes the closing parenthesis
+              return { value: name, label: `${name}`, type: trimmedType };
             });
 
             // Update the items array with the new items
@@ -118,6 +121,7 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
   return (
     <ConfigProvider renderEmpty={customizeRenderEmpty}>
       <Select
+      {...(multiple ? { mode: "multiple" } : {})}
       labelInValue
       size={inDialog ? "middle" : "small"}
       style={{ width: '100%' }}
@@ -145,7 +149,13 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
           </Space>
         </>
       )}
-      options={items.map((item: Option) => ({ label: item.label, value: item.value }))}
+      options={items.map((item: Option) => ({ label: item.label, value: item.value, type: item.type }))}
+      optionRender={(option) => (
+        <Space>
+          <span> {option.data.label}</span> 
+          <Tag>{option.data.type}</Tag>
+        </Space>
+      )}
     />
   </ConfigProvider>
   );

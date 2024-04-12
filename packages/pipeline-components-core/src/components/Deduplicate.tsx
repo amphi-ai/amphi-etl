@@ -10,27 +10,27 @@ export class Deduplicate extends PipelineComponent<ComponentItem>() {
   public _type = "pandas_df_processor";
   public _category = "transform";
   public _icon = dedupIcon; // Assuming codeIcon is imported or defined elsewhere
-  public _default = {};
+  public _default = { keep: "first"};
   public _form = {
     idPrefix: "component__form",
     fields: [
       {
-        type: "input",
-        label: "Columns",
-        id: "subset",
-        placeholder: "Optional: comma separated column names",
-      },
-      {
-        type: "datalist",
+        type: "select",
         label: "Keep (survivorship)",
         id: "keep",
-        placeholder: "first",
         options: [
-          { key: "first", value: "first", text: "Drop duplicates except for the first occurrence." },
-          { key: "last", value: "last", text: "Drop duplicates except for the last occurrence." },
-          { key: "false", value: false, text: "Drop all duplicates." }
+          { value: "first", label: "Drop duplicates except for the first occurrence" },
+          { value: "last", label: "Drop duplicates except for the last occurrence" },
+          { value: false, label: "Drop all duplicates" }
         ],
       },
+      {
+        type: "columns",
+        label: "Columns",
+        id: "subset",
+        placeholder: "All columns",
+        tooltip: "Columns considered for identifying duplicates"
+      }
     ],
   };
 
@@ -133,12 +133,12 @@ export class Deduplicate extends PipelineComponent<ComponentItem>() {
   public generateComponentCode({ config, inputName, outputName }): string {
     // Initializing code string
     let code = `# Deduplicate\n`;
-    const columns = config.columns ? `subset=['${config.columns.split(',').map(name => name.trim()).join("', '")}'], ` : '';
+    const columns = config.columns.length > 0 ? `subset=[${config.columns.map(name => `'${name.trim()}'`).join(", ")}], ` : '';
     const keep = config.keepFirst ? `'first'` : `'last'`;
-
+  
     // Generating the Python code for deduplication
     code += `${outputName} = ${inputName}.drop_duplicates(${columns}keep=${keep})\n`;
-
+  
     return code;
   }
 }

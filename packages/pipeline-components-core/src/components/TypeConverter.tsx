@@ -15,27 +15,87 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
     idPrefix: "component__form",
     fields: [
       {
-        type: "input",
+        type: "column",
         label: "Column name",
         id: "columnName",
         placeholder: "Column name",
       },
       {
-        type: "selectCustomizable",
+        type: "cascader",
         label: "Data Type to convert to",
         id: "dataType",
         placeholder: "Select column type to convert to",
-        required: true,
         options: [
-          { value: "null", label: "Select or specify type", disabled: true},
-          { value: "string", label: "string: For string data." },
-          { value: "int", label: "int: For integer types (use int64, int32, int16, etc. for optimized memory usage)."},
-          { value: "float", label: "float: For floating-point numbers (use float64, float32, etc. for optimized memory usage)." },
-          { value: "object", label: "object: For generic objects (strings, timestamps, mixed types)." },
-          { value: "bool", label: "bool: For boolean values (True or False)." },
-          { value: "datetime64", label: "datetime64: For datetime values (use datetime64[ns], datetime64[ns, tz] for more options)." },
-          { value: "timedelta[ns]", label: "timedelta[ns]: For differences between two datetimes." },
-          { value: "category", label: "category: For categorical variables." }
+          {
+            value: "numeric",
+            label: "Numeric",
+            children: [
+              {
+                value: "int",
+                label: "Integer",
+                children: [
+                  { value: "int64", label: "int64: Standard integer type." },
+                  { value: "int32", label: "int32: For optimized memory usage." },
+                  { value: "int16", label: "int16: For more optimized memory usage." }
+                ]
+              },
+              {
+                value: "float",
+                label: "Float",
+                children: [
+                  { value: "float64", label: "float64: Standard floating-point type." },
+                  { value: "float32", label: "float32: For optimized memory usage." }
+                ]
+              }
+            ]
+          },
+          {
+            value: "datetime",
+            label: "Datetime",
+            children: [
+              { value: "datetime64[ns]", label: "datetime64[ns]: For datetime values." },
+              { value: "datetime64[ns, tz]", label: "datetime64[ns, tz]: For datetime values with timezone." },
+              { value: "datetime64[ms]", label: "datetime64[ms]: For datetime values in milliseconds." },
+              { value: "datetime64[s]", label: "datetime64[s]: For datetime values in seconds." },
+              { value: "datetime32[ns]", label: "datetime32[ns]: For compact datetime storage in nanoseconds." },
+              { value: "datetime32[ms]", label: "datetime32[ms]: For compact datetime storage in milliseconds." }
+            ]
+          },
+          {
+            value: "timedelta",
+            label: "Timedelta",
+            children: [
+              { value: "timedelta[ns]", label: "timedelta[ns]: For differences between two datetimes." }
+            ]
+          },
+          {
+            value: "boolean",
+            label: "Boolean",
+            children: [
+              { value: "bool", label: "bool: For boolean values (True or False)." }
+            ]
+          },
+          {
+            value: "object",
+            label: "Object",
+            children: [
+              { value: "object", label: "object: For generic objects (strings, timestamps, mixed types)." }
+            ]
+          },
+          {
+            value: "category",
+            label: "Category",
+            children: [
+              { value: "category", label: "category: For categorical variables." }
+            ]
+          },
+          {
+            value: "string",
+            label: "String",
+            children: [
+              { value: "string", label: "string: For string data." }
+            ]
+          }
         ]
       }
     ],

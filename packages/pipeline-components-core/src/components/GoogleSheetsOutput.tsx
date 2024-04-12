@@ -38,14 +38,6 @@ export class GoogleSheetsOutput extends PipelineComponent<ComponentItem>() {
         placeholder: "e.g., Sheet1 or Sheet1!A1:D5",
         validation: "^[a-zA-Z0-9-_!]+$",
         validationMessage: "Invalid Range."
-      },
-      {
-        type: "",
-        label: "Range",
-        id: "sheetOptions.range",
-        placeholder: "e.g., Sheet1 or Sheet1!A1:D5",
-        validation: "^[a-zA-Z0-9-_!]+$",
-        validationMessage: "Invalid Range."
       }
     ],
   };

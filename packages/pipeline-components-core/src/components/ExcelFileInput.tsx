@@ -24,25 +24,26 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
         validationMessage: "This field expects a file with a xlsx extension such as input.xlsx."
       },
       {
-        type: "datalist",
+        type: "selectCustomizable",
         label: "Sheets",
         id: "excelOptions.sheet",
-        placeholder: "default: 0 (1st sheet)",
+        placeholder: "Default: O (first sheet)",
         options: [
-          { key: "0", value: "0", text: "1st sheet" },
-          { key: "1", value: "1", text: "2nd sheet" },
-          { key: "dict", value: "[0, 1, 'Sheet5']", text: "Load first, second and sheet named 'Sheet5'" },
-          { key: "none", value: "None", text: "All worksheets" }
+          { value: "0", label: "0" },
+          { value: "1", label: "1t" },
+          { value: "[0, 1, 'Sheet5']", label: "[0, 1, 'Sheet5']" },
+          { value: "None", label: "All" }
         ],
       },
       {
-        type: "datalist",
+        type: "selectCustomizable",
         label: "Header",
         id: "excelOptions.header",
         placeholder: "default: 0 (first row)",
         options: [
-          { key: "0", value: "0", text: "1st row" },
-          { key: "none", value: "None", text: "None if there is no header." }
+          { value: "0", label: "0 (1st row)" },
+          { value: "1", label: "1 (2nd row)" },
+          { value: "None", label: "None (No header)" }
         ],
         advanced: true
       },

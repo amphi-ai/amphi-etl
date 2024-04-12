@@ -10,7 +10,7 @@ export class SchemaModeler extends PipelineComponent<ComponentItem>() {
   public _type = "pandas_df_processor";
   public _category = "transform";
   public _icon = filterIcon;
-  public _default = {};
+  public _default = { mapping: {sourceData: [], targetKeys: [] }};
   public _form = {
     idPrefix: "component__form",
     fields: [
@@ -126,7 +126,7 @@ export class SchemaModeler extends PipelineComponent<ComponentItem>() {
 ${outputName} = ${inputName}[[${columnsToKeep}]]
 `;
     return code;
-}
+  }
 
 
 

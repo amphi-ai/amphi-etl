@@ -8,7 +8,7 @@ export class PipelineService {
     const pipeline = JSON.parse(pipelineJson);
     const pipelineFlow = pipeline.pipelines[0].flow;
     const filteredNodes = pipelineFlow.nodes.map(({ id, type, data }) => ({ id, type, data }));
-    const filteredEdges = pipelineFlow.edges.map(({ id, source, target, data }) => ({ id, source, target, data }));
+    const filteredEdges = pipelineFlow.edges.map(({ id, source, target, targetHandle }) => ({ id, source, target, targetHandle }));
 
     const flow: Flow = {
       "nodes": filteredNodes,
@@ -77,6 +77,7 @@ export class PipelineService {
     // Group incoming edges by targetHandle
     flow.edges.forEach(edge => {
       if (edge.target === nodeId) {
+        console.log("edge %o", edge)
         const handle = edge.targetHandle || 'default'; // Fallback to 'default' if no handle
         if (!previousNodesMap.has(handle)) {
           previousNodesMap.set(handle, []);
@@ -84,6 +85,8 @@ export class PipelineService {
         previousNodesMap.get(handle).push(edge.source);
       }
     });
+
+    console.log("previousNodesMap %o", previousNodesMap)
   
     // Sort the map by targetHandle and flatten the result
     const sortedPreviousNodeIds = Array.from(previousNodesMap.entries())

@@ -1160,10 +1160,3 @@ input:checked + label {
   --tw-text-opacity: 1 !important;
   color: rgb(90 143 123 / var(--tw-text-opacity)) !important;
 }
-
-@media (min-width: 640px) {
-  .sm\:text-xs {
-    font-size: 0.75rem !important;
-    line-height: 1rem !important;
-  }
-}
