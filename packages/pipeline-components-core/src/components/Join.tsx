@@ -5,7 +5,7 @@ import { mergeIcon } from '../icons';
 
 export class Join extends PipelineComponent<ComponentItem>() {
 
-  public _name = "Join";
+  public _name = "Join Datasets";
   public _id = "join";
   public _type = "pandas_df_double_processor";
   public _category = "transform";

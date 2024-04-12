@@ -1,6 +1,7 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import { Button, Form, Input, Radio, Flex, Cascader, Space, Switch, InputNumber, Modal } from 'antd';
 import { CheckOutlined, CloseOutlined, ClockCircleOutlined, SearchOutlined, SettingOutlined } from '@ant-design/icons';
+import styled from 'styled-components';
 
 import { PathExt } from '@jupyterlab/coreutils';
 
@@ -167,7 +168,7 @@ export const generateUIInputs = ({
         switch (field.type) {
           case "input":
             return (
-              <Form.Item label={field.label} className="nodrag"  {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+              <Form.Item style={{ marginTop: "5px", padding: "0 0 2px" }} label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
                 <Input
                   id={field.id}
                   size={advanced ? "middle" : "small"}
@@ -193,7 +194,7 @@ export const generateUIInputs = ({
               );
           case "file":
             return (
-              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+              <Form.Item style={{ marginTop: "5px", padding: "0 0 2px" }} label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
                 <Space.Compact style={{ width: '100%' }}>
                   <Input
                     id={field.id}
@@ -227,13 +228,13 @@ export const generateUIInputs = ({
             );
           case "columns":
             return (
-              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+              <Form.Item style={{ marginTop: "5px", padding: "0 0 2px" }} label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
                 <SelectColumns field={field} handleChange={handleChange} defaultValues={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
               </Form.Item>
             );
           case "column":
             return (
-              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+              <Form.Item style={{ marginTop: "5px", padding: "0 0 2px" }} label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
                 <SelectColumn field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
               </Form.Item>
             );
@@ -273,6 +274,7 @@ export const generateUIInputs = ({
           case "boolean":
             return (
               <Form.Item
+                style={{ marginTop: "5px", padding: "0 0 2px" }}
                 label={field.label}
                 {...(field.required ? { required: field.required } : {})}
                 {...(field.tooltip ? { tooltip: field.tooltip } : {})}

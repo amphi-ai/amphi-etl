@@ -5,7 +5,7 @@ import { filterIcon } from '../icons';
 
 export class Filter extends PipelineComponent<ComponentItem>() {
 
-  public _name = "Filter";
+  public _name = "Filter Rows";
   public _id = "filter";
   public _type = "pandas_df_processor";
   public _category = "transform";
@@ -18,7 +18,7 @@ export class Filter extends PipelineComponent<ComponentItem>() {
         type: "column",
         label: "Column name",
         id: "columnName",
-        placeholder: "Column name",
+        placeholder: "Select column",
       },
       {
         type: "select",

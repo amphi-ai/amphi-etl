@@ -76,6 +76,10 @@ Editor components styles
   padding: 0 0 3px;
 }
 
+:global .ant-row .ant-form-item-row {
+  margin-top: 5px;
+}
+
 /*
 Components palette sidebar
 */

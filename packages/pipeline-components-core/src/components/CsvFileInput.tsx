@@ -44,6 +44,7 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
         tooltip: "Row number containing column labels and marking the start of the data (zero-indexed).",
         label: "Header",
         id: "csvOptions.header",
+        placeholder: "Default: first line",
         options: [
           { value: "None", label: "None" },
           { value: "0", label: "First line" },
@@ -65,7 +66,7 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
         type: "select",
         label: "On Bad Lines",
         id: "csvOptions.on_bad_lines",
-        placeholder: "error",
+        placeholder: "Error: raise an Exception when a bad line is encountered",
         options: [
           { value: "error", label: "Error: raise an Exception when a bad line is encountered" },
           { value: "warn", label: "Warn: raise a warning when a bad line is encountered and skip that line." },
