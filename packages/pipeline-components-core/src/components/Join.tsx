@@ -1,7 +1,7 @@
 import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig } from '@amphi/pipeline-components-manager';
 import React, { useCallback, useEffect } from 'react';
 import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
-import { filterIcon } from '../icons';
+import { mergeIcon } from '../icons';
 
 export class Join extends PipelineComponent<ComponentItem>() {
 
@@ -9,7 +9,7 @@ export class Join extends PipelineComponent<ComponentItem>() {
   public _id = "join";
   public _type = "pandas_df_double_processor";
   public _category = "transform";
-  public _icon = filterIcon;
+  public _icon = mergeIcon;
   public _default = { condition: "=="};
   public _form = {
     idPrefix: "component__form",

@@ -46,7 +46,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(SQLQuery.getInstance())
    componentService.addComponent(CustomTransformations.getInstance())
    
-  
   // Outputs
    componentService.addComponent(CsvFileOutput.getInstance())
    componentService.addComponent(JsonFileOutput.getInstance())

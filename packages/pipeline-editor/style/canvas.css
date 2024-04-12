@@ -86,6 +86,7 @@ Components palette sidebar
 
 .palette aside {
   @apply border-r border-l border-[#eee] border-l-[#E0E0E0] p-[20px_6px] text-[12px] bg-white;
+  height: 95%;
 }
 
 .palette aside .description {

@@ -5,7 +5,7 @@ import { extractIcon } from '../icons';
 
 export class Extract extends PipelineComponent<ComponentItem>() {
 
-  public _name = "Extract (Regex)";
+  public _name = "Extract";
   public _id = "extract";
   public _type = "pandas_df_processor";
   public _category = "transform";
@@ -27,16 +27,16 @@ export class Extract extends PipelineComponent<ComponentItem>() {
         tooltip: "Select of a type of data or add a custom regex",
         placeholder: "Select type or type regex",
         options: [
-          { value: "\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b", label: "Email" },
-          { value: "https?://(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b(?:[-a-zA-Z0-9@:%_\+.~#?&//=]*)", label: "URL" },
-          { value: "\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b", label: "IPv4 Address" },
-          { value: "([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}", label: "IPv6 Address" },
-          { value: "\b\d{4}[- ]?\d{4}[- ]?\d{4}[- ]?\d{4}\b", label: "Credit Card" },
-          { value: "\b\d{3}-\d{2}-\d{4}\b", label: "SSN" },
-          { value: "\b\d{1,3}(\.\d{1,2})?%\b", label: "Percentage" },
-          { value: "\"([^\"\\]*(\\.[^\"\\]*)*)\"", label: "JSON String" },
-          { value: "\b\d{3}-\d{10}\b", label: "ISBN" }
-        ],
+          { value: "(\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b)", label: "Email" },
+          { value: "(https?://(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6}\\b(?:[-a-zA-Z0-9@:%_\\+.~#?&//=]*))", label: "URL" },
+          { value: "(\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b)", label: "IPv4 Address" },
+          { value: "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4})", label: "IPv6 Address" },
+          { value: "(\\b\\d{4}[- ]?\\d{4}[- ]?\\d{4}[- ]?\\d{4}\\b)", label: "Credit Card" },
+          { value: "(\\b\\d{3}-\\d{2}-\\d{4}\\b)", label: "SSN" },
+          { value: "(\\b\\d{1,3}(\\.\\d{1,2})?%\\b)", label: "Percentage" },
+          { value: "(\"([^\"\\\\]*(\\\\.[^\"\\\\]*)*))", label: "JSON String" },
+          { value: "(\\b\\d{3}-\\d{10}\\b)", label: "ISBN" }
+        ]
       },
       {
         type: "select",

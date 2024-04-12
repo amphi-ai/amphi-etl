@@ -8,19 +8,22 @@ import apiIconSvgStr from '../style/icons/api-24.svg';
 import codeIconSvgStr from '../style/icons/code-24.svg';
 import filterIconSvgStr from '../style/icons/filter-24.svg';
 import aggregateIconSvgStr from '../style/icons/collections-24.svg';
-import mergeIconSvgStr from '../style/icons/git-merge-24.svg';
 import expandIconSvgStr from '../style/icons/network-alt-24.svg';
-import dedupIconSvgStr from '../style/icons/jump-link-24.svg';
-import splitIconSvgStr from '../style/icons/swap-horizontal-24.svg';
+import dedupIconSvgStr from '../style/icons/duplicate-24.svg';
+import extractIconSvgStr from '../style/icons/crop-24.svg';
 import globeIconSvgStr from '../style/icons/globe-24.svg';
 import sortIconSvgStr from '../style/icons/sort-desc-24.svg';
 import editIconSvgStr from '../style/icons/edit-24.svg';
 import typeIconSvgStr from '../style/icons/type-24.svg';
-import extractIconSvgStr from '../style/icons/scissors-24.svg';
+import splitIconSvgStr from '../style/icons/scissors-24.svg';
 import googleSheetsIconSvgStr from '../style/icons/google-sheets-color-24.svg';
 import mySQLIconSvgStr from '../style/icons/mysql.svg';
 import boxIconSvgStr from '../style/icons/box-16.svg';
 import redditIconSvgStr from '../style/icons/reddit.svg';
+import mergeIconSvgStr from '../style/icons/git-merge-24.svg';
+import crosshairIconSvgStr from '../style/icons/crosshair-24.svg';
+import randomIconSvgStr from '../style/icons/random-24.svg';
+
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -77,11 +80,6 @@ export const dedupIcon = new LabIcon({
   svgstr: dedupIconSvgStr
 });
 
-export const splitIcon = new LabIcon({
-  name: 'amphi:splitIcon',
-  svgstr: splitIconSvgStr
-});
-
 export const globeIcon = new LabIcon({
   name: 'amphi:globeIcon',
   svgstr: globeIconSvgStr
@@ -107,6 +105,11 @@ export const extractIcon = new LabIcon({
   svgstr: extractIconSvgStr
 });
 
+export const splitIcon = new LabIcon({
+  name: 'amphi:splitIcon',
+  svgstr: splitIconSvgStr
+});
+
 export const googleSheetsIcon = new LabIcon({
   name: 'amphi:googleSheetsIcon',
   svgstr: googleSheetsIconSvgStr
@@ -126,6 +129,17 @@ export const redditIcon = new LabIcon({
   name: 'amphi:redditIcon',
   svgstr: redditIconSvgStr
 });
+
+export const crosshairIcon = new LabIcon({
+  name: 'amphi:crosshairIcon',
+  svgstr: crosshairIconSvgStr
+});
+
+export const randomIcon = new LabIcon({
+  name: 'amphi:randomIcon',
+  svgstr: randomIconSvgStr
+});
+
 
 
 

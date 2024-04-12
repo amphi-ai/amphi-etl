@@ -1,7 +1,7 @@
 import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig } from '@amphi/pipeline-components-manager';
 import React, { useCallback, useEffect } from 'react';
 import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
-import { filterIcon } from '../icons';
+import { randomIcon } from '../icons';
 
 export class Sample extends PipelineComponent<ComponentItem>() {
 
@@ -9,7 +9,7 @@ export class Sample extends PipelineComponent<ComponentItem>() {
   public _id = "sample";
   public _type = "pandas_df_processor";
   public _category = "transform";
-  public _icon = filterIcon;
+  public _icon = randomIcon;
   public _default = { "mode": "random" };
   public _form = {
     idPrefix: "component__form",

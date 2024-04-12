@@ -1,7 +1,7 @@
 import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig } from '@amphi/pipeline-components-manager';
 import React, { useCallback, useEffect } from 'react';
 import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
-import { filterIcon } from '../icons';
+import { crosshairIcon } from '../icons';
 
 export class SchemaModeler extends PipelineComponent<ComponentItem>() {
 
@@ -9,7 +9,7 @@ export class SchemaModeler extends PipelineComponent<ComponentItem>() {
   public _id = "schemaModeler";
   public _type = "pandas_df_processor";
   public _category = "transform";
-  public _icon = filterIcon;
+  public _icon = crosshairIcon;
   public _default = { mapping: {sourceData: [], targetKeys: [] }};
   public _form = {
     idPrefix: "component__form",
