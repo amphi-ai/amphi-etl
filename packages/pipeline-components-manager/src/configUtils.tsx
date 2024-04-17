@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { Button, Form, Input, Radio, Flex, Cascader, Space, Switch, InputNumber, Modal } from 'antd';
+import { ConfigProvider, Button, Form, Input, Radio, Flex, Cascader, Space, Switch, InputNumber, Modal } from 'antd';
 import { CheckOutlined, CloseOutlined, ClockCircleOutlined, SearchOutlined, SettingOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
@@ -82,23 +82,33 @@ export const generateUIFormComponent = ({
   };
 
   return (
-    <Form
-      layout="vertical"
-      size="small">
-      {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: false })}
-      <div className="flex justify-center mt-1 pt-1.5 space-x-4">
-        <span onClick={() => setModal2Open(true)}
-          className="inline-flex items-center justify-center cursor-pointer group">
-          <settingsIcon.react className="h-3 w-3 group-hover:text-primary" />
-        </span>
-        {!type.includes('output') && (
-          <span onClick={executeUntilComponent} className="inline-flex items-center justify-center cursor-pointer group">
-            <playCircleIcon.react className="h-3 w-3 group-hover:text-primary" />
+    <ConfigProvider
+        theme={{
+          token: {
+            // Seed Token
+            colorPrimary: '#5F9B97',
+          },
+        }}
+      >
+        <Form
+        layout="vertical"
+        size="small">
+        {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: false })}
+        <div className="flex justify-center mt-1 pt-1.5 space-x-4">
+          <span onClick={() => setModal2Open(true)}
+            className="inline-flex items-center justify-center cursor-pointer group">
+            <settingsIcon.react className="h-3 w-3 group-hover:text-primary" />
           </span>
-        )}
-      </div>
-      <ConfigModal modal2Open={modal2Open} setModal2Open={setModal2Open} name={name} nodeId={nodeId} form={form} data={data} context={context} componentService={componentService} manager={manager} commands={commands} handleChange={handleChange} advanced />
-    </Form>
+          {(type.includes('input') || type.includes('processor')) && (
+            <span onClick={executeUntilComponent} className="inline-flex items-center justify-center cursor-pointer group">
+              <playCircleIcon.react className="h-3 w-3 group-hover:text-primary" />
+            </span>
+          )}
+        </div>
+        <ConfigModal modal2Open={modal2Open} setModal2Open={setModal2Open} name={name} nodeId={nodeId} form={form} data={data} context={context} componentService={componentService} manager={manager} commands={commands} handleChange={handleChange} advanced />
+      </Form>
+    </ConfigProvider>
+
   );
 };
 
@@ -293,9 +303,10 @@ export const generateUIInputs = ({
                 <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
                   <Cascader
                     value={values}
+                    placeholder={field.placeholder}
                     options={field.options}
                     displayRender={displayRender}
-                    onChange={(e: any) => handleChange(e.target.value, field.id)}
+                    onChange={(value: any) => handleChange(value, field.id)}
                     />                
                 </Form.Item>
               );
@@ -428,10 +439,11 @@ interface UIInputsProps {
 export interface Option {
   key?: string;
   value: string;
-  label: string;
+  label: string | React.ReactNode;
   selected?: boolean;
   disabled?: boolean;
-  type?: string
+  type?: string;
+  named?: boolean;
 }
 
 export interface FieldDescriptor {

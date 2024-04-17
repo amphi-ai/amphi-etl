@@ -15,11 +15,11 @@
     "preserveWatchOutput": true,
     "resolveJsonModule": true,
     "outDir": "lib",
-    "rootDir": "src",
+    "rootDir": "src", 
     "strict": true,
     "strictNullChecks": false,
     "target": "es2018",
-    "types": [],
+    "types": ["node"],
     "skipLibCheck": true
   },
   "include": ["src/*"]

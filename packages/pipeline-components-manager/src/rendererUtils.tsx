@@ -15,17 +15,17 @@ interface IHandleProps {
 
 export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, internals }) => {
 
-  const CustomHandle = (props) => {
+  const LimitedInputHandle = (props) => {
     const { nodeInternals, edges, nodeId } = internals;
     const isHandleConnectable = useMemo(() => {
       if (typeof props.isConnectable === 'function') {
         const node = nodeInternals.get(nodeId);
-        const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.sourceHandle === props.id || edge.targetHandle === props.id);
+        const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.target === nodeId); // only count input edges
         return props.isConnectable({ node, connectedEdges });
       }
       if (typeof props.isConnectable === 'number') {
         const node = nodeInternals.get(nodeId);
-        const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.sourceHandle === props.id || edge.targetHandle === props.id);
+        const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.target === nodeId); // only count input edges
         return connectedEdges.length < props.isConnectable;
       }
       return props.isConnectable;
@@ -47,13 +47,13 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
 
     case "pandas_df_output":
       return (
-        <CustomHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in" />
+        <LimitedInputHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in" />
       );
     case "pandas_df_processor":
 
       return (
         <>
-          <CustomHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in"/>
+          <LimitedInputHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in"/>
           <Handle
             className="handle-right"
             type="source"
@@ -65,8 +65,8 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
       case "pandas_df_double_processor":
       return (
         <>
-          <CustomHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in1"/>
-          <CustomHandle type="target" position={Position.Left} isConnectable={1} className="second-handle-left" id="in2"/>
+          <LimitedInputHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in1"/>
+          <LimitedInputHandle type="target" position={Position.Left} isConnectable={1} className="second-handle-left" id="in2"/>
           <Handle
             className="handle-right"
             type="source"

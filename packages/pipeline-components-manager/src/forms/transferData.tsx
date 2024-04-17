@@ -5,6 +5,7 @@ import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { CodeGenerator } from '../CodeGenerator';
 import { PipelineService } from '../PipelineService';
+import { RequestService } from '../RequestService';
 
 
 import { Button, GetProp, Space, Table, TableColumnsType, TableProps, Tag, Transfer, TransferProps } from 'antd';
@@ -214,16 +215,25 @@ export const TransferData: React.FC<TransferDataProps> = ({
             const streamMsg = msg as KernelMessage.IStreamMsg;
             const output = streamMsg.content.text;
             // Split the output string into fields and then map each field to an object
-            const newItems = output.split(', ').map(field => {
-              const [name, type] = field.split(' (');
-              const newItems = output.split(', ').map(field => {
-                const [name, type] = field.split(' (');
-                return { key: name, type: type.replace(')', ''), disabled: false };
+              
+            const regex = /(\w+)\s+\(([^,]+),\s*(named|unnamed)\)/g;
+            const newItems = [];
+            
+            let match;
+            while ((match = regex.exec(output)) !== null) {
+              const [_, name, type, namedStatus] = match;
+              newItems.push({
+                value: name,
+                key: name,
+                label: name,
+                type: type,
+                named: namedStatus === 'named' // true if 'named', false if 'unnamed'
               });
+            }
+            
+            console.log(newItems);
 
-              // Update the source data
-              setSourceData(newItems);
-            });
+            setSourceData(newItems);
           } else if (msg.header.msg_type === 'error') {
             const errorMsg = msg as KernelMessage.IErrorMsg;
             const errorOutput = errorMsg.content;
@@ -268,7 +278,7 @@ export const TransferData: React.FC<TransferDataProps> = ({
   const renderFooter: TransferProps['footer'] = (_, info) => {
     if (info?.direction === 'left') {
       return (
-        <Button size="small" style={{ float: 'left', margin: 5 }} onClick={retrieveColumns}>
+        <Button type="primary" size="small" style={{ float: 'left', margin: 5 }} onClick={retrieveColumns}>
           Retrieve columns
         </Button>
       );

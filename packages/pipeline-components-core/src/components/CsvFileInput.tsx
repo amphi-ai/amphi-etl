@@ -188,9 +188,9 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
         csvOptions.header = config.header; // Use the header value directly if it's a number or 'None'
     }
 
-    if (config.names && Array.isArray(config.names)) {
-        csvOptions.names = `['${config.names.join("', '")}']`; // Format names as a Python list
-        csvOptions.header = 0; // Set header to 0 if names are provided
+    if (config.names && Array.isArray(config.names) && config.names.length > 0) {
+      csvOptions.names = `['${config.names.join("', '")}']`; // Format names as a Python list
+      csvOptions.header = 0; // Set header to 0 if names are provided
     }
 
     // Prepare options string for pd.read_csv

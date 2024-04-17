@@ -3,21 +3,21 @@ import React, { useCallback, useEffect } from 'react';
 import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
 import { crosshairIcon } from '../icons';
 
-export class SchemaModeler extends PipelineComponent<ComponentItem>() {
+export class FilterColumns extends PipelineComponent<ComponentItem>() {
 
-  public _name = "Schema Modeler";
-  public _id = "schemaModeler";
+  public _name = "Filter Columns";
+  public _id = "filterColumn";
   public _type = "pandas_df_processor";
   public _category = "transform";
   public _icon = crosshairIcon;
-  public _default = { mapping: {sourceData: [], targetKeys: [] }};
+  public _default = { columns: {sourceData: [], targetKeys: [] }};
   public _form = {
     idPrefix: "component__form",
     fields: [
       {
         type: "transferData",
-        label: "Mapping",
-        id: "mapping",
+        label: "Filter columns",
+        id: "columns",
         advanced: true
       }
     ],
@@ -89,7 +89,7 @@ export class SchemaModeler extends PipelineComponent<ComponentItem>() {
   
   // Create the handle element
   const handleElement = React.createElement(renderHandle, {
-    type: SchemaModeler.Type,
+    type: FilterColumns.Type,
     Handle: Handle, // Make sure Handle is imported or defined
     Position: Position, // Make sure Position is imported or defined
     internals: internals
@@ -103,9 +103,9 @@ export class SchemaModeler extends PipelineComponent<ComponentItem>() {
         context: context,
         manager: manager,
         commands: commands,
-        name: SchemaModeler.Name,
-        ConfigForm: SchemaModeler.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
-        Icon: SchemaModeler.Icon,
+        name: FilterColumns.Name,
+        ConfigForm: FilterColumns.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
+        Icon: FilterColumns.Icon,
         showContent: showContent,
         handle: handleElement,
         deleteNode: deleteNode,
@@ -119,15 +119,22 @@ export class SchemaModeler extends PipelineComponent<ComponentItem>() {
     return ["import pandas as pd"];
   }
 
-  public generateComponentCode({config, inputName, outputName}): string {
-    const columnsToKeep = config.mapping.targetKeys.map(key => `'${key.trim()}'`).join(', ');
+  public generateComponentCode({ config, inputName, outputName }): string {
+    const allColumns = config.columns.sourceData;
+    const targetKeys = config.columns.targetKeys;
+
+    // Prepare column references, handling named and unnamed columns
+    const columnsToKeep = targetKeys.map(key => {
+        const column = allColumns.find(c => c.value === key);
+        return column && column.named ? `'${key.trim()}'` : `${key.trim()}`;
+    }).join(', ');
+
+    // Python code generation for DataFrame operation
     const code = `
-# Schema modeling (filtering and ordering)
+# Filter and order columns
 ${outputName} = ${inputName}[[${columnsToKeep}]]
 `;
     return code;
-  }
-
-
+}
 
 }

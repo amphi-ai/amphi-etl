@@ -17,7 +17,7 @@ export class Extract extends PipelineComponent<ComponentItem>() {
       {
         type: "column",
         label: "Column name",
-        id: "columnName",
+        id: "column",
         placeholder: "Column name",
       },
       {
@@ -154,7 +154,12 @@ export class Extract extends PipelineComponent<ComponentItem>() {
 
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    const columnName = config.columnName;
+    const columnName = config.column.value; // name of the column
+    const columnType = config.column.type; // current type of the column (e.g., 'int', 'string')
+    const columnNamed = config.column.named; // boolean, true if column is named, false if index is used
+  
+    const columnAccess = columnNamed ? `['${columnName}']` : `[${columnName}]`;
+
     const regex = config.regex;
     let flagsCode = '';
 
@@ -177,7 +182,7 @@ export class Extract extends PipelineComponent<ComponentItem>() {
     // Generate the final code string
     const code = `
 # Extract data using regex
-${extractedVarName} = ${inputName}['${columnName}'].str.extract(r'${regex}'${flagsCode})
+${extractedVarName} = ${inputName}[${columnAccess}].str.extract(r'${regex}'${flagsCode})
 ${extractedVarName}.columns = [${columnNames}]
 ${outputName} = ${inputName}.join(${extractedVarName}, rsuffix='_extracted')
 `;

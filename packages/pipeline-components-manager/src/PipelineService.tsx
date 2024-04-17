@@ -1,5 +1,8 @@
-
+import React from 'react';
 import { PathExt } from '@jupyterlab/coreutils';
+import { CodeGenerator } from './CodeGenerator';
+import { KernelMessage } from '@jupyterlab/services';
+
 
 export class PipelineService {
 
@@ -14,7 +17,6 @@ export class PipelineService {
       "nodes": filteredNodes,
       "edges": filteredEdges
     };
-
     return flow;
   }
 
@@ -187,7 +189,6 @@ export class PipelineService {
   
     return { id: null, default: null }; // Return nulls if no matching component is found
   }
-
 
 }
 

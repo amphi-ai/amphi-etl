@@ -20,7 +20,7 @@ export class Sort extends PipelineComponent<ComponentItem>() {
         type: "columns",
         label: "Columns",
         id: "by",
-        placeholder: "Column names",
+        placeholder: "Select columns",
       },
       {
         type: "radio",
@@ -137,7 +137,8 @@ export class Sort extends PipelineComponent<ComponentItem>() {
   }
 
   public generateComponentCode({config, inputName, outputName}): string {
-    const byColumns = config.by ? `by=[${config.by.map(column => `'${column.trim()}'`).join(', ')}]` : '';
+
+    const byColumns = `by=[${config.by.map(column => column.named ? `'${column.value}'` : column.value).join(', ')}]`;
     const ascending = typeof config.order !== 'undefined' ? `, ascending=${config.order}` : '';
     const ignoreIndex = config.ignoreIndex ? `, ignore_index=${config.ignoreIndex}` : '';
   

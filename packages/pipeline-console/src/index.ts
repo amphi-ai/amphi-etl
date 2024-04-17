@@ -174,8 +174,8 @@ const pipelines: JupyterFrontEndPlugin<void> = {
                       // Assert the message type to IExecuteResultMsg or IDisplayDataMsg to access 'data'
                       const content = args.msg.content as KernelMessage.IExecuteResultMsg['content'] | KernelMessage.IDisplayDataMsg['content'];
                       if (content.data['text/html']) {
-                        const htmlData = `<div class="display_data">${content.data['text/html']}</div>`;
-                        manager.panel.onNewLog(formatLogDate(args.msg.header.date), "data", htmlData)
+                        console.log("DATA: %o", content.data['text/html']);
+                        manager.panel.onNewLog(formatLogDate(args.msg.header.date), "data", content.data['text/html'])
                       }
                     }
                     else if (args.msg.header.msg_type === 'stream') {

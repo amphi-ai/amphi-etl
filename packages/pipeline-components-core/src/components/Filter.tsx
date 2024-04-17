@@ -17,7 +17,7 @@ export class Filter extends PipelineComponent<ComponentItem>() {
       {
         type: "column",
         label: "Column name",
-        id: "columnName",
+        id: "column",
         placeholder: "Select column",
       },
       {
@@ -154,53 +154,72 @@ export class Filter extends PipelineComponent<ComponentItem>() {
   }
 
   public generateComponentCode({config, inputName, outputName}): string {
-    const columnName = config.columnName;
+    const columnName = config.column.value;
+    const columnType = config.column.type;
+    const columnIsNamed = config.column.named;
     const condition = config.condition;
     const conditionValue = config.conditionValue;
-    const enforceString = config.enforceNumber; // ensure this is correctly named as it seems to represent enforcing string type
+    const enforceString = config.enforceString; // Correct naming to reflect enforcing string type usage
 
-    // Enhanced type detection and formatting
     let formattedConditionValue: string;
-    if (!enforceString && !isNaN(Number(conditionValue))) {
-        // Treat as number if it's numeric and not enforcing string
-        formattedConditionValue = conditionValue.toString();
-    } else {
-        // Otherwise, treat as string and escape single quotes
-        formattedConditionValue = `'${conditionValue.toString().replace(/'/g, "\\'")}'`;
+    switch (columnType) {
+        case 'string':
+        case 'Object':
+        case 'category':
+            formattedConditionValue = `'${conditionValue.toString().replace(/'/g, "\\'")}'`;
+            break;
+        case 'datetime64':
+            formattedConditionValue = `'${new Date(conditionValue).toISOString()}'`;
+            break;
+        case 'bool':
+            formattedConditionValue = conditionValue.toString().toLowerCase();
+            break;
+        case 'timedelta[ns]':
+            formattedConditionValue = `pd.to_timedelta(${conditionValue}, unit='ms')`;
+            break;
+        case 'period':
+            formattedConditionValue = `'P${conditionValue.toString()}'`;
+            break;
+        default:
+            formattedConditionValue = !isNaN(Number(conditionValue)) ? conditionValue.toString() : `'${conditionValue.toString()}'`;
+            break;
     }
 
-    // Constructing the query expression
     let queryExpression: string;
     switch (condition) {
         case "==":
         case "!=":
-            queryExpression = `\`${columnName}\` ${condition} ${formattedConditionValue}`;
+            queryExpression = columnIsNamed ? `\`${columnName}\` ${condition} ${formattedConditionValue}` : `${columnName} ${condition} ${formattedConditionValue}`;
             break;
         case "contains":
-            queryExpression = `\`${columnName}\`.str.contains(${formattedConditionValue})`;
-            break;
         case "not contains":
-            queryExpression = `~\`${columnName}\`.str.contains(${formattedConditionValue})`;
-            break;
         case "startswith":
         case "endswith":
-            queryExpression = `\`${columnName}\`.str.${condition}(${formattedConditionValue})`;
+            if (['string', 'Object', 'category'].includes(columnType)) {
+                const method = condition.replace(" ", ".");
+                queryExpression = columnIsNamed ? `\`${columnName}\`.str.${method}(${formattedConditionValue})` : `${columnName}.str.${method}(${formattedConditionValue})`;
+            } else {
+                throw new Error('Invalid operation for the data type');
+            }
             break;
         case "isna":
         case "notna":
-            queryExpression = `\`${columnName}\`.${condition}()`;
+            queryExpression = columnIsNamed ? `\`${columnName}\`.${condition}()` : `${columnName}.${condition}()`;
             break;
         default:
-            queryExpression = `\`${columnName}\` ${condition} ${formattedConditionValue}`;
+            queryExpression = columnIsNamed ? `\`${columnName}\` ${condition} ${formattedConditionValue}` : `${columnName} ${condition} ${formattedConditionValue}`;
+            break;
     }
 
-    // Template for the pandas query code, with backticks around column names
     const code = `
-# Filter rows
+# Filter rows based on condition
 ${outputName} = ${inputName}.query("${queryExpression}")
 `;
     return code;
 }
+
+
+
 
 
 }

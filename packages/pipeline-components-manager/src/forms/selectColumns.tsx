@@ -3,6 +3,7 @@ import { SmileOutlined, PlusOutlined } from '@ant-design/icons';
 import { CodeGenerator } from '../CodeGenerator';
 import { PipelineService } from '../PipelineService';
 import { KernelMessage } from '@jupyterlab/services';
+import { RequestService } from '../RequestService';
 
 import { ConfigProvider, Divider, Input, Select, Space, Button, Tag, Empty } from 'antd';
 import type { InputRef } from 'antd';
@@ -26,19 +27,27 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
       
   const [items, setItems] = useState(field.options || []);
   const [selectedOptions, setSelectedOptions] = useState(defaultValues);
-
-  useEffect(() => {
-    setSelectedOptions(defaultValues);
-  }, [defaultValues]);
-
   const [name, setName] = useState('');
   const inputRef = useRef<InputRef>(null);
   const [loadings, setLoadings] = useState<boolean>();
   const inputNb = field.inputNb ? field.inputNb - 1 : 0;
 
+  const getTypeNamedByValue = (items: Option[], value: any): { type: string, named: boolean } | undefined => {
+    const item = items.find(item => item.value === value);
+    if (item) {
+      return { type: item.type, named: item.named };
+    }
+    return undefined;
+  };
+
+  useEffect(() => {
+    setSelectedOptions(defaultValues);
+  }, [defaultValues]);
+
+
   const addItem = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
     e.preventDefault();
-    setItems([...items, { value: name, label: name }]);
+    setItems([...items, { value: name, label: name , type: 'object', named: true}]);
     setName('');
     setTimeout(() => {
       inputRef.current?.focus();
@@ -47,7 +56,12 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
 
   const handleSelectChange = (selectedItems: Option[]) => {
     setSelectedOptions(selectedItems);
-    handleChange(selectedItems.map(item => item.value), field.id);
+    const options = selectedItems.map(item => ({
+      ...getTypeNamedByValue(items, item.value),
+      value: item.value
+    }));
+    console.log("options %o", options);
+    handleChange(options, field.id);
   };
 
   const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,57 +70,14 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
 
   const customizeRenderEmpty = () => (
     <div style={{ textAlign: 'center' }}>
-      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />;
-      <Button type="primary" onClick={retrieveColumns} loading={loadings}>Retrieve columns</Button>
+      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
     </div>
   );
-
-  const retrieveColumns = (event: React.MouseEvent<HTMLElement>) => {
-    setLoadings(true);
-    const flow = PipelineService.filterPipeline(context.model.toString());
-    let code = CodeGenerator.generateCodeUntil(context.model.toString(), commands, componentService, PipelineService.findMultiplePreviousNodeIds(flow, nodeId)[inputNb]);
-    const lines = code.split('\n');
-    const output_df = lines.pop(); // Extract the last line and store it in output_df
-    code = lines.join('\n'); // Rejoin the remaining lines back into code
-    const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
-
-    future.onReply = reply => {
-      if (reply.content.status == "ok") {
-        const future2 = context.sessionContext.session.kernel!.requestExecute({ code: "print(_amphi_metadatapanel_getcontentof(" + output_df + "))"});
-        future2.onIOPub = msg => {
-          if (msg.header.msg_type === 'stream') {
-            const streamMsg = msg as KernelMessage.IStreamMsg;
-            const output = streamMsg.content.text;
-            // Split the output string into fields and then map each field to an object
-            const newItems = output.split(', ').map(field => {
-              const [name, type] = field.split(' (');
-              const trimmedType = type.slice(0, -1); // Removes the closing parenthesis
-              return { value: name, label: `${name}`, type: trimmedType };
-            });
-
-            // Update the items array with the new items
-            setItems(items => [...items, ...newItems]);
-          } else if (msg.header.msg_type === 'error') {
-            const errorMsg = msg as KernelMessage.IErrorMsg; 
-            const errorOutput = errorMsg.content; 
-            console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
-          }
-        };
-      } else if (reply.content.status == "error") {
-        setLoadings(false)
-      } else if (reply.content.status == "abort") {
-        setLoadings(false)
-      } else {
-        setLoadings(false)
-      }
-    };
-
-  };
-
 
   return (
     <ConfigProvider renderEmpty={customizeRenderEmpty}>
       <Select
+      showSearch
       mode="multiple"
       labelInValue
       size={inDialog ? "middle" : "small"}
@@ -121,6 +92,25 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
         <>
           {menu}
           <Divider style={{ margin: '8px 0' }} />
+            <Space style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 2px 2px' }}>
+            <Button 
+            type="primary" 
+            onClick={(event) => RequestService.retrieveColumns(
+              event,
+              context,
+              commands,
+              componentService,
+              setItems,
+              setLoadings,
+              nodeId,
+              inputNb
+            )}
+            loading={loadings}>
+              Retrieve columns
+          </Button>
+          </Space>
+            <Divider style={{ margin: '8px 0' }} />
+          <Divider style={{ margin: '8px 0' }} />
           <Space style={{ padding: '0 8px 4px' }}>
             <Input
               placeholder="Custom"
@@ -130,7 +120,7 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
               onKeyDown={(e: any) => e.stopPropagation()}
             />
             <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
-              Add item
+              Add column
             </Button>
           </Space>
         </>

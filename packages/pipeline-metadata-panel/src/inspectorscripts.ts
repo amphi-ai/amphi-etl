@@ -106,13 +106,19 @@ def _amphi_metadatapanel_getshapeof(x):
 
 
 def _amphi_metadatapanel_getcontentof(x):
-    # returns content in a friendly way for python variables
-    # pandas and numpy
+    def check_unnamed_columns(df):
+        # Consider columns with purely integer labels as unnamed, all others (including empty strings) as named
+        unnamed_columns = [col for col in df.columns if isinstance(col, int)]
+        return unnamed_columns
+
+    # Check if the input is a DataFrame and handle it
     if __pd and isinstance(x, __pd.DataFrame):
-        colnames = ', '.join([f"{col} ({dtype})" for col, dtype in zip(x.columns, x.dtypes)])
+        unnamed_cols = check_unnamed_columns(x)
+        colnames = ', '.join([f"{col} ({dtype}, {'unnamed' if col in unnamed_cols else 'named'})" for col, dtype in zip(x.columns, x.dtypes)])
         content = "%s" % colnames
+    # Handle other types accordingly
     elif __pd and isinstance(x, __pd.Series):
-        content = f"{x.name} ({x.dtype}), " + str(x.values).replace(" ", ", ")[1:-1]
+        content = f"{x.name} ({x.dtype}, {'unnamed' if x.name == '' or isinstance(x.name, int) else 'named'}), " + str(x.values).replace(" ", ", ")[1:-1]
         content = content.replace("\\n", "")
     elif __np and isinstance(x, __np.ndarray):
         content = f"ndarray (shape={x.shape}, dtype={x.dtype})"
@@ -120,11 +126,8 @@ def _amphi_metadatapanel_getcontentof(x):
         content = f"DataArray (shape={x.shape}, dtype={x.dtype})"
     else:
         content = f"{type(x).__name__}, " + str(x)
-    
-    if len(content) > 1500:
-        return content[:1500] + " ..."
-    else:
-        return content
+
+    return content
 
 
 def _amphi_metadatapanel_is_matrix(x):

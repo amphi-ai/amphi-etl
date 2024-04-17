@@ -144,6 +144,7 @@ const PipelineWrapper: React.FC<IProps> = ({
   componentService,
 }) => {
 
+
   const manager = defaultFileBrowser.model.manager;
 
   const edgeTypes = {
@@ -270,8 +271,6 @@ const PipelineWrapper: React.FC<IProps> = ({
     const handleFileDrop = async (e: Drag.Event): Promise<void> => {
       handleAddFileToPipeline({ x: e.offsetX, y: e.offsetY });
     };
-  
-    //
 
     const onDragOver = useCallback((event) => {
       event.preventDefault();
@@ -307,7 +306,6 @@ const PipelineWrapper: React.FC<IProps> = ({
       [reactFlowInstance]
     );
 
-    
     return (
       <div className="reactflow-wrapper" ref={reactFlowWrapper}>
        <Dropzone onDrop={handleFileDrop}>
@@ -359,8 +357,8 @@ const PipelineWrapper: React.FC<IProps> = ({
     const categorizedComponents = {
       input: [],
       transform: [],
-      output: [],
-      other: []
+      output: []
+      // other: []
     };
 
     componentService.getComponents().forEach(component => {
@@ -398,11 +396,10 @@ const PipelineWrapper: React.FC<IProps> = ({
           Drag and drop components.
         </div>
         <DirectoryTree
+          
           multiple
-          switcherIcon={<DownOutlined />}
-          showLine
+          blockNode
           defaultExpandAll
-
           treeData={treeData}
         />
       </aside>
@@ -413,7 +410,7 @@ const PipelineWrapper: React.FC<IProps> = ({
     <div className="palette" id="pipeline-panel">
       <ReactFlowProvider>
         <PipelineFlow context={context} />
-        <Sidebar />
+        <Sidebar/>
       </ReactFlowProvider>
     </div>
   );

@@ -140,10 +140,19 @@ export class Join extends PipelineComponent<ComponentItem>() {
   }
 
   public generateComponentCode({config, inputName1, inputName2, outputName}): string {
+
+    // column.value = name, column.type = type, column.name = boolean if column is named or false if numeric index
+    const { leftKeyColumnValue, leftKeyColumnType, leftKeyColumnNamed } = config.leftKeyColumn;
+    const { rightKeyColumnValue, rightKeyColumnType, rightKeyColumnNamed } = config.rightKeyColumn;
+
+    // Modify to handle non-named (numeric index) columns by removing quotes
+    const leftKey = leftKeyColumnNamed ? `'${leftKeyColumnValue}'` : leftKeyColumnValue;
+    const rightKey = rightKeyColumnNamed ? `'${rightKeyColumnValue}'` : rightKeyColumnValue;
+
     const joinType = config.how ? `, how='${config.how}'` : '';
     const code = `
-# Merge two datasets
-${outputName} = pd.merge(${inputName1}, ${inputName2}, left_on='${config.leftKeyColumn}', right_on='${config.rightKeyColumn}'${joinType})
+# Join ${inputName1} and ${inputName2}
+${outputName} = pd.merge(${inputName1}, ${inputName2}, left_on=${leftKey}, right_on=${rightKey}${joinType})
 `;
 
     return code;

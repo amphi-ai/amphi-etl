@@ -17,14 +17,14 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
       {
         type: "column",
         label: "Column name",
-        id: "columnName",
+        id: "column",
         placeholder: "Column name",
       },
       {
         type: "cascader",
         label: "Data Type to convert to",
         id: "dataType",
-        placeholder: "Select column type to convert to",
+        placeholder: "Select ...",
         options: [
           {
             value: "numeric",
@@ -36,7 +36,13 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
                 children: [
                   { value: "int64", label: "int64: Standard integer type." },
                   { value: "int32", label: "int32: For optimized memory usage." },
-                  { value: "int16", label: "int16: For more optimized memory usage." }
+                  { value: "int16", label: "int16: For more optimized memory usage." },
+                  { value: "int8", label: "int8: For more optimized memory usage." },
+                  { value: "uint64", label: "uint64: Unsigned integer (can only hold non-negative values)" },
+                  { value: "uint32", label: "uint32: For more optimized memory usage." },
+                  { value: "uint16", label: "uint16: For more optimized memory usage." },
+                  { value: "uint8", label: "uint8: For more optimized memory usage." }
+
                 ]
               },
               {
@@ -44,27 +50,32 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
                 label: "Float",
                 children: [
                   { value: "float64", label: "float64: Standard floating-point type." },
-                  { value: "float32", label: "float32: For optimized memory usage." }
+                  { value: "float32", label: "float32: For optimized memory usage." },
+                  { value: "float16", label: "float16: For optimized memory usage." }
+
                 ]
               }
             ]
           },
           {
-            value: "datetime",
-            label: "Datetime",
+            value: "text",
+            label: "Text",
             children: [
-              { value: "datetime64[ns]", label: "datetime64[ns]: For datetime values." },
-              { value: "datetime64[ns, tz]", label: "datetime64[ns, tz]: For datetime values with timezone." },
-              { value: "datetime64[ms]", label: "datetime64[ms]: For datetime values in milliseconds." },
-              { value: "datetime64[s]", label: "datetime64[s]: For datetime values in seconds." },
-              { value: "datetime32[ns]", label: "datetime32[ns]: For compact datetime storage in nanoseconds." },
-              { value: "datetime32[ms]", label: "datetime32[ms]: For compact datetime storage in milliseconds." }
+              { value: "string", label: "string: For string data. (recommended)" },
+              { value: "object", label: "object: For generic objects (strings, timestamps, mixed types)." },
+              { value: "category", label: "category: For categorical variables." }
+
             ]
           },
           {
-            value: "timedelta",
-            label: "Timedelta",
+            value: "datetime",
+            label: "Date & Time",
             children: [
+              { value: "datetime64[ns]", label: "datetime64[ns]: For datetime values." },
+              { value: "datetime64[ms]", label: "datetime64[ms]: For datetime values in milliseconds." },
+              { value: "datetime64[s]", label: "datetime64[s]: For datetime values in seconds." },
+              { value: "datetime32[ns]", label: "datetime32[ns]: For compact datetime storage in nanoseconds." },
+              { value: "datetime32[ms]", label: "datetime32[ms]: For compact datetime storage in milliseconds." },
               { value: "timedelta[ns]", label: "timedelta[ns]: For differences between two datetimes." }
             ]
           },
@@ -73,27 +84,6 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
             label: "Boolean",
             children: [
               { value: "bool", label: "bool: For boolean values (True or False)." }
-            ]
-          },
-          {
-            value: "object",
-            label: "Object",
-            children: [
-              { value: "object", label: "object: For generic objects (strings, timestamps, mixed types)." }
-            ]
-          },
-          {
-            value: "category",
-            label: "Category",
-            children: [
-              { value: "category", label: "category: For categorical variables." }
-            ]
-          },
-          {
-            value: "string",
-            label: "String",
-            children: [
-              { value: "string", label: "string: For string data." }
             ]
           }
         ]
@@ -197,13 +187,35 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
     return ["import pandas as pd"];
   }
 
-  public generateComponentCode({config, inputName, outputName}): string {
-    const { columnName, dataType } = config;
+  public generateComponentCode({ config, inputName, outputName }): string {
+    const columnName = config.column.value;
+    const columnType = config.column.type;
+    const columnNamed = config.column.named;
+    const dataType = config.dataType[config.dataType.length - 1];
 
-    const code = `
-# Convert ${columnName} to ${dataType}
-${outputName} = ${inputName}.assign(${columnName}=${inputName}['${columnName}'].astype('${dataType}'))
-`;
+    // Start generating the Python code
+    let code = `import pandas as pd\n`;
+    code += `# Initialize the output DataFrame\n`;
+    code += `${outputName} = ${inputName}.copy()\n`;
+    code += `# Convert ${columnName} from ${columnType} to ${dataType}\n`;
+
+    // Determine the conversion function based on dataType
+    let conversionFunction = dataType.startsWith('datetime') ? 'pd.to_datetime' : `astype('${dataType}')`;
+
+    // Generate conversion code based on whether the column is named or indexed
+    if (columnNamed) {
+        if (dataType.startsWith('datetime')) {
+            code += `${outputName}['${columnName}'] = pd.to_datetime(${inputName}['${columnName}'])\n`;
+        } else {
+            code += `${outputName}['${columnName}'] = ${inputName}['${columnName}'].${conversionFunction}\n`;
+        }
+    } else {
+        if (dataType.startsWith('datetime')) {
+            code += `${outputName}.iloc[:, ${columnName}] = pd.to_datetime(${outputName}.iloc[:, ${columnName}])\n`;
+        } else {
+            code += `${outputName}.iloc[:, ${columnName}] = ${outputName}.iloc[:, ${columnName}].${conversionFunction}\n`;
+        }
+    }
     return code;
 }
 

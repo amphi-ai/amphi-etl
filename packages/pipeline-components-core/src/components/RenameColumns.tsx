@@ -20,14 +20,7 @@ export class RenameColumns extends PipelineComponent<ComponentItem>() {
         id: "columns",
         placeholders: { key: "column name", value: "new column name"},
         advanced: true
-      },
-      {
-        type: "boolean",
-        label: "Numeric indexes",
-        id: "indexes",
-        placeholder: "false",
-        advanced: true
-      },
+      }
     ],
   };
 
@@ -128,24 +121,31 @@ export class RenameColumns extends PipelineComponent<ComponentItem>() {
   }
 
   public generateComponentCode({config, inputName, outputName}): string {
+    let columnsParam = '{';
+    if (config.columns && config.columns.length > 0) {
+        columnsParam += config.columns.map(column => {
+          console.log("COLUMN: %o", column)
+            if (column.key.named) {
+                // Handle named columns as strings
+                return `'${column.key.value}': '${column.value}'`;
+            } else {
+                // Handle unnamed (numeric index) columns, converting them to strings
+                return `${column.key.value}: '${column.value}'`;
+            }
+        }).join(', ');
+        columnsParam += '}';
+    } else {
+        columnsParam = '{}'; // Ensure columnsParam is always initialized
+    }
 
-      const indexes = config.indexes;
-
-      let columnsParam = '';
-      if (config.columns && config.columns.length > 0) {
-          if (indexes) { // If columns are numeric indexes
-              columnsParam = 'columns={' + config.columns.map(column => `${column.key}: '${column.value}'`).join(', ') + '}';
-          } else { // If columns are labels
-              columnsParam = 'columns={' + config.columns.map(column => `'${column.key}': '${column.value}'`).join(', ') + '}';
-          }
-      }
-    
-      // Template for the pandas rename columns code
-      const code = `
+    // Template for the pandas rename columns code, explicitly setting axis='columns'
+    const code = `
 # Rename columns
-${outputName} = ${inputName}.rename(${columnsParam})
+${outputName} = ${inputName}.rename(columns=${columnsParam})
 `;
-  return code;
-  }
+    return code;
+}
+
+
   
 }

@@ -10,7 +10,7 @@ export class SplitColumn extends PipelineComponent<ComponentItem>() {
   public _type = "pandas_df_processor";
   public _category = "transform";
   public _icon = splitIcon;
-  public _default = { "keepOriginalColumn": false };
+  public _default = { keepOriginalColumn: false };
   public _form = {
     idPrefix: "component__form",
     fields: [
@@ -34,18 +34,11 @@ export class SplitColumn extends PipelineComponent<ComponentItem>() {
         ],
       },
       {
-        type: "selectTokenization",
-        label: "Column names",
-        id: "columnNames",
-        placeholder: "Optional: provide names for created columns",
-        advanced: true
-      },
-      {
         type: "boolean",
         label: "Keep original column",
         id: "keepOriginalColumn",
         advanced: true
-      },
+      }
     ],
   };
 
@@ -145,33 +138,42 @@ export class SplitColumn extends PipelineComponent<ComponentItem>() {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
+    const columnName = config.column.value; // name of the column
+    const columnType = config.column.type; // current type of the column (e.g., 'int', 'string')
+    const columnNamed = config.column.named; // boolean, true if column is named, false if index is used
+  
     // Ensure unique variable names for intermediate dataframes
     const uniqueSplitVar = `${outputName}_split`;
     const uniqueCombinedVar = `${outputName}_combined`;
-
+  
     // Start generating the code string
     let code = `\n# Create a new DataFrame from the split operation\n`;
-    code += `${uniqueSplitVar} = ${inputName}['${config.column}'].str.split('${config.delimiter}', expand=True)\n`;
-
-    // Conditionally add code for renaming columns if column names are provided
-    if (config.columnNames && config.columnNames.length > 0) {
-      const columnNames = config.columnNames.map(name => name.trim()).join("', '");
-      code += `\n# Rename columns\n`;
-      code += `${uniqueSplitVar}.columns = ['${columnNames}']\n`;
+  
+    // Handling column access based on whether it's named or indexed
+    const columnAccess = columnNamed ? `'${columnName}'` : `${columnName}`;
+  
+    // Convert column to string if it's not already
+    if (columnType !== 'string') {
+      code += `${inputName}[${columnAccess}] = ${inputName}[${columnAccess}].astype('string')\n`;
     }
+  
+    // Split operation
+    code += `${uniqueSplitVar} = ${inputName}[${columnAccess}].str.split('${config.delimiter}', expand=True)\n`;
+  
+    // Rename the new columns to avoid any potential overlap
+    code += `${uniqueSplitVar}.columns  = [f'${columnName}_{i}' for i in range(${uniqueSplitVar}.shape[1])]\n`;
 
     // Combine the original DataFrame with the new columns
-    code += `\n# Combine original DataFrame with the new temporary split DataFrame\n`;
-    code += `${uniqueCombinedVar} = ${inputName}.join(${uniqueSplitVar})\n`;
+      code += `${outputName} = pd.concat([${inputName}, ${uniqueSplitVar}], axis=1)\n`;
 
     // Check if the original column should be kept
     if (!config.keepOriginalColumn) {
-      code += `\n# Remove the original column used for split if required\n`;
-      code += `${outputName} = ${uniqueCombinedVar}.drop(columns=['${config.column}'])\n`;
-    } else {
-      code += `${outputName} = ${uniqueCombinedVar}\n`;
+      code += `\n# Remove the original column used for split\n`;
+      code += `${outputName}.drop(columns=[${columnAccess}], inplace=True)\n`;
     }
-
+  
+    // Assign to output
+  
     return code;
   }
 

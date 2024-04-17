@@ -23,10 +23,6 @@
   background-color: var(--jp-layout-color1);
 }
 
-.amphi-MetadataPanel-content tr:hover {
-  background-color: var(--jp-layout-color2);
-}
-
 .amphi-MetadataPanel-table thead {
   font-size: var(--jp-ui-font-size0);
   text-align: center;

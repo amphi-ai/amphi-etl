@@ -1,12 +1,16 @@
 import { Widget } from '@lumino/widgets';
 import { IPipelineConsole } from './tokens';
+import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
+import DataView from './DataView'; // Assume DataView is your React component
 
-const TITLE_CLASS = 'amphi-MetadataPanel-title';
-const PANEL_CLASS = 'amphi-MetadataPanel';
-const TABLE_CLASS = 'amphi-MetadataPanel-table';
-const TABLE_BODY_CLASS = 'amphi-MetadataPanel-content';
-const TABLE_ROW_CLASS = 'amphi-MetadataPanel-table-row';
-const TABLE_DATE_CLASS = 'amphi-MetadataPanel-date';
+
+const TITLE_CLASS = 'amphi-Console-title';
+const PANEL_CLASS = 'amphi-Console';
+const TABLE_CLASS = 'amphi-Console-table';
+const TABLE_BODY_CLASS = 'amphi-Console-content';
+const TABLE_ROW_CLASS = 'amphi-Console-table-row';
+const TABLE_DATE_CLASS = 'amphi-Console-date';
 
 /**
  * A panel that renders the pipeline logs
@@ -60,6 +64,7 @@ export class PipelineConsolePanel
   }
 
   onNewLog(date: string, level: string, content): void {
+
     if (!this.isAttached) {
       return;
     }
@@ -74,30 +79,41 @@ export class PipelineConsolePanel
     let row = this._console.tFoot!.insertRow(0); // Changed from -1 to 0
     row.className = `${TABLE_ROW_CLASS} fade-background-transition`; // Apply the transition class
 
-    // Initially set the background color to beige/yellow to attract attention
-    switch (level) {
-      case "info":
-        row.style.backgroundColor = "#e5f6ff";
-        break;
-      case "error":
-        row.style.backgroundColor = "#ffd7d9";
-        break;
-      case "data":
-        row.style.backgroundColor = "white";
-        break;
-      default:
-        // Handle other cases or do nothing
-        break;
-    }
-    row.style.transition = "background-color 1s ease-in-out"
-
     // Add cells to the new row
     let cell = row.insertCell(0);
     cell.innerHTML = date;
     cell.className = TABLE_DATE_CLASS;
 
-    cell = row.insertCell(1);
-    cell.innerHTML = content;
+    // Initially set the background color to beige/yellow to attract attention
+    switch (level) {
+      case "info":
+        row.style.backgroundColor = "#e5f6ff";
+        row.style.transition = "background-color 1s ease-in-out"
+        cell = row.insertCell(1);
+        cell.innerHTML =  content ;
+        break;
+      case "error":
+        row.style.backgroundColor = "#ffd7d9";
+        row.style.transition = "background-color 1s ease-in-out"
+        cell = row.insertCell(1);
+        cell.innerHTML =  content ;
+        break;
+      case "data":
+        cell = row.insertCell(1);
+        cell.style.padding = "0";  // Remove padding from the cell
+        const container = document.createElement('div'); // Create a container for the React component
+        cell.appendChild(container);  // Append the container to the cell
+        ReactDOM.render(<DataView htmlData={content} />, container);
+        break;
+      default:
+        // Handle other cases or do nothing
+        break;
+    }
+    
+
+
+
+
 
     // Scroll to the top
     this._console.parentElement.scrollTop = 0; // Changed to scroll to the top
@@ -116,6 +132,7 @@ export class PipelineConsolePanel
     this.source = null;
   }
 }
+
 
 namespace Private {
   const entityMap = new Map<string, string>(

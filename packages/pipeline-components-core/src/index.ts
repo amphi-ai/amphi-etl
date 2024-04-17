@@ -4,9 +4,9 @@ import {
 } from '@jupyterlab/application';
 
 import { ComponentManager } from "@amphi/pipeline-components-manager";
-import { Annotation, Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
-SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, SchemaModeler, Join,
-ParquetFileInput, ParquetFileOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, EmailLogger, FileLogger, RedditInput } from './components';
+import { Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
+SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join,
+ParquetFileInput, ParquetFileOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, RedditInput } from './components';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-components-core',
@@ -31,7 +31,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(RedditInput.getInstance())
 
    // Processors
-   componentService.addComponent(SchemaModeler.getInstance())
+   componentService.addComponent(FilterColumns.getInstance())
    componentService.addComponent(RenameColumns.getInstance())
    componentService.addComponent(Filter.getInstance())
    componentService.addComponent(Aggregate.getInstance())
@@ -57,9 +57,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(Console.getInstance())
 
    // Other
-   componentService.addComponent(Annotation.getInstance())
-   componentService.addComponent(EmailLogger.getInstance())
-   componentService.addComponent(FileLogger.getInstance())
+   //componentService.addComponent(Annotation.getInstance())
+   // componentService.addComponent(EmailLogger.getInstance())
+   // componentService.addComponent(FileLogger.getInstance())
 
 
 
