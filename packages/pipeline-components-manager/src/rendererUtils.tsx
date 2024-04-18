@@ -20,12 +20,12 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
     const isHandleConnectable = useMemo(() => {
       if (typeof props.isConnectable === 'function') {
         const node = nodeInternals.get(nodeId);
-        const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.target === nodeId); // only count input edges
+        const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.target === nodeId && props.id === edge.targetHandle); // only count input edges
         return props.isConnectable({ node, connectedEdges });
       }
       if (typeof props.isConnectable === 'number') {
         const node = nodeInternals.get(nodeId);
-        const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.target === nodeId); // only count input edges
+        const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.target === nodeId && props.id === edge.targetHandle) ; // only count input edges
         return connectedEdges.length < props.isConnectable;
       }
       return props.isConnectable;
