@@ -142,8 +142,9 @@ export class Join extends PipelineComponent<ComponentItem>() {
   public generateComponentCode({config, inputName1, inputName2, outputName}): string {
 
     // column.value = name, column.type = type, column.name = boolean if column is named or false if numeric index
-    const { leftKeyColumnValue, leftKeyColumnType, leftKeyColumnNamed } = config.leftKeyColumn;
-    const { rightKeyColumnValue, rightKeyColumnType, rightKeyColumnNamed } = config.rightKeyColumn;
+    const { value: leftKeyColumnValue, type: leftKeyColumnType, named: leftKeyColumnNamed } = config.leftKeyColumn;
+    console.log("config.leftKeyColumn %o", config.leftKeyColumn)
+    const { value: rightKeyColumnValue, type: rightKeyColumnType, named: rightKeyColumnNamed } = config.rightKeyColumn;
 
     // Modify to handle non-named (numeric index) columns by removing quotes
     const leftKey = leftKeyColumnNamed ? `'${leftKeyColumnValue}'` : leftKeyColumnValue;
