@@ -38,8 +38,8 @@ export class RequestService {
               console.log("receive stream %o", streamMsg)
 
               const output = streamMsg.content.text;
-              
-              const regex = /(\w+)\s+\(([^,]+),\s*(named|unnamed)\)/g;
+
+              const regex = /([^\s,]+)\s+\(([^,]+),\s*(named|unnamed)\)/g;
               const newItems = [];
               
               let match;
