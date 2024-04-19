@@ -218,8 +218,4 @@ ${outputName} = ${inputName}.query("${queryExpression}")
     return code;
 }
 
-
-
-
-
 }

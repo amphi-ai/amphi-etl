@@ -15,6 +15,8 @@ import SelectRegular from './forms/selectRegular';
 import SelectColumns from './forms/selectColumns';
 import SelectColumn from './forms/selectColumn';
 import KeyValueColumns from './forms/keyValueColumns';
+import KeyValueColumnsSelect from './forms/keyValueColumnsSelect';
+
 
 import TransferData from './forms/transferData';
 
@@ -323,6 +325,13 @@ export const generateUIInputs = ({
                 <KeyValueColumns field={field} handleChange={handleChange} initialValues={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
               </Form.Item>
             );
+            case "keyvalueColumnsSelect":
+              return (
+                <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+
+                  <KeyValueColumnsSelect field={field} handleChange={handleChange} initialValues={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
+                </Form.Item>
+              );
           case "valuesList":
             return (
               <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
@@ -447,7 +456,7 @@ export interface Option {
 }
 
 export interface FieldDescriptor {
-  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'select' | 'textarea' | 'radio' | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns';
+  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'select' | 'textarea' | 'radio' | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect';
   label: string;
   id: string;
   placeholder?: any;

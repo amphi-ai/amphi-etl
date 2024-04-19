@@ -10,36 +10,29 @@ export class Aggregate extends PipelineComponent<ComponentItem>() {
     public _type = "pandas_df_processor";
     public _icon = aggregateIcon;
     public _category = "transform";
-    public _default = { csvOptions: { header: "infer"} };
+    public _default = { };
     public _form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "columns",
           label: "Columns to group by",
-          id: "groupColumn",
+          id: "groupByColumns",
           placeholder: "Select columns"
         },
         {
-          type: "columns",
+          type: "keyvalueColumnsSelect",
           label: "Columns to apply operation",
-          id: "aggColumns",
+          id: "columnsOperations",
           placeholder: "column(s) name",
-        },
-        {
-          type: "select",
-          label: "Operation function(s)",
-          id: "aggFunctions",
-          placeholder: "Select function(s) (comma separated for multiple functions",
           options: [
-            { key: "min", value: "min", text: "Minimum of each group"},
-            { key: "max", value: "max", text: "Maximum of each group" },
-            { key: "sum", value: "sum", text: "Sum of each group" },
-            { key: "count", value: "count", text: "Count of each group" },
-            { key: "mean", value: "mean", text: "Mean" },
-            { key: "minmaxsummin", value: "min, max, sum, mean", text: "Multiple functions example" }
+            { value: "min", label: "Minimum"},
+            { value: "max", label: "Maximum" },
+            { value: "sum", label: "Sum" },
+            { value: "count", label: "Count" },
+            { value: "mean", label: "Mean" }
           ],
-        },
+        }
       ],
     };
 
@@ -139,31 +132,41 @@ export class Aggregate extends PipelineComponent<ComponentItem>() {
     }
 
     public generateComponentCode({ config, inputName, outputName }) {
-
-      const groupColumns = config.groupColumn.split(',').map(s => s.trim());
-      
-      const aggColumns = config.aggColumns.split(',').map(s => s.trim());
-    
-      const aggFunctions = config.aggFunctions.split(',').map(s => s.trim());
-    
-      // Construct aggregation dict
-      let aggDict = {};
-      aggColumns.forEach((col, idx) => {
-        aggDict[col] = aggFunctions[idx]; 
-      });
-    
+      const groupColumns = config.groupByColumns.map(col => col.value);
+  
+      // Start constructing the aggregation arguments dynamically
+      let aggArgs = "";
+  
+      if (config.columnsOperations && config.columnsOperations.length > 0) {
+          config.columnsOperations.forEach((op, index) => {
+              // Determine how to reference the column based on 'named'
+              const columnReference = op.key.named ? `'${op.key.value}'` : op.key.value;
+              const operation = op.value.value;
+              const columnName = op.key.named ? op.key.value : `col${op.key.value}`;
+              const operationName = `${columnName}_${operation}`;
+  
+              // Construct each aggregation argument
+              aggArgs += `${operationName}=(${columnReference}, '${operation}')`;
+              if (index < config.columnsOperations.length - 1) {
+                  aggArgs += ", ";
+              }
+          });
+      }
+  
       // Generate groupby code
       let code = `
 ${outputName} = ${inputName}.groupby([`;
-      
-      // Add group columns 
+  
+      // Add group columns
       groupColumns.forEach(col => {
-        code += `\n'${col}',`; 
+          code += `'${col}',`;
       });
-      
-      code += `\n]).agg(${JSON.stringify(aggDict)}).reset_index()\n`;
-    
+  
+      // Complete the aggregation function call
+      code += `]).agg(${aggArgs}).reset_index()\n`;
+  
       return code;
-    }
+  }
+  
 
 }

@@ -124,7 +124,6 @@ export class RenameColumns extends PipelineComponent<ComponentItem>() {
     let columnsParam = '{';
     if (config.columns && config.columns.length > 0) {
         columnsParam += config.columns.map(column => {
-          console.log("COLUMN: %o", column)
             if (column.key.named) {
                 // Handle named columns as strings
                 return `'${column.key.value}': '${column.value}'`;
