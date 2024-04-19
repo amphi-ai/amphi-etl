@@ -7,8 +7,6 @@ const DataView = ({ htmlData }: { htmlData: string }) => {
 
   useEffect(() => {
     const { data, headers } = htmlToJson(htmlData);
-    console.log("data %o", data)
-    console.log("headers %o", headers)
     setDataSource(data);
     setColumns(headers.map((header) => ({
       title: header,

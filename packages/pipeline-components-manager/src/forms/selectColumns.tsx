@@ -60,7 +60,6 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
       ...getTypeNamedByValue(items, item.value),
       value: item.value
     }));
-    console.log("options %o", options);
     handleChange(options, field.id);
   };
 
@@ -109,7 +108,6 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
               Retrieve columns
           </Button>
           </Space>
-            <Divider style={{ margin: '8px 0' }} />
           <Divider style={{ margin: '8px 0' }} />
           <Space style={{ padding: '0 8px 4px' }}>
             <Input

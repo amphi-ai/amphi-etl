@@ -188,7 +188,6 @@ export const TransferData: React.FC<TransferDataProps> = ({
 
   useEffect(() => {
     if (defaultValue && defaultValue.sourceData && defaultValue.targetKeys) {
-      console.log("defaultValye: %o", defaultValue);
       setSourceData(defaultValue.sourceData);
       setTargetKeys(defaultValue.targetKeys);
     } else {
@@ -231,8 +230,6 @@ export const TransferData: React.FC<TransferDataProps> = ({
               });
             }
             
-            console.log(newItems);
-
             setSourceData(newItems);
           } else if (msg.header.msg_type === 'error') {
             const errorMsg = msg as KernelMessage.IErrorMsg;
@@ -269,7 +266,6 @@ export const TransferData: React.FC<TransferDataProps> = ({
   ];
 
   const onChange = (nextTargetKeys: string[]) => {
-    console.log("nextTargetKeys %o", nextTargetKeys)
     setTargetKeys(nextTargetKeys);
     const savedSchema = { sourceData: sourceData, targetKeys: nextTargetKeys }
     handleChange(savedSchema, field.id);

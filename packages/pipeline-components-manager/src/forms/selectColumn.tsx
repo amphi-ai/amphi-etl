@@ -1,8 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { SmileOutlined, PlusOutlined } from '@ant-design/icons';
-import { CodeGenerator } from '../CodeGenerator';
-import { PipelineService } from '../PipelineService';
-import { KernelMessage } from '@jupyterlab/services';
+import { PlusOutlined } from '@ant-design/icons';
 
 import { ConfigProvider, Divider, Input, Select, Space, Button, Tag, Empty } from 'antd';
 import type { InputRef } from 'antd';

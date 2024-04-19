@@ -78,7 +78,6 @@ export const KeyValueColumnsSelect: React.FC<KeyValueFormProps> = ({ field, hand
   };
 
   const handleSelectColumnChange = (selection: any, index: number) => {
-    console.log("VALUE %o", selection)
     const value = selection.value;
     const {type, named} = getTypeNamedByValue(items, value);
     const updatedKeyValuePairs = [...keyValuePairs];
@@ -86,7 +85,6 @@ export const KeyValueColumnsSelect: React.FC<KeyValueFormProps> = ({ field, hand
       ...updatedKeyValuePairs[index],
       key: { value: value, type: type, named: named }
     };
-    console.log("keyPari %o", updatedKeyValuePairs)
     setKeyValuePairs(updatedKeyValuePairs);
     handleChange(updatedKeyValuePairs, field.id);
   };
@@ -129,18 +127,17 @@ export const KeyValueColumnsSelect: React.FC<KeyValueFormProps> = ({ field, hand
         <>
           <Form.Item>
             {keyValuePairs.map((pair, index) => (
-                <Space style={{ display: 'flex', width: '100%' , marginBottom: 8 }} align="baseline">
+                <Space direction="vertical" style={{ display: 'flex', width: '100%' , marginBottom: 8 }}>
                  <ConfigProvider renderEmpty={customizeRenderEmpty}>
                   <Select
                   labelInValue
                   size={inDialog ? "middle" : "small"}
-                  style={{ width: '100%', minWidth: '250px' }}
                   className="nodrag"
-                  onChange={(value) => { console.log("Value %o", value); handleSelectColumnChange(value, index); }}
+                  onChange={(value) => {handleSelectColumnChange(value, index);}}
                   value={pair.key}
                   options={getAvailableItems(index).map(item => ({ label: item.label, value: item.value }))}
-                  placeholder={field.placeholder || 'Select ...'}
-                  {...(field.required ? { required: field.required } : {})} 
+                  placeholder='Select ...'
+                  {...(field.required ? { required: field.required } : {})}
                   {...(field.tooltip ? { tooltip: field.tooltip } : {})}
                   dropdownRender={(menu: any) => (
                     <>
@@ -170,7 +167,7 @@ export const KeyValueColumnsSelect: React.FC<KeyValueFormProps> = ({ field, hand
                 className="nodrag"
                 onChange={(value) => handleChangeKV(value, index, 'value')}
                 value={pair.value}
-                placeholder={field.placeholder || 'Select ...'}
+                placeholder="Select ..."
                 {...(field.required ? { required: field.required } : {})} 
                 {...(field.tooltip ? { tooltip: field.tooltip } : {})}
                 options={options.map(option => ({

@@ -16,18 +16,18 @@ export class Aggregate extends PipelineComponent<ComponentItem>() {
       fields: [
         {
           type: "columns",
-          label: "Columns to group by",
+          label: "Group by",
           id: "groupByColumns",
           placeholder: "Select columns"
         },
         {
           type: "keyvalueColumnsSelect",
-          label: "Columns to apply operation",
+          label: "Operations",
           id: "columnsOperations",
-          placeholder: "column(s) name",
+          placeholder: "Select column",
           options: [
-            { value: "min", label: "Minimum"},
-            { value: "max", label: "Maximum" },
+            { value: "min", label: "Min"},
+            { value: "max", label: "Max" },
             { value: "sum", label: "Sum" },
             { value: "count", label: "Count" },
             { value: "mean", label: "Mean" }

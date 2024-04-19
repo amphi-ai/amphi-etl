@@ -29,7 +29,7 @@ export class Deduplicate extends PipelineComponent<ComponentItem>() {
         label: "Columns",
         id: "subset",
         placeholder: "All columns",
-        tooltip: "Columns considered for identifying duplicates"
+        tooltip: "Columns considered for identifying duplicates. Leave empty to consider all columns."
       }
     ],
   };
@@ -133,11 +133,11 @@ export class Deduplicate extends PipelineComponent<ComponentItem>() {
   public generateComponentCode({ config, inputName, outputName }): string {
     // Initializing code string
     let code = `# Deduplicate\n`;
-    const columns = config.columns.length > 0 ? `subset=[${config.columns.map(column => column.named ? `'${column.value.trim()}'` : column.value).join(', ')}]` : '';
-    const keep = config.keepFirst ? `'first'` : `'last'`;
+    const columns = config.subset.length > 0 ? `subset=[${config.subset.map(column => column.named ? `'${column.value.trim()}'` : column.value).join(', ')}]` : '';
+    const keep = typeof config.keep === 'boolean' ? (config.keep ? `'first'` : '') : `'${config.keep}'`;
   
     // Generating the Python code for deduplication
-    code += `${outputName} = ${inputName}.drop_duplicates(${columns}keep=${keep})\n`;
+    code += `${outputName} = ${inputName}.drop_duplicates(${columns}${keep ? `, keep=${keep}` : ''})\n`;
   
     return code;
   }

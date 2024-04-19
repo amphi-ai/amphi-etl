@@ -76,7 +76,6 @@ export const KeyValueColumns: React.FC<KeyValueFormProps> = ({ field, handleChan
   };
 
   const handleSelectChange = (selection: any, index: number) => {
-    console.log("VALUE %o", selection)
     const value = selection.value;
     const {type, named} = getTypeNamedByValue(items, value);
     const updatedKeyValuePairs = [...keyValuePairs];
@@ -84,7 +83,6 @@ export const KeyValueColumns: React.FC<KeyValueFormProps> = ({ field, handleChan
       ...updatedKeyValuePairs[index],
       key: { value: value, type: type, named: named }
     };
-    console.log("keyPari %o", updatedKeyValuePairs)
     setKeyValuePairs(updatedKeyValuePairs);
     handleChange(updatedKeyValuePairs, field.id);
   };
@@ -119,8 +117,6 @@ export const KeyValueColumns: React.FC<KeyValueFormProps> = ({ field, handleChan
     }, 0);
   };
 
-  console.log("placeholder " + field.placeholder)
-
   return (
     <Form.List name="keyValue">
       {(fields, { add, remove }) => (
@@ -134,7 +130,7 @@ export const KeyValueColumns: React.FC<KeyValueFormProps> = ({ field, handleChan
                   size={inDialog ? "middle" : "small"}
                   style={{ width: '100%', minWidth: '250px' }}
                   className="nodrag"
-                  onChange={(value) => { console.log("Value %o", value); handleSelectChange(value, index); }}
+                  onChange={(value) => {handleSelectChange(value, index); }}
                   value={pair.key}
                   options={getAvailableItems(index).map(item => ({ label: item.label, value: item.value }))}
                   placeholder={field.placeholder || 'Select ...'}

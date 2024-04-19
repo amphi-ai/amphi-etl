@@ -79,7 +79,6 @@ export class PipelineService {
     // Group incoming edges by targetHandle
     flow.edges.forEach(edge => {
       if (edge.target === nodeId) {
-        console.log("edge %o", edge)
         const handle = edge.targetHandle || 'default'; // Fallback to 'default' if no handle
         if (!previousNodesMap.has(handle)) {
           previousNodesMap.set(handle, []);
@@ -87,16 +86,12 @@ export class PipelineService {
         previousNodesMap.get(handle).push(edge.source);
       }
     });
-
-    console.log("previousNodesMap %o", previousNodesMap)
   
     // Sort the map by targetHandle and flatten the result
     const sortedPreviousNodeIds = Array.from(previousNodesMap.entries())
       .sort((a, b) => a[0].localeCompare(b[0]))
       .map(([_, nodeIds]) => nodeIds)
       .reduce((acc, val) => acc.concat(val), []);
-  
-      console.log("sortedPreviousNodeIds %o", sortedPreviousNodeIds)
     return sortedPreviousNodeIds;
   }
 

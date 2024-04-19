@@ -33,12 +33,8 @@ export class RequestService {
           const future2 = context.sessionContext.session.kernel!.requestExecute({ code: "print(_amphi_metadatapanel_getcontentof(" + output_df + "))" });
           future2.onIOPub = msg => {
             if (msg.header.msg_type === 'stream') {
-
               const streamMsg = msg as KernelMessage.IStreamMsg;
-              console.log("receive stream %o", streamMsg)
-
               const output = streamMsg.content.text;
-
               const regex = /([^\s,]+)\s+\(([^,]+),\s*(named|unnamed)\)/g;
               const newItems = [];
               
@@ -53,11 +49,6 @@ export class RequestService {
                 });
               }
               
-              console.log(newItems);
-
-              console.log("New items %o", newItems)
-              
-
               // Update the items array with the new items, ensuring no duplicates
               setItems(items => {
                 const itemSet = new Set(items.map(item => item.value)); // Create a set of existing item values
@@ -84,8 +75,6 @@ export class RequestService {
 
     } else {
       setLoadings(false);
-
-      console.log("output_df is empty, null or not a single word.");
     }
 
 
