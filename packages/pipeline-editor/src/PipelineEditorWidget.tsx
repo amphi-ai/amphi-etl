@@ -357,7 +357,7 @@ const PipelineWrapper: React.FC<IProps> = ({
     const categorizedComponents = {
       input: [],
       transform: [],
-      output: []
+      output: [],
       // other: []
     };
 
@@ -371,6 +371,7 @@ const PipelineWrapper: React.FC<IProps> = ({
       title: category.charAt(0).toUpperCase() + category.slice(1),
       key: `${index}`,
       children: categorizedComponents[category].map((component, childIndex) => ({
+          selectable: false,
           title: (
             <span
               draggable
@@ -390,18 +391,18 @@ const PipelineWrapper: React.FC<IProps> = ({
     return (
 
       <aside className={sidebarClass} title={'Components'}>
-
+        
         <div className="description">
           <extensionIcon.react tag="span" width="24px" float="left" marginRight="8px" />
           Drag and drop components.
         </div>
         <DirectoryTree
-          
           multiple
           blockNode
           defaultExpandAll
           treeData={treeData}
         />
+        
       </aside>
     );
   }

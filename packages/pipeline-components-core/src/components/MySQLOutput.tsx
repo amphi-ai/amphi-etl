@@ -148,16 +148,18 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "import sqlalchemy"];
+    return ["import pandas as pd", "import sqlalchemy", "import pymysql"];
   }
 
   public generateComponentCode({ config, inputName }): string {
     const connectionString = `mysql+pymysql://${config.dbOptions.username}:${config.dbOptions.password}@${config.dbOptions.host}:${config.dbOptions.port}/${config.dbOptions.databaseName}`;
     const uniqueEngineName = `${inputName}Engine`; // Unique engine name based on the inputName
+    const connectionName = `${inputName}Connection`; // Unique connection name based on the inputName
     const code = `
 # Connect to MySQL and output into table
 ${uniqueEngineName} = sqlalchemy.create_engine('${connectionString}')
-${inputName}.to_sql(name='${config.dbOptions.tableName}', con=${uniqueEngineName}, if_exists='replace', index=False)
+with ${uniqueEngineName}.connect() as ${connectionName}:
+  ${inputName}.to_sql(name='${config.dbOptions.tableName}', con=${connectionName}, if_exists='replace', index=False)
 `;
     return code;
   }

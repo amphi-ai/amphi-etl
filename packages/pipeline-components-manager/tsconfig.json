@@ -22,5 +22,5 @@
     "types": [],
     "skipLibCheck": true
   },
-  "include": ["src/*", "src/forms/*"]
+  "include": ["src/*", "src/forms/*",  "src/forms/*.tsx", "src/configUtils.tsx"]
 }

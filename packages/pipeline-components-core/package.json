@@ -52,7 +52,7 @@
     "@amphi/pipeline-components-manager": "file:./../pipeline-components-manager",
     "@jupyterlab/application": "^4.1.5",
     "@lumino/widgets": "^2.0.0",
-    "antd": "^5.16.0",
+    "antd": "^5.16.2",
     "reactflow": "11.9.4"
   },
   "devDependencies": {
