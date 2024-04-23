@@ -19,7 +19,7 @@ export class CodeGenerator {
 
     const flow = PipelineService.filterPipeline(pipelineJson);
 
-    /*
+    
     // Only generate code up until target node
     let fromStart: boolean = true;
     const previousNodesIds = PipelineService.findMultiplePreviousNodeIds(flow, targetNode); // list of previous nodes
@@ -38,6 +38,7 @@ export class CodeGenerator {
       allLastExecutedValues.some(executedValue => updatedValue > executedValue)
     );
 
+    /*
     console.log("updatesSinceLastExecutions %o", updatesSinceLastExecutions)
 
     if(updatesSinceLastExecutions) {

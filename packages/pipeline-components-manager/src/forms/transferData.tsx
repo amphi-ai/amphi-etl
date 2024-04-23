@@ -2,16 +2,18 @@ import { KernelMessage } from '@jupyterlab/services';
 import difference from 'lodash/difference';
 import React, { useEffect, useState } from 'react';
 import { DndProvider, useDrag, useDrop } from "react-dnd";
+
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { CodeGenerator } from '../CodeGenerator';
 import { PipelineService } from '../PipelineService';
 import { RequestService } from '../RequestService';
 
-
-import { Button, GetProp, Space, Table, TableColumnsType, TableProps, Tag, Transfer, TransferProps } from 'antd';
+import type { GetProp, TableColumnsType, TableProps, TransferProps } from 'antd';
+import { Button, Space, Table, Tag, Transfer } from 'antd';
 import { FieldDescriptor } from '../configUtils';
 
 // implementation based on ant design and https://github.com/ant-design/ant-design/issues/12817#issuecomment-683288556
+
 
 interface TransferDataProps {
   field: FieldDescriptor;
@@ -30,15 +32,20 @@ export const TransferData: React.FC<TransferDataProps> = ({
 
   type TransferItem = GetProp<TransferProps, 'dataSource'>[number];
   type TableRowSelection<T extends object> = TableProps<T>['rowSelection'];
+  
 
   interface RecordType {
+    key: string;
     value: string;
+    title: string;
     disabled: boolean;
     type: string;
   }
 
   interface DataType {
+    key: string;
     value: string;
+    title: string;
     disabled: boolean;
     type: string;
   }
@@ -46,7 +53,7 @@ export const TransferData: React.FC<TransferDataProps> = ({
   interface TableTransferProps extends TransferProps<TransferItem> {
     dataSource: DataType[];
     leftColumns: TableColumnsType<DataType>;
-    rightColumns: TableColumnsType<string[]>;
+    rightColumns: TableColumnsType<DataType>;
   }
 
   interface DragItem {
@@ -100,8 +107,8 @@ export const TransferData: React.FC<TransferDataProps> = ({
       {({
         direction,
         filteredItems,
-        onItemSelectAll,
         onItemSelect,
+        onItemSelectAll,
         selectedKeys: listSelectedKeys,
         disabled: listDisabled,
       }) => {
@@ -109,20 +116,12 @@ export const TransferData: React.FC<TransferDataProps> = ({
         const displayType = direction === 'right' ? 'target' : 'source';
 
         const rowSelection: TableRowSelection<TransferItem> = {
-          getCheckboxProps: (item) => ({ disabled: listDisabled || item.disabled }),
-          onSelectAll(selected, selectedRows) {
-            const treeSelectedKeys = selectedRows
-              .filter((item) => !item.disabled)
-              .map(({ key }) => key);
-            const diffKeys = selected
-              ? difference(treeSelectedKeys, listSelectedKeys)
-              : difference(listSelectedKeys, treeSelectedKeys);
-            onItemSelectAll(diffKeys as string[], selected);
-          },
-          onSelect({ key }, selected) {
-            onItemSelect(key as string, selected);
+          getCheckboxProps: () => ({ disabled: listDisabled }),
+          onChange(selectedRowKeys) {
+            onItemSelectAll(selectedRowKeys, 'replace');
           },
           selectedRowKeys: listSelectedKeys,
+          selections: [Table.SELECTION_ALL, Table.SELECTION_INVERT, Table.SELECTION_NONE],
         };
 
         if (displayType === 'source') {
@@ -135,22 +134,40 @@ export const TransferData: React.FC<TransferDataProps> = ({
               style={{ pointerEvents: listDisabled ? 'none' : undefined }}
               onRow={({ key, disabled: itemDisabled }) => ({
                 onClick: () => {
-                  if (itemDisabled || listDisabled) return;
-                  onItemSelect(key as string, !listSelectedKeys.includes(key as string));
+                  if (itemDisabled || listDisabled) {
+                    return;
+                  }
+                  onItemSelect(key, !listSelectedKeys.includes(key));
                 },
               })}
             />
           );
         } else {
+
           const rowDrop = (dragIndex, hoverIndex) => {
+            console.log("dragIndex:", dragIndex);
+            console.log("hoverIndex:", hoverIndex);
+          
+            // Ensure the indices are valid
+            if (dragIndex === undefined || hoverIndex === undefined) {
+              console.error("Invalid drag or hover index");
+              return;
+            }
+          
+            // Create a copy of the target keys with all properties intact
             let newKeys = [...targetKeys];
-            const dragRow = newKeys[dragIndex];
-            // remove existing drag item from it's place
-            newKeys.splice(dragIndex, 1);
-            // insert drag into new place
-            newKeys.splice(hoverIndex, 0, dragRow);
-            // update state
-            onChange(newKeys, direction, newKeys);
+          
+            console.log("Initial newKeys:", newKeys);
+          
+            // Extract the dragged item and re-insert at the hover index
+            const dragRow = newKeys.splice(dragIndex, 1)[0]; // Ensure correct extraction
+            newKeys.splice(hoverIndex, 0, dragRow); // Insert at the correct position
+          
+            console.log("Updated newKeys:", newKeys);
+          
+            setTargetKeys(newKeys);
+            const savedSchema = { sourceData: sourceData, targetKeys: newKeys }
+            handleChange(savedSchema, field.id);
           };
 
           return (
@@ -166,26 +183,39 @@ export const TransferData: React.FC<TransferDataProps> = ({
                 }}
                 size="small"
                 style={{ pointerEvents: listDisabled ? 'none' : undefined }}
-                onRow={({ key }, idx) => ({
-                  index: idx,
+                onRow={(record, idx) => ({
+                  index: idx, // Pass the correct index to the row
                   rowDrop,
                   onClick: () => {
-                    onItemSelect(key, !listSelectedKeys.includes(key));
-                  }
+                    if (record.disabled) {
+                      return;
+                    }
+                    onItemSelect(record.key, !listSelectedKeys.includes(record.key)); // Toggle selection
+                  },
                 })}
               />
             </DndProvider>
 
           );
         }
+
       }}
     </Transfer>
   );
 
-  
+  const [items, setItems] = useState([]);
   const [sourceData, setSourceData] = useState<RecordType[]>([]);
-  const [targetKeys, setTargetKeys] = useState<React.Key[]>([]);
+  const [targetKeys, setTargetKeys] = useState<TransferProps['targetKeys']>([]);
   const [loadings, setLoadings] = useState<boolean>();
+
+  useEffect(() => {
+    setSourceData(items.map(item => ({
+        ...item,
+        key: item.value,
+        title: item.value
+    })));
+  }, [items]);
+
 
   useEffect(() => {
     if (defaultValue && defaultValue.sourceData && defaultValue.targetKeys) {
@@ -198,7 +228,8 @@ export const TransferData: React.FC<TransferDataProps> = ({
     }
   }, [defaultValue]);
 
-  const leftTableColumns: TableColumnsType<DataType> = [
+
+  const columns: TableColumnsType<DataType> = [
     {
       dataIndex: 'value',
       title: 'Column',
@@ -207,20 +238,13 @@ export const TransferData: React.FC<TransferDataProps> = ({
       dataIndex: 'type',
       title: 'Type',
       render: (type) => <Tag>{type}</Tag>,
-    },
-  ];
-
-  const rightTableColumns: TableColumnsType<string[]> = [
-    {
-      dataIndex: 'value',
-      title: 'Column'
     }
   ];
 
-  const onChange: TransferProps['onChange'] = (newTargetKeys, direction, moveKeys) => {
-    console.log(newTargetKeys, direction, moveKeys);
-    setTargetKeys(newTargetKeys);
-    const savedSchema = { sourceData: sourceData, targetKeys: newTargetKeys }
+  const onChange: TableTransferProps['onChange'] = (nextTargetKeys) => {
+    console.log("newTargetKeys %o", nextTargetKeys);
+    setTargetKeys(nextTargetKeys);
+    const savedSchema = { sourceData: sourceData, targetKeys: nextTargetKeys }
     handleChange(savedSchema, field.id);
   };
 
@@ -232,10 +256,10 @@ export const TransferData: React.FC<TransferDataProps> = ({
           context,
           commands,
           componentService,
-          setSourceData,
+          setItems,
           setLoadings,
           nodeId,
-          1
+          0
         )}
         loading={loadings}>
           Retrieve columns
@@ -256,8 +280,8 @@ export const TransferData: React.FC<TransferDataProps> = ({
         filterOption={(inputValue, item) =>
           item.key!.indexOf(inputValue) !== -1 || item.type.indexOf(inputValue) !== -1
         }
-        leftColumns={leftTableColumns}
-        rightColumns={rightTableColumns}
+        leftColumns={columns}
+        rightColumns={columns}
         footer={renderFooter}
       />
       <Space style={{ marginTop: 16 }}>
