@@ -9,6 +9,7 @@ import { showBrowseFileDialog } from './BrowseFileDialog';
 import { KeyValueForm } from './forms/keyValueForm';
 import { ValuesListForm } from './forms/valuesListForm';
 import { crosshairIcon, playCircleIcon, searchIcon, settingsIcon, warningIcon } from './icons';
+import InputRegular from './forms/InputRegular';
 import SelectCustomizable from './forms/selectCustomizable';
 import SelectTokenization from './forms/selectTokenization';
 import SelectRegular from './forms/selectRegular';
@@ -19,14 +20,24 @@ import KeyValueColumnsSelect from './forms/keyValueColumnsSelect';
 
 
 import TransferData from './forms/transferData';
+import TextareaRegular from './forms/TextareaRegular';
 
-export const setDefaultConfig = ({ nodeId, store, setNodes, defaultConfig }: SetDefaultConfigProps): void => {
+export const setDefaultConfig = ({
+  nodeId,
+  store,
+  setNodes,
+  defaultConfig,
+}: SetDefaultConfigProps): void => {
   const { nodeInternals } = store.getState();
+  console.log("setDefault????");
   setNodes(
     Array.from(nodeInternals.values()).map((node) => {
-      if (node.id === nodeId && Object.keys(node.data).length === 0) {
+      if (node.id === nodeId && Object.keys(node.data).length === 1) {
+        console.log("why not working?")
         node.data = {
-          ...defaultConfig
+          ...defaultConfig,
+          lastUpdated: null,
+          lastExecuted: null,
         };
       }
       return node;
@@ -35,18 +46,19 @@ export const setDefaultConfig = ({ nodeId, store, setNodes, defaultConfig }: Set
 };
 
 export const onChange = ({ evtTargetValue, field, nodeId, store, setNodes }: OnChangeProps): void => {
-
   const newValue = evtTargetValue;
   const { nodeInternals } = store.getState();
+  const currentTimestamp = Date.now(); // Current timestamp in milliseconds since Unix epoch
 
   setNodes(
     Array.from(nodeInternals.values()).map((node) => {
       if (node.id === nodeId) {
         let fieldParts = field.split('.');
 
+        // Set or update the main field
         if (fieldParts.length === 1) {
           // Top-level field
-          node.data = { ...node.data, [field]: newValue };
+            node.data = { ...node.data, [field]: newValue };
         } else {
           // Nested field
           const [outerField, innerField] = fieldParts;
@@ -57,6 +69,13 @@ export const onChange = ({ evtTargetValue, field, nodeId, store, setNodes }: OnC
               [innerField]: newValue,
             },
           };
+        }
+
+        // Set or update the lastUpdated field with the current timestamp
+        if(field !== 'lastExecuted') {
+          node.data = { ...node.data, lastUpdated: currentTimestamp };
+        } else {
+          node.data = { ...node.data };
         }
       }
       return node;
@@ -80,7 +99,8 @@ export const generateUIFormComponent = ({
   const [modal2Open, setModal2Open] = useState(false);
 
   const executeUntilComponent = () => {
-    commands.execute('pipeline-editor:run-pipeline-until', { nodeId: nodeId, });
+    commands.execute('pipeline-editor:run-pipeline-until', { nodeId: nodeId, context: context });
+    handleChange(Date.now(), 'lastExecuted'); 
   };
 
   return (
@@ -181,14 +201,8 @@ export const generateUIInputs = ({
           case "input":
             return (
               <Form.Item style={{ marginTop: "5px", padding: "0 0 2px" }} label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <Input
-                  id={field.id}
-                  size={advanced ? "middle" : "small"}
-                  name={field.id}
-                  placeholder={field.placeholder}
-                  onChange={(e: any) => handleChange(e.target.value, field.id)}
-                  value={value}
-                  autoComplete="off"
+                <InputRegular
+                  field={field} value={value} handleChange={handleChange} advanced={advanced}
                 />
               </Form.Item>
             );
@@ -272,15 +286,9 @@ export const generateUIInputs = ({
             const { TextArea } = Input;
             return (
               <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <TextArea
-                  id={field.id}
-                  name={field.id}
-                  placeholder={field.placeholder}
-                  onChange={(e: any) => handleChange(e.target.value, field.id)}
-                  value={value}
-                  autoComplete="off"
-                  rows={4}
-                />              
+                <TextareaRegular
+                  field={field} value={value} handleChange={handleChange} advanced={advanced} rows={field.rows}
+                />        
               </Form.Item>
             );
           case "boolean":
@@ -470,6 +478,7 @@ export interface FieldDescriptor {
   inputNb?: number;
   min?: number;
   max?: number;
+  rows?: number;
 }
 
 interface ConfigModalProps {

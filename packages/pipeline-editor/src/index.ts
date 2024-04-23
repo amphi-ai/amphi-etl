@@ -280,12 +280,14 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
       execute: args => {
 
         // Delete Python variables for the metadata panel (reinitialization)
+        /*
         const command = 'pipeline-metadata-panel:delete-all';
         commands.execute(command, {}).catch(reason => {
           console.error(
             `An error occurred during the execution of ${command}.\n${reason}`
           );
         });
+        */
 
         // First open log console
         // Open in same panel as metadata panel is openned
@@ -479,7 +481,9 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
         }
 
         const nodeId = args.nodeId.toString();
-        const code = CodeGenerator.generateCodeUntil(current.context.model.toString(), commands, componentService, nodeId);
+        const context = args.context;
+        const code = CodeGenerator.generateCodeUntil(current.context.model.toString(), commands, componentService, nodeId, context);
+
 
         commands.execute('pipeline-editor:run-pipeline', { code }).catch(reason => {
           console.error(

@@ -194,28 +194,41 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
     const dataType = config.dataType[config.dataType.length - 1];
 
     // Start generating the Python code
-    let code = `import pandas as pd\n`;
+    let code = ``;
     code += `# Initialize the output DataFrame\n`;
     code += `${outputName} = ${inputName}.copy()\n`;
     code += `# Convert ${columnName} from ${columnType} to ${dataType}\n`;
 
-    // Determine the conversion function based on dataType
-    let conversionFunction = dataType.startsWith('datetime') ? 'pd.to_datetime' : `astype('${dataType}')`;
+    // Determine the conversion function and any additional parameters based on dataType
+    let conversionFunction;
+    let additionalParams = '';
+
+    if (dataType.startsWith('datetime')) {
+        // Check if a unit is specified for datetime conversion
+        if (dataType.includes('[')) {
+            const unit = dataType.split('[')[1].split(']')[0];
+            additionalParams = `, unit='${unit}'`;
+        }
+        conversionFunction = `pd.to_datetime`;
+    } else {
+        conversionFunction = `astype('${dataType}')`;
+    }
 
     // Generate conversion code based on whether the column is named or indexed
     if (columnNamed) {
         if (dataType.startsWith('datetime')) {
-            code += `${outputName}['${columnName}'] = pd.to_datetime(${inputName}['${columnName}'])\n`;
+            code += `${outputName}['${columnName}'] = ${conversionFunction}(${inputName}['${columnName}']${additionalParams})\n`;
         } else {
             code += `${outputName}['${columnName}'] = ${inputName}['${columnName}'].${conversionFunction}\n`;
         }
     } else {
         if (dataType.startsWith('datetime')) {
-            code += `${outputName}.iloc[:, ${columnName}] = pd.to_datetime(${outputName}.iloc[:, ${columnName}])\n`;
+            code += `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}(${inputName}.iloc[:, ${columnName}]${additionalParams})\n`;
         } else {
-            code += `${outputName}.iloc[:, ${columnName}] = ${outputName}.iloc[:, ${columnName}].${conversionFunction}\n`;
+            code += `${outputName}.iloc[:, ${columnName}].${conversionFunction}\n`;
         }
     }
+
     return code;
 }
 

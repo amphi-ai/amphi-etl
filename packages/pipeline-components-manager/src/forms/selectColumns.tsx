@@ -13,7 +13,7 @@ import { FieldDescriptor, Option } from '../configUtils';
 interface SelectColumnsProps {
     field: FieldDescriptor;
     handleChange: (values: any, fieldId: string) => void;
-    defaultValues: Option | Option[];
+    defaultValues: Option[];
     context: any;
     componentService: any;
     commands: any;

@@ -23,6 +23,7 @@ import redditIconSvgStr from '../style/icons/reddit.svg';
 import mergeIconSvgStr from '../style/icons/git-merge-24.svg';
 import crosshairIconSvgStr from '../style/icons/crosshair-24.svg';
 import randomIconSvgStr from '../style/icons/random-24.svg';
+import openAiSvgStr from '../style/icons/openai.svg';
 
 
 export const fileTextIcon = new LabIcon({
@@ -138,6 +139,11 @@ export const crosshairIcon = new LabIcon({
 export const randomIcon = new LabIcon({
   name: 'amphi:randomIcon',
   svgstr: randomIconSvgStr
+});
+
+export const openAiIcon = new LabIcon({
+  name: 'amphi:openAiIcon',
+  svgstr: openAiSvgStr
 });
 
 

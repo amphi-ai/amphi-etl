@@ -32,13 +32,13 @@ export const TransferData: React.FC<TransferDataProps> = ({
   type TableRowSelection<T extends object> = TableProps<T>['rowSelection'];
 
   interface RecordType {
-    key: string;
+    value: string;
     disabled: boolean;
     type: string;
   }
 
   interface DataType {
-    key: string;
+    value: string;
     disabled: boolean;
     type: string;
   }
@@ -150,7 +150,7 @@ export const TransferData: React.FC<TransferDataProps> = ({
             // insert drag into new place
             newKeys.splice(hoverIndex, 0, dragRow);
             // update state
-            onChange(newKeys);
+            onChange(newKeys, direction, newKeys);
           };
 
           return (
@@ -180,11 +180,12 @@ export const TransferData: React.FC<TransferDataProps> = ({
         }
       }}
     </Transfer>
-
   );
 
+  
   const [sourceData, setSourceData] = useState<RecordType[]>([]);
-  const [targetKeys, setTargetKeys] = useState<string[]>([]);
+  const [targetKeys, setTargetKeys] = useState<React.Key[]>([]);
+  const [loadings, setLoadings] = useState<boolean>();
 
   useEffect(() => {
     if (defaultValue && defaultValue.sourceData && defaultValue.targetKeys) {
@@ -197,57 +198,9 @@ export const TransferData: React.FC<TransferDataProps> = ({
     }
   }, [defaultValue]);
 
-  const retrieveColumns = (event: React.MouseEvent<HTMLElement>) => {
-    const flow = PipelineService.filterPipeline(context.model.toString());
-    let code = CodeGenerator.generateCodeUntil(context.model.toString(), commands, componentService, PipelineService.findPreviousNodeId(flow, nodeId));
-
-    const lines = code.split('\n');
-    const output_df = lines.pop(); // Extract the last line and store it in output_df
-    code = lines.join('\n'); // Rejoin the remaining lines back into code
-    const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
-
-    future.onReply = reply => {
-      if (reply.content.status == "ok") {
-        const future2 = context.sessionContext.session.kernel!.requestExecute({ code: "print(_amphi_metadatapanel_getcontentof(" + output_df + "))" });
-        future2.onIOPub = msg => {
-          if (msg.header.msg_type === 'stream') {
-            const streamMsg = msg as KernelMessage.IStreamMsg;
-            const output = streamMsg.content.text;
-            // Split the output string into fields and then map each field to an object
-              
-            const regex = /(\w+)\s+\(([^,]+),\s*(named|unnamed)\)/g;
-            const newItems = [];
-            
-            let match;
-            while ((match = regex.exec(output)) !== null) {
-              const [_, name, type, namedStatus] = match;
-              newItems.push({
-                value: name,
-                key: name,
-                label: name,
-                type: type,
-                named: namedStatus === 'named' // true if 'named', false if 'unnamed'
-              });
-            }
-            
-            setSourceData(newItems);
-          } else if (msg.header.msg_type === 'error') {
-            const errorMsg = msg as KernelMessage.IErrorMsg;
-            const errorOutput = errorMsg.content;
-            console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
-          }
-        };
-      } else if (reply.content.status == "error") {
-      } else if (reply.content.status == "abort") {
-      } else {
-      }
-    };
-
-  };
-
   const leftTableColumns: TableColumnsType<DataType> = [
     {
-      dataIndex: 'key',
+      dataIndex: 'value',
       title: 'Column',
     },
     {
@@ -257,31 +210,40 @@ export const TransferData: React.FC<TransferDataProps> = ({
     },
   ];
 
-
   const rightTableColumns: TableColumnsType<string[]> = [
     {
-      dataIndex: 'key',
+      dataIndex: 'value',
       title: 'Column'
     }
   ];
 
-  const onChange = (nextTargetKeys: string[]) => {
-    setTargetKeys(nextTargetKeys);
-    const savedSchema = { sourceData: sourceData, targetKeys: nextTargetKeys }
+  const onChange: TransferProps['onChange'] = (newTargetKeys, direction, moveKeys) => {
+    console.log(newTargetKeys, direction, moveKeys);
+    setTargetKeys(newTargetKeys);
+    const savedSchema = { sourceData: sourceData, targetKeys: newTargetKeys }
     handleChange(savedSchema, field.id);
   };
 
   const renderFooter: TransferProps['footer'] = (_, info) => {
     if (info?.direction === 'left') {
       return (
-        <Button type="primary" size="small" style={{ float: 'left', margin: 5 }} onClick={retrieveColumns}>
+        <Button type="primary" size="small" style={{ float: 'left', margin: 5 }} onClick={(event) => RequestService.retrieveColumns(
+          event,
+          context,
+          commands,
+          componentService,
+          setSourceData,
+          setLoadings,
+          nodeId,
+          1
+        )}
+        loading={loadings}>
           Retrieve columns
         </Button>
       );
     }
     return;
   };
-
 
   return (
     <>
@@ -303,8 +265,5 @@ export const TransferData: React.FC<TransferDataProps> = ({
     </>
   );
 };
-
-
-
 
 export default TransferData;

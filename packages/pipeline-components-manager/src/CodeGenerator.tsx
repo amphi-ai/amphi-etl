@@ -4,26 +4,90 @@ import {
 import {
   PipelineService, Node, Flow
 } from './PipelineService';
+import { RequestService } from './RequestService';
+import { KernelMessage } from '@jupyterlab/services';
 
 export class CodeGenerator {
 
   static generateCode(pipelineJson: string, commands: any, componentService: any) {
 
-    const code = this.generateCodeForNodes(PipelineService.filterPipeline(pipelineJson), componentService, 'none');
+    const code = this.generateCodeForNodes(PipelineService.filterPipeline(pipelineJson), componentService, 'none', true);
     return code;
   }
 
-  static generateCodeUntil(pipelineJson: string, commands: any, componentService: any, targetNode: string) {
+  static generateCodeUntil(pipelineJson: string, commands: any, componentService: any, targetNode: string, context: any) {
 
+    const flow = PipelineService.filterPipeline(pipelineJson);
+
+    /*
     // Only generate code up until target node
-    const code = this.generateCodeForNodes(PipelineService.filterPipeline(pipelineJson), componentService, targetNode);
+    let fromStart: boolean = true;
+    const previousNodesIds = PipelineService.findMultiplePreviousNodeIds(flow, targetNode); // list of previous nodes
+
+    const lastExecuted = (flow.nodes.find(node => node.id === targetNode) || {}).data?.lastExecuted || null;
+    const previousLastExecutedValues = flow.nodes
+      .filter(node => previousNodesIds.includes(node.id)) // Get lastExecuted from previous nodes
+      .map(node => node.data.lastExecuted); // Map to lastExecuted
+    const lastUpdatedValues = PipelineService.getLastUpdatedInPath(flow, targetNode); // Get last updated values
+    
+    // Add lastExecuted to the list of previous last executed values
+    const allLastExecutedValues = [...previousLastExecutedValues, lastExecuted];
+    
+    // Check if any lastUpdated is greater than any of the lastExecuted values
+    const updatesSinceLastExecutions = lastUpdatedValues.some(updatedValue =>
+      allLastExecutedValues.some(executedValue => updatedValue > executedValue)
+    );
+
+    console.log("updatesSinceLastExecutions %o", updatesSinceLastExecutions)
+
+    if(updatesSinceLastExecutions) {
+      fromStart = true;
+    } else {
+      const dataframes = previousNodesIds.map((nodeId) => {
+        const nodeCode = this.generateCodeForNodes(flow, componentService, nodeId, false);
+        const codeLines = nodeCode.split("\n"); // Split into individual lines
+        return codeLines[codeLines.length - 1]; // Get the last line
+      });
+
+      console.log("Dataframes: %o", dataframes);
+  
+      dataframes.forEach((df) => {
+        const future = context.sessionContext.session.kernel!.requestExecute({ code: "print(_amphi_metadatapanel_getcontentof(" + df + "))" });
+        future.onIOPub = msg => {
+          if (msg.header.msg_type === 'stream') {
+            const streamMsg = msg as KernelMessage.IStreamMsg;
+            const output = streamMsg.content.text;
+            console.log("output successful")
+            fromStart = false;
+          } else  {
+            const errorMsg = msg as KernelMessage.IErrorMsg;
+            const errorOutput = errorMsg.content;
+            console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
+            fromStart = true;
+          }
+        };
+      });
+    }
+    */
+    if(true) {
+      const command = 'pipeline-metadata-panel:delete-all';
+      commands.execute(command, {}).catch(reason => {
+        console.error(
+          `An error occurred during the execution of ${command}.\n${reason}`
+        );
+      });
+    }
+
+    const code = this.generateCodeForNodes(flow, componentService, targetNode, true);
+    console.log("Code generated %o", code)
     return code;
   }
 
-  static generateCodeForNodes = (flow: Flow, componentService: any, targetNodeId: string): string => {
+  static generateCodeForNodes = (flow: Flow, componentService: any, targetNodeId: string, fromStart: boolean): string => {
 
     // Intialization
     let code: string = '';
+    let lastCodeGenerated: string = '';
     let counters = new Map<string, number>(); // Map with string as key and integer as value
     const nodesMap = new Map<string, Node>();
     const nodeDependencies = new Map<string, string[]>(); // To keep track of node dependencies
@@ -142,6 +206,11 @@ export class CodeGenerator {
       const imports = component.provideImports({config}); // Gather imports
       imports.forEach(importStatement => uniqueImports.add(importStatement));
 
+      // Gather functions
+      if (typeof component?.provideFunctions === 'function') {
+        component.provideFunctions({config}).forEach(func => functions.add(func));
+      }
+        
       // Initiliaze input and output variables
       let inputName = '';
       let outputName = '';
@@ -152,7 +221,7 @@ export class CodeGenerator {
           inputName = nodeOutputs.get(PipelineService.findPreviousNodeId(flow, nodeId));
           outputName = `${node.type}${counters.get(component_id)}`;
           nodeOutputs.set(nodeId, outputName); // Map the source node to its output variable
-          code += componentService.getComponent(node.type).generateComponentCode({ config, inputName, outputName });
+          lastCodeGenerated = componentService.getComponent(node.type).generateComponentCode({ config, inputName, outputName });
           break;
         case 'pandas_df_double_processor':
           const [input1Id, input2Id] = PipelineService.findMultiplePreviousNodeIds(flow, nodeId);
@@ -161,7 +230,7 @@ export class CodeGenerator {
           nodeOutputs.set(node.id, outputName);
           const inputName1 = nodeOutputs.get(input1Id);
           const inputName2 = nodeOutputs.get(input2Id);
-          code += componentService.getComponent(node.type).generateComponentCode({
+          lastCodeGenerated = componentService.getComponent(node.type).generateComponentCode({
             config,
             inputName1,
             inputName2,
@@ -172,23 +241,26 @@ export class CodeGenerator {
           incrementCounter(component_id);
           outputName = `${node.type}${counters.get(component_id)}`;
           nodeOutputs.set(nodeId, outputName); // Map the source node to its output variable
-          code += componentService.getComponent(node.type).generateComponentCode({ config, outputName });
+          lastCodeGenerated = componentService.getComponent(node.type).generateComponentCode({ config, outputName });
           break;
         case 'pandas_df_output':
           incrementCounter(component_id);
           inputName = nodeOutputs.get(PipelineService.findPreviousNodeId(flow, nodeId));
-          code += componentService.getComponent(node.type).generateComponentCode({ config, inputName });
+          lastCodeGenerated = componentService.getComponent(node.type).generateComponentCode({ config, inputName });
           break;
         default:
           console.error("Error generating code.");
       }
 
-      // If target node....
-      if (nodeId === targetNodeId) {
-        code += '\n' + nodeOutputs.get(nodeId);
-        // console.log(code) // Call the last node that is run to output in console
-        // No need to continue after reaching the target node
-      }
+      code += lastCodeGenerated;
+    
+      // If target node....  
+        if (nodeId === targetNodeId) {
+          if(!fromStart) {
+            code = lastCodeGenerated;
+          }
+          code += '\n' + nodeOutputs.get(nodeId);
+        }
     }
 
     // Loggers when full pipeline execution

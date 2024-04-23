@@ -185,6 +185,36 @@ export class PipelineService {
     return { id: null, default: null }; // Return nulls if no matching component is found
   }
 
+  static getLastUpdatedInPath(flow: Flow, targetId: string): string[] {
+    const visited = new Set<string>();
+    const lastUpdatedList: string[] = [];
+  
+    const findNodesInPath = (nodeId: string) => {
+      if (visited.has(nodeId)) {
+        return;
+      }
+      visited.add(nodeId);
+  
+      const node = flow.nodes.find(n => n.id === nodeId);
+      if (node && node.data && node.data.lastUpdated) {
+        lastUpdatedList.push(node.data.lastUpdated);
+      }
+  
+      const dependencies = flow.edges
+        .filter(edge => edge.target === nodeId)
+        .map(edge => edge.source);
+  
+      dependencies.forEach(dependency => {
+        findNodesInPath(dependency);
+      });
+    };
+  
+    findNodesInPath(targetId);
+  
+    return lastUpdatedList;
+  }
+
+
 }
 
 export interface Node {

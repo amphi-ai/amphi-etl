@@ -31,6 +31,7 @@ export { SQLQuery } from './SqlQuery';
 export { RedditInput } from './RedditInput';
 export { FilterColumns } from './FilterColumns';
 export { Join } from './Join';
+export { OpenAILookUp } from './OpenAILookUp';
 
 // export { EmailLogger } from './EmailLogger';
 // export { Annotation } from './Annotation';

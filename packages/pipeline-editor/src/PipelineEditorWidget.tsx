@@ -246,6 +246,7 @@ const PipelineWrapper: React.FC<IProps> = ({
                 position: adjustedPosition, // Make sure adjustedPosition is defined earlier as per the previous suggestions
                 data: { 
                   filePath: filePath,
+                  lastUpdated: Date.now(),
                   ...(nodeDefaults || {}) // Merge nodeDefaults into the data field
                 }
               };
@@ -298,7 +299,10 @@ const PipelineWrapper: React.FC<IProps> = ({
           id: getNodeId(),
           type,
           position,
-          data: config,
+          data: {
+            ...config,
+            lastUpdated: Date.now(), // current timestamp in milliseconds
+          }
         };
 
         setNodes((nds) => nds.concat(newNode));
@@ -493,7 +497,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
         this.commands.execute('docmanager:save');
 
         // Second, generate code
-        const code = await CodeGenerator.generateCode(context.model.toString(), this.commands, this.componentService);
+        const code = CodeGenerator.generateCode(context.model.toString(), this.commands, this.componentService);
 
         this.commands.execute('pipeline-editor:run-pipeline', { code }).catch(reason => {
           console.error(
