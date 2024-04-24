@@ -85,7 +85,6 @@ export class PipelineEditorWidget extends ReactWidget {
         this.update();
       }
     });
-
   }
 
   /*
@@ -203,7 +202,7 @@ const PipelineWrapper: React.FC<IProps> = ({
             const remainingEdges = acc.filter((edge) => !connectedEdges.includes(edge));
 
             const createdEdges = incomers.flatMap(({ id: source }) =>
-              outgoers.map(({ id: target }) => ({ id: `${source}->${target}`, source, target }))
+              outgoers.map(({ id: target }) => ({ id: `${source}->${target}`, source, target, type: 'custom-edge' }))
             );
 
             return [...remainingEdges, ...createdEdges];
@@ -388,8 +387,6 @@ const PipelineWrapper: React.FC<IProps> = ({
           icon: <component._icon.react height="14px" width="14px;"/>
       }))
   }));
-
-
 
     return (
 
