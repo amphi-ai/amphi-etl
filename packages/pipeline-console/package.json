@@ -1,6 +1,6 @@
 {
   "name": "@amphi/pipeline-log-console",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Amphi Pipeline Log Console",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {

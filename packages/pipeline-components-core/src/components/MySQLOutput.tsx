@@ -148,7 +148,7 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "import sqlalchemy"];
+    return ["import pandas as pd", "import sqlalchemy", "import pymysql"];
   }
 
   public generateComponentCode({ config, inputName }): string {
@@ -157,7 +157,13 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
     const code = `
 # Connect to MySQL and output into table
 ${uniqueEngineName} = sqlalchemy.create_engine('${connectionString}')
-${inputName}.to_sql(name='${config.dbOptions.tableName}', con=${uniqueEngineName}, if_exists='replace', index=False)
+with ${uniqueEngineName}.connect() as conn:
+  ${inputName}.to_sql(
+    name='${config.dbOptions.tableName}',
+    con=conn.connection,
+    if_exists='replace',
+    index=False
+  ).convert_dtypes()
 `;
     return code;
   }

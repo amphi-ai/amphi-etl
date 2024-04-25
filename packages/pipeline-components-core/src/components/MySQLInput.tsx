@@ -157,7 +157,11 @@ export class MySQLInput extends PipelineComponent<ComponentItem>() {
       const code = `
 # Connect to the MySQL database
 ${uniqueEngineName} = sqlalchemy.create_engine('${connectionString}')
-${outputName} = pd.read_sql_table('${config.dbOptions.tableName}', ${uniqueEngineName}).convert_dtypes()
+with ${uniqueEngineName}.connect() as conn:
+  ${outputName} = pd.read_sql_table(
+    name='${config.dbOptions.tableName}',
+    con=conn.connection
+  ).convert_dtypes()
 `;
       return code;
     }
