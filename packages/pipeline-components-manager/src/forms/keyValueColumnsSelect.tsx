@@ -95,7 +95,7 @@ export const KeyValueColumnsSelect: React.FC<KeyValueFormProps> = ({ field, hand
       <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
       <Button 
         type="primary" 
-        onClick={(event) => RequestService.retrieveColumns(
+        onClick={(event) => RequestService.retrieveDataframeColumns(
           event,
           context,
           commands,

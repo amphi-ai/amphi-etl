@@ -53,6 +53,12 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
         id: "dbOptions.password",
         placeholder: "Enter password",
         advanced: true
+      },
+      {
+        type: "dataMapping",
+        label: "Mapping",
+        id: "dbOptions.mapping",
+        advanced: true
       }
     ],
   };

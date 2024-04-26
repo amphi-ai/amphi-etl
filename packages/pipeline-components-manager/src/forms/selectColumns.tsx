@@ -94,7 +94,7 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
             <Space style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 2px 2px' }}>
             <Button 
             type="primary" 
-            onClick={(event) => RequestService.retrieveColumns(
+            onClick={(event) => RequestService.retrieveDataframeColumns(
               event,
               context,
               commands,

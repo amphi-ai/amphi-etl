@@ -251,7 +251,7 @@ export const TransferData: React.FC<TransferDataProps> = ({
   const renderFooter: TransferProps['footer'] = (_, info) => {
     if (info?.direction === 'left') {
       return (
-        <Button type="primary" size="small" style={{ float: 'left', margin: 5 }} onClick={(event) => RequestService.retrieveColumns(
+        <Button type="primary" size="small" style={{ float: 'left', margin: 5 }} onClick={(event) => RequestService.retrieveDataframeColumns(
           event,
           context,
           commands,

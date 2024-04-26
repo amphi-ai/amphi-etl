@@ -21,6 +21,7 @@ import KeyValueColumnsSelect from './forms/keyValueColumnsSelect';
 
 import TransferData from './forms/transferData';
 import TextareaRegular from './forms/TextareaRegular';
+import DataMapping from './forms/dataMapping';
 
 export const setDefaultConfig = ({
   nodeId,
@@ -358,6 +359,12 @@ export const generateUIInputs = ({
                 <TransferData field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
               </Form.Item>
             );
+            case "dataMapping":
+              return (
+                <Form.Item label={field.label} {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                  <DataMapping data={data} field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
+                </Form.Item>
+              );
 
           default:
             return null;
@@ -464,7 +471,7 @@ export interface Option {
 }
 
 export interface FieldDescriptor {
-  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'select' | 'textarea' | 'radio' | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect';
+  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'select' | 'textarea' | 'radio' | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'dataMapping';
   label: string;
   id: string;
   placeholder?: any;

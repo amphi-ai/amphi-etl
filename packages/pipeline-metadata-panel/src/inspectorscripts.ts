@@ -24,9 +24,8 @@ from importlib import __import__
 from IPython import get_ipython
 from IPython.core.magics.namespace import NamespaceMagics
 
-!pip install pandas -q -q
-
-import pandas
+!pip install --quiet pandas --disable-pip-version-check
+!pip install --quiet sqlalchemy==2.0.4 --disable-pip-version-check
 
 _amphi_metadatapanel_nms = NamespaceMagics()
 _amphi_metadatapanel_Jupyter = get_ipython()
@@ -39,7 +38,6 @@ __K = None
 __torch = None
 __ipywidgets = None
 __xr = None
-  
   
 def _attempt_import(module):
     try:

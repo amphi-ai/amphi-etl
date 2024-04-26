@@ -1038,7 +1038,6 @@ Components palette sidebar
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
   padding: 20px 6px;
   font-size: 12px;
-  height: 95%;
 }
 
 .palette aside .description {
