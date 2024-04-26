@@ -57,7 +57,9 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
       {
         type: "dataMapping",
         label: "Mapping",
-        id: "dbOptions.mapping",
+        id: "mapping",
+        outputType: "relationalDatabase",
+        drivers: "mysql+pymysql",
         advanced: true
       }
     ],

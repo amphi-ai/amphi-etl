@@ -113,7 +113,7 @@ export const DataMapping: React.FC<DataMappingProps> = ({
               className="nodrag"
               onChange={(value) => {handleSelectChange(value, record); }}
               value={record.input?.value ?? ""}  
-              placeholder={field.placeholder || 'Select ...'}
+              placeholder='Select column ...'
               {...(field.required ? { required: field.required } : {})}
               {...(field.tooltip ? { tooltip: field.tooltip } : {})}
               dropdownRender={(menu: any) => (
@@ -265,19 +265,21 @@ export const DataMapping: React.FC<DataMappingProps> = ({
   return (
     <>
     <div>
-      <Button type="primary" size="small" style={{ marginBottom: 16 }} onClick={(event) => RequestService.retrieveTableColumns(
-          event,
-          `mysql+pymysql://${data.dbOptions.username}:${data.dbOptions.password}@${data.dbOptions.host}:${data.dbOptions.port}/${data.dbOptions.databaseName}`,
-          `${data.dbOptions.tableName}`,
-          `DESCRIBE ${data.dbOptions.tableName}`,
-          context,
-          commands,
-          componentService,
-          setDataSource,
-          setLoadingsOutput,
-          nodeId
-        )}
-        loading={loadingsOutput}>
+      <Button type="primary" size="small" style={{ marginBottom: 16 }} onClick={(event) => {
+          setDataSource([]);
+          RequestService.retrieveTableColumns(
+            event,
+            `${field.drivers}://${data.dbOptions.username}:${data.dbOptions.password}@${data.dbOptions.host}:${data.dbOptions.port}/${data.dbOptions.databaseName}`,
+            `${data.dbOptions.tableName}`,
+            `DESCRIBE ${data.dbOptions.tableName}`,
+            context,
+            commands,
+            componentService,
+            setDataSource,
+            setLoadingsOutput,
+            nodeId
+          )}}
+          loading={loadingsOutput}>
           Retrieve schema
         </Button>
       <Table

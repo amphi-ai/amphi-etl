@@ -19,8 +19,22 @@ export class RequestService {
     ): any {
     setLoadings(true);
     const flow = PipelineService.filterPipeline(context.model.toString());
-    let code = CodeGenerator.generateCodeUntil(context.model.toString(), commands, componentService, PipelineService.findMultiplePreviousNodeIds(flow, nodeId)[inputNb], context);
-    
+    let code: string = '';
+
+    try {
+        code = CodeGenerator.generateCodeUntil(
+            context.model.toString(),
+            commands,
+            componentService,
+            PipelineService.findMultiplePreviousNodeIds(flow, nodeId)[inputNb],
+            context
+        );
+    } catch (error) {
+        console.error("Error generating code.", error);
+        code = null; // Or handle error appropriately
+        setLoadings(false);
+    }    
+
     const lines = code.split('\n');
     const output_df = lines.pop(); // Extract the last line and store it in output_df
 

@@ -486,6 +486,8 @@ export interface FieldDescriptor {
   min?: number;
   max?: number;
   rows?: number;
+  outputType?: string;
+  drivers?: string;
 }
 
 interface ConfigModalProps {
