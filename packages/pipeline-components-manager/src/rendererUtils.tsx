@@ -5,6 +5,7 @@ import { LabIcon } from '@jupyterlab/ui-components';
 import { xIcon } from './icons';
 import React, { useMemo } from 'react';
 import { getConnectedEdges, Handle, useNodeId, useStore } from 'reactflow';
+import { Popconfirm } from 'antd';
 
 interface IHandleProps {
   type: string;
@@ -92,9 +93,11 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
       <div className="component" onDoubleClick={handleDoubleClick}>
         <div className="component__header">
           {name}
-          <div onClick={deleteNode} className='deletebutton'>
-            <xIcon.react className="group-hover:text-primary" />
-          </div>
+          <Popconfirm title="Sure to delete?" onConfirm={() => deleteNode()}>
+            <div className='deletebutton'>
+              <xIcon.react className="group-hover:text-primary" />
+            </div>
+          </Popconfirm>
         </div>
         <div className="component__body">
           <form>

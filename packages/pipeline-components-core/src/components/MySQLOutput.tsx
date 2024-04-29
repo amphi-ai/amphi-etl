@@ -161,17 +161,39 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
 
   public generateComponentCode({ config, inputName }): string {
     const connectionString = `mysql+pymysql://${config.dbOptions.username}:${config.dbOptions.password}@${config.dbOptions.host}:${config.dbOptions.port}/${config.dbOptions.databaseName}`;
-    const uniqueEngineName = `${inputName}Engine`; // Unique engine name based on the inputName
-    const code = `
+    const uniqueEngineName = `${inputName}Engine`;
+    let mappingsCode = "";
+  
+    if (config.mapping && config.mapping.length > 0) {
+      const renameMap = config.mapping
+        .filter(map => map.input && (map.input.value || typeof map.input.value === 'number'))
+        .map(map => {
+          if (map.input.named) {
+            return `\`${map.input.value}\`: \`${map.key}\``; // Handles named columns
+          } else {
+            return `${map.input.value}: \`${map.key}\``; // Handles numeric index
+          }
+        })
+        .join(", ");
+  
+      if (renameMap.length > 0) {
+        mappingsCode = `
+  # Rename columns according to the mapping
+  ${inputName} = ${inputName}.rename(columns={${renameMap}})`;
+    }
+  }
+
+  const code = `
 # Connect to MySQL and output into table
 ${uniqueEngineName} = sqlalchemy.create_engine('${connectionString}')
 with ${uniqueEngineName}.connect() as conn:
+  ${mappingsCode}
   ${inputName}.to_sql(
     name='${config.dbOptions.tableName}',
     con=conn.connection,
     if_exists='replace',
     index=False
-  ).convert_dtypes()
+  )
 `;
     return code;
   }

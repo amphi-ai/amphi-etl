@@ -86,11 +86,6 @@ export const DataMapping: React.FC<DataMappingProps> = ({
     };
   
     let childNode = children;
-  
-    const toggleEdit = () => {
-      setEditing(!editing);
-      form.setFieldsValue({ [dataIndex]: record[dataIndex] });
-    };
 
     if (editable) {
       childNode =
@@ -106,7 +101,7 @@ export const DataMapping: React.FC<DataMappingProps> = ({
         >
           <ConfigProvider renderEmpty={customizeRenderEmpty}>
             <Select              
-              showSearch  
+              showSearch 
               labelInValue
               size={inDialog ? "middle" : "small"}
               style={{ width: '100%' }}
@@ -202,18 +197,6 @@ export const DataMapping: React.FC<DataMappingProps> = ({
           </>
         )
       }
-      /*
-      {
-        title: 'operation',
-        dataIndex: 'operation',z
-        render: (_, record) =>
-          dataSource.length >= 1 ? (
-            <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-              <a>Delete</a>
-            </Popconfirm>
-          ) : null,
-      },
-      */
     ];
   
     /*
@@ -266,7 +249,7 @@ export const DataMapping: React.FC<DataMappingProps> = ({
     <>
     <div>
       <Button type="primary" size="small" style={{ marginBottom: 16 }} onClick={(event) => {
-          setDataSource([]);
+          setDataSource([]); // reset data to avoid doubles
           RequestService.retrieveTableColumns(
             event,
             `${field.drivers}://${data.dbOptions.username}:${data.dbOptions.password}@${data.dbOptions.host}:${data.dbOptions.port}/${data.dbOptions.databaseName}`,

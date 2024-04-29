@@ -397,7 +397,7 @@ const PipelineWrapper: React.FC<IProps> = ({
           Drag and drop components.
         </div>
         <DirectoryTree
-          
+          selectable={false}
           multiple
           blockNode
           defaultExpandAll

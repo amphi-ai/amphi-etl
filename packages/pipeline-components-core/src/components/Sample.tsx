@@ -5,12 +5,12 @@ import { randomIcon } from '../icons';
 
 export class Sample extends PipelineComponent<ComponentItem>() {
 
-  public _name = "Sample";
+  public _name = "Sample Datasets";
   public _id = "sample";
   public _type = "pandas_df_processor";
   public _category = "transform";
   public _icon = randomIcon;
-  public _default = { "mode": "random" };
+  public _default = { mode: "random" };
   public _form = {
     idPrefix: "component__form",
     fields: [

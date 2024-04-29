@@ -362,7 +362,7 @@ export const generateUIInputs = ({
             case "dataMapping":
               return (
                 <Form.Item label={field.label} {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                  <DataMapping data={data} field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
+                  <DataMapping data={data} field={field} handleChange={handleChange} defaultValue={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
                 </Form.Item>
               );
 
@@ -398,6 +398,11 @@ export default function ConfigModal({
         onOk={() => setModal2Open(false)}
         onCancel={() => setModal2Open(false)}
         width={800}
+        footer={(_, { OkBtn }) => (
+          <>
+          <OkBtn />
+          </>
+        )}
       >
         <Form
           layout="vertical" >
