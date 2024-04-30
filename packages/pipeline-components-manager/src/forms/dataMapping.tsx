@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import type { GetRef, InputRef } from 'antd';
-import {  Form, Table, ConfigProvider, Divider, Input, Select, Space, Button, Tag, Empty } from 'antd';
+import {  Form, Table, ConfigProvider, Divider, Input, Select, Space, Button, Tag, Empty, Popconfirm } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 
 import { CodeGenerator } from '../CodeGenerator';
 import { PipelineService } from '../PipelineService';
 import { RequestService } from '../RequestService';
 import { FieldDescriptor, Option } from '../configUtils';
-
 
 interface DataMappingProps {
   data: any;
@@ -33,7 +33,6 @@ export const DataMapping: React.FC<DataMappingProps> = ({
   useEffect(() => {
     console.log("ITEMS %o", items)
   }, [items]);
-
 
   interface Item {
     input: any;
@@ -169,7 +168,6 @@ export const DataMapping: React.FC<DataMappingProps> = ({
       handleChange(dataSource, field.id);
     }, [dataSource]);
 
-
     const customizeRenderEmpty = () => (
       <div style={{ textAlign: 'center' }}>
         <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
@@ -196,21 +194,34 @@ export const DataMapping: React.FC<DataMappingProps> = ({
           </Space>
           </>
         )
+      },
+      {
+        title: '',
+        dataIndex: 'operation',
+        render: (_, record) =>
+          dataSource.length >= 1 ? (
+            <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+              <DeleteOutlined />
+            </Popconfirm>
+          ) : null,
       }
     ];
-  
-    /*
+
+    const [form] = Form.useForm(); // Step 1: Create form instance
+
     const handleAdd = () => {
+      const values = form.getFieldsValue(); // Step 2: Get values from the form
+      console.log(values); // Do something with the form data
+      console.log('Received values from form: ', values);
       const newData: DataType = {
-        key: count,
-        name: `Edward King ${count}`,
-        type: 'text',
+        input: {},
+        key: values.field.name,
+        value: values.field.name,
+        type: values.field.type
       };
       setDataSource([...dataSource, newData]);
-      setCount(count + 1);
     };
-    */
-  
+
     const handleSave = (row: DataType) => {
       const newData = [...dataSource];
       const index = newData.findIndex((item) => row.key === item.key);
@@ -219,6 +230,11 @@ export const DataMapping: React.FC<DataMappingProps> = ({
         ...item,
         ...row,
       });
+      setDataSource(newData);
+    };
+
+    const handleDelete = (key: React.Key) => {
+      const newData = dataSource.filter((item) => item.key !== key);
       setDataSource(newData);
     };
   
@@ -245,11 +261,12 @@ export const DataMapping: React.FC<DataMappingProps> = ({
       };
     });
 
+
   return (
     <>
     <div>
       <Button type="primary" size="small" style={{ marginBottom: 16 }} onClick={(event) => {
-          setDataSource([]); // reset data to avoid doubles
+          setDataSource([]);
           RequestService.retrieveTableColumns(
             event,
             `${field.drivers}://${data.dbOptions.username}:${data.dbOptions.password}@${data.dbOptions.host}:${data.dbOptions.port}/${data.dbOptions.databaseName}`,
@@ -272,10 +289,82 @@ export const DataMapping: React.FC<DataMappingProps> = ({
         dataSource={dataSource}
         columns={columns as ColumnTypes}
       />
+        <Form style={{ marginTop: 16 }}
+          name="Add field row"
+          layout="inline"
+          form={form}
+        >
+       <Form.Item name="field">
+        <FieldValueInput field={field} />
+        </Form.Item>
+        <Form.Item>
+          <Button onClick={handleAdd}>
+            Add a field
+          </Button>
+        </Form.Item>
+      </Form>
     </div>
     </>
   );
 
 };
+
+
+interface FieldValue {
+  name?: string;
+  type?: string;
+}
+
+interface FieldValueProps {
+  field: FieldDescriptor;
+  value?: FieldValue;
+  onChange?: (value: FieldValue) => void;
+}
+
+const FieldValueInput: React.FC<FieldValueProps> = ({ field, value = {}, onChange }) => {
+  const [name, setName] = useState<string>('');
+  const [type, setType] = useState<string>('');
+  const { Option } = Select;
+
+  const triggerChange = (changedValue: { name?: string; type?: string }) => {
+    onChange?.({ name, type, ...value, ...changedValue });
+  };
+
+  const onNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value || '';
+    setName(newName);
+    triggerChange({ name: newName });
+  };
+
+  const onTypeChange = (newType: string) => {
+    setType(newType);
+    triggerChange({ type: newType });
+  };
+
+
+  return (
+    <span>
+      <Input
+        type="text"
+        value={name}
+        placeholder='Field name'
+        onChange={onNameChange}
+        style={{ width: 130 }}
+      />
+      <Select
+        value={type}
+        placeholder='Select type'
+        style={{ width: 120, margin: '0 8px' }}
+        onChange={onTypeChange}
+      >
+        {Object.entries(field.typeOptions).map(([key, value]) => (
+          <Option key={key} value={value}>{value as string}</Option>
+        ))}
+      </Select>
+    </span>
+  );
+};
+
+
 
 export default DataMapping;

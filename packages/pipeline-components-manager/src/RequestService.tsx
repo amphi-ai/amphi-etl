@@ -145,8 +145,7 @@ console.log("code: " + code);
           const output = streamMsg.content.text;
           console.log("message : %o",output )
 
-          
-          const regex = /([^\s,]+)\s+\(([^)]+)\)/g;
+          const regex = /([^\s,]+)\s+\(((?:[^()]+|\([^)]*\))*)\)/g;
           const newItems = [];
           
           let match;
@@ -156,7 +155,7 @@ console.log("code: " + code);
               input: {},
               value: name,
               key: name,
-              type: type,
+              type: type.toUpperCase()
             });
           }
          

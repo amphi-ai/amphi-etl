@@ -10,7 +10,7 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
   public _type = "pandas_df_output";
   public _category = "output";
   public _icon = mySQLIcon; // Adjust if there's a different icon for databases
-  public _default = { dbOptions: { host: "localhost", port: "3306", databaseName: "", tableName: "", username: "", password: "" } };
+  public _default = { dbOptions: { host: "localhost", port: "3306", databaseName: "", tableName: "", username: "", password: "" }, ifTableExists: "fail", mode: "insert" };
   public _form = {
     idPrefix: "component__form",
     fields: [
@@ -55,11 +55,51 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
         advanced: true
       },
       {
+        type: "radio",
+        label: "If Table Exists",
+        id: "ifTableExists",
+        options: [
+          { value: "fail", label: "Fail" },
+          { value: "replace", label: "Replace" },
+          { value: "append", label: "Append" }
+
+        ],
+        advanced: true
+      },
+      {
+        type: "radio",
+        label: "Mode",
+        id: "mode",
+        options: [
+          { value: "insert", label: "INSERT" }
+        ],
+        advanced: true
+      },
+      {
         type: "dataMapping",
         label: "Mapping",
         id: "mapping",
         outputType: "relationalDatabase",
         drivers: "mysql+pymysql",
+        typeOptions: {
+          INT: 'INT',
+          VARCHAR: 'VARCHAR',
+          TEXT: 'TEXT',
+          DATE: 'DATE',
+          DATETIME: 'DATETIME',
+          TIMESTAMP: 'TIMESTAMP',
+          TIME: 'TIME',
+          YEAR: 'YEAR',
+          BOOLEAN: 'BOOLEAN',
+          DECIMAL: 'DECIMAL',
+          FLOAT: 'FLOAT',
+          DOUBLE: 'DOUBLE',
+          BLOB: 'BLOB',
+          BIT: 'BIT',
+          ENUM: 'ENUM',
+          SET: 'SET',
+          JSON: 'JSON'
+        },
         advanced: true
       }
     ],
@@ -155,6 +195,8 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
     );
   }
 
+  // https://stackoverflow.com/questions/63881687/how-to-upsert-pandas-dataframe-to-mysql-with-sqlalchemy
+
   public provideImports({ config }): string[] {
     return ["import pandas as pd", "import sqlalchemy", "import pymysql"];
   }
@@ -163,37 +205,57 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
     const connectionString = `mysql+pymysql://${config.dbOptions.username}:${config.dbOptions.password}@${config.dbOptions.host}:${config.dbOptions.port}/${config.dbOptions.databaseName}`;
     const uniqueEngineName = `${inputName}Engine`;
     let mappingsCode = "";
+    let columnsCode = "";
+
   
+    const selectedColumns = config.mapping
+    .filter(map => map.value !== null && map.value !== undefined && map.input?.value !== null && map.input?.value !== undefined)
+    .map(map => `'${map.value}'`)
+    .join(', ');
+
     if (config.mapping && config.mapping.length > 0) {
       const renameMap = config.mapping
-        .filter(map => map.input && (map.input.value || typeof map.input.value === 'number'))
-        .map(map => {
+      .filter(map => map.input && (map.input.value || typeof map.input.value === 'number'))
+      .map(map => {
+        if(map.input.value != map.value) {
           if (map.input.named) {
-            return `\`${map.input.value}\`: \`${map.key}\``; // Handles named columns
+            return `\'${map.input.value}\': \'${map.value}\'`; // Handles named columns
           } else {
-            return `${map.input.value}: \`${map.key}\``; // Handles numeric index
+            return `${map.input.value}: \'${map.value}\'`; // Handles numeric index
           }
-        })
-        .join(", ");
-  
-      if (renameMap.length > 0) {
+        }
+        return undefined; // Explicitly return undefined for clarity
+      })
+      .filter(value => value !== undefined); // Remove undefined values
+
+      if (renameMap.length > 0 ) {
         mappingsCode = `
-  # Rename columns according to the mapping
-  ${inputName} = ${inputName}.rename(columns={${renameMap}})`;
+# Rename columns based on the mapping
+${inputName} = ${inputName}.rename(columns={${renameMap.join(", ")}})[[${selectedColumns}]]
+`;
+      }
+      
+      if (selectedColumns !== '' && selectedColumns !== undefined) {
+        columnsCode = `
+# Only keep relevant columns
+${inputName} = ${inputName}[[${selectedColumns}]]
+`;  
+      }
     }
-  }
+
+  const ifExistsAction = config.ifTableExists === "fail" ? "fail" : "replace";
 
   const code = `
 # Connect to MySQL and output into table
 ${uniqueEngineName} = sqlalchemy.create_engine('${connectionString}')
-with ${uniqueEngineName}.connect() as conn:
-  ${mappingsCode}
-  ${inputName}.to_sql(
-    name='${config.dbOptions.tableName}',
-    con=conn.connection,
-    if_exists='replace',
-    index=False
-  )
+${mappingsCode}
+${columnsCode}
+${inputName}.to_sql(
+  name='${config.dbOptions.tableName}',
+  con=${uniqueEngineName},
+  if_exists='${ifExistsAction}',
+  index=False
+)
 `;
     return code;
   }
