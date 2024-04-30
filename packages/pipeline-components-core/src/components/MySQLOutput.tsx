@@ -79,6 +79,7 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
         type: "dataMapping",
         label: "Mapping",
         id: "mapping",
+        tooltip: "By default the mapping is inferred from the input data. By specifying a shcema you override the incoming schema.",
         outputType: "relationalDatabase",
         drivers: "mysql+pymysql",
         typeOptions: {
@@ -231,7 +232,7 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
       if (renameMap.length > 0 ) {
         mappingsCode = `
 # Rename columns based on the mapping
-${inputName} = ${inputName}.rename(columns={${renameMap.join(", ")}})[[${selectedColumns}]]
+${inputName} = ${inputName}.rename(columns={${renameMap.join(", ")}})
 `;
       }
       
