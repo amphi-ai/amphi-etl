@@ -15,10 +15,12 @@ export class SQLQuery extends PipelineComponent<ComponentItem>() {
     idPrefix: "component__form",
     fields: [
       {
-        type: "textarea",
+        type: "codeTextarea",
         label: "SQL",
+        mode: "sql",
         id: "query",
         placeholder: "Enter your SQL Query here. Table is named input_df1.",
+        advanced: true
       }
     ],
   };

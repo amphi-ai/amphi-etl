@@ -15,16 +15,20 @@ export class CustomTransformations extends PipelineComponent<ComponentItem>() {
     idPrefix: "component__form",
     fields: [
       {
-        type: "textarea",
-        label: "Code",
-        id: "code",
-        placeholder: "output = input",
-      },
-      {
-        type: "textarea",
+        type: "codeTextarea",
         label: "Imports",
         id: "import",
-        placeholder: "import library",
+        placeholder: "import pandas as pd",
+        height: '50px',
+        advanced: true
+      },
+      {
+        type: "codeTextarea",
+        label: "Code",
+        id: "code",
+        mode: "python",
+        height: '300px',
+        placeholder: "output = input",
         advanced: true
       }
     ],

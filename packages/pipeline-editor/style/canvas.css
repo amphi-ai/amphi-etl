@@ -80,6 +80,8 @@ Editor components styles
   margin-top: 5px;
 }
 
+
+
 /*
 Components palette sidebar
 */
@@ -117,7 +119,15 @@ Components palette sidebar
    @apply fixed top-0 right-0 h-full w-[220px] z-10 overflow-auto
   }
 }
-  
+
+.palette .palette-component-category {
+  font-weight: bold;
+}
+
+.palette .ant-tree-indent-unit {
+  width: 8px;
+}
+
 /*
 Edges 
 */

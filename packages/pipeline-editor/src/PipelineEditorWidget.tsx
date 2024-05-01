@@ -28,9 +28,6 @@ import ReactFlow, {
 
 import { Tree } from 'antd';
 import type { GetProps, TreeDataNode } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
-
-type DirectoryTreeProps = GetProps<typeof Tree.DirectoryTree>;
 
 const { DirectoryTree } = Tree;
 
@@ -371,12 +368,13 @@ const PipelineWrapper: React.FC<IProps> = ({
 
 
     const treeData = Object.keys(categorizedComponents).map((category, index) => ({
-      title: category.charAt(0).toUpperCase() + category.slice(1),
+      title: <span className="palette-component-category">{category.charAt(0).toUpperCase() + category.slice(1)}</span>,
       key: `${index}`,
       children: categorizedComponents[category].map((component, childIndex) => ({
           title: (
             <span
               draggable
+              className="palette-component"
               onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
             >
               {component._name}

@@ -1088,6 +1088,14 @@ Components palette sidebar
   }
 }
 
+.palette .palette-component-category {
+  font-weight: bold;
+}
+
+.palette .ant-tree-indent-unit {
+  width: 8px;
+}
+
 /*
 Edges 
 */

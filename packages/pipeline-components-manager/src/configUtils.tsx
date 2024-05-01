@@ -22,6 +22,7 @@ import KeyValueColumnsSelect from './forms/keyValueColumnsSelect';
 import TransferData from './forms/transferData';
 import TextareaRegular from './forms/TextareaRegular';
 import DataMapping from './forms/dataMapping';
+import CodeTextarea from './forms/CodeTextarea';
 
 export const setDefaultConfig = ({
   nodeId,
@@ -292,6 +293,14 @@ export const generateUIInputs = ({
                 />        
               </Form.Item>
             );
+            case "codeTextarea":
+              return (
+                <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                  <CodeTextarea
+                    field={field} value={value} handleChange={handleChange} advanced={advanced} rows={field.rows}
+                  />        
+                </Form.Item>
+              );
           case "boolean":
             return (
               <Form.Item
@@ -476,7 +485,7 @@ export interface Option {
 }
 
 export interface FieldDescriptor {
-  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'select' | 'textarea' | 'radio' | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'dataMapping';
+  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'select' | 'textarea' | 'codeTextarea' | 'radio' | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'dataMapping';
   label: string;
   id: string;
   placeholder?: any;
@@ -490,6 +499,7 @@ export interface FieldDescriptor {
   inputNb?: number;
   min?: number;
   max?: number;
+  height?: number;
   rows?: number;
   outputType?: string;
   drivers?: string;
