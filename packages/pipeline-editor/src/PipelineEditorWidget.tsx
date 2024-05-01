@@ -354,23 +354,39 @@ const PipelineWrapper: React.FC<IProps> = ({
       event.dataTransfer.effectAllowed = 'move';
     };
 
-    const categorizedComponents = {
-      input: [],
-      transform: [],
-      output: []
-      // other: []
-    };
 
-    componentService.getComponents().forEach(component => {
-      const category = categorizedComponents[component._category] || categorizedComponents['other'];
-      category.push(component);
-    });
+  // Simulating componentService.getComponents()
+  const components = componentService.getComponents();
 
+  // Categorizing components with potential subcategories
+  const categorizedComponents: Record<string, Record<string, any[]>> = {};
 
-    const treeData = Object.keys(categorizedComponents).map((category, index) => ({
-      title: <span className="palette-component-category">{category.charAt(0).toUpperCase() + category.slice(1)}</span>,
-      key: `${index}`,
-      children: categorizedComponents[category].map((component, childIndex) => ({
+  components.forEach(component => {
+    let [category, subcategory] = component._category.split('.');
+    if (!categorizedComponents[category]) {
+      categorizedComponents[category] = {};
+    }
+    if (subcategory) {
+      if (!categorizedComponents[category][subcategory]) {
+        categorizedComponents[category][subcategory] = [];
+      }
+      categorizedComponents[category][subcategory].push(component);
+    } else {
+      if (!categorizedComponents[category]['_']) {  // Maintain a simple placeholder for main categories without explicit subcategories
+        categorizedComponents[category]['_'] = [];
+      }
+      categorizedComponents[category]['_'].push(component);
+    }
+  });
+
+  // Transforming categorized components into tree data structure
+  const treeData = Object.keys(categorizedComponents).map((category, index) => {
+    const subCategories = Object.keys(categorizedComponents[category]);
+    let children = [];
+
+    subCategories.forEach((subCat, subIndex) => {
+      if (subCat === '_') {  // Handling main category direct children
+        children.push(...categorizedComponents[category][subCat].map((component, childIndex) => ({
           title: (
             <span
               draggable
@@ -380,11 +396,43 @@ const PipelineWrapper: React.FC<IProps> = ({
               {component._name}
             </span>
           ),
-          key: `${index}-${childIndex}`,
+          key: `category-${index}-item-${childIndex}`,
           isLeaf: true,
           icon: <component._icon.react height="14px" width="14px;"/>
-      }))
-  }));
+        })));
+      } else {  // Handling subcategories
+        children.push({
+          title: <span className="palette-component-category">{subCat.charAt(0).toUpperCase() + subCat.slice(1)}</span>,
+          key: `category-${index}-sub-${subIndex}`,
+          children: categorizedComponents[category][subCat].map((component, childIndex) => ({
+            title: (
+              <span
+                draggable
+                className="palette-component"
+                onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')
+              }>
+                {component._name}
+              </span>
+            ),
+            key: `category-${index}-sub-${subIndex}-item-${childIndex}`,
+            isLeaf: true,
+            icon: <component._icon.react height="14px" width="14px;"/>
+          }))
+        });
+      }
+    });
+
+    return {
+      title: <span className="palette-component-category">{category.charAt(0).toUpperCase() + category.slice(1)}</span>,
+      key: `category-${index}`,
+      children: children
+    };
+  });
+
+  // Output tree data (for debugging, you might want to console.log or use it directly in your components)
+  console.log(treeData);
+
+
 
     return (
 

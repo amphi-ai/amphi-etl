@@ -8,7 +8,7 @@ export class RestInput extends PipelineComponent<ComponentItem>() {
   public _name = "REST Input";
   public _id = "restInput";
   public _type = "pandas_df_input";
-  public _category = "input";
+  public _category = "input.API";
   public _icon = apiIcon;
   public _default = { method: "GET", headers: [] };
   public _form = {
