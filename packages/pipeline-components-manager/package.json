@@ -60,6 +60,7 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.2.0",
     "react-flow-renderer": "^10.3.17",
+    "react-mentions": "^4.4.10",
     "react-select": "^5.8.0",
     "styled-components": "^6.1.8"
   },
