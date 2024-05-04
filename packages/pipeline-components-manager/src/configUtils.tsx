@@ -19,12 +19,10 @@ import SelectColumn from './forms/selectColumn';
 import KeyValueColumns from './forms/keyValueColumns';
 import KeyValueColumnsSelect from './forms/keyValueColumnsSelect';
 
-
 import TransferData from './forms/transferData';
 import TextareaRegular from './forms/TextareaRegular';
 import DataMapping from './forms/dataMapping';
 import CodeTextarea from './forms/CodeTextarea';
-import InputPassword from './forms/InputPassword';
 
 export const setDefaultConfig = ({
   nodeId,
@@ -184,8 +182,6 @@ export const generateUIInputs = ({
           }
         }
 
-        let rdm = '';
-
         const validateInput = (value: any) => {
           if (field.validation) { // Check if field.validation exists
             const pattern = new RegExp(field.validation, "i"); // Creates the regex
@@ -201,23 +197,17 @@ export const generateUIInputs = ({
           validateInput(value);
         }, [value]); // Dependency array ensures this effect runs whenever 'value' changes
 
+        console.log(field.id + "vallue? "+ value);
+
         switch (field.type) {
           case "input":
             return (
               <Form.Item style={{ marginTop: "5px", padding: "0 0 2px" }} label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
                 <InputRegular
-                  field={field} value={value} handleChange={handleChange} advanced={advanced}
+                  field={field} value={value} handleChange={handleChange} context={context} advanced={advanced}
                 />
               </Form.Item>
             );
-            case "password":
-              return (
-                <Form.Item style={{ marginTop: "5px", padding: "0 0 2px" }} label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <InputPassword
-                  field={field} value={value} handleChange={handleChange} advanced={advanced}
-                />
-                </Form.Item>
-              );
             case "radio":
               return (
                 <Form.Item label={field.label} className="nodrag"  {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
@@ -295,7 +285,6 @@ export const generateUIInputs = ({
               </Form.Item>
             );
           case "textarea":
-            const { TextArea } = Input;
             return (
               <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
                 <TextareaRegular
@@ -384,7 +373,6 @@ export const generateUIInputs = ({
                   <DataMapping data={data} field={field} handleChange={handleChange} defaultValue={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
                 </Form.Item>
               );
-
           default:
             return null;
         }
@@ -495,7 +483,7 @@ export interface Option {
 }
 
 export interface FieldDescriptor {
-  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio' | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'dataMapping';
+  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio' | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'dataMapping' | 'editableTable';
   label: string;
   id: string;
   placeholder?: any;
@@ -514,6 +502,7 @@ export interface FieldDescriptor {
   outputType?: string;
   drivers?: string;
   typeOptions?: any;
+  inputType?: 'password';
 }
 
 interface ConfigModalProps {

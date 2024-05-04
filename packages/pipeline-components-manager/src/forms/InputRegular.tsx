@@ -1,10 +1,14 @@
 import { FieldDescriptor, Option } from '../configUtils';
 import React, { useState, useEffect, useRef } from 'react';
-import { UserOutlined } from '@ant-design/icons';
+import { UserOutlined, CloseOutlined, EyeInvisibleOutlined, EyeTwoTone, SearchOutlined, SettingOutlined } from '@ant-design/icons';
 import { AutoComplete, Input } from 'antd';
+import { PipelineService } from '../PipelineService';
 
 
-export const InputRegular = ({ field, value, handleChange, advanced }) => {
+export const InputRegular = ({ field, value, handleChange, context, advanced }) => {
+
+  console.log("Value in inputregular %o", value)
+
   const [inputValue, setInputValue] = useState(value);
   const inputRef = useRef(null);
   const [openValue, setOpenValue] = useState(false);
@@ -13,33 +17,21 @@ export const InputRegular = ({ field, value, handleChange, advanced }) => {
     setInputValue(value);  // Update inputValue when value prop changes
   }, [value]);
 
-  const handleInputChange = (e) => {
-    const newValue = e.target.value;
-    const cursorPosition = e.target.selectionStart;  // Save the cursor position
+  const handleInputChange = (value) => {
+    const newValue = value;
+    console.log("newValue %o", newValue)
     setInputValue(newValue);
     handleChange(newValue, field.id);
-
-    // Reset cursor position after the state updates
-    setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.selectionStart = cursorPosition;
-        inputRef.current.selectionEnd = cursorPosition;
-      }
-    }, 0);
   };
 
   const filterOptions = (inputValue: string, option: any) => {
-    setOpenValue(false);
-    return false;
-    /*
-    if(inputValue.startsWith('env.')) {
+    if(inputValue.startsWith('$')) {
       setOpenValue(true);
       return true;
     } else {
       setOpenValue(false);
       return false;
     }
-    */
   };
 
   const renderTitle = (title: string) => (
@@ -65,29 +57,39 @@ export const InputRegular = ({ field, value, handleChange, advanced }) => {
   const options = [
     {
       label: renderTitle('Environment Variables'),
-      options: [renderItem('AntDesign')],
+      options: PipelineService.getEnvironmentVariables(context.model.toString()).map(variable => renderItem(variable.name)),
     }
   ];
 
   return (
     <AutoComplete
+      ref={inputRef}
+      id={field.id}
+      placeholder={field.placeholder}
       popupClassName="certain-category-search-dropdown"
       options={options}
       filterOption={filterOptions}
       size={advanced ? "middle" : "small"}
       open={openValue}
-      >
-      <Input
-        ref={inputRef}
-        size={advanced ? "middle" : "small"}
-        id={field.id}
-        name={field.id}
-        placeholder={field.placeholder}
-        onChange={handleInputChange}
-        value={inputValue}
-      />
-  </AutoComplete>
+      defaultOpen={false}
+      value={inputValue}
+      onChange={handleInputChange}
+    >
+      {field.inputType === 'password' && (
+        <Input.Password
+          ref={inputRef}
+          id={field.id}
+          size={advanced ? "middle" : "small"}
+          name={field.id}
+          placeholder={field.placeholder}
+          value={inputValue}
+          autoComplete="off"
+          iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
+        />
+      )}
+    </AutoComplete>
   );
+
   }
 
 export default InputRegular;

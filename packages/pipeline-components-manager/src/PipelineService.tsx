@@ -215,6 +215,18 @@ export class PipelineService {
   }
 
 
+  static getEnvironmentVariables(pipelineJson: string): any[] {
+    const flow = PipelineService.filterPipeline(pipelineJson);
+    console.log("flownodes %o", flow.nodes);
+    const envVariablesNodes = flow.nodes.filter(node => node.type === 'envVariables');
+
+    const variablesList = envVariablesNodes.reduce((acc, node) => {
+      return acc.concat(node.data.variables || []);
+    }, []);
+  
+    return variablesList;
+  }
+
 }
 
 export interface Node {

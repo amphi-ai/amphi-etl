@@ -11,6 +11,8 @@ import playIconSvgStr from '../style/icons/play-16.svg';
 import playCircleIconSvgStr from '../style/icons/play-circle-16.svg';
 import warningIconSvgStr from '../style/icons/alert-triangle-fill-16.svg';
 
+
+
 export const trashIcon = new LabIcon({
   name: 'amphi:trash-icon',
   svgstr: trashIconSvgStr

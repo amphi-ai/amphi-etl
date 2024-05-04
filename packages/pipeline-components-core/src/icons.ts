@@ -24,7 +24,7 @@ import mergeIconSvgStr from '../style/icons/git-merge-24.svg';
 import crosshairIconSvgStr from '../style/icons/crosshair-24.svg';
 import randomIconSvgStr from '../style/icons/random-24.svg';
 import openAiSvgStr from '../style/icons/openai.svg';
-
+import settingsIconSvgStr from '../style/icons/settings-16.svg';
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -146,6 +146,10 @@ export const openAiIcon = new LabIcon({
   svgstr: openAiSvgStr
 });
 
+export const settingsIcon = new LabIcon({
+  name: 'amphi:settings-config-icon',
+  svgstr: settingsIconSvgStr
+});
 
 
 

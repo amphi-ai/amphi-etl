@@ -48,7 +48,8 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
         advanced: true
       },
       {
-        type: "password",
+        type: "input",
+        inputType: "password",
         label: "Password",
         id: "dbOptions.password",
         placeholder: "Enter password",
