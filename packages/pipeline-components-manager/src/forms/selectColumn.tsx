@@ -107,7 +107,8 @@ export const SelectColumn: React.FC<SelectColumnsProps> = ({
               setItems,
               setLoadings,
               nodeId,
-              inputNb
+              inputNb,
+              true
             )}
             loading={loadings}>
               Retrieve columns

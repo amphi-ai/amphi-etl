@@ -103,7 +103,8 @@ export const KeyValueColumnsSelect: React.FC<KeyValueFormProps> = ({ field, hand
           setItems,
           setLoadings, 
           nodeId,
-          0
+          0,
+          true
         )} 
         loading={loadings}>Retrieve columns
       </Button>

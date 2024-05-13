@@ -197,8 +197,6 @@ export const generateUIInputs = ({
           validateInput(value);
         }, [value]); // Dependency array ensures this effect runs whenever 'value' changes
 
-        console.log(field.id + "vallue? "+ value);
-
         switch (field.type) {
           case "input":
             return (

@@ -15,18 +15,20 @@ export class RequestService {
     setItems: any,
     setLoadings: any,
     nodeId: any,
-    inputNb: number
+    inputNb: number,
+    previousNodes: boolean
     ): any {
     setLoadings(true);
     const flow = PipelineService.filterPipeline(context.model.toString());
     let code: string = '';
 
     try {
+        let refNodeId = previousNodes ? PipelineService.findMultiplePreviousNodeIds(flow, nodeId)[inputNb] : nodeId;
         code = CodeGenerator.generateCodeUntil(
             context.model.toString(),
             commands,
             componentService,
-            PipelineService.findMultiplePreviousNodeIds(flow, nodeId)[inputNb],
+            refNodeId,
             context
         );
     } catch (error) {

@@ -101,7 +101,8 @@ export const KeyValueColumns: React.FC<KeyValueFormProps> = ({ field, handleChan
           setItems,
           setLoadings, 
           nodeId,
-          0
+          0,
+          true
         )} 
         loading={loadings}>Retrieve columns
       </Button>

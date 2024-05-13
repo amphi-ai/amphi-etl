@@ -18,18 +18,32 @@ export const InputRegular = ({ field, value, handleChange, context, advanced }) 
   }, [value]);
 
   const handleInputChange = (value) => {
-    const newValue = value;
-    console.log("newValue %o", newValue)
-    setInputValue(newValue);
-    handleChange(newValue, field.id);
+    setInputValue(value);
+    handleChange(value, field.id);
+  };
+
+  const handleSelect = (value, option) => {
+    const newValue = `{os.environment['${value}']}`;
+    handleInputChange(newValue);
   };
 
   const filterOptions = (inputValue: string, option: any) => {
-    if(inputValue.startsWith('$')) {
+    if (!option || option.value === undefined) {
+      console.error("Option or option.value is undefined:", option);
+      return false;
+    }
+  
+    if (inputValue.endsWith('{')) {
       setOpenValue(true);
       return true;
     } else {
       setOpenValue(false);
+      const lastDollarIndex = inputValue.lastIndexOf('{');
+      if (lastDollarIndex !== -1 && lastDollarIndex < inputValue.length - 1) {
+        const searchTerm = inputValue.substring(lastDollarIndex + 1);
+        console.log("Option: %o", option);
+        return option.value.startsWith(searchTerm);
+      }
       return false;
     }
   };
@@ -61,6 +75,8 @@ export const InputRegular = ({ field, value, handleChange, context, advanced }) 
     }
   ];
 
+
+
   return (
     <AutoComplete
       ref={inputRef}
@@ -74,6 +90,7 @@ export const InputRegular = ({ field, value, handleChange, context, advanced }) 
       defaultOpen={false}
       value={inputValue}
       onChange={handleInputChange}
+      onSelect={handleSelect}
     >
       {field.inputType === 'password' && (
         <Input.Password

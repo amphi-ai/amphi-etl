@@ -259,7 +259,8 @@ export const TransferData: React.FC<TransferDataProps> = ({
           setItems,
           setLoadings,
           nodeId,
-          0
+          0,
+          true
         )}
         loading={loadings}>
           Retrieve columns

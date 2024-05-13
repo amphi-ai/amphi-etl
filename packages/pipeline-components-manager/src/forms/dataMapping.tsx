@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import type { GetRef, InputRef } from 'antd';
 import {  Form, Table, ConfigProvider, Divider, Input, Select, Space, Button, Tag, Empty, Popconfirm } from 'antd';
-import { DeleteOutlined } from '@ant-design/icons';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
 
 import { CodeGenerator } from '../CodeGenerator';
 import { PipelineService } from '../PipelineService';
@@ -126,7 +126,8 @@ export const DataMapping: React.FC<DataMappingProps> = ({
                         setItems,
                         setLoadingsInput,
                         nodeId,
-                        0
+                        0,
+                        true
                       );
                     }}
                     loading={loadingsInput}>
@@ -162,7 +163,8 @@ export const DataMapping: React.FC<DataMappingProps> = ({
   type ColumnTypes = Exclude<EditableTableProps['columns'], undefined>;
   
   const [dataSource, setDataSource] = useState<DataType[]>(defaultValue || []);
-    
+  
+
     useEffect(() => {
       console.log("datasource %o", dataSource)
       handleChange(dataSource, field.id);
@@ -265,23 +267,31 @@ export const DataMapping: React.FC<DataMappingProps> = ({
   return (
     <>
     <div>
-      <Button type="primary" size="small" style={{ marginBottom: 16 }} onClick={(event) => {
-          setDataSource([]);
-          RequestService.retrieveTableColumns(
-            event,
-            `${field.drivers}://${data.dbOptions.username}:${data.dbOptions.password}@${data.dbOptions.host}:${data.dbOptions.port}/${data.dbOptions.databaseName}`,
-            `${data.dbOptions.tableName}`,
-            `DESCRIBE ${data.dbOptions.tableName}`,
-            context,
-            commands,
-            componentService,
-            setDataSource,
-            setLoadingsOutput,
-            nodeId
-          )}}
-          loading={loadingsOutput}>
-          Retrieve schema
-        </Button>
+      {field.outputType === 'relationalDatabase' ? (
+          <Button
+            type="primary"
+            size="small"
+            style={{ marginBottom: 16 }}
+            onClick={(event) => {
+              setDataSource([]);
+              RequestService.retrieveTableColumns(
+                event,
+                `${field.drivers}://${data.dbOptions.username}:${data.dbOptions.password}@${data.dbOptions.host}:${data.dbOptions.port}/${data.dbOptions.databaseName}`,
+                `${data.dbOptions.tableName}`,
+                `DESCRIBE ${data.dbOptions.tableName}`,
+                context,
+                commands,
+                componentService,
+                setDataSource,
+                setLoadingsOutput,
+                nodeId
+              );
+            }}
+            loading={loadingsOutput}
+          >
+            Retrieve schema
+          </Button>
+        ) : null}
       <Table
         components={components}
         rowClassName={() => 'editable-row'}
@@ -324,7 +334,11 @@ interface FieldValueProps {
 const FieldValueInput: React.FC<FieldValueProps> = ({ field, value = {}, onChange }) => {
   const [name, setName] = useState<string>('');
   const [type, setType] = useState<string>('');
-  const { Option } = Select;
+  const [nameType, setNameType] = useState('');
+  const inputRef = useRef<InputRef>(null);
+  const [items, setItems] = useState(field.typeOptions);
+
+  console.log("items %o", items);
 
   const triggerChange = (changedValue: { name?: string; type?: string }) => {
     onChange?.({ name, type, ...value, ...changedValue });
@@ -341,6 +355,19 @@ const FieldValueInput: React.FC<FieldValueProps> = ({ field, value = {}, onChang
     triggerChange({ type: newType });
   };
 
+  const onNameTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNameType(event.target.value);
+  };
+
+  const addItem = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
+    e.preventDefault();
+    setItems([...items, { value: name, label: name}]);
+    setName('');
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+  };
+
 
   return (
     <span>
@@ -349,22 +376,35 @@ const FieldValueInput: React.FC<FieldValueProps> = ({ field, value = {}, onChang
         value={name}
         placeholder='Field name'
         onChange={onNameChange}
-        style={{ width: 130 }}
+        style={{ width: 150 }}
       />
-      <Select
-        value={type}
-        placeholder='Select type'
-        style={{ width: 120, margin: '0 8px' }}
-        onChange={onTypeChange}
-      >
-        {Object.entries(field.typeOptions).map(([key, value]) => (
-          <Option key={key} value={value}>{value as string}</Option>
-        ))}
-      </Select>
+        <Select
+      value={type}
+      style={{ width: 220, margin: '0 8px' }}
+      className="nodrag"
+      onChange={onTypeChange}
+      dropdownRender={(menu: any) => (
+        <>
+          {menu}
+          <Divider style={{ margin: '8px 0' }} />
+          <Space style={{ padding: '0 8px 4px' }}>
+            <Input
+              placeholder="Custom"
+              ref={inputRef}
+              value={nameType}
+              onChange={onNameTypeChange}
+              onKeyDown={(e: any) => e.stopPropagation()}
+            />
+            <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
+              Add type
+            </Button>
+          </Space>
+        </>
+      )}
+      options={items.map((item: Option) => ({ label: item.value, value: item.value }))}
+      />
     </span>
   );
 };
-
-
 
 export default DataMapping;
