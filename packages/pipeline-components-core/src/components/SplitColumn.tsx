@@ -150,22 +150,22 @@ export class SplitColumn extends PipelineComponent<ComponentItem>() {
     let code = `\n# Create a new DataFrame from the split operation\n`;
   
     // Handling column access based on whether it's named or indexed
-    const columnAccess = columnNamed ? `'${columnName}'` : `${columnName}`;
+    const columnAccess = columnNamed ? `"${columnName}"` : columnName;
   
     // Convert column to string if it's not already
-    if (columnType !== 'string') {
-      code += `${inputName}[${columnAccess}] = ${inputName}[${columnAccess}].astype('string')\n`;
+    if (columnType !== "string") {
+      code += `${inputName}[${columnAccess}] = ${inputName}[${columnAccess}].astype("string")\n`;
     }
   
     // Split operation
-    code += `${uniqueSplitVar} = ${inputName}[${columnAccess}].str.split('${config.delimiter}', expand=True)\n`;
+    code += `${uniqueSplitVar} = ${inputName}[${columnAccess}].str.split("${config.delimiter}", expand=True)\n`;
   
     // Rename the new columns to avoid any potential overlap
-    code += `${uniqueSplitVar}.columns  = [f'${columnName}_{i}' for i in range(${uniqueSplitVar}.shape[1])]\n`;
-
+    code += `${uniqueSplitVar}.columns  = [f"${columnName}_{i}" for i in range(${uniqueSplitVar}.shape[1])]\n`;
+  
     // Combine the original DataFrame with the new columns
-      code += `${outputName} = pd.concat([${inputName}, ${uniqueSplitVar}], axis=1)\n`;
-
+    code += `${outputName} = pd.concat([${inputName}, ${uniqueSplitVar}], axis=1)\n`;
+  
     // Check if the original column should be kept
     if (!config.keepOriginalColumn) {
       code += `\n# Remove the original column used for split\n`;
@@ -176,5 +176,6 @@ export class SplitColumn extends PipelineComponent<ComponentItem>() {
   
     return code;
   }
+  
 
 }

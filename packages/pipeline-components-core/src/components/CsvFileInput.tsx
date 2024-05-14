@@ -202,7 +202,7 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
             } else if (key === 'names') {
                 return `${key}=${value}`; // Directly use the formatted names list
             } else if (typeof value === 'string' && value !== 'None') {
-                return `${key}='${value}'`; // Handle strings with quotes, except for 'None'
+                return `${key}="${value}"`; // Handle strings with quotes, except for 'None'
             } else {
                 return `${key}=${value}`; // Handle numbers and Python's None without quotes
             }
@@ -212,7 +212,7 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
     // Generate the Python code
     const code = `
 # Reading data from ${config.filePath}
-${outputName} = pd.read_csv('${config.filePath}'${optionsString ? `, ${optionsString}` : ''}).convert_dtypes()
+${outputName} = pd.read_csv("${config.filePath}"${optionsString ? `, ${optionsString}` : ''}).convert_dtypes()
 `;
     return code;
 }

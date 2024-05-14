@@ -215,20 +215,20 @@ def generate_gpt_response(
 # Set the OpenAI API key for authentication
 ${outputName}_client = OpenAI(
   # This is the default and can be omitted
-  api_key='${config.token}'
+  api_key="${config.token}"
 )
 
-# Open AI request parameters
+# OpenAI request parameters
 ${outputName}_user_prompt = "${config.prompt}"
 ${outputName}_system_prompt = "${config.systemPrompt}"
-${outputName}_model="${config.model}"  # Model to use for generating responses
+${outputName}_model = "${config.model}"  # Model to use for generating responses
 ${outputName}_max_tokens = ${config.maxToken}  # Maximum number of tokens for the generated response
 ${outputName}_temperature = ${config.temperature}  # Response variability based on the specified temperature
 
 # Apply the function to generate output for each row
 ${inputName}['gpt_${outputName}'] = ${inputName}.apply(lambda row: generate_gpt_response(
   row, 
-  ['${columnNames.join("', '")}'], 
+  ["${columnNames.join('", "')}"], 
   ${outputName}_client,
   ${outputName}_user_prompt,
   ${outputName}_system_prompt, 
@@ -238,7 +238,7 @@ ${inputName}['gpt_${outputName}'] = ${inputName}.apply(lambda row: generate_gpt_
 ), axis=1)
 ${outputName} = ${inputName}  # Set the modified DataFrame to the output variable
 `;
-  
     return code;
   }
+  
 }

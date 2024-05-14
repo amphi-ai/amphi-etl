@@ -208,58 +208,57 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
     const uniqueEngineName = `${inputName}Engine`;
     let mappingsCode = "";
     let columnsCode = "";
-
   
     const selectedColumns = config.mapping
-    .filter(map => map.value !== null && map.value !== undefined && map.input?.value !== null && map.input?.value !== undefined)
-    .map(map => `'${map.value}'`)
-    .join(', ');
-
+      .filter(map => map.value !== null && map.value !== undefined && map.input?.value !== null && map.input?.value !== undefined)
+      .map(map => `"${map.value}"`)
+      .join(', ');
+  
     if (config.mapping && config.mapping.length > 0) {
       const renameMap = config.mapping
-      .filter(map => map.input && (map.input.value || typeof map.input.value === 'number'))
-      .map(map => {
-        if(map.input.value != map.value) {
-          if (map.input.named) {
-            return `\'${map.input.value}\': \'${map.value}\'`; // Handles named columns
-          } else {
-            return `${map.input.value}: \'${map.value}\'`; // Handles numeric index
+        .filter(map => map.input && (map.input.value || typeof map.input.value === 'number'))
+        .map(map => {
+          if (map.input.value != map.value) {
+            if (map.input.named) {
+              return `"${map.input.value}": "${map.value}"`; // Handles named columns
+            } else {
+              return `${map.input.value}: "${map.value}"`; // Handles numeric index
+            }
           }
-        }
-        return undefined; // Explicitly return undefined for clarity
-      })
-      .filter(value => value !== undefined); // Remove undefined values
-
-      if (renameMap.length > 0 ) {
+          return undefined; // Explicitly return undefined for clarity
+        })
+        .filter(value => value !== undefined); // Remove undefined values
+  
+      if (renameMap.length > 0) {
         mappingsCode = `
 # Rename columns based on the mapping
 ${inputName} = ${inputName}.rename(columns={${renameMap.join(", ")}})
 `;
-      }
-      
-      if (selectedColumns !== '' && selectedColumns !== undefined) {
-        columnsCode = `
+    }
+
+    if (selectedColumns !== '' && selectedColumns !== undefined) {
+      columnsCode = `
 # Only keep relevant columns
 ${inputName} = ${inputName}[[${selectedColumns}]]
-`;  
-      }
+`;
     }
+  }
 
   const ifExistsAction = config.ifTableExists === "fail" ? "fail" : "replace";
 
   const code = `
 # Connect to MySQL and output into table
-${uniqueEngineName} = sqlalchemy.create_engine('${connectionString}')
-${mappingsCode}
-${columnsCode}
+${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
+${mappingsCode}${columnsCode}
 ${inputName}.to_sql(
-  name='${config.dbOptions.tableName}',
+  name="${config.dbOptions.tableName}",
   con=${uniqueEngineName},
-  if_exists='${ifExistsAction}',
+  if_exists="${ifExistsAction}",
   index=False
 )
 `;
     return code;
   }
+  
 
 }

@@ -123,8 +123,9 @@ export class ExpandList extends PipelineComponent<ComponentItem>() {
     // Start generating the code string
     let code = `# Expand the list in the specified column\n`;
     code += `import pandas as pd\n`; // Ensure pandas is imported
-    code += `${outputName} = ${inputName}['${config.column.value}'].apply(pd.Series)\n`;
+    code += `${outputName} = ${inputName}["${config.column.value}"].apply(pd.Series)\n`;
 
     return code;
   }
+
 }

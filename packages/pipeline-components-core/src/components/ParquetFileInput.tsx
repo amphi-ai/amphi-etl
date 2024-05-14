@@ -126,7 +126,7 @@ export class ParquetFileInput extends PipelineComponent<ComponentItem>() {
     // Generate the Python code
     const code = `
 # Reading data from ${config.filePath}
-${outputName} = pd.read_parquet('${config.filePath}').convert_dtypes()
+${outputName} = pd.read_parquet("${config.filePath}").convert_dtypes()
 `;
     return code;
   }

@@ -133,12 +133,13 @@ export class Deduplicate extends PipelineComponent<ComponentItem>() {
   public generateComponentCode({ config, inputName, outputName }): string {
     // Initializing code string
     let code = `# Deduplicate\n`;
-    const columns = config.subset.length > 0 ? `subset=[${config.subset.map(column => column.named ? `'${column.value.trim()}'` : column.value).join(', ')}]` : '';
-    const keep = typeof config.keep === 'boolean' ? (config.keep ? `'first'` : '') : `'${config.keep}'`;
-  
+    const columns = config.subset.length > 0 ? `subset=[${config.subset.map(column => column.named ? `"${column.value.trim()}"` : column.value).join(', ')}]` : '';
+    const keep = typeof config.keep === 'boolean' ? (config.keep ? `"first"` : '') : `"${config.keep}"`;
+
     // Generating the Python code for deduplication
     code += `${outputName} = ${inputName}.drop_duplicates(${columns}${keep ? `, keep=${keep}` : ''})\n`;
-  
+
     return code;
   }
+
 }

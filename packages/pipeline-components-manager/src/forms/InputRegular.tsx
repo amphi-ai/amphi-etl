@@ -23,7 +23,7 @@ export const InputRegular = ({ field, value, handleChange, context, advanced }) 
   };
 
   const handleSelect = (value, option) => {
-    const newValue = `{os.environment['${value}']}`;
+    const newValue = `{os.environ['${value}']}`;
     handleInputChange(newValue);
   };
 

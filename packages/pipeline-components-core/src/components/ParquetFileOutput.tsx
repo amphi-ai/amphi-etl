@@ -139,14 +139,14 @@ export class ParquetFileOutput extends PipelineComponent<ComponentItem>() {
 
     let optionsString = Object.entries(config.parquetOptions || {})
       .filter(([key, value]) => value !== null && value !== '')
-      .map(([key, value]) => `${key}='${value}'`)
+      .map(([key, value]) => `${key}="${value}"`)
       .join(', ');
 
     // Add comma only if optionsString is not empty
     optionsString = optionsString ? `, ${optionsString}` : '';
 
     const code = `
-${inputName}.to_parquet('${config.filePath}'${optionsString})
+${inputName}.to_parquet("${config.filePath}"${optionsString})
 `;
     return code;
   }

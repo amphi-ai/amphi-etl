@@ -146,10 +146,10 @@ export class Join extends PipelineComponent<ComponentItem>() {
     const { value: rightKeyColumnValue, type: rightKeyColumnType, named: rightKeyColumnNamed } = config.rightKeyColumn;
 
     // Modify to handle non-named (numeric index) columns by removing quotes
-    const leftKey = leftKeyColumnNamed ? `'${leftKeyColumnValue}'` : leftKeyColumnValue;
-    const rightKey = rightKeyColumnNamed ? `'${rightKeyColumnValue}'` : rightKeyColumnValue;
+    const leftKey = leftKeyColumnNamed ? `"${leftKeyColumnValue}"` : leftKeyColumnValue;
+    const rightKey = rightKeyColumnNamed ? `"${rightKeyColumnValue}"` : rightKeyColumnValue;
 
-    const joinType = config.how ? `, how='${config.how}'` : '';
+    const joinType = config.how ? `, how="${config.how}"` : '';
     const code = `
 # Join ${inputName1} and ${inputName2}
 ${outputName} = pd.merge(${inputName1}, ${inputName2}, left_on=${leftKey}, right_on=${rightKey}${joinType})

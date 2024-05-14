@@ -153,23 +153,23 @@ export class Filter extends PipelineComponent<ComponentItem>() {
     return ["import pandas as pd"];
   }
 
-  public generateComponentCode({config, inputName, outputName}): string {
+  public generateComponentCode({ config, inputName, outputName }: { config: any; inputName: string; outputName: string }): string {
     const columnName = config.column.value;
     const columnType = config.column.type;
     const columnIsNamed = config.column.named;
     const condition = config.condition;
     const conditionValue = config.conditionValue;
-    const enforceString = config.enforceString; // Correct naming to reflect enforcing string type usage
+    const enforceString = config.enforceString;
 
     let formattedConditionValue: string;
     switch (columnType) {
         case 'string':
         case 'Object':
         case 'category':
-            formattedConditionValue = `'${conditionValue.toString().replace(/'/g, "\\'")}'`;
+            formattedConditionValue = `${conditionValue.toString().replace(/"/g, '\\"')}`;
             break;
         case 'datetime64':
-            formattedConditionValue = `'${new Date(conditionValue).toISOString()}'`;
+            formattedConditionValue = `${new Date(conditionValue).toISOString()}`;
             break;
         case 'bool':
             formattedConditionValue = conditionValue.toString().toLowerCase();
@@ -178,43 +178,54 @@ export class Filter extends PipelineComponent<ComponentItem>() {
             formattedConditionValue = `pd.to_timedelta(${conditionValue}, unit='ms')`;
             break;
         case 'period':
-            formattedConditionValue = `'P${conditionValue.toString()}'`;
+            formattedConditionValue = `P${conditionValue.toString()}`;
             break;
         default:
             formattedConditionValue = !isNaN(Number(conditionValue)) ? conditionValue.toString() : `'${conditionValue.toString()}'`;
             break;
     }
 
+    let code = `
+# Filter rows based on condition
+`;
+
     let queryExpression: string;
     switch (condition) {
         case "==":
         case "!=":
-            queryExpression = columnIsNamed ? `\`${columnName}\` ${condition} ${formattedConditionValue}` : `${columnName} ${condition} ${formattedConditionValue}`;
+            queryExpression = `${columnName} ${condition} '${formattedConditionValue}'`;
+            code += `${outputName} = ${inputName}.query("${queryExpression}")`;
             break;
         case "contains":
         case "not contains":
+            if (['string', 'Object', 'category'].includes(columnType)) {
+                const negation = condition === "not contains" ? "~" : "";
+                queryExpression = `${negation}${inputName}[${inputName}['${columnName}'].str.contains("${formattedConditionValue}", na=False)]`;
+                code += `${outputName} = ${queryExpression}`;
+            } else {
+                throw new Error('Invalid operation for the data type');
+            }
+            break;
         case "startswith":
         case "endswith":
             if (['string', 'Object', 'category'].includes(columnType)) {
-                const method = condition.replace(" ", ".");
-                queryExpression = columnIsNamed ? `\`${columnName}\`.str.${method}(${formattedConditionValue})` : `${columnName}.str.${method}(${formattedConditionValue})`;
+                queryExpression = `${inputName}[${inputName}['${columnName}'].str.${condition}("${formattedConditionValue.slice(1, -1)}", na=False)]`;
+                code += `${outputName} = ${queryExpression}`;
             } else {
                 throw new Error('Invalid operation for the data type');
             }
             break;
         case "isna":
         case "notna":
-            queryExpression = columnIsNamed ? `\`${columnName}\`.${condition}()` : `${columnName}.${condition}()`;
+            queryExpression = `${inputName}[${inputName}['${columnName}'].${condition}()]`;
+            code += `${outputName} = ${queryExpression}`;
             break;
         default:
-            queryExpression = columnIsNamed ? `\`${columnName}\` ${condition} ${formattedConditionValue}` : `${columnName} ${condition} ${formattedConditionValue}`;
+            queryExpression = `${columnName} ${condition} '${formattedConditionValue}'`;
+            code += `${outputName} = ${inputName}.query("${queryExpression}")`;
             break;
     }
 
-    const code = `
-# Filter rows based on condition
-${outputName} = ${inputName}.query("${queryExpression}")
-`;
     return code;
 }
 

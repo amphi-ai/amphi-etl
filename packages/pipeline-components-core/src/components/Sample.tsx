@@ -145,7 +145,7 @@ export class Sample extends PipelineComponent<ComponentItem>() {
     // Template for the pandas query code
     const code = `
 ${sampleCode}
-  `;
+`;
     return code;
   }
 

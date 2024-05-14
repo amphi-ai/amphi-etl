@@ -163,7 +163,7 @@ export class CsvFileOutput extends PipelineComponent<ComponentItem>() {
     optionsString = optionsString ? `, ${optionsString}` : '';
 
     const code = `
-${inputName}.to_csv('${config.filePath}', index=False${optionsString})
+${inputName}.to_csv("${config.filePath}", index=False${optionsString})
 `;
     return code;
   }

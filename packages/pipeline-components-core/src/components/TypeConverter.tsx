@@ -192,46 +192,41 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
     const columnType = config.column.type;
     const columnNamed = config.column.named;
     const dataType = config.dataType[config.dataType.length - 1];
-
-    // Start generating the Python code
-    let code = ``;
-    code += `# Initialize the output DataFrame\n`;
+  
+    let code = `# Initialize the output DataFrame\n`;
     code += `${outputName} = ${inputName}.copy()\n`;
     code += `# Convert ${columnName} from ${columnType} to ${dataType}\n`;
-
-    // Determine the conversion function and any additional parameters based on dataType
-    let conversionFunction;
-    let additionalParams = '';
-
-    if (dataType.startsWith('datetime')) {
-        // Check if a unit is specified for datetime conversion
-        if (dataType.includes('[')) {
-            const unit = dataType.split('[')[1].split(']')[0];
-            additionalParams = `, unit='${unit}'`;
-        }
-        conversionFunction = `pd.to_datetime`;
-    } else {
-        conversionFunction = `astype('${dataType}')`;
-    }
-
-    // Generate conversion code based on whether the column is named or indexed
+  
     if (columnNamed) {
-        if (dataType.startsWith('datetime')) {
-            code += `${outputName}['${columnName}'] = ${conversionFunction}(${inputName}['${columnName}']${additionalParams})\n`;
-        } else {
-            code += `${outputName}['${columnName}'] = ${inputName}['${columnName}'].${conversionFunction}\n`;
-        }
+      code += this.generateConversionCode(inputName, outputName, columnName, columnType, dataType, true);
     } else {
-        if (dataType.startsWith('datetime')) {
-            code += `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}(${inputName}.iloc[:, ${columnName}]${additionalParams})\n`;
-        } else {
-            code += `${outputName}.iloc[:, ${columnName}].${conversionFunction}\n`;
-        }
+      code += this.generateConversionCode(inputName, outputName, columnName, columnType, dataType, false);
     }
-
+  
     return code;
-}
-
-
+  }
+  
+  private generateConversionCode(inputName: string, outputName: string, columnName: string, columnType: string, dataType: string, columnNamed: boolean): string {
+    let conversionFunction = `astype("${dataType}")`;
+    let additionalParams = "";
+  
+    if (dataType.startsWith("datetime")) {
+      if (dataType.includes("[")) {
+        const unit = dataType.split("[")[1].split("]")[0];
+        additionalParams = `, unit="${unit}"`;
+      }
+      conversionFunction = `pd.to_datetime`;
+    } else if (columnType.startsWith("float") && dataType.startsWith("int")) {
+      conversionFunction = `pd.to_numeric(${inputName}["${columnName}"], errors="coerce").fillna(0).astype("${dataType}")`;
+      return `${outputName}["${columnName}"] = ${conversionFunction}\n`;
+    }
+  
+    if (columnNamed) {
+      return `${outputName}["${columnName}"] = ${conversionFunction}(${inputName}["${columnName}"]${additionalParams})\n`;
+    } else {
+      return `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}(${inputName}.iloc[:, ${columnName}]${additionalParams})\n`;
+    }
+  }
+  
 
 }

@@ -138,13 +138,13 @@ export class JsonFileOutput extends PipelineComponent<ComponentItem>() {
 
     let optionsString = Object.entries(config.jsonOptions || {})
         .filter(([key, value]) => value !== null && value !== '')
-        .map(([key, value]) => `${key}='${value}'`)
+        .map(([key, value]) => `${key}="${value}"`)
         .join(', ');
 
     const optionsCode = optionsString ? `, ${optionsString}` : ''; // Only add optionsString if it exists
 
     const code = `
-${inputName}.to_json('${config.filePath}'${optionsCode})
+${inputName}.to_json("${config.filePath}"${optionsCode})
 `;
     return code;
   }  

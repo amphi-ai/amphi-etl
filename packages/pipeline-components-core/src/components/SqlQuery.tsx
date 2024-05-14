@@ -126,7 +126,7 @@ export class SQLQuery extends PipelineComponent<ComponentItem>() {
     // Template for the pandas query code, with backticks around column names
     const code = `
 # Execute SQL Query using DuckDB
-${outputName} = duckdb.query("${config.query.replace('input_df1', inputName)}").to_df()
+${outputName} = duckdb.query("${config.query.replace('input_df1', inputName)}").to_df().convert_dtypes()\n
 `;
     return code;
 }

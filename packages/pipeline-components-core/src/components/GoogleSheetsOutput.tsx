@@ -143,7 +143,7 @@ export class GoogleSheetsOutput extends PipelineComponent<ComponentItem>() {
     let sheetOptions = { ...config.sheetOptions };
 
     // Validate and set the service account file path
-    const serviceAccountFilePath = config.filePath ? `'${config.filePath}'` : 'None';
+    const serviceAccountFilePath = config.filePath ? `"${config.filePath}"` : 'None';
 
     // Unique variables for each instance
     const uniqueClientVar = `${inputName}Client`;
@@ -152,12 +152,12 @@ export class GoogleSheetsOutput extends PipelineComponent<ComponentItem>() {
     // Generate the Python code for outputting data to Google Sheets
     const code = `
 # Outputting data to Google Sheets
-scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
+scope = ["https://spreadsheets.google.com/feeds","https://www.googleapis.com/auth/drive"]
 creds = ServiceAccountCredentials.from_json_keyfile_name(${serviceAccountFilePath}, scope)
 ${uniqueClientVar} = gspread.authorize(creds)
 
 # Open the spreadsheet and select the right worksheet
-${uniqueSheetVar} = ${uniqueClientVar}.open_by_key(${sheetOptions.spreadsheetId ? `'${sheetOptions.spreadsheetId}'` : 'None'}).worksheet(${sheetOptions.range ? `'${sheetOptions.range.split('!')[0]}'` : 'None'})
+${uniqueSheetVar} = ${uniqueClientVar}.open_by_key(${sheetOptions.spreadsheetId ? `"${sheetOptions.spreadsheetId}"` : 'None'}).worksheet(${sheetOptions.range ? `"${sheetOptions.range.split('!')[0]}"` : 'None'})
 
 # Update the sheet with dataframe's data
 ${uniqueSheetVar}.update([${inputName}.columns.values.tolist()] + ${inputName}.values.tolist())
@@ -165,4 +165,5 @@ ${uniqueSheetVar}.update([${inputName}.columns.values.tolist()] + ${inputName}.v
 
     return code;
   }
+
 }

@@ -174,7 +174,7 @@ export class Extract extends PipelineComponent<ComponentItem>() {
 
     // Count the number of capturing groups in the regex
     const groupCount = (new RegExp(regex + '|')).exec('').length - 1;
-    const columnNames = Array.from({ length: groupCount }, (_, i) => `'${outputName}_${i + 1}'`).join(', ');
+    const columnNames = Array.from({ length: groupCount }, (_, i) => `"${outputName}_${i + 1}"`).join(', ');
 
     // Use outputName to create unique names for the extracted data
     const extractedVarName = `${outputName}_extracted`;
@@ -182,9 +182,9 @@ export class Extract extends PipelineComponent<ComponentItem>() {
     // Generate the final code string
     const code = `
 # Extract data using regex
-${extractedVarName} = ${inputName}[${columnAccess}].str.extract(r'${regex}'${flagsCode})
+${extractedVarName} = ${inputName}[${columnAccess}].str.extract(r"${regex}"${flagsCode})
 ${extractedVarName}.columns = [${columnNames}]
-${outputName} = ${inputName}.join(${extractedVarName}, rsuffix='_extracted')
+${outputName} = ${inputName}.join(${extractedVarName}, rsuffix="_extracted")
 `;
     return code;
   }

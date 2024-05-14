@@ -127,7 +127,7 @@ export class XmlFileInput extends PipelineComponent<ComponentItem>() {
     let xpathOption = config.xmlOptions.xpath ? `"${config.xmlOptions.xpath}"` : "'.'"; // Use the provided XPath or default to root
 
     const code = `
-${treeVar} = ET.parse('${config.filePath}')
+${treeVar} = ET.parse("${config.filePath}")
 ${rootVar} = ${treeVar}.getroot()
 ${outputName} = ${rootVar}.findall(${xpathOption})
     `;

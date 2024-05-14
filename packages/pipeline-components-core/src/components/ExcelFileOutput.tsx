@@ -161,11 +161,11 @@ export class ExcelFileOutput extends PipelineComponent<ComponentItem>() {
   
     let code = '';
     if (excelWriterNeeded) {
-      code = `with pd.ExcelWriter('${config.filePath}', mode='a') as writer:\n` +
+      code = `with pd.ExcelWriter("${config.filePath}", mode="a") as writer:\n` +
              `    ${inputName}.to_excel(writer, index=False${optionsString})
   `;
     } else {
-      code = `${inputName}.to_excel('${config.filePath}', index=False${optionsString})
+      code = `${inputName}.to_excel("${config.filePath}", index=False${optionsString})
   `;
     }
     return code;

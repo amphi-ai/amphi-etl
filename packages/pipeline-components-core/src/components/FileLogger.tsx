@@ -142,7 +142,7 @@ export class FileLogger extends PipelineComponent<ComponentItem>() {
     let functions = [];
     const code = `
 logger = logging.getLogger('PipelineLogger')
-logging.basicConfig(filename='${config.filePath}', level=logging.${config.logLevel}, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(filename="${config.filePath}", level=logging.${config.logLevel}, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 `;
     functions.push(code);
     return functions;

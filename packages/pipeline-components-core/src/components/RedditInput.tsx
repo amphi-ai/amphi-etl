@@ -149,31 +149,33 @@ export class RedditInput extends PipelineComponent<ComponentItem>() {
   public generateComponentCode({ config, outputName }): string {
     const submission = config.submission;
     const limit = config.limit || 10;
-
+  
     // Check if the subreddit is a URL or an ID
     const isUrl = submission.startsWith('http') || submission.startsWith('www');
     const submissionAccess = isUrl
-        ? `${outputName}_submission = ${outputName}_reddit.submission(url='${submission}')`
-        : `${outputName}_submission = ${outputName}_reddit.submission('${submission}')`;
-
+      ? `${outputName}_submission = ${outputName}_reddit.submission(url="${submission}")`
+      : `${outputName}_submission = ${outputName}_reddit.submission("${submission}")`;
+  
     const code = `
-${outputName}_reddit = praw.Reddit(client_id='${config.clientId}', client_secret='${config.secretId}', user_agent='${config.userAgent}')
+${outputName}_reddit = praw.Reddit(client_id="${config.clientId}", client_secret="${config.secretId}", user_agent="${config.userAgent}")
 ${submissionAccess}
 
 ${outputName}_comments_data = []
 ${outputName}_submission.comments.replace_more(limit=${limit})
 for comment in ${outputName}_submission.comments.list():
     ${outputName}_comments_data.append({
-        'comment_id': comment.id,
-        'comment_body': comment.body,
-        'comment_author': comment.author.name if comment.author else None,
-        'comment_score': comment.score,
-        'comment_created_utc': comment.created_utc,
-        'parent_id': comment.parent_id
+        "comment_id": comment.id,
+        "comment_body": comment.body,
+        "comment_author": comment.author.name if comment.author else None,
+        "comment_score": comment.score,
+        "comment_created_utc": comment.created_utc,
+        "parent_id": comment.parent_id
     })
 
 ${outputName} = pd.DataFrame(${outputName}_comments_data)
 `;
     return code;
   }
+  
+
 }

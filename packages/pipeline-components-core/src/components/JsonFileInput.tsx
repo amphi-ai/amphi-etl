@@ -152,13 +152,13 @@ export class JsonFileInput extends PipelineComponent<ComponentItem>() {
     // Assuming the JSON options are nested under a jsonOptions key in the config object
     let optionsString = Object.entries(config.jsonOptions || {})
         .filter(([key, value]) => value !== null && value !== '')
-        .map(([key, value]) => `${key}='${value}'`)
+        .map(([key, value]) => `${key}="${value}"`)
         .join(', ');
 
     const optionsCode = optionsString ? `, ${optionsString}` : ''; // Only add optionsString if it exists
 
     const code = `
-${outputName} = pd.read_json('${config.filePath}'${optionsCode}).convert_dtypes()
+${outputName} = pd.read_json("${config.filePath}"${optionsCode}).convert_dtypes()
 `;
     return code;
 }

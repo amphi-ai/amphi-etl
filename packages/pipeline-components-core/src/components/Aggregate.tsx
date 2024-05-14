@@ -159,7 +159,7 @@ ${outputName} = ${inputName}.groupby([`;
   
       // Add group columns
       groupColumns.forEach(col => {
-          code += `'${col}',`;
+          code += `"${col}",`;
       });
   
       // Complete the aggregation function call

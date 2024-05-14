@@ -126,7 +126,7 @@ export class FilterColumns extends PipelineComponent<ComponentItem>() {
     // Prepare column references, handling named and unnamed columns
     const columnsToKeep = targetKeys.map(key => {
         const column = allColumns.find(c => c.value === key);
-        return column && column.named ? `'${key.trim()}'` : `${key.trim()}`;
+        return column && column.named ? `"${key.trim()}"` : `${key.trim()}`;
     }).join(', ');
 
     // Python code generation for DataFrame operation

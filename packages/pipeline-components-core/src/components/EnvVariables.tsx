@@ -98,7 +98,6 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
       const save = async () => {
         try {
           const values = await form.validateFields();
-    
           toggleEdit();
           handleSave({ ...record, ...values });
         } catch (errInfo) {
@@ -120,18 +119,26 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
               },
             ] : []}
           >
-            <Input ref={inputRef} onPressEnter={save} onBlur={save} />
+            <Input ref={inputRef} onPressEnter={save} onBlur={save} onKeyDown={(e) => e.stopPropagation()} autoComplete="off"/>
           </Form.Item>
         ) : (
-          <div className="editable-cell-value-wrap"       
-          style={{ paddingRight: 24, minHeight: '20px', width: '100%', display: 'inline-block' }} 
-          onClick={!editing ? toggleEdit : undefined}>
-          {children}
+          <div
+            className="editable-cell-value-wrap"
+            style={{ paddingRight: 24, minHeight: '20px', width: '100%', display: 'inline-block' }}
+            onClick={() => toggleEdit()}
+          >
+            {children}
           </div>
         );
       }
     
-      return <td {...restProps}>{childNode}</td>;
+      return (
+        <td {...restProps}>
+          <div onDoubleClick={(e) => e.stopPropagation()}>
+            {childNode}
+          </div>
+        </td>
+      );
     };
     
     type EditableTableProps = Parameters<typeof Table>[0];

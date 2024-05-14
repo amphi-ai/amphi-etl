@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { ConfigProvider, Button, Form, Input, Radio, Flex, Cascader, Space, Switch, InputNumber, Modal } from 'antd';
+import { ConfigProvider, Button, Form, Input, Radio, Flex, Cascader, Space, Switch, InputNumber, Modal, Typography } from 'antd';
 import { CheckOutlined, CloseOutlined, EyeInvisibleOutlined, EyeTwoTone, SearchOutlined, SettingOutlined } from '@ant-design/icons';
 
 import styled from 'styled-components';
@@ -371,6 +371,13 @@ export const generateUIInputs = ({
                   <DataMapping data={data} field={field} handleChange={handleChange} defaultValue={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
                 </Form.Item>
               );
+              case "info":
+                const { Paragraph } = Typography;
+                return (
+                  <Paragraph>
+                  {field.text}
+                </Paragraph>
+                );
           default:
             return null;
         }
@@ -481,7 +488,7 @@ export interface Option {
 }
 
 export interface FieldDescriptor {
-  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio' | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'dataMapping' | 'editableTable';
+  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio' | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'dataMapping' | 'editableTable' | 'info';
   label: string;
   id: string;
   placeholder?: any;
@@ -501,6 +508,7 @@ export interface FieldDescriptor {
   drivers?: string;
   typeOptions?: any;
   inputType?: 'password';
+  text?: string;
 }
 
 interface ConfigModalProps {

@@ -136,14 +136,15 @@ export class Sort extends PipelineComponent<ComponentItem>() {
     return ["import pandas as pd"];
   }
 
-  public generateComponentCode({config, inputName, outputName}): string {
+  public generateComponentCode({ config, inputName, outputName }): string {
 
-    const byColumns = `by=[${config.by.map(column => column.named ? `'${column.value}'` : column.value).join(', ')}]`;
-    const ascending = typeof config.order !== 'undefined' ? `, ascending=${config.order}` : '';
-    const ignoreIndex = config.ignoreIndex ? `, ignore_index=${config.ignoreIndex}` : '';
+    const byColumns = `by=[${config.by.map(column => column.named ? `"${column.value}"` : column.value).join(", ")}]`;
+    const ascending = typeof config.order !== "undefined" ? `, ascending=${config.order}` : "";
+    const ignoreIndex = config.ignoreIndex ? `, ignore_index=${config.ignoreIndex}` : "";
   
     const code = `${outputName} = ${inputName}.sort_values(${byColumns}${ascending}${ignoreIndex})`;
     return code;
   }
+  
 
 }

@@ -162,9 +162,9 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
       : null;
 
     const code = optionsString
-      ? `${outputName} = pd.read_excel('${config.filePath}', ${optionsString}).convert_dtypes()
+      ? `${outputName} = pd.read_excel("${config.filePath}", ${optionsString}).convert_dtypes()
 `
-      : `${outputName} = pd.read_excel('${config.filePath}').convert_dtypes()
+      : `${outputName} = pd.read_excel("${config.filePath}").convert_dtypes()
 `;
 
     return code;

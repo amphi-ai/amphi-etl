@@ -120,7 +120,7 @@ export class XmlFileOutput extends PipelineComponent<ComponentItem>() {
     const code = `
 # Output the XML content to a file
 ${xmlOutputVar} = ${inputName}.to_xml()
-with open('${config.filePath}', 'w') as ${fileVar}:
+with open("${config.filePath}", "w") as ${fileVar}:
     ${fileVar}.write(${xmlOutputVar})
 `;
     return code;

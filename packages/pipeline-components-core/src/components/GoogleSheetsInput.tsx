@@ -149,7 +149,7 @@ export class GoogleSheetsInput extends PipelineComponent<ComponentItem>() {
     // Prepare options string for pd.read_gbq
     let optionsString = Object.entries(sheetOptions)
       .filter(([key, value]) => value !== null && value !== '')
-      .map(([key, value]) => `${key}='${value}'`)
+      .map(([key, value]) => `${key}="${value}"`)
       .join(', ');
   
     // Unique variables for each instance
@@ -159,8 +159,8 @@ export class GoogleSheetsInput extends PipelineComponent<ComponentItem>() {
     // Conditional code based on service account availability
     let authenticationCode = isServiceAccountProvided ? 
 `# Authentication with service account
-scope = ['https://spreadsheets.google.com/feeds','https://www.googleapis.com/auth/drive']
-creds = ServiceAccountCredentials.from_json_keyfile_name('${config.filePath}', scope)
+scope = ["https://spreadsheets.google.com/feeds","https://www.googleapis.com/auth/drive"]
+creds = ServiceAccountCredentials.from_json_keyfile_name("${config.filePath}", scope)
 ${uniqueClientVar} = gspread.authorize(creds)
 ` :
 `# Accessing public sheet without authentication
@@ -172,7 +172,7 @@ ${uniqueClientVar} = gspread.service_account()
 # Reading data from Google Sheets
 ${authenticationCode}
 # Open the spreadsheet
-${uniqueSheetVar} = ${uniqueClientVar}.open_by_key(${sheetOptions.spreadsheetId ? `'${sheetOptions.spreadsheetId}'` : 'None'}).worksheet(${sheetOptions.range ? `'${sheetOptions.range.split('!')[0]}'` : 'None'})
+${uniqueSheetVar} = ${uniqueClientVar}.open_by_key(${sheetOptions.spreadsheetId ? `"${sheetOptions.spreadsheetId}"` : 'None'}).worksheet(${sheetOptions.range ? `"${sheetOptions.range.split('!')[0]}"` : 'None'})
   
 # Convert to DataFrame
 ${outputName} = pd.DataFrame(${uniqueSheetVar}.get_all_records())
@@ -180,4 +180,5 @@ ${outputName} = pd.DataFrame(${uniqueSheetVar}.get_all_records())
 
     return code;
   }
+
 }
