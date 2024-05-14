@@ -94,6 +94,7 @@ Components palette sidebar
   @apply border-r border-l border-[#eee] border-l-[#E0E0E0] p-[20px_6px] text-[12px] bg-white;
 }
 
+
 .palette aside .description {
   @apply mr-[8px] mb-[10px];
 }
@@ -118,6 +119,16 @@ Components palette sidebar
   .palette aside {
    @apply fixed top-0 right-0 h-full w-[220px] z-10 overflow-auto
   }
+}
+
+.palette-component {
+  position: relative;
+  z-index: 1000; /* Ensure the draggable elements are always on top */
+}
+
+.palette-component-category {
+  position: relative;
+  z-index: 500; /* Ensure categories are on top but below components */
 }
 
 .palette .palette-component-category {

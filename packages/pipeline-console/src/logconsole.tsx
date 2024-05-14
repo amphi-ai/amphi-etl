@@ -2,7 +2,12 @@ import { Widget } from '@lumino/widgets';
 import { IPipelineConsole } from './tokens';
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import ReactDOMServer from 'react-dom/server';
 import DataView from './DataView'; // Assume DataView is your React component
+import { Alert, Button, DatePicker, Typography, Space } from 'antd';
+import { ClockCircleOutlined } from '@ant-design/icons';
+
+const { Text } = Typography;
 
 
 const TITLE_CLASS = 'amphi-Console-title';
@@ -81,27 +86,60 @@ export class PipelineConsolePanel
 
     // Add cells to the new row
     let cell = row.insertCell(0);
-    cell.innerHTML = date;
+    let container;
+    cell.innerHTML = `
+    <span>
+      ${ReactDOMServer.renderToString(
+        <Space>
+          <Text>{date}</Text>
+        </Space>
+      )}
+    </span>
+  `;
+    cell.style.padding = "2px";  // Remove padding from the cell
+    cell.style.paddingLeft = "5px";
+
     cell.className = TABLE_DATE_CLASS;
 
     // Initially set the background color to beige/yellow to attract attention
     switch (level) {
       case "info":
-        row.style.backgroundColor = "#e5f6ff";
-        row.style.transition = "background-color 1s ease-in-out"
         cell = row.insertCell(1);
-        cell.innerHTML =  content ;
+        cell.style.padding = "2px"; // Remove padding from the cell
+        container = document.createElement('div'); // Create a container for the React component
+        cell.appendChild(container); // Append the container to the cell
+    
+        // Determine the alert type based on content
+        let alertType: "info" | "warning" = /ERROR|WARNING/i.test(content) ? "warning" : "info";
+    
+        ReactDOM.render(
+            <Alert
+                showIcon
+                description={<div dangerouslySetInnerHTML={{ __html: content }} />}
+                type={alertType}
+            />,
+            container
+        );
         break;
       case "error":
-        row.style.backgroundColor = "#ffd7d9";
-        row.style.transition = "background-color 1s ease-in-out"
         cell = row.insertCell(1);
-        cell.innerHTML =  content ;
+        cell.style.padding = "2px";  // Remove padding from the cell
+        container = document.createElement('div'); // Create a container for the React component
+        cell.appendChild(container);  // Append the container to the cell
+        ReactDOM.render(
+            <Alert
+              message="Error"
+              showIcon
+              description={<div dangerouslySetInnerHTML={{ __html: content }} />}
+              type="error"
+            />, 
+            container
+          );
         break;
       case "data":
         cell = row.insertCell(1);
         cell.style.padding = "0";  // Remove padding from the cell
-        const container = document.createElement('div'); // Create a container for the React component
+        container = document.createElement('div'); // Create a container for the React component
         cell.appendChild(container);  // Append the container to the cell
         ReactDOM.render(<DataView htmlData={content} />, container);
         break;
@@ -109,11 +147,6 @@ export class PipelineConsolePanel
         // Handle other cases or do nothing
         break;
     }
-    
-
-
-
-
 
     // Scroll to the top
     this._console.parentElement.scrollTop = 0; // Changed to scroll to the top
@@ -124,7 +157,6 @@ export class PipelineConsolePanel
     }, 3000); // This duration should match the CSS transition duration
   }
 
-
   /**
    * Handle source disposed signals.
    */
@@ -132,7 +164,6 @@ export class PipelineConsolePanel
     this.source = null;
   }
 }
-
 
 namespace Private {
   const entityMap = new Map<string, string>(

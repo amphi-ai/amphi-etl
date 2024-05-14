@@ -1088,6 +1088,18 @@ Components palette sidebar
   }
 }
 
+.palette-component {
+  position: relative;
+  z-index: 1000;
+  /* Ensure the draggable elements are always on top */
+}
+
+.palette-component-category {
+  position: relative;
+  z-index: 500;
+  /* Ensure categories are on top but below components */
+}
+
 .palette .palette-component-category {
   font-weight: bold;
 }
