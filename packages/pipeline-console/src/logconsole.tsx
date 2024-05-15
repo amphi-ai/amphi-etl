@@ -96,9 +96,7 @@ export class PipelineConsolePanel
       )}
     </span>
   `;
-    cell.style.padding = "2px";  // Remove padding from the cell
-    cell.style.paddingLeft = "5px";
-
+    cell.style.padding = "5px";  // Remove padding from the cell
     cell.className = TABLE_DATE_CLASS;
 
     // Initially set the background color to beige/yellow to attract attention
