@@ -105,7 +105,7 @@ export class PipelineConsolePanel
     switch (level) {
       case "info":
         cell = row.insertCell(1);
-        cell.style.padding = "2px"; // Remove padding from the cell
+        cell.style.padding = "5px"; // Remove padding from the cell
         container = document.createElement('div'); // Create a container for the React component
         cell.appendChild(container); // Append the container to the cell
     
@@ -123,7 +123,7 @@ export class PipelineConsolePanel
         break;
       case "error":
         cell = row.insertCell(1);
-        cell.style.padding = "2px";  // Remove padding from the cell
+        cell.style.padding = "5px";  // Remove padding from the cell
         container = document.createElement('div'); // Create a container for the React component
         cell.appendChild(container);  // Append the container to the cell
         ReactDOM.render(
