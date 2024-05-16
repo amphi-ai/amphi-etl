@@ -197,36 +197,40 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
     code += `${outputName} = ${inputName}.copy()\n`;
     code += `# Convert ${columnName} from ${columnType} to ${dataType}\n`;
   
-    if (columnNamed) {
-      code += this.generateConversionCode(inputName, outputName, columnName, columnType, dataType, true);
-    } else {
-      code += this.generateConversionCode(inputName, outputName, columnName, columnType, dataType, false);
-    }
+    code += this.generateConversionCode(inputName, outputName, columnName, columnType, dataType, columnNamed);
   
     return code;
-  }
+}
   
-  private generateConversionCode(inputName: string, outputName: string, columnName: string, columnType: string, dataType: string, columnNamed: boolean): string {
-    let conversionFunction = `astype("${dataType}")`;
+private generateConversionCode(inputName: string, outputName: string, columnName: string, columnType: string, dataType: string, columnNamed: boolean): string {
+    let conversionFunction: string;
     let additionalParams = "";
-  
+
     if (dataType.startsWith("datetime")) {
-      if (dataType.includes("[")) {
-        const unit = dataType.split("[")[1].split("]")[0];
-        additionalParams = `, unit="${unit}"`;
-      }
-      conversionFunction = `pd.to_datetime`;
+        if (dataType.includes("[")) {
+            const unit = dataType.split("[")[1].split("]")[0];
+            additionalParams = `, unit="${unit}"`;
+        }
+        conversionFunction = `pd.to_datetime`;
     } else if (columnType.startsWith("float") && dataType.startsWith("int")) {
-      conversionFunction = `pd.to_numeric(${inputName}["${columnName}"], errors="coerce").fillna(0).astype("${dataType}")`;
-      return `${outputName}["${columnName}"] = ${conversionFunction}\n`;
-    }
-  
-    if (columnNamed) {
-      return `${outputName}["${columnName}"] = ${conversionFunction}(${inputName}["${columnName}"]${additionalParams})\n`;
+        conversionFunction = `pd.to_numeric(${inputName}["${columnName}"], errors="coerce").fillna(0).astype("${dataType}")`;
+        if (columnNamed) {
+            return `${outputName}["${columnName}"] = ${conversionFunction}\n`;
+        } else {
+            return `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}\n`;
+        }
+    } else if (columnType.startsWith("int") && dataType.startsWith("float")) {
+        conversionFunction = `astype("${dataType}")`;
     } else {
-      return `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}(${inputName}.iloc[:, ${columnName}]${additionalParams})\n`;
+        conversionFunction = `astype("${dataType}")`;
     }
-  }
+
+    if (columnNamed) {
+        return `${outputName}["${columnName}"] = ${conversionFunction}(${inputName}["${columnName}"]${additionalParams})\n`;
+    } else {
+        return `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}(${inputName}.iloc[:, ${columnName}]${additionalParams})\n`;
+    }
+}
   
 
 }

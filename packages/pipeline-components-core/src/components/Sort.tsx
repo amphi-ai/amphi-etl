@@ -142,7 +142,10 @@ export class Sort extends PipelineComponent<ComponentItem>() {
     const ascending = typeof config.order !== "undefined" ? `, ascending=${config.order}` : "";
     const ignoreIndex = config.ignoreIndex ? `, ignore_index=${config.ignoreIndex}` : "";
   
-    const code = `${outputName} = ${inputName}.sort_values(${byColumns}${ascending}${ignoreIndex})`;
+    const code = `
+# Sort rows 
+${outputName} = ${inputName}.sort_values(${byColumns}${ascending}${ignoreIndex})
+`;
     return code;
   }
   

@@ -56,6 +56,13 @@ export const TransferData: React.FC<TransferDataProps> = ({
     rightColumns: TableColumnsType<DataType>;
   }
 
+  // Define a unique type for TransferData
+  const TRANSFER_DATA_TYPE = 'TransferDataRow'
+
+  // Use context to avoid conflict with other drag and drop in the app
+  // solution from https://github.com/react-dnd/react-dnd/issues/3304
+  const DnDRef = React.useRef(null);
+
   interface DragItem {
     type: string;
     index: number;
@@ -64,9 +71,9 @@ export const TransferData: React.FC<TransferDataProps> = ({
   const DragableBodyRow = ({ index, rowDrop, className, style, ...restProps }) => {
     const ref = React.useRef();
     const [{ isOver, dropClassName }, drop] = useDrop({
-      accept: 'DragableBodyRow',
+      accept: TRANSFER_DATA_TYPE,
       collect: (monitor) => {
-        const item = monitor.getItem() as DragItem; // Cast to DragItem
+        const item = monitor.getItem() as DragItem;
         if (item && item.index === index) {
           return {};
         }
@@ -79,17 +86,17 @@ export const TransferData: React.FC<TransferDataProps> = ({
         rowDrop(item.index, index);
       },
     });
-
+  
     const [, drag] = useDrag<DragItem>({
-      type: 'DragableBodyRow',
-      item: { type: 'DragableBodyRow', index },
+      type: TRANSFER_DATA_TYPE,
+      item: { type: TRANSFER_DATA_TYPE, index },
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
     });
-
+  
     drop(drag(ref));
-
+  
     return (
       <tr
         ref={ref}
@@ -99,7 +106,6 @@ export const TransferData: React.FC<TransferDataProps> = ({
       />
     );
   };
-
 
   // Customize Table Transfer
   const TableTransfer = ({ leftColumns, rightColumns, ...restProps }: TableTransferProps) => (
@@ -170,8 +176,11 @@ export const TransferData: React.FC<TransferDataProps> = ({
             handleChange(savedSchema, field.id);
           };
 
+          
+
           return (
-            <DndProvider backend={HTML5Backend}>
+            <div ref={DnDRef} >
+            <DndProvider backend={HTML5Backend} context={DnDRef}>
               <Table
                 rowSelection={rowSelection}
                 columns={columns}
@@ -195,7 +204,7 @@ export const TransferData: React.FC<TransferDataProps> = ({
                 })}
               />
             </DndProvider>
-
+            </div>
           );
         }
 
@@ -209,6 +218,8 @@ export const TransferData: React.FC<TransferDataProps> = ({
   const [loadings, setLoadings] = useState<boolean>();
 
   useEffect(() => {
+    console.log("Transfer Data, items %o", items)
+
     setSourceData(items.map(item => ({
         ...item,
         key: item.value,

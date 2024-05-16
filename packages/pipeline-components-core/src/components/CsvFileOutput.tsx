@@ -10,7 +10,7 @@ export class CsvFileOutput extends PipelineComponent<ComponentItem>() {
   public _type = "pandas_df_output";
   public _category = "output";
   public _icon = filePlusIcon;
-  public _default = { csvOptions: {} };
+  public _default = { csvOptions: { sep: ","} };
   public _form = {
     idPrefix: "component__form",
     fields: [

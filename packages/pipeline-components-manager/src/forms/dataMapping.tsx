@@ -30,10 +30,6 @@ export const DataMapping: React.FC<DataMappingProps> = ({
   const [loadingsOutput, setLoadingsOutput] = useState<boolean>();
   const [items, setItems] = useState<Option[]>([]);
 
-  useEffect(() => {
-    console.log("ITEMS %o", items)
-  }, [items]);
-
   interface Item {
     input: any;
     key: React.Key;
@@ -166,7 +162,6 @@ export const DataMapping: React.FC<DataMappingProps> = ({
   
 
     useEffect(() => {
-      console.log("datasource %o", dataSource)
       handleChange(dataSource, field.id);
     }, [dataSource]);
 
@@ -337,8 +332,6 @@ const FieldValueInput: React.FC<FieldValueProps> = ({ field, value = {}, onChang
   const [nameType, setNameType] = useState('');
   const inputRef = useRef<InputRef>(null);
   const [items, setItems] = useState(field.typeOptions);
-
-  console.log("items %o", items);
 
   const triggerChange = (changedValue: { name?: string; type?: string }) => {
     onChange?.({ name, type, ...value, ...changedValue });

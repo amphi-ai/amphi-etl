@@ -52,24 +52,29 @@ export class RequestService {
             if (msg.header.msg_type === 'stream') {
               const streamMsg = msg as KernelMessage.IStreamMsg;
               const output = streamMsg.content.text;
-              const regex = /([^\s,]+)\s+\(([^,]+),\s*(named|unnamed)\)/g;
+              const regex = /([^,]+)\s+\(([^,]+),\s*(named|unnamed)\)/g;
               const newItems = [];
               
               let match;
               while ((match = regex.exec(output)) !== null) {
                 const [_, name, type, namedStatus] = match;
                 newItems.push({
-                  value: name,
-                  label: name,
-                  type: type,
-                  named: namedStatus === 'named' // true if 'named', false if 'unnamed'
+                  value: name.trim(),
+                  label: name.trim(),
+                  type: type.trim(),
+                  named: namedStatus.trim() === 'named' // true if 'named', false if 'unnamed'
                 });
               }
+
+              console.log("Retrieve col, new items %o", newItems)
               
               // Update the items array with the new items, ensuring no duplicates
               setItems(items => {
                 const itemSet = new Set(items.map(item => item.value)); // Create a set of existing item values
                 const uniqueItems = newItems.filter(newItem => !itemSet.has(newItem.value));
+
+                console.log("Retrieve col, uniqueItems %o", uniqueItems)
+
                 return [...items, ...uniqueItems];
               });
 
@@ -142,10 +147,8 @@ console.log("code: " + code);
 
       future.onIOPub = msg => {
         if (msg.header.msg_type === 'stream') {
-          console.log("stream")
           const streamMsg = msg as KernelMessage.IStreamMsg;
           const output = streamMsg.content.text;
-          console.log("message : %o",output )
 
           const regex = /([^\s,]+)\s+\(((?:[^()]+|\([^)]*\))*)\)/g;
           const newItems = [];

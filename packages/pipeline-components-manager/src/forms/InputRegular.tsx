@@ -7,8 +7,6 @@ import { PipelineService } from '../PipelineService';
 
 export const InputRegular = ({ field, value, handleChange, context, advanced }) => {
 
-  console.log("Value in inputregular %o", value)
-
   const [inputValue, setInputValue] = useState(value);
   const inputRef = useRef(null);
   const [openValue, setOpenValue] = useState(false);
@@ -41,7 +39,7 @@ export const InputRegular = ({ field, value, handleChange, context, advanced }) 
       const lastDollarIndex = inputValue.lastIndexOf('{');
       if (lastDollarIndex !== -1 && lastDollarIndex < inputValue.length - 1) {
         const searchTerm = inputValue.substring(lastDollarIndex + 1);
-        console.log("Option: %o", option);
+        // console.log("Option: %o", option);
         return option.value.startsWith(searchTerm);
       }
       return false;

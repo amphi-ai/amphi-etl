@@ -11,7 +11,7 @@ import { Toolbar as UIToolbar, buildIcon, extensionIcon, inspectorIcon, listIcon
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { Drag } from '@lumino/dragdrop';
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState, useEffect } from 'react';
 import ReactFlow, {
   Background,
   Controls,
@@ -342,9 +342,7 @@ const PipelineWrapper: React.FC<IProps> = ({
   function Sidebar() {
 
     const [sidebarOpen, setSideBarOpen] = useState(false);
-    const handleViewSidebar = () => {
-      setSideBarOpen(!sidebarOpen);
-    };
+
     const sidebarClass = sidebarOpen ? "" : "open";
 
     const onDragStart = (event, nodeType, config) => {
@@ -379,6 +377,7 @@ const PipelineWrapper: React.FC<IProps> = ({
     }
   });
 
+
   // Transforming categorized components into tree data structure
   const treeData = Object.keys(categorizedComponents).map((category, index) => {
     const subCategories = Object.keys(categorizedComponents[category]);
@@ -392,6 +391,8 @@ const PipelineWrapper: React.FC<IProps> = ({
               draggable
               className="palette-component"
               onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
+              key={`category-${index}-item-${childIndex}`} // Add this line
+
             >
               {component._name}
             </span>
@@ -409,8 +410,9 @@ const PipelineWrapper: React.FC<IProps> = ({
               <span
                 draggable
                 className="palette-component"
-                onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')
-              }>
+                onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
+                key={`category-${index}-sub-${subIndex}-item-${childIndex}`} // Add this line
+              >
                 {component._name}
               </span>
             ),
@@ -422,6 +424,8 @@ const PipelineWrapper: React.FC<IProps> = ({
       }
     });
 
+    
+
     return {
       title: <span className="palette-component-category">{category.charAt(0).toUpperCase() + category.slice(1)}</span>,
       key: `category-${index}`,
@@ -432,22 +436,22 @@ const PipelineWrapper: React.FC<IProps> = ({
   // Output tree data (for debugging, you might want to console.log or use it directly in your components)
   console.log(treeData);
 
-
-
     return (
 
       <aside className={sidebarClass} title={'Components'}>
-
+        
         <div className="description">
           <extensionIcon.react tag="span" width="24px" float="left" marginRight="8px" />
           Drag and drop components.
         </div>
+       
         <DirectoryTree
           selectable={false}
           multiple
           blockNode
           defaultExpandAll
           treeData={treeData}
+          key={"palette-components"}
         />
       </aside>
     );

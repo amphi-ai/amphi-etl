@@ -132,7 +132,8 @@ export class Deduplicate extends PipelineComponent<ComponentItem>() {
 
   public generateComponentCode({ config, inputName, outputName }): string {
     // Initializing code string
-    let code = `# Deduplicate\n`;
+    let code = `
+# Deduplicate rows\n`;
     const columns = config.subset.length > 0 ? `subset=[${config.subset.map(column => column.named ? `"${column.value.trim()}"` : column.value).join(', ')}]` : '';
     const keep = typeof config.keep === 'boolean' ? (config.keep ? `"first"` : '') : `"${config.keep}"`;
 

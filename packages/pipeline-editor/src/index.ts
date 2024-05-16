@@ -306,6 +306,8 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           });
         }
 
+        
+
         const current = getCurrent(args);
         if (!current) {
           return;

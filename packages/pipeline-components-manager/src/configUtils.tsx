@@ -31,11 +31,9 @@ export const setDefaultConfig = ({
   defaultConfig,
 }: SetDefaultConfigProps): void => {
   const { nodeInternals } = store.getState();
-  console.log("setDefault????");
   setNodes(
     Array.from(nodeInternals.values()).map((node) => {
       if (node.id === nodeId && Object.keys(node.data).length === 1) {
-        console.log("why not working?")
         node.data = {
           ...defaultConfig,
           lastUpdated: null,
@@ -98,7 +96,7 @@ export const generateUIFormComponent = ({
   handleChange,
 }: FormComponentProps) => {
 
-  const [modal2Open, setModal2Open] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const executeUntilComponent = () => {
     commands.execute('pipeline-editor:run-pipeline-until', { nodeId: nodeId, context: context });
@@ -119,17 +117,17 @@ export const generateUIFormComponent = ({
         size="small">
         {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: false })}
         <div className="flex justify-center mt-1 pt-1.5 space-x-4">
-          <span onClick={() => setModal2Open(true)}
+          <span onClick={() => setModalOpen(true)}
             className="inline-flex items-center justify-center cursor-pointer group">
             <settingsIcon.react className="h-3 w-3 group-hover:text-primary" />
           </span>
-          {(type.includes('input') || type.includes('processor')) && (
+          {(type.includes('input') || type.includes('processor') || type.includes('output')) && (
             <span onClick={executeUntilComponent} className="inline-flex items-center justify-center cursor-pointer group">
               <playCircleIcon.react className="h-3 w-3 group-hover:text-primary" />
             </span>
           )}
         </div>
-        <ConfigModal modal2Open={modal2Open} setModal2Open={setModal2Open} name={name} nodeId={nodeId} form={form} data={data} context={context} componentService={componentService} manager={manager} commands={commands} handleChange={handleChange} advanced />
+        <ConfigModal modalOpen={modalOpen} setModalOpen={setModalOpen} name={name} nodeId={nodeId} form={form} data={data} context={context} componentService={componentService} manager={manager} commands={commands} handleChange={handleChange} advanced />
       </Form>
     </ConfigProvider>
 
@@ -398,17 +396,17 @@ export default function ConfigModal({
   commands,
   handleChange,
   advanced,
-  modal2Open,
-  setModal2Open
+  modalOpen,
+  setModalOpen
 }: ConfigModalProps) {
   return (
     <>
       <Modal
         title={name}
         centered
-        open={modal2Open}
-        onOk={() => setModal2Open(false)}
-        onCancel={() => setModal2Open(false)}
+        open={modalOpen}
+        onOk={() => setModalOpen(false)}
+        onCancel={() => setModalOpen(false)}
         width={800}
         footer={(_, { OkBtn }) => (
           <>
@@ -522,6 +520,6 @@ interface ConfigModalProps {
   commands: any;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   advanced: boolean;
-  modal2Open: any;
-  setModal2Open: any;
+  modalOpen: any;
+  setModalOpen: any;
 }
