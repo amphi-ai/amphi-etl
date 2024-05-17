@@ -306,7 +306,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           });
         }
 
-        
+
 
         const current = getCurrent(args);
         if (!current) {
@@ -352,7 +352,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           packages = PipelineService.extractPackageNames(imports);
           const lines = code.split(/\r?\n/); // Split the code into lines
           const dependencyLine = lines[2]; // Extract dependencies from the third line (index 2, as arrays are zero-indexed)
-          const dependencies = dependencyLine.startsWith("# Additional imports: ") // Assuming the structure is "# Additional imports: package1, package2, ..."
+          const dependencies = dependencyLine.startsWith("# Additional dependencies: ") // Assuming the structure is "# Additional imports: package1, package2, ..."
             ? dependencyLine.split(': ')[1].split(',').map(pkg => pkg.trim())
             : [];
           packages = [...packages, ...dependencies];
@@ -390,57 +390,20 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
 
         try {
         // Create promise to track success or failure of the request
-        const delegate = new PromiseDelegate<ReadonlyJSONValue>();
-        const start = performance.now();
 
-        Notification.promise(delegate.promise, {
-          // Message when the task is pending
-          pending: { message: 'Running...', options: { autoClose: false } },
-          // Message when the task finished successfully
-          success: {
-            message: (result: any) => `Pipeline execution successful after ${result.delayInSeconds} seconds.`,
-            options: {
-              autoClose: 3000
-            }
-          },
-          // Message when the task finished with errors
-          error: {
-            message: () => 'Pipeline execution failed. Check error messages in the Log Console.',
-            options: {
-              actions: [
-                {
-                  label: 'Log Console',
-                  callback: () => {
-                    const command = 'pipeline-console:open';
-                    commands.execute(command, {}).catch(reason => {
-                      console.error(
-                        `An error occurred during the execution of ${command}.\n${reason}`
-                      );
-                    });
-                  }
-                }
-              ],
-              autoClose: 5000
-            }
-          }
-        });
 
             const future = current.context.sessionContext.session.kernel!.requestExecute({ code: args.code });
 
             future.onReply = reply => {
 
-              const end = performance.now();
-              const delay = end - start;
-              const delayInSeconds = (delay / 1000).toFixed(1);
-
               if (reply.content.status == "ok") {
-                delegate.resolve({ delayInSeconds });
+                console.log("Execution: OK")
               } else if (reply.content.status == "error") {
-                delegate.reject({ delayInSeconds });
+                console.error("Execution: error")
               } else if (reply.content.status == "abort") {
-                delegate.reject({ delayInSeconds });
+                console.log("Execution: abort")
               } else {
-                delegate.reject({ delayInSeconds });
+                console.log("Execution: unknown")
               }
             };
 

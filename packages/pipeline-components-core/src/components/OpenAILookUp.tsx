@@ -5,7 +5,7 @@ import { openAiIcon } from '../icons';
 
 export class OpenAILookUp extends PipelineComponent<ComponentItem>() {
 
-  public _name = "OpenAI Lookup";
+  public _name = "OpenAI Prompt";
   public _id = "openAiLookup";
   public _type = "pandas_df_processor";
   public _category = "transform";
@@ -45,7 +45,8 @@ export class OpenAILookUp extends PipelineComponent<ComponentItem>() {
         options: [
           { value: "gpt-3.5-turbo", label: "gpt-3.5-turbo" },
           { value: "gpt-3.5-turbo-16k", label: "gpt-3.5-turbo-16k" },
-          { value: "gpt-4-turbo", label: "gpt-4-turbo" }
+          { value: "gpt-4-turbo", label: "gpt-4-turbo" },
+          { value: "gpt-4o", label: "gpt-4o" }
         ],
         advanced: true
       },

@@ -108,7 +108,11 @@ export class PipelineConsolePanel
         cell.appendChild(container); // Append the container to the cell
     
         // Determine the alert type based on content
-        let alertType: "info" | "warning" = /ERROR|WARNING/i.test(content) ? "warning" : "info";
+        let alertType: "info" | "warning" | "success" = /SUCCESS/i.test(content)
+            ? "success"
+            : /ERROR|WARNING/i.test(content)
+            ? "warning"
+            : "info";
     
         ReactDOM.render(
             <Alert

@@ -260,12 +260,21 @@ export class CodeGenerator {
       code += lastCodeGenerated;
     
       // If target node....  
-        if (nodeId === targetNodeId && (component_type.includes('processor') || component_type.includes('input')) ) {
-          if(!fromStart) {
+      if (nodeId === targetNodeId) {
+        if (component_type.includes('processor') || component_type.includes('input')) {
+          if (!fromStart) {
             code = lastCodeGenerated;
           }
           code += '\n' + nodeOutputs.get(nodeId);
+        } else if (component_type.includes('output')) {
+          // Add try block and indent existing code
+          const indentedCode = code.split('\n').map(line => '    ' + line).join('\n');
+          code = 'try:\n' + indentedCode + '\n    print("Pipeline Execution: SUCCESS")\n';
+          code += 'except Exception as e:\n';
+          code += '    print(f"Pipeline Execution: FAILED with error {e}")\n';
+          code += '    raise\n';  // Re-raise the exception to propagate the error status
         }
+      }
     }
 
     let envVariablesCode = '';

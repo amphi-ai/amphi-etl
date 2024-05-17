@@ -7,7 +7,7 @@ import { sortIcon } from '../icons';
 
 export class Sort extends PipelineComponent<ComponentItem>() {
 
-  public _name = "Sort";
+  public _name = "Sort Rows";
   public _id = "sort";
   public _type = "pandas_df_processor";
   public _category = "transform";

@@ -192,16 +192,16 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
     const columnType = config.column.type;
     const columnNamed = config.column.named;
     const dataType = config.dataType[config.dataType.length - 1];
-  
+
     let code = `# Initialize the output DataFrame\n`;
     code += `${outputName} = ${inputName}.copy()\n`;
     code += `# Convert ${columnName} from ${columnType} to ${dataType}\n`;
-  
+
     code += this.generateConversionCode(inputName, outputName, columnName, columnType, dataType, columnNamed);
-  
+
     return code;
 }
-  
+
 private generateConversionCode(inputName: string, outputName: string, columnName: string, columnType: string, dataType: string, columnNamed: boolean): string {
     let conversionFunction: string;
     let additionalParams = "";
@@ -213,22 +213,20 @@ private generateConversionCode(inputName: string, outputName: string, columnName
         }
         conversionFunction = `pd.to_datetime`;
     } else if (columnType.startsWith("float") && dataType.startsWith("int")) {
-        conversionFunction = `pd.to_numeric(${inputName}["${columnName}"], errors="coerce").fillna(0).astype("${dataType}")`;
+        conversionFunction = `${inputName}["${columnName}"].astype("float").fillna(0).astype("${dataType}")`;
         if (columnNamed) {
             return `${outputName}["${columnName}"] = ${conversionFunction}\n`;
         } else {
             return `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}\n`;
         }
-    } else if (columnType.startsWith("int") && dataType.startsWith("float")) {
-        conversionFunction = `astype("${dataType}")`;
     } else {
         conversionFunction = `astype("${dataType}")`;
     }
 
     if (columnNamed) {
-        return `${outputName}["${columnName}"] = ${conversionFunction}(${inputName}["${columnName}"]${additionalParams})\n`;
+        return `${outputName}["${columnName}"] = ${inputName}["${columnName}"].${conversionFunction}${additionalParams}\n`;
     } else {
-        return `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}(${inputName}.iloc[:, ${columnName}]${additionalParams})\n`;
+        return `${outputName}.iloc[:, ${columnName}] = ${inputName}.iloc[:, ${columnName}].${conversionFunction}${additionalParams}\n`;
     }
 }
   

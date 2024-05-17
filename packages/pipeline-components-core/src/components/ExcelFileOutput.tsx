@@ -165,7 +165,8 @@ export class ExcelFileOutput extends PipelineComponent<ComponentItem>() {
              `    ${inputName}.to_excel(writer, index=False${optionsString})
   `;
     } else {
-      code = `${inputName}.to_excel("${config.filePath}", index=False${optionsString})
+      code = `
+${inputName}.to_excel("${config.filePath}", index=False${optionsString})
   `;
     }
     return code;

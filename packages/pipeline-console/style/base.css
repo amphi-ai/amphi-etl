@@ -2,7 +2,6 @@
   flex-direction: column;
   overflow: auto;
   font-size: var(--jp-ui-font-size0);
-  max-width: 2080px;
 }
 
 .amphi-Console-table {
@@ -13,11 +12,14 @@
   color: var(--jp-content-font-color1);
 }
 
+.amphi-Console-table-row {
+}
+
 .amphi-Console-date {
   vertical-align: top;
-  width: 8em;
-  min-width: 8em;
-  max-width: 8em;
+  width: 9em;
+  min-width: 9em;
+  max-width: 9em;
 }
 
 .amphi-Console pre {
