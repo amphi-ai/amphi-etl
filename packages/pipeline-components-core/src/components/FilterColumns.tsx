@@ -5,7 +5,7 @@ import { crosshairIcon } from '../icons';
 
 export class FilterColumns extends PipelineComponent<ComponentItem>() {
 
-  public _name = "Filter Columns";
+  public _name = "Drop Columns";
   public _id = "filterColumn";
   public _type = "pandas_df_processor";
   public _category = "transform";

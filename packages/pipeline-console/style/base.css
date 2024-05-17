@@ -2,6 +2,7 @@
   flex-direction: column;
   overflow: auto;
   font-size: var(--jp-ui-font-size0);
+  max-width: 2080px;
 }
 
 .amphi-Console-table {

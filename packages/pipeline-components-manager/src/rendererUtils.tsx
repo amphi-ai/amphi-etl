@@ -4,6 +4,8 @@
 import { LabIcon } from '@jupyterlab/ui-components';
 import { xIcon } from './icons';
 import React, { useMemo } from 'react';
+import { QuestionCircleOutlined } from '@ant-design/icons';
+
 import { getConnectedEdges, Handle, useNodeId, useStore } from 'reactflow';
 import { Popconfirm } from 'antd';
 
@@ -93,7 +95,7 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
       <div className="component" onDoubleClick={handleDoubleClick}>
         <div className="component__header">
           {name}
-          <Popconfirm title="Sure to delete?" onConfirm={() => deleteNode()}>
+          <Popconfirm title="Sure to delete?" placement="right" onConfirm={() => deleteNode()} icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
             <div className='deletebutton'>
               <xIcon.react className="group-hover:text-primary" />
             </div>

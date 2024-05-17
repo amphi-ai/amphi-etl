@@ -1,12 +1,13 @@
 import { KernelMessage } from '@jupyterlab/services';
 import difference from 'lodash/difference';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import { DndProvider, useDrag, useDrop } from "react-dnd";
 
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { CodeGenerator } from '../CodeGenerator';
 import { PipelineService } from '../PipelineService';
 import { RequestService } from '../RequestService';
+import DndProviderWrapper from '../DndProviderWrapper';
 
 import type { GetProp, TableColumnsType, TableProps, TransferProps } from 'antd';
 import { Button, Space, Table, Tag, Transfer } from 'antd';
@@ -56,13 +57,6 @@ export const TransferData: React.FC<TransferDataProps> = ({
     rightColumns: TableColumnsType<DataType>;
   }
 
-  // Define a unique type for TransferData
-  const TRANSFER_DATA_TYPE = 'TransferDataRow'
-
-  // Use context to avoid conflict with other drag and drop in the app
-  // solution from https://github.com/react-dnd/react-dnd/issues/3304
-  const DnDRef = React.useRef(null);
-
   interface DragItem {
     type: string;
     index: number;
@@ -71,9 +65,9 @@ export const TransferData: React.FC<TransferDataProps> = ({
   const DragableBodyRow = ({ index, rowDrop, className, style, ...restProps }) => {
     const ref = React.useRef();
     const [{ isOver, dropClassName }, drop] = useDrop({
-      accept: TRANSFER_DATA_TYPE,
+      accept: 'DragableBodyRow',
       collect: (monitor) => {
-        const item = monitor.getItem() as DragItem;
+        const item = monitor.getItem() as DragItem; // Cast to DragItem
         if (item && item.index === index) {
           return {};
         }
@@ -86,22 +80,22 @@ export const TransferData: React.FC<TransferDataProps> = ({
         rowDrop(item.index, index);
       },
     });
-  
+
     const [, drag] = useDrag<DragItem>({
-      type: TRANSFER_DATA_TYPE,
-      item: { type: TRANSFER_DATA_TYPE, index },
+      type: 'DragableBodyRow',
+      item: { type: 'DragableBodyRow', index },
       collect: (monitor) => ({
         isDragging: monitor.isDragging(),
       }),
     });
-  
-    drop(drag(ref));
-  
+
+    drag(drop(ref));
+
     return (
       <tr
         ref={ref}
         className={`${className}${isOver ? dropClassName : ''} draggable`}
-        style={{ cursor: 'move', ...style }}
+        style={{ cursor: 'move', opacity: isOver ? 0.5 : 1, ...style }} // Added opacity change
         {...restProps}
       />
     );
@@ -176,35 +170,31 @@ export const TransferData: React.FC<TransferDataProps> = ({
             handleChange(savedSchema, field.id);
           };
 
-          
-
           return (
-            <div ref={DnDRef} >
-            <DndProvider backend={HTML5Backend} context={DnDRef}>
+            <DndProviderWrapper>
               <Table
-                rowSelection={rowSelection}
-                columns={columns}
-                dataSource={filteredItems}
-                components={{
-                  body: {
-                    row: DragableBodyRow,
-                  },
-                }}
-                size="small"
-                style={{ pointerEvents: listDisabled ? 'none' : undefined }}
-                onRow={(record, idx) => ({
-                  index: idx, // Pass the correct index to the row
-                  rowDrop,
-                  onClick: () => {
-                    if (record.disabled) {
-                      return;
-                    }
-                    onItemSelect(record.key, !listSelectedKeys.includes(record.key)); // Toggle selection
-                  },
-                })}
-              />
-            </DndProvider>
-            </div>
+                  rowSelection={rowSelection}
+                  columns={columns}
+                  dataSource={filteredItems}
+                  components={{
+                    body: {
+                      row: DragableBodyRow,
+                    },
+                  }}
+                  size="small"
+                  style={{ pointerEvents: listDisabled ? 'none' : undefined }}
+                  onRow={(record, idx) => ({
+                    index: idx, // Pass the correct index to the row
+                    rowDrop,
+                    onClick: () => {
+                      if (record.disabled) {
+                        return;
+                      }
+                      onItemSelect(record.key, !listSelectedKeys.includes(record.key)); // Toggle selection
+                    },
+                  })}
+                />
+              </DndProviderWrapper>
           );
         }
 
