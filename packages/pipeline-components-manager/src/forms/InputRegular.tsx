@@ -27,7 +27,6 @@ export const InputRegular = ({ field, value, handleChange, context, advanced }) 
 
   const filterOptions = (inputValue: string, option: any) => {
     if (!option || option.value === undefined) {
-      console.error("Option or option.value is undefined:", option);
       return false;
     }
   

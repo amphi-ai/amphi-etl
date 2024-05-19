@@ -163,12 +163,14 @@ const pipelines: JupyterFrontEndPlugin<void> = {
           handler.ready.then(() => {
             resolve(handler);
             connector.ready.then(async () => {
-
               session.session.kernel.anyMessage.connect((sender, args) => {
+
                 if (manager.panel) {
                   if (args.direction === 'recv') {
                     // Filter and process kernel messages here
                     // For example, args.msg.header.msg_type might be 'stream' for log messages
+
+                    // console.log("MESSAGE %o", args.msg);
 
                     if (args.msg.header.msg_type === 'execute_result' || args.msg.header.msg_type === 'display_data') {
                       // Assert the message type to IExecuteResultMsg or IDisplayDataMsg to access 'data'
@@ -177,6 +179,7 @@ const pipelines: JupyterFrontEndPlugin<void> = {
                         manager.panel.onNewLog(formatLogDate(args.msg.header.date), "data", content.data['text/html'])
                       }
                     }
+
                     else if (args.msg.header.msg_type === 'stream') {
                       const streamMsg = args.msg as KernelMessage.IStreamMsg;
 

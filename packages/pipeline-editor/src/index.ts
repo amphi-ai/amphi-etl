@@ -358,25 +358,29 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           packages = [...packages, ...dependencies];
 
           if (packages.length > 0 && packages[0] != null && packages[0] !== '') {
+
             const pips_code = PipelineService.getInstallCommandsFromPackageNames(packages).join('\n');
             // Install packages
             try {
 
               const future = current.context.sessionContext.session.kernel!.requestExecute({ code: pips_code });
 
-              future.onReply = reply => {
-
-                if (reply.content.status == "ok") {
-                  console.log("Dependencies installed successfully")
-                } else if (reply.content.status == "error") {
-                  console.log("Error when installing dependencies")
-                } else if (reply.content.status == "abort") {
-                  console.log("Error when installing dependencies")
-                } else {
-                  console.log("Error when installing dependencies")
+              future.onIOPub = msg => {
+                if (msg.header.msg_type === 'stream') {
+                  // Handle stream messages if necessary
+                } else if (msg.header.msg_type === 'error') {
+                  // Handle error messages
+                  const errorMsg = msg as KernelMessage.IErrorMsg;
+                  const errorOutput = errorMsg.content;
+          
+                  console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
                 }
               };
-
+          
+              future.onDone = () => {
+                console.log("Dependencies installed.")
+              };
+          
               await future.done;
 
             } catch (error) {
@@ -388,41 +392,77 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
         // Third, run pipeline code
         current.context.sessionContext.ready.then(async () => {
 
-        try {
-        // Create promise to track success or failure of the request
+          try {
+            // Create promise to track success or failure of the request
+            const delegate = new PromiseDelegate<ReadonlyJSONValue>();
+            const start = performance.now();
 
+            Notification.promise(delegate.promise, {
+              // Message when the task is pending
+              pending: { message: 'Running...', options: { autoClose: false } },
+              // Message when the task finished successfully
+              success: {
+                message: (result: any) => `Pipeline execution successful after ${result.delayInSeconds} seconds.`,
+                options: {
+                  autoClose: 3000
+                }
+              },
+              // Message when the task finished with errors
+              error: {
+                message: () => 'Pipeline execution failed. Check error messages in the Log Console.',
+                options: {
+                  actions: [
+                    {
+                      label: 'Log Console',
+                      callback: () => {
+                        const command = 'pipeline-console:open';
+                        commands.execute(command, {}).catch(reason => {
+                          console.error(
+                            `An error occurred during the execution of ${command}.\n${reason}`
+                          );
+                        });
+                      }
+                    }
+                  ],
+                  autoClose: 5000
+                }
+              }
+            });
 
             const future = current.context.sessionContext.session.kernel!.requestExecute({ code: args.code });
 
             future.onReply = reply => {
-
-              if (reply.content.status == "ok") {
-                console.log("Execution: OK")
-              } else if (reply.content.status == "error") {
-                console.error("Execution: error")
-              } else if (reply.content.status == "abort") {
-                console.log("Execution: abort")
+              const end = performance.now();
+              const delay = end - start;
+              const delayInSeconds = (delay / 1000).toFixed(1);
+        
+              if (reply.content.status === "ok") {
+                delegate.resolve({ delayInSeconds });
               } else {
-                console.log("Execution: unknown")
+                delegate.reject({ delayInSeconds });
               }
             };
-
+        
             future.onIOPub = msg => {
-
               if (msg.header.msg_type === 'stream') {
-                const streamMsg = msg as KernelMessage.IStreamMsg;
-                // const output = streamMsg.content.text;
+                // Handle stream messages if necessary
               } else if (msg.header.msg_type === 'error') {
-
                 // Handle error messages
-                const errorMsg = msg as KernelMessage.IErrorMsg; // If using TypeScript
-                const errorOutput = errorMsg.content; // This contains the error details
-
-                // Send an error notification with an action button
+                const errorMsg = msg as KernelMessage.IErrorMsg;
+                const errorOutput = errorMsg.content;
+        
                 console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
               }
             };
-
+        
+            future.onDone = () => {
+              const end = performance.now();
+              const delay = end - start;
+              const delayInSeconds = (delay / 1000).toFixed(1);
+        
+              delegate.resolve({ delayInSeconds });
+            };
+        
             await future.done;
 
           } catch (error) {

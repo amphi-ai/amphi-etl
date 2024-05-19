@@ -262,7 +262,7 @@ const pipelines: JupyterFrontEndPlugin<void> = {
 
 
     /**
-     * Subscribes to the creation of new consoles. If a new notebook is created, build a new handler for the consoles.
+     * Subscribes to the creation of new pipelines. If a new notebook is created, build a new handler for the consoles.
      * Adds a promise for a instanced handler to the 'handlers' collection.
      */
     pipelines.widgetAdded.connect((sender, pipelinePanel) => {

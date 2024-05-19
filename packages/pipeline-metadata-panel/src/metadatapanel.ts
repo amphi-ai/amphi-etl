@@ -74,6 +74,7 @@ export class MetadataPanelPanel
     sender: any,
     allArgs: IMetadataPanel.IMetadataPanelUpdate
   ): void {
+    console.log("Update detected")
     if (!this.isAttached) {
       return;
     }

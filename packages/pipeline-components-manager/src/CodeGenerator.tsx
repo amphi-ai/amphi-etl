@@ -220,6 +220,7 @@ export class CodeGenerator {
       let inputName = '';
       let outputName = '';
 
+
       switch (component_type) {
         case 'pandas_df_processor':
           incrementCounter(component_id);

@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import ReactDOMServer from 'react-dom/server';
 import DataView from './DataView'; // Assume DataView is your React component
-import { Alert, Button, DatePicker, Typography, Space } from 'antd';
-import { ClockCircleOutlined } from '@ant-design/icons';
+import { Alert, Spin, DatePicker, Typography, Space } from 'antd';
+import { ClockCircleOutlined, LoadingOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
 
@@ -98,9 +98,30 @@ export class PipelineConsolePanel
   `;
     cell.style.padding = "5px";  // Remove padding from the cell
     cell.className = TABLE_DATE_CLASS;
+    const spinIndicator = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
     // Initially set the background color to beige/yellow to attract attention
     switch (level) {
+      case "busy":
+        cell = row.insertCell(1);
+        cell.style.padding = "5px"; // Remove padding from the cell
+        container = document.createElement('div'); // Create a container for the React component
+        cell.appendChild(container); // Append the container to the cell
+    
+        ReactDOM.render(
+          <Alert
+              showIcon
+              description={
+                  <div>
+                      <Spin indicator={spinIndicator} /> 
+                      <span dangerouslySetInnerHTML={{ __html: 'Execution in progress...' }} />
+                  </div>
+              }
+              type='info'
+          />,
+          container
+      );
+        break;
       case "info":
         cell = row.insertCell(1);
         cell.style.padding = "5px"; // Remove padding from the cell

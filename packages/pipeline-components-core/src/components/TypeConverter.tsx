@@ -193,7 +193,7 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
     const columnNamed = config.column.named;
     const dataType = config.dataType[config.dataType.length - 1];
 
-    let code = `# Initialize the output DataFrame\n`;
+    let code = `\n\n# Initialize the output DataFrame\n`;
     code += `${outputName} = ${inputName}.copy()\n`;
     code += `# Convert ${columnName} from ${columnType} to ${dataType}\n`;
 
@@ -230,5 +230,4 @@ private generateConversionCode(inputName: string, outputName: string, columnName
     }
 }
   
-
 }
