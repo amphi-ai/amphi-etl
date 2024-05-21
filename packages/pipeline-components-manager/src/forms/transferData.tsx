@@ -33,7 +33,7 @@ export const TransferData: React.FC<TransferDataProps> = ({
 
   type TransferItem = GetProp<TransferProps, 'dataSource'>[number];
   type TableRowSelection<T extends object> = TableProps<T>['rowSelection'];
-  
+
 
   interface RecordType {
     key: string;
@@ -147,24 +147,24 @@ export const TransferData: React.FC<TransferDataProps> = ({
           const rowDrop = (dragIndex, hoverIndex) => {
             console.log("dragIndex:", dragIndex);
             console.log("hoverIndex:", hoverIndex);
-          
+
             // Ensure the indices are valid
             if (dragIndex === undefined || hoverIndex === undefined) {
               console.error("Invalid drag or hover index");
               return;
             }
-          
+
             // Create a copy of the target keys with all properties intact
             let newKeys = [...targetKeys];
-          
+
             console.log("Initial newKeys:", newKeys);
-          
+
             // Extract the dragged item and re-insert at the hover index
             const dragRow = newKeys.splice(dragIndex, 1)[0]; // Ensure correct extraction
             newKeys.splice(hoverIndex, 0, dragRow); // Insert at the correct position
-          
+
             console.log("Updated newKeys:", newKeys);
-          
+
             setTargetKeys(newKeys);
             const savedSchema = { sourceData: sourceData, targetKeys: newKeys }
             handleChange(savedSchema, field.id);
@@ -173,28 +173,28 @@ export const TransferData: React.FC<TransferDataProps> = ({
           return (
             <DndProviderWrapper>
               <Table
-                  rowSelection={rowSelection}
-                  columns={columns}
-                  dataSource={filteredItems}
-                  components={{
-                    body: {
-                      row: DragableBodyRow,
-                    },
-                  }}
-                  size="small"
-                  style={{ pointerEvents: listDisabled ? 'none' : undefined }}
-                  onRow={(record, idx) => ({
-                    index: idx, // Pass the correct index to the row
-                    rowDrop,
-                    onClick: () => {
-                      if (record.disabled) {
-                        return;
-                      }
-                      onItemSelect(record.key, !listSelectedKeys.includes(record.key)); // Toggle selection
-                    },
-                  })}
-                />
-              </DndProviderWrapper>
+                rowSelection={rowSelection}
+                columns={columns}
+                dataSource={filteredItems}
+                components={{
+                  body: {
+                    row: DragableBodyRow,
+                  },
+                }}
+                size="small"
+                style={{ pointerEvents: listDisabled ? 'none' : undefined }}
+                onRow={(record, idx) => ({
+                  index: idx, // Pass the correct index to the row
+                  rowDrop,
+                  onClick: () => {
+                    if (record.disabled) {
+                      return;
+                    }
+                    onItemSelect(record.key, !listSelectedKeys.includes(record.key)); // Toggle selection
+                  },
+                })}
+              />
+            </DndProviderWrapper>
           );
         }
 
@@ -211,9 +211,9 @@ export const TransferData: React.FC<TransferDataProps> = ({
     console.log("Transfer Data, items %o", items)
 
     setSourceData(items.map(item => ({
-        ...item,
-        key: item.value,
-        title: item.value
+      ...item,
+      key: item.value,
+      title: item.value
     })));
   }, [items]);
 
@@ -252,18 +252,25 @@ export const TransferData: React.FC<TransferDataProps> = ({
   const renderFooter: TransferProps['footer'] = (_, info) => {
     if (info?.direction === 'left') {
       return (
-        <Button type="primary" size="small" style={{ float: 'left', margin: 5 }} onClick={(event) => RequestService.retrieveDataframeColumns(
-          event,
-          context,
-          commands,
-          componentService,
-          setItems,
-          setLoadings,
-          nodeId,
-          0,
-          true
-        )}
-        loading={loadings}>
+        <Button
+          type="primary"
+          size="small"
+          style={{ float: 'left', margin: 5 }}
+          onClick={(event) => {
+            setItems([]);
+            RequestService.retrieveDataframeColumns(
+              event,
+              context,
+              commands,
+              componentService,
+              setItems,
+              setLoadings,
+              nodeId,
+              0,
+              true
+            );
+          }}
+          loading={loadings}>
           Retrieve columns
         </Button>
       );

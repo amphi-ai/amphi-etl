@@ -9,7 +9,6 @@ import { ClockCircleOutlined, LoadingOutlined } from '@ant-design/icons';
 
 const { Text } = Typography;
 
-
 const TITLE_CLASS = 'amphi-Console-title';
 const PANEL_CLASS = 'amphi-Console';
 const TABLE_CLASS = 'amphi-Console-table';
@@ -82,7 +81,7 @@ export class PipelineConsolePanel
 
     // Insert a new row at the beginning of the table footer
     let row = this._console.tFoot!.insertRow(0); // Changed from -1 to 0
-    row.className = `${TABLE_ROW_CLASS}`; // Apply the transition class
+    row.className = `${TABLE_ROW_CLASS}`;
 
     // Add cells to the new row
     let cell = row.insertCell(0);
@@ -117,7 +116,7 @@ export class PipelineConsolePanel
         ReactDOM.render(
             <Alert
                 showIcon
-                description={<div dangerouslySetInnerHTML={{ __html: content }} />}
+                message={<div dangerouslySetInnerHTML={{ __html: content }} />}
                 type={alertType}
             />,
             container
@@ -140,7 +139,7 @@ export class PipelineConsolePanel
         break;
       case "data":
         cell = row.insertCell(1);
-        cell.style.padding = "0";  // Remove padding from the cell
+        cell.style.padding = "5";  // Remove padding from the cell
         container = document.createElement('div'); // Create a container for the React component
         cell.appendChild(container);  // Append the container to the cell
         ReactDOM.render(<DataView htmlData={content} />, container);
@@ -152,11 +151,15 @@ export class PipelineConsolePanel
 
     // Scroll to the top
     this._console.parentElement.scrollTop = 0; // Changed to scroll to the top
+  }
 
-    // Revert the background color after a few seconds (3 seconds in this example) to trigger the fade effect
-    setTimeout(() => {
-      row.style.backgroundColor = ""; // Fade to original/transparent color
-    }, 3000); // This duration should match the CSS transition duration
+  clearLogs(): void {
+    // Check if table footer exists and remove all its rows
+    if (this._console.tFoot) {
+      while (this._console.tFoot.rows.length > 0) {
+        this._console.tFoot.deleteRow(0);
+      }
+    }
   }
 
   /**

@@ -33,6 +33,7 @@ const logsconsole: JupyterFrontEndPlugin<IPipelineConsoleManager> = {
     labShell: ILabShell
   ): IPipelineConsoleManager => {
     const manager = new LogConsoleManager();
+
     const category = 'Pipeline Console';
     const command = CommandIDs.open;
     const label = 'Pipeline Console';
@@ -105,8 +106,25 @@ const logsconsole: JupyterFrontEndPlugin<IPipelineConsoleManager> = {
     });
 
     palette.addItem({ command, category });
+
+    app.commands.addCommand('pipeline-console:clear', {
+      execute: () => {
+        manager.panel.clearLogs();
+      },
+      label: 'Clear Console'
+    });
+
+    app.contextMenu.addItem({
+      command: 'pipeline-console:clear',
+      selector: '.amphi-Console',
+      rank: 1
+     });
+
     console.log('JupyterLab extension @amphi/pipeline-log-console is activated!');
     return manager;
+
+
+
   }
 };
 

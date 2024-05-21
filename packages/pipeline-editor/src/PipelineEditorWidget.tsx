@@ -342,7 +342,6 @@ const PipelineWrapper: React.FC<IProps> = ({
   function Sidebar() {
 
     const [sidebarOpen, setSideBarOpen] = useState(false);
-
     const sidebarClass = sidebarOpen ? "" : "open";
 
     const onDragStart = (event, nodeType, config) => {
