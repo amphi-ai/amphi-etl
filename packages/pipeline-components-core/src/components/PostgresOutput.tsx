@@ -1,16 +1,16 @@
 import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig } from '@amphi/pipeline-components-manager';
 import React, { useCallback, useEffect } from 'react';
 import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
-import { mySQLIcon } from '../icons'; // Assuming databaseIcon is an available icon similar to filePlusIcon
+import { postgresIcon } from '../icons'; // Assuming databaseIcon is an available icon similar to filePlusIcon
 
-export class MySQLOutput extends PipelineComponent<ComponentItem>() {
+export class PostgresOutput extends PipelineComponent<ComponentItem>() {
 
-  public _name = "MySQL Output";
-  public _id = "mySQLOutput";
+  public _name = "Postgres Output";
+  public _id = "postgresOutput";
   public _type = "pandas_df_output";
   public _category = "output";
-  public _icon = mySQLIcon; // Adjust if there's a different icon for databases
-  public _default = { dbOptions: { host: "localhost", port: "3306", databaseName: "", tableName: "", username: "", password: "" }, ifTableExists: "fail", mode: "insert" };
+  public _icon = postgresIcon; // Adjust if there's a different icon for databases
+  public _default = { dbOptions: { host: "localhost", port: "5432", databaseName: "", tableName: "", username: "", password: "" }, ifTableExists: "fail", mode: "insert" };
   public _form = {
     idPrefix: "component__form",
     fields: [
@@ -78,30 +78,44 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
       },
       {
         type: "dataMapping",
-        imports: ["pymysql"],
         label: "Mapping",
         id: "mapping",
         tooltip: "By default the mapping is inferred from the input data. By specifying a schema you override the incoming schema.",
         outputType: "relationalDatabase",
-        drivers: "mysql+pymysql",
+        imports: ["psycopg2-binary"],
+        drivers: "postgresql",
         typeOptions: [
-          { value: "INT", label: "INT" },
+          { value: "SMALLINT", label: "SMALLINT" },
+          { value: "INTEGER", label: "INTEGER" },
+          { value: "BIGINT", label: "BIGINT" },
+          { value: "SERIAL", label: "SERIAL" },
+          { value: "BIGSERIAL", label: "BIGSERIAL" },
+          { value: "DECIMAL", label: "DECIMAL" },
+          { value: "NUMERIC", label: "NUMERIC" },
+          { value: "REAL", label: "REAL" },
+          { value: "DOUBLE PRECISION", label: "DOUBLE PRECISION" },
+          { value: "SMALLSERIAL", label: "SMALLSERIAL" },
+          { value: "MONEY", label: "MONEY" },
+          { value: "CHAR", label: "CHAR" },
           { value: "VARCHAR", label: "VARCHAR" },
           { value: "TEXT", label: "TEXT" },
-          { value: "DATE", label: "DATE" },
-          { value: "DATETIME", label: "DATETIME" },
+          { value: "BYTEA", label: "BYTEA" },
           { value: "TIMESTAMP", label: "TIMESTAMP" },
+          { value: "DATE", label: "DATE" },
           { value: "TIME", label: "TIME" },
-          { value: "YEAR", label: "YEAR" },
+          { value: "INTERVAL", label: "INTERVAL" },
           { value: "BOOLEAN", label: "BOOLEAN" },
-          { value: "DECIMAL", label: "DECIMAL" },
-          { value: "FLOAT", label: "FLOAT" },
-          { value: "DOUBLE", label: "DOUBLE" },
-          { value: "BLOB", label: "BLOB" },
+          { value: "UUID", label: "UUID" },
+          { value: "XML", label: "XML" },
+          { value: "JSON", label: "JSON" },
+          { value: "JSONB", label: "JSONB" },
+          { value: "ARRAY", label: "ARRAY" },
+          { value: "CIDR", label: "CIDR" },
+          { value: "INET", label: "INET" },
+          { value: "MACADDR", label: "MACADDR" },
           { value: "BIT", label: "BIT" },
-          { value: "ENUM", label: "ENUM" },
-          { value: "SET", label: "SET" },
-          { value: "JSON", label: "JSON" }
+          { value: "TSVECTOR", label: "TSVECTOR" },
+          { value: "TSQUERY", label: "TSQUERY" }
         ],
         advanced: true
       }
@@ -172,7 +186,7 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
   const internals = { nodeInternals, edges, nodeId }
 
     const handleElement = React.createElement(renderHandle, {
-      type: MySQLOutput.Type,
+      type: PostgresOutput.Type,
       Handle: Handle,
       Position: Position,
       internals: internals
@@ -186,9 +200,9 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
           context: context,
           manager: manager,
           commands: commands,
-          name: MySQLOutput.Name,
-          ConfigForm: MySQLOutput.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes }),
-          Icon: MySQLOutput.Icon,
+          name: PostgresOutput.Name,
+          ConfigForm: PostgresOutput.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes }),
+          Icon: PostgresOutput.Icon,
           showContent: showContent,
           handle: handleElement,
           deleteNode: deleteNode,
@@ -198,14 +212,18 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  // https://stackoverflow.com/questions/63881687/how-to-upsert-pandas-dataframe-to-mysql-with-sqlalchemy
+  public provideDependencies({ config }): string[] {
+    let deps: string[] = [];
+    deps.push('psycopg2-binary');
+    return deps;
+  }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "import sqlalchemy", "import pymysql"];
+    return ["import pandas as pd", "import sqlalchemy", "import psycopg2"];
   }
 
   public generateComponentCode({ config, inputName }): string {
-    const connectionString = `mysql+pymysql://${config.dbOptions.username}:${config.dbOptions.password}@${config.dbOptions.host}:${config.dbOptions.port}/${config.dbOptions.databaseName}`;
+    const connectionString = `postgresql://${config.dbOptions.username}:${config.dbOptions.password}@${config.dbOptions.host}:${config.dbOptions.port}/${config.dbOptions.databaseName}`;
     const uniqueEngineName = `${inputName}Engine`;
     let mappingsCode = "";
     let columnsCode = "";
@@ -248,10 +266,9 @@ ${inputName} = ${inputName}[[${selectedColumns}]]
   const ifExistsAction = config.ifTableExists === "fail" ? "fail" : "replace";
 
   const code = `
-# Connect to MySQL and output into table
+# Connect to Postgres and output into table
 ${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
-${mappingsCode}
-${columnsCode}
+${mappingsCode}${columnsCode}
 ${inputName}.to_sql(
   name="${config.dbOptions.tableName}",
   con=${uniqueEngineName},

@@ -271,9 +271,10 @@ export const DataMapping: React.FC<DataMappingProps> = ({
               setDataSource([]);
               RequestService.retrieveTableColumns(
                 event,
+                field.imports,
                 `${field.drivers}://${data.dbOptions.username}:${data.dbOptions.password}@${data.dbOptions.host}:${data.dbOptions.port}/${data.dbOptions.databaseName}`,
                 `${data.dbOptions.tableName}`,
-                `DESCRIBE ${data.dbOptions.tableName}`,
+                `\\dt ${data.dbOptions.tableName}`,
                 context,
                 commands,
                 componentService,

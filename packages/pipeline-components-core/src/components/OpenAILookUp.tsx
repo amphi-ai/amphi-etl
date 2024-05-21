@@ -8,7 +8,7 @@ export class OpenAILookUp extends PipelineComponent<ComponentItem>() {
   public _name = "OpenAI Prompt";
   public _id = "openAiLookup";
   public _type = "pandas_df_processor";
-  public _category = "transform";
+  public _category = "AI";
   public _icon = openAiIcon;
   public _default = { maxToken: 256, temperature: 0.3, model: "gpt-3.5-turbo",
   systemPrompt: "You are part of a Python data pipeline using Pandas. Your task is to generate responses for each row of a DataFrame. Just provide the response as short as possible, don't write any sentence." };

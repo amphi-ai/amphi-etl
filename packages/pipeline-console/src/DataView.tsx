@@ -6,6 +6,8 @@ const DataView = ({ htmlData }: { htmlData: string }) => {
   const [columns, setColumns] = useState<Array<{ title: string, dataIndex: string, key: string }>>([]);
 
   useEffect(() => {
+    console.log("DATA %o", htmlData)
+
     const { data, headers } = htmlToJson(htmlData);
     setDataSource(data);
     setColumns(headers.map((header) => ({

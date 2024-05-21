@@ -1,16 +1,20 @@
 import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig } from '@amphi/pipeline-components-manager';
-import React, { useCallback, useEffect } from 'react';
+import React, { useContext, useEffect, useCallback, useState, useRef } from 'react';
+import type { GetRef, InputRef } from 'antd';
+import {  Form, Table, ConfigProvider, Divider, Input, Select, Space, Button, Typography, Modal, Popconfirm } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
-import { codeIcon } from '../icons';
+import { mergeIcon, settingsIcon } from '../icons';
 
-export class CustomTransformations extends PipelineComponent<ComponentItem>() {
 
-  public _name = "Custom Code";
-  public _id = "customTransformations";
-  public _type = "pandas_df_processor";
-  public _category = "transform";
-  public _icon = codeIcon;
-  public _default = { code: "output = input"};
+export class EnvFile extends PipelineComponent<ComponentItem>() {
+
+  public _name = "Env. File";
+  public _id = "envFile";
+  public _type = "env_file";
+  public _category = "other";
+  public _icon = mergeIcon;
+  public _default = { filePath: ".env" };
   public _form = {
     idPrefix: "component__form",
     fields: [
@@ -18,24 +22,13 @@ export class CustomTransformations extends PipelineComponent<ComponentItem>() {
         type: "info",
         label: "Instructions",
         id: "instructions",
-        text: "Write Python code with input as a dataframe input and output as the dataframe output.",
+        text: "Import an environment file and use the environment variable in components by typing {.",
       },
       {
-        type: "codeTextarea",
-        label: "Imports",
-        id: "import",
-        placeholder: "import pandas as pd",
-        height: '50px',
-        advanced: true
-      },
-      {
-        type: "codeTextarea",
-        label: "Code",
-        id: "code",
-        mode: "python",
-        height: '300px',
-        placeholder: "output = input",
-        advanced: true
+        type: "file",
+        label: "Environment File",
+        id: "filePath",
+        placeholder: ".env"
       }
     ],
   };
@@ -80,9 +73,9 @@ export class CustomTransformations extends PipelineComponent<ComponentItem>() {
         })}
       </>
     );
-}
+  }
 
-public UIComponent({ id, data, context, componentService, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands }) {
 
   const { setNodes, deleteElements, setViewport } = useReactFlow();
   const store = useStoreApi();
@@ -102,14 +95,12 @@ public UIComponent({ id, data, context, componentService, manager, commands }) {
   const { nodeInternals, edges } = useStore(selector);
   const nodeId = id;
   const internals = { nodeInternals, edges, nodeId }
-
   
-  // Create the handle element
   const handleElement = React.createElement(renderHandle, {
-    type: CustomTransformations.Type,
-    Handle: Handle, // Make sure Handle is imported or defined
-    Position: Position, // Make sure Position is imported or defined
-    internals: internals 
+    type: EnvFile.Type,
+    Handle: Handle,
+    Position: Position,
+    internals: internals
   });
   
   return (
@@ -120,25 +111,34 @@ public UIComponent({ id, data, context, componentService, manager, commands }) {
         context: context,
         manager: manager,
         commands: commands,
-        name: CustomTransformations.Name,
-        ConfigForm: CustomTransformations.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
-        Icon: CustomTransformations.Icon,
+        name: EnvFile.Name,
+        ConfigForm: EnvFile.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
+        Icon: EnvFile.Icon,
         showContent: showContent,
         handle: handleElement,
         deleteNode: deleteNode,
-        setViewport: setViewport,
+        setViewport: setViewport
       })}
     </>
   );
+  }
+
+  public provideImports({config}): string[] {
+    return ["from python-dotenv import load_dotenv"];
+  }
+
+  public generateComponentCode({config}): string {
+
+    let code = `
+# Load environment variables from ${config.filePath}
+load_dotenv(dotenv_path="${config.filePath}")
+`;
+
+    code += "\n";
+    
+    return code;
 }
 
-  public provideImports(config): string[] {
-    return config.imports ? config.imports.split('\n').filter(line => line.startsWith('import ')) : [];
-  }
 
-  public generateComponentCode({config, inputName, outputName}): string {
-    let code = `\n${config.code}`.replace(/input/g, inputName);
-    code = code.replace(/output/g, outputName);
-    return code;
-  }
+
 }

@@ -1,7 +1,7 @@
 import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig } from '@amphi/pipeline-components-manager';
 import React, { useContext, useEffect, useCallback, useState, useRef } from 'react';
 import type { GetRef, InputRef } from 'antd';
-import {  Form, Table, ConfigProvider, Divider, Input, Select, Space, Button, Tag, Modal, Popconfirm } from 'antd';
+import {  Form, Table, ConfigProvider, Divider, Input, Select, Space, Button, Typography, Modal, Popconfirm } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
 import { mergeIcon, settingsIcon } from '../icons';
@@ -246,8 +246,12 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
       });
 
       const [modal2Open, setModal2Open] = useState(false);
-
-    
+      const { Paragraph, Text } = Typography;
+      const info = (
+        <span>
+          Specify Environment Variables and select them in components' inputs by typing <Text keyboard>{'{ '}</Text>
+        </span>
+      );    
     return (
       <>
       <ConfigProvider
@@ -262,10 +266,19 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
         layout="vertical"
         size="small">
         <div className="flex justify-center mt-1 pt-1.5 space-x-4">
+        <Space direction="vertical" size="middle">
+          <Space.Compact>
+            <Paragraph style={{ padding: '5px' }}>
+                  {info}
+              </Paragraph>
+          </Space.Compact>
+          <Space.Compact>
           <span onClick={() => setModal2Open(true)}
             className="inline-flex items-center justify-center cursor-pointer group">
             <settingsIcon.react className="h-3 w-3 group-hover:text-primary" />
           </span>
+          </Space.Compact>
+          </Space>
         </div>
           <Modal
             title={this.Name}
@@ -283,6 +296,9 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
             <Form
               layout="vertical" >
             <div>
+              <Paragraph style={{ padding: '5px' }}>
+                {info}
+              </Paragraph>
             <Button onClick={handleAdd} type="primary" style={{ marginBottom: 16 }}>
               Add environment variable
             </Button>

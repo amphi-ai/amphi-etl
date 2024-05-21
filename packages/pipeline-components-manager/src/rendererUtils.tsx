@@ -89,6 +89,7 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
     // Example: Zoom in 1.2 times the current zoom level
     setViewport({ zoom: 1.2, duration: 500 });
   };
+  
 
   return (
     <>
@@ -113,7 +114,6 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
           </form>
         </div>
         {handle}
-
       </div>
     </>
   );

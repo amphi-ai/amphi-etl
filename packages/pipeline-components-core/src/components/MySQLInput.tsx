@@ -54,6 +54,16 @@ export class MySQLInput extends PipelineComponent<ComponentItem>() {
           id: "dbOptions.tableName",
           placeholder: "Enter table name",
         },
+        {
+          type: "codeTextarea",
+          label: "SQL Query",
+          height: '50px',
+          mode: "sql",
+          placeholder: 'SELECT * FROM table_name',
+          id: "dbOptions.sqlQuery",
+          tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
+          advanced: true
+        }
       ],
     };
   
@@ -154,14 +164,15 @@ export class MySQLInput extends PipelineComponent<ComponentItem>() {
     public generateComponentCode({ config, outputName }): string {
       let connectionString = `mysql+pymysql://${config.dbOptions.username}:${config.dbOptions.password}@${config.dbOptions.host}:${config.dbOptions.port}/${config.dbOptions.databaseName}`;
       const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
+      const sqlQuery = config.dbOptions.sqlQuery && config.dbOptions.sqlQuery.trim() ? config.dbOptions.sqlQuery : `SELECT * FROM ${config.dbOptions.tableName}`;
       const code = `
 # Connect to the MySQL database
 ${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
 with ${uniqueEngineName}.connect() as conn:
-  ${outputName} = pd.read_sql_table(
-    name="${config.dbOptions.tableName}",
-    con=conn.connection
-  ).convert_dtypes()
+    ${outputName} = pd.read_sql(
+        "${sqlQuery}",
+        con=conn.connection
+    ).convert_dtypes()
 `;
       return code;
     }

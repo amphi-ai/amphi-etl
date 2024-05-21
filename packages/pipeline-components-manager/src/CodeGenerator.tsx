@@ -114,7 +114,7 @@ export class CodeGenerator {
       if (type !== 'annotation') {
         if (type === 'logger') {
           loggersMap.set(node.id, node);
-        } else if (type === 'env_variables') {
+        } else if (type === 'env_variables' || type === 'env_file') {
           envVariablesMap.set(node.id, node);
         } else {
           nodesMap.set(node.id, node);
@@ -375,7 +375,7 @@ ${code}`;
       return replacedGroup.includes("{os.environ") ? `f"${replacedGroup}"` : `"${replacedGroup}"`;
     });
   }
-  
+
 
 
 };

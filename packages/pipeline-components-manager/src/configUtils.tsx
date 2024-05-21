@@ -372,9 +372,9 @@ export const generateUIInputs = ({
               case "info":
                 const { Paragraph } = Typography;
                 return (
-                  <Paragraph>
-                  {field.text}
-                </Paragraph>
+                  <Paragraph style={{ padding: '5px' }}>
+                    {field.text}
+                  </Paragraph>
                 );
           default:
             return null;
@@ -507,6 +507,7 @@ export interface FieldDescriptor {
   typeOptions?: any;
   inputType?: 'password';
   text?: string;
+  imports?: string[];
 }
 
 interface ConfigModalProps {

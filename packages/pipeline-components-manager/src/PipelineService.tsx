@@ -217,11 +217,16 @@ export class PipelineService {
 
   static getEnvironmentVariables(pipelineJson: string): any[] {
     const flow = PipelineService.filterPipeline(pipelineJson);
-    const envVariablesNodes = flow.nodes.filter(node => node.type === 'envVariables');
+    const envVariablesNodes = flow.nodes.filter(node => node.type === 'envVariables' );
 
     const variablesList = envVariablesNodes.reduce((acc, node) => {
       return acc.concat(node.data.variables || []);
     }, []);
+
+
+    // const envFileNodes = flow.nodes.filter(node => node.type === 'envFile' );
+
+
   
     return variablesList;
   }

@@ -32,7 +32,10 @@ export { RedditInput } from './RedditInput';
 export { FilterColumns } from './FilterColumns';
 export { Join } from './Join';
 export { OpenAILookUp } from './OpenAILookUp';
+export { EnvFile } from './EnvFile';
 export { EnvVariables } from './EnvVariables';
+export { PostgresInput } from './PostgresInput';
+export { PostgresOutput } from './PostgresOutput';
 
 
 // export { EmailLogger } from './EmailLogger';
