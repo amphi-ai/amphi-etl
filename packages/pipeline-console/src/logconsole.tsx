@@ -82,7 +82,7 @@ export class PipelineConsolePanel
 
     // Insert a new row at the beginning of the table footer
     let row = this._console.tFoot!.insertRow(0); // Changed from -1 to 0
-    row.className = `${TABLE_ROW_CLASS} fade-background-transition`; // Apply the transition class
+    row.className = `${TABLE_ROW_CLASS}`; // Apply the transition class
 
     // Add cells to the new row
     let cell = row.insertCell(0);
@@ -100,28 +100,7 @@ export class PipelineConsolePanel
     cell.className = TABLE_DATE_CLASS;
     const spinIndicator = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 
-    // Initially set the background color to beige/yellow to attract attention
     switch (level) {
-      case "busy":
-        cell = row.insertCell(1);
-        cell.style.padding = "5px"; // Remove padding from the cell
-        container = document.createElement('div'); // Create a container for the React component
-        cell.appendChild(container); // Append the container to the cell
-    
-        ReactDOM.render(
-          <Alert
-              showIcon
-              description={
-                  <div>
-                      <Spin indicator={spinIndicator} /> 
-                      <span dangerouslySetInnerHTML={{ __html: 'Execution in progress...' }} />
-                  </div>
-              }
-              type='info'
-          />,
-          container
-      );
-        break;
       case "info":
         cell = row.insertCell(1);
         cell.style.padding = "5px"; // Remove padding from the cell

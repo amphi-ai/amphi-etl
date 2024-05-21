@@ -9,10 +9,18 @@
   border-collapse: collapse;
   margin: auto;
   width: 100%;
+  max-width: 100%;
   color: var(--jp-content-font-color1);
 }
 
-.amphi-Console-table-row {
+.amphi-Console-table-row td {
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+.amphi-Console-table-row div, .amphi-Console-table-row pre {
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .amphi-Console-date {
