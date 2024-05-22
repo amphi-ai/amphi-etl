@@ -84,6 +84,7 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
         tooltip: "By default the mapping is inferred from the input data. By specifying a schema you override the incoming schema.",
         outputType: "relationalDatabase",
         drivers: "mysql+pymysql",
+        query: "DESCRIBE {{table}}",
         typeOptions: [
           { value: "INT", label: "INT" },
           { value: "VARCHAR", label: "VARCHAR" },

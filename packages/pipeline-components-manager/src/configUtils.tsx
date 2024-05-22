@@ -508,6 +508,7 @@ export interface FieldDescriptor {
   inputType?: 'password';
   text?: string;
   imports?: string[];
+  query?: string;
 }
 
 interface ConfigModalProps {

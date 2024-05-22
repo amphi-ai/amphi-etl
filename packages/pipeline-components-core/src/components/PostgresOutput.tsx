@@ -10,7 +10,7 @@ export class PostgresOutput extends PipelineComponent<ComponentItem>() {
   public _type = "pandas_df_output";
   public _category = "output";
   public _icon = postgresIcon; // Adjust if there's a different icon for databases
-  public _default = { dbOptions: { host: "localhost", port: "5432", databaseName: "", tableName: "", username: "", password: "" }, ifTableExists: "fail", mode: "insert" };
+  public _default = { dbOptions: { host: "localhost", port: "5432", databaseName: "", schema: "public", tableName: "", username: "", password: "" }, ifTableExists: "fail", mode: "insert" };
   public _form = {
     idPrefix: "component__form",
     fields: [
@@ -33,6 +33,12 @@ export class PostgresOutput extends PipelineComponent<ComponentItem>() {
         label: "Database Name",
         id: "dbOptions.databaseName",
         placeholder: "Enter database name"
+      },
+      {
+        type: "input",
+        label: "Schema",
+        id: "dbOptions.schema",
+        placeholder: "Enter schema name",
       },
       {
         type: "input",
@@ -84,6 +90,21 @@ export class PostgresOutput extends PipelineComponent<ComponentItem>() {
         outputType: "relationalDatabase",
         imports: ["psycopg2-binary"],
         drivers: "postgresql",
+        query: `
+SELECT 
+    column_name AS "Field",
+    data_type AS "Type",
+    is_nullable AS "Null",
+    column_default AS "Default",
+    CASE 
+        WHEN character_maximum_length IS NOT NULL THEN character_maximum_length::text
+        ELSE ''
+    END AS "Extra"
+FROM 
+    information_schema.columns
+WHERE 
+    table_schema = '{{schema}}' AND
+    table_name = '{{table}}';`,
         typeOptions: [
           { value: "SMALLINT", label: "SMALLINT" },
           { value: "INTEGER", label: "INTEGER" },
@@ -173,17 +194,17 @@ export class PostgresOutput extends PipelineComponent<ComponentItem>() {
       deleteElements({ nodes: [{ id }] });
     }, [id, deleteElements]);
 
-  const zoomSelector = (s) => s.transform[2] >= 1;
-  const showContent = useStore(zoomSelector);
-  
-  const selector = (s) => ({
-    nodeInternals: s.nodeInternals,
-    edges: s.edges,
-  });
+    const zoomSelector = (s) => s.transform[2] >= 1;
+    const showContent = useStore(zoomSelector);
 
-  const { nodeInternals, edges } = useStore(selector);
-  const nodeId = id;
-  const internals = { nodeInternals, edges, nodeId }
+    const selector = (s) => ({
+      nodeInternals: s.nodeInternals,
+      edges: s.edges,
+    });
+
+    const { nodeInternals, edges } = useStore(selector);
+    const nodeId = id;
+    const internals = { nodeInternals, edges, nodeId }
 
     const handleElement = React.createElement(renderHandle, {
       type: PostgresOutput.Type,
@@ -227,12 +248,12 @@ export class PostgresOutput extends PipelineComponent<ComponentItem>() {
     const uniqueEngineName = `${inputName}Engine`;
     let mappingsCode = "";
     let columnsCode = "";
-  
+
     const selectedColumns = config.mapping
       .filter(map => map.value !== null && map.value !== undefined && map.input?.value !== null && map.input?.value !== undefined)
       .map(map => `"${map.value}"`)
       .join(', ');
-  
+
     if (config.mapping && config.mapping.length > 0) {
       const renameMap = config.mapping
         .filter(map => map.input && (map.input.value || typeof map.input.value === 'number'))
@@ -247,25 +268,30 @@ export class PostgresOutput extends PipelineComponent<ComponentItem>() {
           return undefined; // Explicitly return undefined for clarity
         })
         .filter(value => value !== undefined); // Remove undefined values
-  
+
       if (renameMap.length > 0) {
         mappingsCode = `
 # Rename columns based on the mapping
 ${inputName} = ${inputName}.rename(columns={${renameMap.join(", ")}})
 `;
-    }
+      }
 
-    if (selectedColumns !== '' && selectedColumns !== undefined) {
-      columnsCode = `
+      if (selectedColumns !== '' && selectedColumns !== undefined) {
+        columnsCode = `
 # Only keep relevant columns
 ${inputName} = ${inputName}[[${selectedColumns}]]
 `;
+      }
     }
-  }
 
-  const ifExistsAction = config.ifTableExists === "fail" ? "fail" : "replace";
+    const ifExistsAction = config.ifTableExists === "fail" ? "fail" : "replace";
 
-  const code = `
+    const schemaParam = (config.dbOptions.schema && config.dbOptions.schema.toLowerCase() !== 'public')
+      ? `,
+schema="${config.dbOptions.schema}"`
+      : '';
+
+    const code = `
 # Connect to Postgres and output into table
 ${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
 ${mappingsCode}${columnsCode}
@@ -273,11 +299,11 @@ ${inputName}.to_sql(
   name="${config.dbOptions.tableName}",
   con=${uniqueEngineName},
   if_exists="${ifExistsAction}",
-  index=False
+  index=False${schemaParam}
 )
 `;
     return code;
   }
-  
+
 
 }

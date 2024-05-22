@@ -106,6 +106,7 @@ export class RequestService {
     event: React.MouseEvent<HTMLElement>,
     imports: string[],
     connectionString: string,
+    schemaName: string,
     tableName: string,
     query: string,
     context: any,
@@ -118,11 +119,17 @@ export class RequestService {
     setLoadings(true);
     const importString = imports.join(', ');
 
+    let escapedQuery = query.replace(/"/g, '\\"');
+    escapedQuery = escapedQuery.replace(/{{schema}}/g, schemaName).replace(/{{table}}/g, tableName);
+    
     let code = `
 !pip install --quiet ${importString} --disable-pip-version-check
 import pandas as pd
 from sqlalchemy import create_engine
-schema = pd.read_sql("${query}", con = create_engine("${connectionString}"))
+query = """
+${escapedQuery}
+"""
+schema = pd.read_sql(query, con = create_engine("${connectionString}"))
 column_info = schema[["Field", "Type"]]
 formatted_output = ", ".join([f"{row['Field']} ({row['Type']})" for _, row in column_info.iterrows()])
 print(formatted_output)

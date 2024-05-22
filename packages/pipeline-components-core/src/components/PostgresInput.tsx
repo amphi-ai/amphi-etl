@@ -10,7 +10,7 @@ export class PostgresInput extends PipelineComponent<ComponentItem>() {
   public _type = "pandas_df_input";
   public _category = "input";
   public _icon = postgresIcon; // Adjust if there's a different icon for databases
-  public _default = { dbOptions: { host: "localhost", port: "5432", databaseName: "", username: "", password: "", tableName: "" } };
+  public _default = { dbOptions: { host: "localhost", port: "5432", databaseName: "", username: "", password: "", schema: "public", tableName: "" } };
   public _form = {
     fields: [
       {
@@ -47,6 +47,12 @@ export class PostgresInput extends PipelineComponent<ComponentItem>() {
         placeholder: "Enter password",
         inputType: "password",
         advanced: true
+      },
+      {
+        type: "input",
+        label: "Schema",
+        id: "dbOptions.schema",
+        placeholder: "Enter schema name",
       },
       {
         type: "input",
@@ -170,7 +176,15 @@ export class PostgresInput extends PipelineComponent<ComponentItem>() {
   public generateComponentCode({ config, outputName }): string {
     let connectionString = `postgresql://${config.dbOptions.username}:${config.dbOptions.password}@${config.dbOptions.host}:${config.dbOptions.port}/${config.dbOptions.databaseName}`;
     const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
-    const sqlQuery = config.dbOptions.sqlQuery && config.dbOptions.sqlQuery.trim() ? config.dbOptions.sqlQuery : `SELECT * FROM ${config.dbOptions.tableName}`;
+
+    const tableReference = (config.dbOptions.schema && config.dbOptions.schema.toLowerCase() !== 'public')
+    ? `${config.dbOptions.schema}.${config.dbOptions.tableName}`
+    : config.dbOptions.tableName;
+
+    const sqlQuery = config.dbOptions.sqlQuery && config.dbOptions.sqlQuery.trim()
+        ? config.dbOptions.sqlQuery
+        : `SELECT * FROM ${tableReference}`;
+
     const code = `
 # Connect to the PostgreSQL database
 ${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
