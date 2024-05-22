@@ -28,7 +28,7 @@ export class LogConsoleManager implements IPipelineConsoleManager {
   }
 
   /**
-   * The current inspector panel.
+   * The current console panel.
    */
   get panel(): PipelineConsolePanel | null {
     return this._panel;

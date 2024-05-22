@@ -114,6 +114,14 @@ const logsconsole: JupyterFrontEndPlugin<IPipelineConsoleManager> = {
       label: 'Clear Console'
     });
 
+    app.commands.addCommand('pipeline-console:settings', {
+      execute: () => {
+        
+      },
+      label: 'Console Settings'
+    });
+
+
     app.contextMenu.addItem({
       command: 'pipeline-console:clear',
       selector: '.amphi-Console',

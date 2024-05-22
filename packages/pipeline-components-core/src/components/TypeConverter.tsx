@@ -203,31 +203,35 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
 }
 
 private generateConversionCode(inputName: string, outputName: string, columnName: string, columnType: string, dataType: string, columnNamed: boolean): string {
-    let conversionFunction: string;
-    let additionalParams = "";
+  let conversionFunction: string;
+  let additionalParams = "";
 
-    if (dataType.startsWith("datetime")) {
-        if (dataType.includes("[")) {
-            const unit = dataType.split("[")[1].split("]")[0];
-            additionalParams = `, unit="${unit}"`;
-        }
-        conversionFunction = `pd.to_datetime`;
-    } else if (columnType.startsWith("float") && dataType.startsWith("int")) {
-        conversionFunction = `${inputName}["${columnName}"].astype("float").fillna(0).astype("${dataType}")`;
-        if (columnNamed) {
-            return `${outputName}["${columnName}"] = ${conversionFunction}\n`;
-        } else {
-            return `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}\n`;
-        }
-    } else {
-        conversionFunction = `astype("${dataType}")`;
-    }
-
-    if (columnNamed) {
-        return `${outputName}["${columnName}"] = ${inputName}["${columnName}"].${conversionFunction}${additionalParams}\n`;
-    } else {
-        return `${outputName}.iloc[:, ${columnName}] = ${inputName}.iloc[:, ${columnName}].${conversionFunction}${additionalParams}\n`;
-    }
+  if (dataType.startsWith("datetime")) {
+      if (dataType.includes("[")) {
+          const unit = dataType.split("[")[1].split("]")[0];
+          additionalParams = `, unit="${unit}"`;
+      }
+      conversionFunction = `pd.to_datetime(${inputName}["${columnName}"]${additionalParams})`;
+      if (columnNamed) {
+          return `${outputName}["${columnName}"] = ${conversionFunction}\n`;
+      } else {
+          return `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}\n`;
+      }
+  } else if (columnType.startsWith("float") && dataType.startsWith("int")) {
+      conversionFunction = `${inputName}["${columnName}"].astype("float").fillna(0).astype("${dataType}")`;
+      if (columnNamed) {
+          return `${outputName}["${columnName}"] = ${conversionFunction}\n`;
+      } else {
+          return `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}\n`;
+      }
+  } else {
+      conversionFunction = `astype("${dataType}")`;
+      if (columnNamed) {
+          return `${outputName}["${columnName}"] = ${inputName}["${columnName}"].${conversionFunction}\n`;
+      } else {
+          return `${outputName}.iloc[:, ${columnName}] = ${inputName}.iloc[:, ${columnName}].${conversionFunction}\n`;
+      }
+  }
 }
   
 }

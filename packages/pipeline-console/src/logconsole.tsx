@@ -37,6 +37,7 @@ export class PipelineConsolePanel
     this.node.appendChild(this._console as HTMLElement);
   }
 
+
   get source(): IPipelineConsole.ILogging | null {
     return this._source;
   }

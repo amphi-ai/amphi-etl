@@ -24,6 +24,7 @@ export class KernelConnector {
       (sender: ISessionContext, newStatus: KernelMessage.Status) => {
         switch (newStatus) {
           case 'restarting':
+            this._kernelRestarted.emit(this._session.ready);
           case 'autorestarting':
             this._kernelRestarted.emit(this._session.ready);
             break;
@@ -64,6 +65,15 @@ export class KernelConnector {
    */
   get iopubMessage(): ISignal<ISessionContext, KernelMessage.IMessage> {
     return this._session.iopubMessage;
+  }
+
+  execute(
+    content: KernelMessage.IExecuteRequestMsg['content']
+  ): IShellFuture<IExecuteRequestMsg, IExecuteReplyMsg> {
+    if (!this._session.session?.kernel) {
+      throw new Error('No session available.');
+    }
+    return this._session.session.kernel.requestExecute(content);
   }
 
 }
