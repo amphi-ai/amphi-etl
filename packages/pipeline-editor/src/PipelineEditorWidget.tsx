@@ -441,7 +441,7 @@ const PipelineWrapper: React.FC<IProps> = ({
         
         <div className="description" style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: '16px' }}>
           <extensionIcon.react tag="span" width="24px" float="left" marginRight="8px" />
-          Drag and drop components in the canvas
+          Drag and drop components
         </div>
        
         <DirectoryTree
@@ -555,6 +555,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.toolbar.addItem('runPipeline', runButton);
 
     // Add Metadata panel
+    /*
     const previewPanel = new ToolbarButton({
       label: 'Metadata Panel',
       iconLabel: 'Metadata Panel',
@@ -570,6 +571,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       }
     });
     widget.toolbar.addItem('openPreviewPanel', previewPanel);
+    */
 
     // Add Log panel
     const logconsole = new ToolbarButton({

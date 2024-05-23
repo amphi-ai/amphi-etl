@@ -895,6 +895,7 @@ Editor components styles
   min-height: 120px;
   width: 180px;
   padding: 8px;
+  color: #161616;
 }
 
 .react-flow__node {

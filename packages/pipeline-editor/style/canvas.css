@@ -10,6 +10,7 @@ Editor components styles
 
 .component {
   @apply w-[180px] min-h-[120px] p-[8px];
+  color: #161616;
 }
 
 .react-flow__node {
