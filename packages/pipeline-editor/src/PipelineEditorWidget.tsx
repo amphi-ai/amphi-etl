@@ -439,9 +439,9 @@ const PipelineWrapper: React.FC<IProps> = ({
 
       <aside className={sidebarClass} title={'Components'}>
         
-        <div className="description">
+        <div className="description" style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: '16px' }}>
           <extensionIcon.react tag="span" width="24px" float="left" marginRight="8px" />
-          Drag and drop components.
+          Drag and drop components in the canvas
         </div>
        
         <DirectoryTree
