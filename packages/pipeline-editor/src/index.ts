@@ -399,7 +399,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
 
             Notification.promise(delegate.promise, {
               // Message when the task is pending
-              pending: { message: 'Running...', options: { autoClose: false } },
+              pending: { message: 'Running...', options: { autoClose: false }},
               // Message when the task finished successfully
               success: {
                 message: (result: any) => `Pipeline execution successful after ${result.delayInSeconds} seconds.`,
