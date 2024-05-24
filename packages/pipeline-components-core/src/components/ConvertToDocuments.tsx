@@ -3,7 +3,7 @@ import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow
 import { FieldDescriptor } from '@amphi/pipeline-components-manager'
 
 import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig } from '@amphi/pipeline-components-manager';
-import { sortIcon } from '../icons';
+import { changeCircleIcon } from '../icons';
 
 export class ConvertToDocuments extends PipelineComponent<ComponentItem>() {
 
@@ -11,7 +11,7 @@ export class ConvertToDocuments extends PipelineComponent<ComponentItem>() {
   public _id = "convertToDocuments";
   public _type = "pandas_df_to_documents_processor";
   public _category = "transform.RAG";
-  public _icon = sortIcon; // You should define this icon in your icons file
+  public _icon = changeCircleIcon; // You should define this icon in your icons file
   public _default = { };
   public _form = {
     idPrefix: "component__form",

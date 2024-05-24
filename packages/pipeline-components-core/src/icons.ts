@@ -27,6 +27,8 @@ import openAiSvgStr from '../style/icons/openai.svg';
 import settingsIconSvgStr from '../style/icons/settings-16.svg';
 import postgresIconSvgStr from '../style/icons/postgres.svg';
 import pineconeIconSvgStr from '../style/icons/pinecone.svg';
+import changeCircleIconSvgStr from '../style/icons/change-circle-24.svg';
+import bracesIconSvgStr from '../style/icons/braces.svg';
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -163,8 +165,15 @@ export const pineconeIcon = new LabIcon({
   svgstr: pineconeIconSvgStr
 });
 
+export const changeCircleIcon = new LabIcon({
+  name: 'amphi:changeCircle-icon',
+  svgstr: changeCircleIconSvgStr
+});
 
-
+export const bracesIcon = new LabIcon({
+  name: 'amphi:braces-icon',
+  svgstr: bracesIconSvgStr
+});
 
 
 

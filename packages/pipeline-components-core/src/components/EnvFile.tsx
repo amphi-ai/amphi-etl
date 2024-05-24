@@ -4,7 +4,7 @@ import type { GetRef, InputRef } from 'antd';
 import {  Form, Table, ConfigProvider, Divider, Input, Select, Space, Button, Typography, Modal, Popconfirm } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
-import { mergeIcon, settingsIcon } from '../icons';
+import { bracesIcon } from '../icons';
 
 
 export class EnvFile extends PipelineComponent<ComponentItem>() {
@@ -13,7 +13,7 @@ export class EnvFile extends PipelineComponent<ComponentItem>() {
   public _id = "envFile";
   public _type = "env_file";
   public _category = "other";
-  public _icon = mergeIcon;
+  public _icon = bracesIcon;
   public _default = { filePath: ".env" };
   public _form = {
     idPrefix: "component__form",

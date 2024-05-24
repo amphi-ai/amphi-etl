@@ -9,6 +9,7 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
   public _name = "Excel File Input";
   public _id = "excelfileInput";
   public _type = "pandas_df_input";
+  public _fileDrop = [ "xlsx" ];
   public _category = "input";
   public _icon = fileTextIcon;
   public _default = {};

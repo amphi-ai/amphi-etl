@@ -313,16 +313,15 @@ export const generateUIInputs = ({
               </Form.Item>
             );
             case "cascader":
-              const displayRender = (labels: string[]) => labels[labels.length - 1];
               return (
                 <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
                   <Cascader
                     value={values}
                     placeholder={field.placeholder}
                     options={field.options}
-                    displayRender={displayRender}
+                    {...(field.onlyLastValue ? { displayRender: (labels: string[]) => labels[labels.length - 1] } : {})}
                     onChange={(value: any) => handleChange(value, field.id)}
-                    />                
+                  />             
                 </Form.Item>
               );
           case "keyvalue":
@@ -486,7 +485,7 @@ export interface Option {
 }
 
 export interface FieldDescriptor {
-  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio' | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'dataMapping' | 'editableTable' | 'info';
+  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio' | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple';
   label: string;
   id: string;
   placeholder?: any;
@@ -509,6 +508,7 @@ export interface FieldDescriptor {
   text?: string;
   imports?: string[];
   query?: string;
+  onlyLastValue?: boolean;
 }
 
 interface ConfigModalProps {

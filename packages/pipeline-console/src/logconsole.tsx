@@ -114,6 +114,8 @@ export class PipelineConsolePanel
             ? "warning"
             : "info";
 
+        console.log("content %o", content)
+
         ReactDOM.render(
           <Alert
             showIcon
@@ -132,7 +134,7 @@ export class PipelineConsolePanel
           <Alert
             message="Error"
             showIcon
-            description={<div dangerouslySetInnerHTML={{ __html: content }} />}
+            description={<div dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;') }} />}
             type="error"
           />,
           container

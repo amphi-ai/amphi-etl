@@ -252,6 +252,7 @@ export class CodeGenerator {
           lastCodeGenerated = componentService.getComponent(node.type).generateComponentCode({ config, outputName });
           break;
         case 'pandas_df_output':
+        case 'documents_output':
           incrementCounter(component_id);
           inputName = nodeOutputs.get(PipelineService.findPreviousNodeId(flow, nodeId));
           lastCodeGenerated = componentService.getComponent(node.type).generateComponentCode({ config, inputName });

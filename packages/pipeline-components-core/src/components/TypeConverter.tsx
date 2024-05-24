@@ -25,6 +25,7 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
         label: "Data Type to convert to",
         id: "dataType",
         placeholder: "Select ...",
+        onlyLastValue: true,
         options: [
           {
             value: "numeric",
