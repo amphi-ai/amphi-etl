@@ -256,12 +256,34 @@ def _amphi_metadatapanel_deleteallvariables():
 
 
 def _amphi_display_documents_as_html(documents):
-    html_content = ""
-    for doc in documents:
-        html_content += f"<div><strong>Document Content:</strong> {doc.page_content}</div>"
-        html_content += f"<div><strong>Metadata:</strong> {doc.metadata}</div>"
-        html_content += "<hr>"
+    html_content = "<div id='documents'>"
+    total_docs = len(documents)
+    
+    if total_docs > 20:
+        # Display first 10 documents
+        for doc in documents[:10]:
+            html_content += f"<div><strong>Document Content:</strong> {doc.page_content}</div>"
+            html_content += f"<div><strong>Metadata:</strong> {doc.metadata}</div>"
+            html_content += "<hr>"
+        
+        # Ellipsis to indicate skipped documents
+        html_content += "<div>...</div><hr>"
+        
+        # Display last 10 documents
+        for doc in documents[-10:]:
+            html_content += f"<div><strong>Document Content:</strong> {doc.page_content}</div>"
+            html_content += f"<div><strong>Metadata:</strong> {doc.metadata}</div>"
+            html_content += "<hr>"
+    else:
+        # Display all documents if total is 20 or less
+        for doc in documents:
+            html_content += f"<div><strong>Document Content:</strong> {doc.page_content}</div>"
+            html_content += f"<div><strong>Metadata:</strong> {doc.metadata}</div>"
+            html_content += "<hr>"
+    
+    html_content += "</div>"
     display(HTML(html_content))
+
   `;
   
   

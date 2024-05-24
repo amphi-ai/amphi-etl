@@ -37,7 +37,7 @@ export { EnvVariables } from './EnvVariables';
 export { PostgresInput } from './PostgresInput';
 export { PostgresOutput } from './PostgresOutput';
 export { ConvertToDocuments } from './ConvertToDocuments';
-
+export { PineconeOutput } from './PineconeOutput';
 // export { EmailLogger } from './EmailLogger';
 // export { Annotation } from './Annotation';
 // export { FileLogger } from './FileLogger';

@@ -26,7 +26,7 @@ import randomIconSvgStr from '../style/icons/random-24.svg';
 import openAiSvgStr from '../style/icons/openai.svg';
 import settingsIconSvgStr from '../style/icons/settings-16.svg';
 import postgresIconSvgStr from '../style/icons/postgres.svg';
-
+import pineconeIconSvgStr from '../style/icons/pinecone.svg';
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -156,6 +156,11 @@ export const settingsIcon = new LabIcon({
 export const postgresIcon = new LabIcon({
   name: 'amphi:postgres-icon',
   svgstr: postgresIconSvgStr
+});
+
+export const pineconeIcon = new LabIcon({
+  name: 'amphi:pinecone-icon',
+  svgstr: pineconeIconSvgStr
 });
 
 

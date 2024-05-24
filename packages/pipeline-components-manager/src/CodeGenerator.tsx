@@ -269,7 +269,7 @@ export class CodeGenerator {
             if (!fromStart) {
               code = lastCodeGenerated;
             }
-            code += '\n' + 'display_documents_as_html(' + nodeOutputs.get(nodeId) + ')';
+            code += '\n' + '_amphi_display_documents_as_html(' + nodeOutputs.get(nodeId) + ')';
           } else {
             if (!fromStart) {
               code = lastCodeGenerated;

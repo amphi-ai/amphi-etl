@@ -49,6 +49,7 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
       );
 
     case "pandas_df_output":
+    case "documents_output":
       return (
         <LimitedInputHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in" />
       );

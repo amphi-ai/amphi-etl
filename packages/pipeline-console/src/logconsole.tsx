@@ -90,10 +90,10 @@ export class PipelineConsolePanel
     cell.innerHTML = `
     <span>
       ${ReactDOMServer.renderToString(
-        <Space>
-          <Text>{date}</Text>
-        </Space>
-      )}
+      <Space>
+        <Text>{date}</Text>
+      </Space>
+    )}
     </span>
   `;
     cell.style.padding = "5px";  // Remove padding from the cell
@@ -106,21 +106,21 @@ export class PipelineConsolePanel
         cell.style.padding = "5px"; // Remove padding from the cell
         container = document.createElement('div'); // Create a container for the React component
         cell.appendChild(container); // Append the container to the cell
-    
+
         // Determine the alert type based on content
         let alertType: "info" | "warning" | "success" = /SUCCESS/i.test(content)
-            ? "success"
-            : /ERROR|WARNING/i.test(content)
+          ? "success"
+          : /ERROR|WARNING/i.test(content)
             ? "warning"
             : "info";
-    
+
         ReactDOM.render(
-            <Alert
-                showIcon
-                message={<div dangerouslySetInnerHTML={{ __html: content }} />}
-                type={alertType}
-            />,
-            container
+          <Alert
+            showIcon
+            message={<div dangerouslySetInnerHTML={{ __html: content }} />}
+            type={alertType}
+          />,
+          container
         );
         break;
       case "error":
@@ -129,21 +129,30 @@ export class PipelineConsolePanel
         container = document.createElement('div'); // Create a container for the React component
         cell.appendChild(container);  // Append the container to the cell
         ReactDOM.render(
-            <Alert
-              message="Error"
-              showIcon
-              description={<div dangerouslySetInnerHTML={{ __html: content }} />}
-              type="error"
-            />, 
-            container
-          );
+          <Alert
+            message="Error"
+            showIcon
+            description={<div dangerouslySetInnerHTML={{ __html: content }} />}
+            type="error"
+          />,
+          container
+        );
         break;
       case "data":
         cell = row.insertCell(1);
         cell.style.padding = "5";  // Remove padding from the cell
         container = document.createElement('div'); // Create a container for the React component
         cell.appendChild(container);  // Append the container to the cell
-        ReactDOM.render(<DataView htmlData={content} />, container);
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(content, 'text/html');
+        const firstDiv = doc.querySelector('div');
+
+        if (firstDiv && firstDiv.id === 'documents') {
+          container.innerHTML = content;
+        } else {
+          ReactDOM.render(<DataView htmlData={content} />, container);
+        }
         break;
       default:
         // Handle other cases or do nothing

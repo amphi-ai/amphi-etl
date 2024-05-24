@@ -7,7 +7,7 @@ import { ComponentManager } from "@amphi/pipeline-components-manager";
 import { Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
 SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join,
 ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, RedditInput, OpenAILookUp,
-EnvVariables, EnvFile, ConvertToDocuments } from './components';
+EnvVariables, EnvFile, ConvertToDocuments, PineconeOutput } from './components';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-components-core',
@@ -48,7 +48,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(SQLQuery.getInstance())
    componentService.addComponent(CustomTransformations.getInstance())
    componentService.addComponent(OpenAILookUp.getInstance())
-   componentService.addComponent(Embed.getInstance())
+   componentService.addComponent(ConvertToDocuments.getInstance())
    
   // Outputs
    componentService.addComponent(CsvFileOutput.getInstance())
@@ -60,6 +60,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(MySQLOutput.getInstance())
    componentService.addComponent(PostgresOutput.getInstance())
    componentService.addComponent(Console.getInstance())
+   componentService.addComponent(PineconeOutput.getInstance())
+
 
    // Other
    componentService.addComponent(EnvVariables.getInstance())
