@@ -223,6 +223,8 @@ export class CodeGenerator {
 
       switch (component_type) {
         case 'pandas_df_processor':
+        case 'pandas_df_to_documents_processor':
+        case 'documents_processor':
           incrementCounter(component_id);
           inputName = nodeOutputs.get(PipelineService.findPreviousNodeId(flow, nodeId));
           outputName = `${node.type}${counters.get(component_id)}`;
@@ -263,10 +265,18 @@ export class CodeGenerator {
       // If target node....  
       if (nodeId === targetNodeId) {
         if (component_type.includes('processor') || component_type.includes('input')) {
-          if (!fromStart) {
-            code = lastCodeGenerated;
+          if(component_type .includes('documents_processor')) {
+            if (!fromStart) {
+              code = lastCodeGenerated;
+            }
+            code += '\n' + 'display_documents_as_html(' + nodeOutputs.get(nodeId) + ')';
+          } else {
+            if (!fromStart) {
+              code = lastCodeGenerated;
+            }
+            code += '\n' + nodeOutputs.get(nodeId);
           }
-          code += '\n' + nodeOutputs.get(nodeId);
+          
         } else if (component_type.includes('output')) {
           // Add try block and indent existing code
           const indentedCode = code.split('\n').map(line => '    ' + line).join('\n');

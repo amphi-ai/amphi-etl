@@ -36,7 +36,7 @@ export { EnvFile } from './EnvFile';
 export { EnvVariables } from './EnvVariables';
 export { PostgresInput } from './PostgresInput';
 export { PostgresOutput } from './PostgresOutput';
-
+export { ConvertToDocuments } from './ConvertToDocuments';
 
 // export { EmailLogger } from './EmailLogger';
 // export { Annotation } from './Annotation';

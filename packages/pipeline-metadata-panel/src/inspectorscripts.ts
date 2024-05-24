@@ -23,6 +23,7 @@ import re
 from importlib import __import__
 from IPython import get_ipython
 from IPython.core.magics.namespace import NamespaceMagics
+from IPython.display import display, HTML
 
 !pip install --quiet pandas --disable-pip-version-check
 !pip install --quiet tqdm --disable-pip-version-check
@@ -252,6 +253,15 @@ def _amphi_metadatapanel_deleteallvariables():
     for key, value in list(globals().items()):
         if not key.startswith('_') and not hasattr(__builtins__, key) and not key in ['exit', 'quit', 'get_ipython', 'In', 'Out'] and not isinstance(value, (type(sys), types.ModuleType)) and camel_case_pattern.match(key):
             exec("del %s" % key, globals())
+
+
+def _amphi_display_documents_as_html(documents):
+    html_content = ""
+    for doc in documents:
+        html_content += f"<div><strong>Document Content:</strong> {doc.page_content}</div>"
+        html_content += f"<div><strong>Metadata:</strong> {doc.metadata}</div>"
+        html_content += "<hr>"
+    display(HTML(html_content))
   `;
   
   
