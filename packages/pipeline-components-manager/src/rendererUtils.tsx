@@ -20,43 +20,20 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
 
   const LimitedInputHandle = (props) => {
     const { nodeInternals, edges, nodeId } = internals;
-
-    const connectableTargets = {
-      pandas_df_input: ["pandas_df_output", "pandas_df_to_documents_processor", "pandas_df_double_processor"],
-      pandas_df_to_documents_processor: ["documents_processor", "documents_output"],
-      pandas_df_processor: ["pandas_df_processor", "pandas_df_to_documents_processor", "pandas_df_double_processor", "pandas_df_output"],
-      pandas_df_double_processor: ["documents_output", "documents_processor"]
-    };
-
     const isHandleConnectable = useMemo(() => {
-      const node = nodeInternals.get(nodeId);
-      const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.target === nodeId && props.id === edge.targetHandle); // only count input edges
-
-      const connectionValid = (params) => {
-        const sourceType = nodeInternals.get(params.source).type;
-        const targetType = nodeInternals.get(params.target).type;
-        return connectableTargets[sourceType]?.includes(targetType) || false;
-      };
-
       if (typeof props.isConnectable === 'function') {
-        return (params) => {
-          const node = nodeInternals.get(nodeId);
-          const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.target === nodeId && props.id === edge.targetHandle); // only count input edges
-          return props.isConnectable({ node, connectedEdges }) && connectionValid(params);
-        };
+        const node = nodeInternals.get(nodeId);
+        const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.target === nodeId && props.id === edge.targetHandle); // only count input edges
+        return props.isConnectable({ node, connectedEdges });
       }
       if (typeof props.isConnectable === 'number') {
-        return (params) => {
-          const node = nodeInternals.get(nodeId);
-          const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.target === nodeId && props.id === edge.targetHandle); // only count input edges
-          return connectedEdges.length < props.isConnectable && connectionValid(params);
-        };
+        const node = nodeInternals.get(nodeId);
+        const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.target === nodeId && props.id === edge.targetHandle) ; // only count input edges
+        return connectedEdges.length < props.isConnectable;
       }
-      return (params) => {
-        return props.isConnectable && connectionValid(params);
-      };
+      return props.isConnectable;
     }, [nodeInternals, edges, nodeId, props.isConnectable, props.id]);
-
+  
     return <Handle {...props} isConnectable={isHandleConnectable} />;
   };
 
@@ -76,7 +53,6 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
       return (
         <LimitedInputHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in" />
       );
-
     case "pandas_df_processor":
     case 'pandas_df_to_documents_processor':
     case 'documents_processor':
@@ -91,8 +67,7 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
           />
         </>
       );
-
-    case "pandas_df_double_processor":
+      case "pandas_df_double_processor":
       return (
         <>
           <LimitedInputHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in1"/>
@@ -105,12 +80,10 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
           />
         </>
       );
-
     default:
       return null;
   }
 };
-
 
 export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, context, manager, commands, name, ConfigForm, Icon, showContent, handle, deleteNode, setViewport }) => {
 
