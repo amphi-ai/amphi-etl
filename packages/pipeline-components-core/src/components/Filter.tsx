@@ -161,47 +161,27 @@ export class Filter extends PipelineComponent<ComponentItem>() {
     const conditionValue = config.conditionValue;
     const enforceString = config.enforceString;
 
-    let formattedConditionValue: string;
-    switch (columnType) {
-      case 'string':
-      case 'Object':
-      case 'category':
-        formattedConditionValue = `${conditionValue.toString().replace(/"/g, '\\"')}`;
-        break;
-      case 'datetime64':
-        formattedConditionValue = `${new Date(conditionValue).toISOString()}`;
-        break;
-      case 'bool':
-        formattedConditionValue = conditionValue.toString().toLowerCase();
-        break;
-      case 'timedelta[ns]':
-        formattedConditionValue = `pd.to_timedelta(${conditionValue}, unit='ms')`;
-        break;
-      case 'period':
-        formattedConditionValue = `P${conditionValue.toString()}`;
-        break;
-      default:
-        formattedConditionValue = !isNaN(Number(conditionValue)) ? conditionValue.toString() : `'${conditionValue.toString()}'`;
-        break;
-    }
+
 
     let code = `
 # Filter rows based on condition
 `;
-
     let queryExpression: string;
-    const columnReference = columnIsNamed ? `'${columnName}'` : columnName;
+    let columnReference: string;
+
     switch (condition) {
       case "==":
       case "!=":
-        queryExpression = `${columnReference} ${condition} '${formattedConditionValue}'`;
+        columnReference = /[^a-zA-Z0-9_]/.test(columnName) ? `\`${columnName}\`` : columnName;
+        queryExpression = `${columnReference} ${condition} '${conditionValue}'`;
         code += `${outputName} = ${inputName}.query("${queryExpression}")`;
         break;
       case "contains":
       case "not contains":
+        columnReference = columnIsNamed ? `'${columnName}'` : columnName;
         if (['string', 'Object', 'category'].includes(columnType)) {
           const negation = condition === "not contains" ? "~" : "";
-          queryExpression = `${inputName}[${negation}${inputName}[${columnReference}].str.contains("${formattedConditionValue}", na=False)]`;
+          queryExpression = `${inputName}[${negation}${inputName}[${columnReference}].str.contains("${conditionValue}", na=False)]`;
           code += `${outputName} = ${queryExpression}`;
         } else {
           throw new Error('Invalid operation for the data type');
@@ -209,23 +189,27 @@ export class Filter extends PipelineComponent<ComponentItem>() {
         break;
       case "startswith":
       case "endswith":
+        columnReference = columnIsNamed ? `'${columnName}'` : columnName;
         if (['string', 'Object', 'category'].includes(columnType)) {
-          queryExpression = `${inputName}[${inputName}[${columnReference}].str.${condition}("${formattedConditionValue.slice(1, -1)}", na=False)]`;
+          queryExpression = `${inputName}[${inputName}[${columnReference}].str.${condition}("${conditionValue.slice(1, -1)}", na=False)]`;
           code += `${outputName} = ${queryExpression}`;
         } else {
           throw new Error('Invalid operation for the data type');
         }
         break;
       case "notnull":
+        columnReference = columnIsNamed ? `'${columnName}'` : columnName;
         queryExpression = `${inputName}.dropna(subset=[${columnReference}])`
         code += `${outputName} = ${queryExpression}`;
         break;
       case "isnull":
+        columnReference = columnIsNamed ? `'${columnName}'` : columnName;
         queryExpression = `${inputName}[${inputName}[${columnReference}].isna()]`;
         code += `${outputName} = ${queryExpression}`;
         break;
       default:
-        queryExpression = `${columnReference} ${condition} '${formattedConditionValue}'`;
+        columnReference = /[^a-zA-Z0-9_]/.test(columnName) ? `\`${columnName}\`` : columnName;
+        queryExpression = `${columnReference} ${condition} '${conditionValue}'`;
         code += `${outputName} = ${inputName}.query("${queryExpression}")`;
         break;
     }

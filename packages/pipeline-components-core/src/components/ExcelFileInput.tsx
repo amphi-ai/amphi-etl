@@ -150,6 +150,12 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
     );
   }
 
+  public provideDependencies({ config }): string[] {
+    let deps: string[] = [];
+    deps.push('openpyxl');
+    return deps;
+  }
+
   public provideImports({ config }): string[] {
     return ["import pandas as pd"];
   }
