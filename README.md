@@ -1,6 +1,6 @@
 # Micro ETL for Jupyterlab
 
-![jupyterlab-amphi-screenshot](https://github.com/amphi-ai/jupyterlab-amphi/assets/15718239/1a7edcb9-ca43-4d44-867d-4535229c4ed6)
+![jupyter-lab-amph-screenshot](https://github.com/amphi-ai/jupyterlab-amphi/assets/15718239/31ce75b5-745e-4642-be4e-29e306e97b0b)
 
 Amphi for JupyterLab is a Micro ETL designed for ingesting, cleansing, and processing data from files and databases.
 Amphi addresses use cases such as data extraction from structured and unstructured data, data preparation and enrichment, and data processing for LLMs-based systems. 
