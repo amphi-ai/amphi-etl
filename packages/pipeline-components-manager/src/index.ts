@@ -6,7 +6,7 @@ import { LabIcon } from '@jupyterlab/ui-components';
 import { Token } from '@lumino/coreutils';
 
 export { setDefaultConfig, onChange, generateUIFormComponent, FieldDescriptor } from './configUtils';
-export { renderComponentUI, renderHandle } from './rendererUtils'
+export { renderComponentUI, renderHandle, createZoomSelector } from './rendererUtils'
 export { PipelineComponent } from './PipelineComponent'
 export { CodeGenerator } from './CodeGenerator'
 export { PipelineService } from './PipelineService'

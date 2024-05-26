@@ -1,4 +1,4 @@
-import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig } from '@amphi/pipeline-components-manager';
+import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
 import React, { useContext, useEffect, useCallback, useState, useRef } from 'react';
 import type { GetRef, InputRef } from 'antd';
 import {  Form, Table, ConfigProvider, Divider, Input, Select, Space, Button, Typography, Modal, Popconfirm } from 'antd';
@@ -329,7 +329,7 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
     deleteElements({ nodes: [{ id }] });
   }, [id, deleteElements]);
 
-  const zoomSelector = (s) => s.transform[2] >= 1;
+  const zoomSelector = createZoomSelector();
   const showContent = useStore(zoomSelector);
   
   const selector = (s) => ({

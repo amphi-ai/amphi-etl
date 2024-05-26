@@ -121,6 +121,10 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
   );
 };
 
+export const createZoomSelector = () => {
+  return (s: { transform: number[] }): boolean => s.transform[2] >= 0.7;
+};
+
 export interface UIComponentProps {
   id: string;
   data: any; // Replace 'any' with a more specific type if possible

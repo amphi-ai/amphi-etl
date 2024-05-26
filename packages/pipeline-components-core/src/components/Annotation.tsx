@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useReactFlow, useStore, useStoreApi } from 'reactflow';
 
-import { ComponentItem, PipelineComponent } from '@amphi/pipeline-components-manager';
+import { ComponentItem, PipelineComponent, createZoomSelector } from '@amphi/pipeline-components-manager';
 import { annotationIcon } from '../icons';
 
 export class Annotation extends PipelineComponent<ComponentItem>() {
@@ -39,7 +39,7 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
 
   public UIComponent({ id, data, context, manager }) {
 
-  const zoomSelector = (s) => s.transform[2] >= 1;
+  const zoomSelector = createZoomSelector();
   const showContent = useStore(zoomSelector);
   
   const selector = (s) => ({

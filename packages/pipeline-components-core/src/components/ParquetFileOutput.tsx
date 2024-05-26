@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
 
-import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig } from '@amphi/pipeline-components-manager';
+import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
 import { filePlusIcon } from '../icons';
 
 export class ParquetFileOutput extends PipelineComponent<ComponentItem>() {
@@ -90,7 +90,7 @@ export class ParquetFileOutput extends PipelineComponent<ComponentItem>() {
       deleteElements({ nodes: [{ id }] });
     }, [id, deleteElements]);
 
-  const zoomSelector = (s) => s.transform[2] >= 1;
+  const zoomSelector = createZoomSelector();
   const showContent = useStore(zoomSelector);
   
   const selector = (s) => ({
