@@ -624,10 +624,6 @@
   padding: 1.5rem !important;
 }
 
-.p-\[20px_6px\] {
-  padding: 20px 6px !important;
-}
-
 .p-\[2px_0px\] {
   padding: 2px 0px !important;
 }
@@ -1037,13 +1033,13 @@ Components palette sidebar
   border-left-color: rgb(224 224 224 / var(--tw-border-opacity));
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
-  padding: 20px 6px;
   font-size: 12px;
 }
 
 .palette aside .description {
   margin-right: 8px;
   margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 .palette .draggable_component {

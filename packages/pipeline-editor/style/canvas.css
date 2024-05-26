@@ -92,12 +92,12 @@ Components palette sidebar
 }
 
 .palette aside {
-  @apply border-r border-l border-[#eee] border-l-[#E0E0E0] p-[20px_6px] text-[12px] bg-white;
+  @apply border-r border-l border-[#eee] border-l-[#E0E0E0] text-[12px] bg-white;
 }
 
 
 .palette aside .description {
-  @apply mr-[8px] mb-[10px];
+  @apply mr-[8px] mb-[10px] mt-[10px];
 }
 
 .palette .draggable_component {
