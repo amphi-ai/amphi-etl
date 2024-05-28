@@ -4,15 +4,14 @@ import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow
 import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
 import { fileTextIcon } from '../icons';
 
-export class PdfFileInput extends PipelineComponent<ComponentItem>() {
+export class PdfTablesInput extends PipelineComponent<ComponentItem>() {
 
-  public _name = 'PDF File Input';
-  public _id = 'pdfInput';
-  public _type = 'documents_input';
-  public _fileDrop = ["pdf"];
-  public _category = 'input';
+  public _name = "PDF Tables Input";
+  public _id = "pdfTablesInput";
+  public _type = "pandas_df_input";
+  public _category = "input";
   public _icon = fileTextIcon;
-  public _default = { library: "PyPDF" };
+  public _default = { pageNumber: 0, tableNumber: 0 };
   public _form = {
     idPrefix: "component__form",
     fields: [
@@ -20,19 +19,21 @@ export class PdfFileInput extends PipelineComponent<ComponentItem>() {
         type: "file",
         label: "File path",
         id: "filePath",
-        placeholders: "Select or type file",
+        placeholder: "Type file name",
+        tooltip: "This field expects a file path with a csv, tsv or txt extension such as input.csv.",
         validation: "\\.(pdf)$",
-        validationMessage: "This field expects a file with a pdf extension such as file.pdf."
       },
       {
-        type: "select",
-        label: "Library",
-        id: "library",
-        options: [
-          { value: "PyPDF", label: "PyPDF" },
-          { value: "PyMuPDF", label: "PyMuPDF" }
-        ],
-        advanced: true
+        type: "inputNumber",
+        label: "Page number",
+        id: "pageNumber",
+        tooltip: "Page number where table is located starting at 0.",
+      },
+      {
+        type: "inputNumber",
+        label: "Table number",
+        id: "tableNumber",
+        tooltip: "If multiple tables are present on the page, specify the number starting at 0.",
       }
     ],
   };
@@ -88,25 +89,25 @@ export class PdfFileInput extends PipelineComponent<ComponentItem>() {
       deleteElements({ nodes: [{ id }] });
     }, [id, deleteElements]);
 
-    const zoomSelector = createZoomSelector();
-    const showContent = useStore(zoomSelector);
+  const zoomSelector = createZoomSelector();
+  const showContent = useStore(zoomSelector);
+  
+  const selector = (s) => ({
+    nodeInternals: s.nodeInternals,
+    edges: s.edges,
+  });
 
-    const selector = (s) => ({
-      nodeInternals: s.nodeInternals,
-      edges: s.edges,
-    });
-
-    const { nodeInternals, edges } = useStore(selector);
-    const nodeId = id;
-    const internals = { nodeInternals, edges, nodeId }
+  const { nodeInternals, edges } = useStore(selector);
+  const nodeId = id;
+  const internals = { nodeInternals, edges, nodeId }
 
 
     // Create the handle element
     const handleElement = React.createElement(renderHandle, {
-      type: PdfFileInput.Type,
+      type: PdfTablesInput.Type,
       Handle: Handle, // Make sure Handle is imported or defined
       Position: Position, // Make sure Position is imported or defined
-      internals: internals
+      internals: internals    
     });
 
     return (
@@ -117,13 +118,13 @@ export class PdfFileInput extends PipelineComponent<ComponentItem>() {
           context: context,
           manager: manager,
           commands: commands,
-          name: PdfFileInput.Name,
-          ConfigForm: PdfFileInput.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes }),
-          Icon: PdfFileInput.Icon,
+          name: PdfTablesInput.Name,
+          ConfigForm: PdfTablesInput.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes }),
+          Icon: PdfTablesInput.Icon,
           showContent: showContent,
           handle: handleElement,
           deleteNode: deleteNode,
-          setViewport: setViewport
+          setViewport: setViewport,
         })}
       </>
     );
@@ -131,51 +132,24 @@ export class PdfFileInput extends PipelineComponent<ComponentItem>() {
 
   public provideDependencies({ config }): string[] {
     let deps: string[] = [];
-    deps.push('pypdf');
+    deps.push('PyMuPDF');
     return deps;
   }
 
   public provideImports({ config }): string[] {
-    let imports: string[] = [];
-    switch (config.library) {
-      case 'PyPDF':
-        imports.push('from langchain_community.document_loaders import PyPDFLoader');
-        break;
-      case 'PyMuPDF':
-        imports.push('from langchain_community.document_loaders import PyMuPDFLoader');
-        break;
-      default:
-        console.error('Unknown option');
-    }
-
-    return imports;
+    return ["import fitz"];
   }
 
   public generateComponentCode({ config, outputName }): string {
-    let code = '';
   
-    // Initial code for loading HTML
-    code += `
-# Read PDF and retrieve text from ${config.filePath}
+    // Generate the Python code
+    const code = `
+# Extract tables from ${config.filePath}
+${outputName}_doc = fitz.open("${config.filePath}")
+${outputName}_tabs = ${outputName}_doc[${config.pageNumber}].find_tables() # detect the tables
+${outputName} = ${outputName}_tabs[${config.tableNumber}].to_pandas()
 `;
-  
-    switch (config.library) {
-      case 'PyPDF':
-        code += `${outputName}_loader = PyPDFLoader("${config.filePath}")\n`;
-        break;
-      case 'PyMuPDF':
-        code += `${outputName}_loader = PyMuPDFLoader("${config.filePath}")\n`;
-        break;
-      default:
-        console.error('Unknown option');
-        code += `# Unknown library option\n`;
-    }
-  
-  code += `${outputName} = ${outputName}_loader.load()\n`;
-  
     return code;
-  }
-
-
+}
 
 }

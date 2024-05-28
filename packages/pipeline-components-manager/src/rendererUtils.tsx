@@ -39,6 +39,7 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
 
   switch (type) {
     case "pandas_df_input":
+    case "documents_input":
       return (
         <Handle
           className="handle-right"

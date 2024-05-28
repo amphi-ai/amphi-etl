@@ -3,24 +3,60 @@ import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow
 import { FieldDescriptor } from '@amphi/pipeline-components-manager'
 
 import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
-import { changeCircleIcon } from '../icons';
+import { splitIcon } from '../icons';
 
-export class ConvertToDocuments extends PipelineComponent<ComponentItem>() {
+export class FixedSizeChunking extends PipelineComponent<ComponentItem>() {
 
-  public _name = "Convert to docs";
-  public _id = "convertToDocuments";
-  public _type = "pandas_df_to_documents_processor";
+  public _name = "Fixed-size chunking";
+  public _id = "fixedSizeChunking";
+  public _type = "documents_processor";
   public _category = "transform";
-  public _icon = changeCircleIcon; // You should define this icon in your icons file
-  public _default = { };
+  public _icon = splitIcon; // You should define this icon in your icons file
+  public _default = { separator: "\n\n", regex: false, chunkSize: 1000, chunkOverlap: 100, chunkLength: "character" };
   public _form = {
     idPrefix: "component__form",
     fields: [
       {
-        type: "column",
-        label: "Select main column",
-        id: "pageContent",
-        placeholder: "Select ..."
+        type: "selectCustomizable",
+        label: "Separator",
+        id: "separator",
+        options: [
+          { value: "\n\n", label: "Double newline (paragraph)" },
+          { value: "\n", label: "Single newline" },
+          { value: " ", label: "Space" },
+          { value: "", label: "Empty (character-based splitting)" },
+          { value: ",", label: "Comma (,)" },
+          { value: ".", label: "Period (.)" },
+          { value: "!", label: "Exclamation mark (!)" },
+          { value: "?", label: "Question mark (?)" }
+        ],
+      },
+      {
+        type: "boolean",
+        label: "Separator is a regex",
+        id: "regex",
+        advanced: true
+      },
+      {
+        type: "inputNumber",
+        label: "Chunk Size",
+        id: "chunkSize",
+      },
+      {
+        type: "inputNumber",
+        label: "Chunk Overlap",
+        id: "chunkOverlap",
+      },
+      {
+        type: "select",
+        label: "Chunk length",
+        tooltip: "Determine how the length of the chunks are measured. By default, the length of a chunk is measured in characters",
+        id: "chunkLength",
+        options: [
+          { value: "character", label: "Character" },
+          { value: "word", label: "Word" }
+        ],
+        advanced: true
       }
     ],
   };
@@ -91,7 +127,7 @@ export class ConvertToDocuments extends PipelineComponent<ComponentItem>() {
 
   // Create the handle element
   const handleElement = React.createElement(renderHandle, {
-    type: ConvertToDocuments.Type,
+    type: FixedSizeChunking.Type,
     Handle: Handle, // Make sure Handle is imported or defined
     Position: Position, // Make sure Position is imported or defined
     internals: internals
@@ -105,9 +141,9 @@ export class ConvertToDocuments extends PipelineComponent<ComponentItem>() {
         context: context,
         manager: manager,
         commands: commands,
-        name: ConvertToDocuments.Name,
-        ConfigForm: ConvertToDocuments.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
-        Icon: ConvertToDocuments.Icon,
+        name: FixedSizeChunking.Name,
+        ConfigForm: FixedSizeChunking.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
+        Icon: FixedSizeChunking.Icon,
         showContent: showContent,
         handle: handleElement,
         deleteNode: deleteNode,
@@ -117,16 +153,40 @@ export class ConvertToDocuments extends PipelineComponent<ComponentItem>() {
   );
   }
 
+  public provideFunctions({ config }): string[] {
+    let functions: string[] = [];
+    if (config.chunkLength === "word") {
+        const code = `
+def word_length_function(text):
+    return len(text.split())
+`;
+        functions.push(code);
+    }
+    return functions;
+}
+
+  public provideDependencies({config}): string[] {
+    let deps: string[] = [];
+    deps.push('tiktoken');
+    return deps;
+  }
+
   public provideImports({config}): string[] {
-    return ["import pandas as pd", "from langchain_community.document_loaders import DataFrameLoader"];
+    return ["from langchain.text_splitter import CharacterTextSplitter"];
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
+    const lengthFunction = config.chunkLength === "word" ? ",\n  length_function=word_length_function" : "";
 
     const code = `
-# Convert dataframe to documents
-${outputName}_loader = DataFrameLoader(${inputName}, page_content_column="${config.pageContent.value}")
-${outputName} = ${outputName}_loader.load()
+# Fixed-based chunking (character split)
+${outputName}_text_splitter = CharacterTextSplitter(
+  separator = "${config.separator}",
+  chunk_size = ${config.chunkSize},
+  chunk_overlap  = ${config.chunkOverlap},
+  is_separator_regex = ${config.regex ? "True" : "False"}${lengthFunction}
+)
+${outputName} = ${outputName}_text_splitter.split_documents(${inputName})
 `;
     return code;
   }

@@ -104,14 +104,7 @@ export const generateUIFormComponent = ({
   };
 
   return (
-    <ConfigProvider
-        theme={{
-          token: {
-            // Seed Token
-            colorPrimary: '#5F9B97',
-          },
-        }}
-      >
+
         <Form
         layout="vertical"
         size="small">
@@ -129,7 +122,6 @@ export const generateUIFormComponent = ({
         </div>
         <ConfigModal modalOpen={modalOpen} setModalOpen={setModalOpen} name={name} nodeId={nodeId} form={form} data={data} context={context} componentService={componentService} manager={manager} commands={commands} handleChange={handleChange} advanced />
       </Form>
-    </ConfigProvider>
 
   );
 };

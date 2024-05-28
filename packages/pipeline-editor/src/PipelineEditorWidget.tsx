@@ -26,7 +26,7 @@ import ReactFlow, {
   useReactFlow
 } from 'reactflow';
 
-import { Tree } from 'antd';
+import { Tree, TabsProps, Tabs, ConfigProvider } from 'antd';
 import type { GetProps, TreeDataNode } from 'antd';
 
 const { DirectoryTree } = Tree;
@@ -151,7 +151,7 @@ const PipelineWrapper: React.FC<IProps> = ({
     const id = component._id;
     const ComponentUI = (props) => <component.UIComponent context={context} componentService={componentService} manager={manager} commands={commands} {...props} />;
 
-    acc[id] = (props) => <ComponentUI context={context} componentService={componentService}  manager={manager} commands={commands} {...props} />;
+    acc[id] = (props) => <ComponentUI context={context} componentService={componentService} manager={manager} commands={commands} {...props} />;
     return acc;
   }, {});
 
@@ -216,12 +216,12 @@ const PipelineWrapper: React.FC<IProps> = ({
       (location?: { x: number; y: number }) => {
 
         const fileBrowser = defaultFileBrowser;
-        
+
         // Only add file to pipeline if it is currently in focus
         if (shell.currentWidget?.id !== widgetId) {
           return;
         }
-  
+
         if (reactFlowInstance && location) {
           const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
           // Adjust the position based on the React Flow instance's coordinate system
@@ -233,20 +233,20 @@ const PipelineWrapper: React.FC<IProps> = ({
           Array.from(fileBrowser.selectedItems()).forEach((item: any) => {
             const filePath = item.path;
             const { id: nodeType, default: nodeDefaults } = PipelineService.getComponentIdForFileExtension(item, componentService);
-          
+
             // Check if nodeType exists
             if (nodeType) {
               const newNode = {
                 id: getNodeId(),
                 type: nodeType,
                 position: adjustedPosition, // Make sure adjustedPosition is defined earlier as per the previous suggestions
-                data: { 
+                data: {
                   filePath: filePath,
                   lastUpdated: Date.now(),
                   ...(nodeDefaults || {}) // Merge nodeDefaults into the data field
                 }
               };
-          
+
               // Add the new node to the pipeline
               setNodes((nds) => nds.concat(newNode));
             } else {
@@ -258,8 +258,8 @@ const PipelineWrapper: React.FC<IProps> = ({
               });
             }
           });
-        
-        } 
+
+        }
         return;
       },
       [defaultFileBrowser, defaultPosition, shell, widgetId, reactFlowInstance]
@@ -308,162 +308,195 @@ const PipelineWrapper: React.FC<IProps> = ({
 
     return (
       <div className="reactflow-wrapper" ref={reactFlowWrapper}>
-       <Dropzone onDrop={handleFileDrop}>
-        <ReactFlow
-          id={pipelineId}
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={onNodesChange}
-          onNodesDelete={onNodesDelete}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
-          onInit={setRfInstance}
-          edgeTypes={edgeTypes}
-          nodeTypes={nodeTypes}
-          snapToGrid={true}
-          snapGrid={[15, 15]}
-          fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0 }}
-          fitView
-          defaultViewport={defaultViewport}
-          deleteKeyCode={[]}
-        > 
-          <Panel position="top-right">
-          </Panel>
-          <Controls />
-          <Background color="#aaa" gap={15} />
-        </ReactFlow>
+
+        <Dropzone onDrop={handleFileDrop}>
+          <ReactFlow
+            id={pipelineId}
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onNodesDelete={onNodesDelete}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onInit={setRfInstance}
+            edgeTypes={edgeTypes}
+            nodeTypes={nodeTypes}
+            snapToGrid={true}
+            snapGrid={[15, 15]}
+            fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0 }}
+            fitView
+            defaultViewport={defaultViewport}
+            deleteKeyCode={[]}
+          >
+            <Panel position="top-right">
+            </Panel>
+            <Controls />
+            <Background color="#aaa" gap={15} />
+          </ReactFlow>
         </Dropzone>
-      </div>
+      </div >
     );
   }
 
-  function Sidebar() {
+function Sidebar() {
 
-    const [sidebarOpen, setSideBarOpen] = useState(false);
-    const sidebarClass = sidebarOpen ? "" : "open";
-
-    const onDragStart = (event, nodeType, config) => {
-      event.dataTransfer.setData('application/reactflow', nodeType);
-      // Here, you can add more data as needed
-      event.dataTransfer.setData('additionalData', config);
-      event.dataTransfer.effectAllowed = 'move';
-    };
+  const onDragStart = (event, nodeType, config) => {
+    event.dataTransfer.setData('application/reactflow', nodeType);
+    // Here, you can add more data as needed
+    event.dataTransfer.setData('additionalData', config);
+    event.dataTransfer.effectAllowed = 'move';
+  };
 
 
   // Simulating componentService.getComponents()
   const components = componentService.getComponents();
 
-  // Categorizing components with potential subcategories
-  const categorizedComponents: Record<string, Record<string, any[]>> = {};
+  // Categorizing components with potential subcategories and classifications
+  const categorizedComponents: Record<string, Record<string, Record<string, any[]>>> = { structured: {}, unstructured: {} };
 
   components.forEach(component => {
     let [category, subcategory] = component._category.split('.');
-    if (!categorizedComponents[category]) {
-      categorizedComponents[category] = {};
-    }
-    if (subcategory) {
-      if (!categorizedComponents[category][subcategory]) {
-        categorizedComponents[category][subcategory] = [];
+    let classification = component._type.includes('pandas') ? 'structured' : component._type.includes('documents') ? 'unstructured' : null;
+
+    if (classification) {
+      if (!categorizedComponents[classification][category]) {
+        categorizedComponents[classification][category] = {};
       }
-      categorizedComponents[category][subcategory].push(component);
-    } else {
-      if (!categorizedComponents[category]['_']) {  // Maintain a simple placeholder for main categories without explicit subcategories
-        categorizedComponents[category]['_'] = [];
+      if (subcategory) {
+        if (!categorizedComponents[classification][category][subcategory]) {
+          categorizedComponents[classification][category][subcategory] = [];
+        }
+        categorizedComponents[classification][category][subcategory].push(component);
+      } else {
+        if (!categorizedComponents[classification][category]['_']) {
+          categorizedComponents[classification][category]['_'] = [];
+        }
+        categorizedComponents[classification][category]['_'].push(component);
       }
-      categorizedComponents[category]['_'].push(component);
     }
   });
 
 
   // Transforming categorized components into tree data structure
-  const treeData = Object.keys(categorizedComponents).map((category, index) => {
-    const subCategories = Object.keys(categorizedComponents[category]);
-    let children = [];
+  const getTreeData = (classification: 'structured' | 'unstructured') => {
+    return Object.keys(categorizedComponents[classification]).map((category, index) => {
+      const subCategories = Object.keys(categorizedComponents[classification][category]);
+      let children = [];
 
-    subCategories.forEach((subCat, subIndex) => {
-      if (subCat === '_') {  // Handling main category direct children
-        children.push(...categorizedComponents[category][subCat].map((component, childIndex) => ({
-          title: (
-            <span
-              draggable
-              className="palette-component"
-              onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
-              key={`category-${index}-item-${childIndex}`} // Add this line
-
-            >
-              {component._name}
-            </span>
-          ),
-          key: `category-${index}-item-${childIndex}`,
-          isLeaf: true,
-          icon: <component._icon.react height="14px" width="14px;"/>
-        })));
-      } else {  // Handling subcategories
-        children.push({
-          title: <span className="palette-component-category">{subCat.charAt(0).toUpperCase() + subCat.slice(1)}</span>,
-          key: `category-${index}-sub-${subIndex}`,
-          children: categorizedComponents[category][subCat].map((component, childIndex) => ({
+      subCategories.forEach((subCat, subIndex) => {
+        if (subCat === '_') {
+          children.push(...categorizedComponents[classification][category][subCat].map((component, childIndex) => ({
             title: (
               <span
                 draggable
                 className="palette-component"
                 onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
-                key={`category-${index}-sub-${subIndex}-item-${childIndex}`} // Add this line
+                key={`category-${index}-item-${childIndex}`}
               >
                 {component._name}
               </span>
             ),
-            key: `category-${index}-sub-${subIndex}-item-${childIndex}`,
+            key: `category-${index}-item-${childIndex}`,
             isLeaf: true,
-            icon: <component._icon.react height="14px" width="14px;"/>
-          }))
-        });
-      }
+            icon: <component._icon.react height="14px" width="14px;" />
+          })));
+        } else {
+          children.push({
+            title: <span className="palette-component-category">{subCat.charAt(0).toUpperCase() + subCat.slice(1)}</span>,
+            key: `category-${index}-sub-${subIndex}`,
+            children: categorizedComponents[classification][category][subCat].map((component, childIndex) => ({
+              title: (
+                <span
+                  draggable
+                  className="palette-component"
+                  onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
+                  key={`category-${index}-sub-${subIndex}-item-${childIndex}`}
+                >
+                  {component._name}
+                </span>
+              ),
+              key: `category-${index}-sub-${subIndex}-item-${childIndex}`,
+              isLeaf: true,
+              icon: <component._icon.react height="14px" width="14px;" />
+            }))
+          });
+        }
+      });
+
+      return {
+        title: <span className="palette-component-category">{category.charAt(0).toUpperCase() + category.slice(1)}</span>,
+        key: `category-${index}`,
+        children: children
+      };
     });
-
-    
-
-    return {
-      title: <span className="palette-component-category">{category.charAt(0).toUpperCase() + category.slice(1)}</span>,
-      key: `category-${index}`,
-      children: children
-    };
-  });
+  };
 
   // Output tree data (for debugging, you might want to console.log or use it directly in your components)
-  console.log(treeData);
+  console.log(getTreeData('structured'));
+  console.log(getTreeData('unstructured'));
 
-    return (
+  const structuredTreeData = getTreeData('structured');
+  const unstructuredTreeData = getTreeData('unstructured');
 
-      <aside className={sidebarClass} title={'Components'}>
-        
-        <div className="description" style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: '16px' }}>
-          <extensionIcon.react tag="span" width="24px" float="left" marginRight="8px" />
-          Drag and drop components
-        </div>
-       
+  // Define the tab items
+  const items: TabsProps['items'] = [
+    {
+      key: '1',
+      label: 'Structured',
+      children: (
         <DirectoryTree
           selectable={false}
           multiple
           blockNode
           defaultExpandAll
-          treeData={treeData}
-          key={"palette-components"}
+          treeData={structuredTreeData}
+          key={"structured-components"}
         />
-      </aside>
-    );
-  }
+      ),
+    },
+    {
+      key: '2',
+      label: 'Unstructured',
+      children: (
+        <DirectoryTree
+          selectable={false}
+          multiple
+          blockNode
+          defaultExpandAll
+          treeData={unstructuredTreeData}
+          key={"unstructured-components"}
+        />
+      ),
+    },
+  ];
 
   return (
-    <div className="palette" id="pipeline-panel">
+
+    <aside title={'Components'}>
+      <Tabs defaultActiveKey="1" items={items} tabBarStyle={{ width: '100%', marginLeft: '15px' }} />
+    </aside>
+  );
+}
+
+return (
+  <div className="palette" id="pipeline-panel">
+    <ConfigProvider
+      theme={{
+        token: {
+          // Seed Token
+          colorPrimary: '#5F9B97',
+        },
+      }}
+    >
       <ReactFlowProvider>
         <PipelineFlow context={context} />
-        <Sidebar/>
+        <Sidebar />
       </ReactFlowProvider>
-    </div>
-  );
+    </ConfigProvider>
+  </div>
+);
 }
 
 export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
@@ -500,7 +533,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       componentService: this.componentService,
     };
 
-    context.sessionContext.kernelPreference = {autoStartDefault:true, name: 'python', shutdownOnDispose: false};
+    context.sessionContext.kernelPreference = { autoStartDefault: true, name: 'python', shutdownOnDispose: false };
 
     const content = new PipelineEditorWidget(props);
     const widget = new DocumentWidget({ content, context });

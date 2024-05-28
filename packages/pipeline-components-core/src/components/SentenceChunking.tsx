@@ -5,37 +5,35 @@ import { FieldDescriptor } from '@amphi/pipeline-components-manager'
 import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
 import { splitIcon } from '../icons';
 
-export class Chunking extends PipelineComponent<ComponentItem>() {
+export class SentenceChunking extends PipelineComponent<ComponentItem>() {
 
-  public _name = "Text Chunking";
-  public _id = "chunking";
+  public _name = "Sentence chunking";
+  public _id = "sentenceChunking";
   public _type = "documents_processor";
-  public _category = "transform.RAG";
+  public _category = "transform";
   public _icon = splitIcon; // You should define this icon in your icons file
-  public _default = { };
+  public _default = { type: "nltk", chunkSize: 1000, chunkOverlap: 100 };
   public _form = {
     idPrefix: "component__form",
     fields: [
       {
-        type: "columns",
-        label: "Columns",
-        id: "by",
-        placeholder: "Select columns",
-      },
-      {
-        type: "radio",
-        label: "Order",
-        id: "order",
+        type: "select",
+        label: "Type",
+        id: "type",
         options: [
-          { value: "True", label: "Asc." },
-          { value: "False", label: "Desc." }
-        ],
+          { value: "nltk", label: "NLTK" },
+          { value: "spacy", label: "spaCy" }
+        ]
       },
       {
-        type: "boolean",
-        label: "Ignore Index",
-        id: "ignoreIndex",
-        advanced: true
+        type: "inputNumber",
+        label: "Chunk Size",
+        id: "chunkSize",
+      },
+      {
+        type: "inputNumber",
+        label: "Chunk Overlap",
+        id: "chunkOverlap",
       }
     ],
   };
@@ -106,7 +104,7 @@ export class Chunking extends PipelineComponent<ComponentItem>() {
 
   // Create the handle element
   const handleElement = React.createElement(renderHandle, {
-    type: Chunking.Type,
+    type: SentenceChunking.Type,
     Handle: Handle, // Make sure Handle is imported or defined
     Position: Position, // Make sure Position is imported or defined
     internals: internals
@@ -120,9 +118,9 @@ export class Chunking extends PipelineComponent<ComponentItem>() {
         context: context,
         manager: manager,
         commands: commands,
-        name: Chunking.Name,
-        ConfigForm: Chunking.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
-        Icon: Chunking.Icon,
+        name: SentenceChunking.Name,
+        ConfigForm: SentenceChunking.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
+        Icon: SentenceChunking.Icon,
         showContent: showContent,
         handle: handleElement,
         deleteNode: deleteNode,
@@ -139,18 +137,40 @@ export class Chunking extends PipelineComponent<ComponentItem>() {
   }
 
   public provideImports({config}): string[] {
-    return ["import pandas as pd"];
+
+    let imports: string[] = [];
+    switch (config.type) {
+      case 'nltk':
+        imports.push('from langchain.text_splitters import NLTKTextSplitter');
+        break;
+      case 'spacy':
+        imports.push('from langchain.text_splitter import SpacyTextSplitter');
+        break;
+      default:
+        console.error('Unknown option');
+    }
+
+    return imports;
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-
-    const byColumns = `by=[${config.by.map(column => column.named ? `"${column.value}"` : column.value).join(", ")}]`;
-    const ascending = typeof config.order !== "undefined" ? `, ascending=${config.order}` : "";
-    const ignoreIndex = config.ignoreIndex ? `, ignore_index=${config.ignoreIndex}` : "";
   
+    let splitter: string;
+    switch (config.type) {
+      case 'nltk':
+        splitter = `${outputName}_text_splitter = NLTKTextSplitter(chunk_size=${config.chunkSize}, chunk_overlap=${config.chunkOverlap})`;
+        break;
+      case 'spacy':
+        splitter = `${outputName}_text_splitter = SpaCyTextSplitter(chunk_size=${config.chunkSize}, chunk_overlap=${config.chunkOverlap})`;
+        break;
+      default:
+        console.error('Unknown option');
+    }
+
     const code = `
-# Sort rows
-${outputName} = ${inputName}.sort_values(${byColumns}${ascending}${ignoreIndex})
+# Sentence chunking
+${splitter}
+${outputName} = ${outputName}_text_splitter.split_documents(${inputName})
 `;
     return code;
   }

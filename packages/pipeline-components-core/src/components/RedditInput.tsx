@@ -7,7 +7,7 @@ export class RedditInput extends PipelineComponent<ComponentItem>() {
   public _name = "Reddit Input";
   public _id = "redditInput";
   public _type = "pandas_df_input";
-  public _category = "input.API";
+  public _category = "input";
   public _icon = redditIcon; // Placeholder for the Reddit icon
   public _default = { submission: "all", limit: 20, sort: "hot", userAgent: "Sumbission extraction by Amphi" };
   public _form = {

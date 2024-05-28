@@ -38,17 +38,14 @@ export { PostgresInput } from './PostgresInput';
 export { PostgresOutput } from './PostgresOutput';
 export { ConvertToDocuments } from './ConvertToDocuments';
 export { PineconeOutput } from './PineconeOutput';
+export { FixedSizeChunking } from './FixedSizeChunking';
+export { SentenceChunking } from './SentenceChunking';
+export { WordFileInput } from './WordFileInput';
+export { PdfTablesInput } from './PdfTablesInput';
+
+
+
 // export { EmailLogger } from './EmailLogger';
 // export { Annotation } from './Annotation';
 // export { FileLogger } from './FileLogger';
 
-
-
-
-/*
-export { FileOutput } from './FileOutput';
-export { Annotation } from './Annotation';
-export { CustomTransformations } from './CustomTransformations'
-export { Filter } from './Filter'
-export { LookUp } from './LookUp'
-*/

@@ -29,6 +29,8 @@ import postgresIconSvgStr from '../style/icons/postgres.svg';
 import pineconeIconSvgStr from '../style/icons/pinecone.svg';
 import changeCircleIconSvgStr from '../style/icons/change-circle-24.svg';
 import bracesIconSvgStr from '../style/icons/braces.svg';
+import htmlIconSvgStr from '../style/icons/html.svg';
+
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -173,6 +175,11 @@ export const changeCircleIcon = new LabIcon({
 export const bracesIcon = new LabIcon({
   name: 'amphi:braces-icon',
   svgstr: bracesIconSvgStr
+});
+
+export const htmlIcon = new LabIcon({
+  name: 'amphi:html-icon',
+  svgstr: htmlIconSvgStr
 });
 
 

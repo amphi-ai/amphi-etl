@@ -9,7 +9,7 @@ export class PineconeOutput extends PipelineComponent<ComponentItem>() {
   public _name = "Pinecone Output";
   public _id = "PineconeOutput";
   public _type = "documents_output";
-  public _category = "output.Vector Database";
+  public _category = "output";
   public _icon = pineconeIcon;
   public _default = { createIndex: false, cloudAndRegion: ["aws", "us-east-1"], dimensions: 1536, similarityMetric: "cosine" }; // No default options for Parquet as of now
   public _form = {

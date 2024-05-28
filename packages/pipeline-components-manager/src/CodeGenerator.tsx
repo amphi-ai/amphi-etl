@@ -246,6 +246,7 @@ export class CodeGenerator {
           });
           break;
         case 'pandas_df_input':
+        case 'documents_input':
           incrementCounter(component_id);
           outputName = `${node.type}${counters.get(component_id)}`;
           nodeOutputs.set(nodeId, outputName); // Map the source node to its output variable
@@ -266,7 +267,7 @@ export class CodeGenerator {
       // If target node....  
       if (nodeId === targetNodeId) {
         if (component_type.includes('processor') || component_type.includes('input')) {
-          if(component_type .includes('documents_processor')) {
+          if(component_type .includes('documents') ) {
             if (!fromStart) {
               code = lastCodeGenerated;
             }
