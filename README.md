@@ -5,6 +5,20 @@
 No-code Python-Based ETL for structured and unstructured data.
 
 English · [Changelog](./CHANGELOG.md) . [Report Bug][https://github.com/amphi-ai/amphi-etl/issues] · [Request Feature][https://github.com/amphi-ai/amphi-etl/issues]
+
+
+<p align="center">
+<a href="https://github.com/airbytehq/airbyte/stargazers/" target="_blank">
+    <img src="https://img.shields.io/github/stars/amphi-ai/amphi-etl?style=social&label=Star&maxAge=2592000" alt="Test">
+</a>
+<a href="https://join.slack.com/t/amphi-ai/shared_invite/zt-2ci2ptvoy-FENw8AW4ISDXUmz8wcd3bw" target="_blank">
+    <img src="https://img.shields.io/badge/slack-join-white.svg?logo=slack" alt="Slack">
+</a>
+<a href="https://github.com/amphi-ai/amphi-etl/blob/main/LICENSE" target="_blank">
+    <img src="https://img.shields.io/static/v1?label=license&message=ELv2&color=white" alt="License">
+</a>
+</p>
+
 </div>
 
 <details>
@@ -77,6 +91,8 @@ amphi start -w /your/workspace/path -p 8888
 - [ ] **Implement connections** - Add the ability to securely create connections to reuse in components
 - [ ] **Developer documentation** - Write comprehensive documentation to allow extensions
 
+<br/>
+
 <!--
 ## 👀 Showcase
 
@@ -96,7 +112,7 @@ TBA
 Every contribution, big or small, is celebrated. Join us in our mission to refine and elevate the world of ETL for data and AI. 😃
 
 <br/>
- d
+
 ## 🛣️ Ecosystem
 
 Amphi is available as an extension for Jupyterlab and Amphi ETL is a distribution based on Jupyterlab. Therefore Jupyterlab extensions can be installed on Amphi ETL.
