@@ -60,6 +60,8 @@ amphi start -w /your/workspace/path -p 8888
 >
 > Amphi focuses on structured and unstructured data manipulation for data and AI pipelines. It aims to empower data scientists and data engineers to easily create and experiment pipelines with and intuitive no-code interface.
 
+![amphi-screenshot-github](https://github.com/amphi-ai/amphi-etl/assets/15718239/de1ccaa5-35ea-40e4-a464-2e498946c43a)
+
 **Open-source ETL for the AI age:**
 
 - 🖱️ **No-code/Low-code**: Accelerate data and AI pipeline development and reduce maintenance time.
