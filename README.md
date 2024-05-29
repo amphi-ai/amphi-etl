@@ -90,6 +90,13 @@ amphi start -w /your/workspace/path -p 8888
 - 🐍 **Python-code Generation**: Generate native Python code leveraging common libraries such as [pandas](https://github.com/pandas-dev/pandas), [DuckDB](https://github.com/duckdb/duckdb) and [LangChain](https://github.com/langchain-ai/langchain) that you can run anywhere.
 - 🔒 **Private and secure**: Self-host Amphi on your laptop or in the cloud for complete privacy and security over your data.
 
+
+**Structured & Unstructured**
+
+- 🔢 **Structured** - Import data from various sources, including CSV and Parquet files, as well as databases. Transform structured data using aggregation, filters, joins, SQL queries, and more. Export the transformed data into common files or databases.
+- 📝 **Unstructured** - Extract data from PDFs, Word documents, and websites (HTML). Perform parsing, chunking and embedding processing. Load the processed data into vector stores such as Pinecone and ChromaDB.
+- 🔁 **Convert** - Easily convert structured data into unstructured document for vector stores and vice versa for RAG pipelines.
+
 <br/>
 
 **Design Evolution / In Progress**
