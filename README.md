@@ -28,15 +28,13 @@ English · [Changelog](./CHANGELOG.md) . [Report Bug][github-issues-link] · [Re
 To install `amphi-etl`, run the following command:
 
 ```bash
-$ pip install amphi-etl
+pip install amphi-etl
 ```
 
 > \[!NOTE]
 >
 > If you prefer to install Amphi's jupyterlab extension, use `pip install jupyterlab-amphi` in your environment. More information [here](./jupyterlab-amphi/).
 
-
-<br/>
 
 ## 🔨 Usage
 
@@ -55,7 +53,6 @@ amphi start -w /your/workspace/path -p 8888
  - 📚 [Documentation](https://docs.amphi.ai)
  - 🚀 [Getting Started](https://docs.amphi.ai/getting-started/installation) 
 
-<br/>
 
 ## ✨ Features
 
@@ -66,7 +63,7 @@ amphi start -w /your/workspace/path -p 8888
 **Open-source ETL for the AI age:**
 
 - 🖱️ **No-code/Low-code**: Accelerate data and AI pipeline development and reduce maintenance time.
-- 🐍 **Python-code Generation**: Generate native Python code leveraging common libraries such as pandas and langchain that you can run anywhere.
+- 🐍 **Python-code Generation**: Generate native Python code leveraging common libraries such as pandas, duckDB and langchain that you can run anywhere.
 - 🔒 **Private and secure**: Self-host Amphi on your laptop or in the cloud for complete privacy and security over your data.
 
 <br/>
@@ -76,7 +73,6 @@ amphi start -w /your/workspace/path -p 8888
 - [ ] **Implement connections** - Add the ability to securely create connections to reuse in components
 - [ ] **Developer documentation** - Write comprehensive documentation to allow extensions
 
-<br/>
 
 ## 👀 Showcase
 
@@ -95,28 +91,18 @@ Let's showcase some of ProChat's signature features:
 
 ## 🤝 Contributing
 
-> \[!IMPORTANT]
->
-> Join our collaborative ecosystem. Feel free to :
-
 - **Use and Innovate**: Try Amphi and share your use case with us. Your real-world usage and feedback are invaluable.
 - **Voice Your Insights**: Encounter a glitch? Have a query? Your perspectives matter. Share them by submitting [issues][github-issues-link] and help us enhance the user experience.
 - **Shape the Future**: Have code enhancements or feature ideas? We invite you to propose [pull requests][pr-welcome-link] and contribute directly to the evolution of our codebase.
 
 Every contribution, big or small, is celebrated. Join us in our mission to refine and elevate the world of ETL for data and AI. 😃
 
-[![][pr-welcome-shield]][pr-welcome-link]
-
-<br/>
-
 ## 🛣️ Ecosystem
 
 Amphi is available as an extension for Jupyterlab and Amphi ETL is a distribution based on Jupyterlab. Therefore Jupyterlab extensions can be installed on Amphi ETL.
 
 - **[Jupyterlab](https://github.com/jupyterlab/jupyterlab)** - JupyterLab computational environment.
-- **[ProEditor](https://github.com/jupyterlab/jupyterlab-git)** - A Git extension for JupyterLab.
-
-<br/>
+- **[jupyterlab-git](https://github.com/jupyterlab/jupyterlab-git)** - A Git extension for JupyterLab.
 
 ---
 
