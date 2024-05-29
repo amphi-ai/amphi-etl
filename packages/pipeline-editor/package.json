@@ -1,6 +1,7 @@
 {
   "name": "@amphi/pipeline-editor",
-  "version": "0.3.8",
+  "version": "0.3.9
+",
   "description": "Amphi Pipeline Editor",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {

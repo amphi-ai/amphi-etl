@@ -1,6 +1,7 @@
 {
   "name": "@amphi/pipeline-components-manager",
-  "version": "0.3.8",
+  "version": "0.3.9
+",
   "description": "Amphi Pipeline Components Manager",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {
