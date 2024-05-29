@@ -1,11 +1,12 @@
 <div align="center">
 
 <img height="60" src="https://amphi.ai/icons/amphi_logo_paths.svg">
+<p align="center">
+    <em>No-code Python-Based ETL for structured and unstructured data.</em>
+</p>
 <hr>
-No-code Python-Based ETL for structured and unstructured data.
 
-English · [Changelog](./CHANGELOG.md) . [Report Bug][https://github.com/amphi-ai/amphi-etl/issues] · [Request Feature][https://github.com/amphi-ai/amphi-etl/issues]
-
+<br/>
 
 <p align="center">
 <a href="https://github.com/airbytehq/airbyte/stargazers/" target="_blank">
@@ -18,6 +19,10 @@ English · [Changelog](./CHANGELOG.md) . [Report Bug][https://github.com/amphi-a
     <img src="https://img.shields.io/static/v1?label=license&message=ELv2&color=white" alt="License">
 </a>
 </p>
+
+
+
+English · [Changelog](./CHANGELOG.md) · [Report Bug](https://github.com/amphi-ai/amphi-etl/issues) · [Request Feature](https://github.com/amphi-ai/amphi-etl/issues)
 
 </div>
 
