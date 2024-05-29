@@ -1,0 +1,85 @@
+{
+  "name": "@amphi/ui-component",
+  "version": "0.1.0",
+  "description": "p5 notebook - lab extension",
+  "homepage": "https://github.com/amphi-ai/amphi",
+  "bugs": {
+    "url": "https://github.com/amphi-ai/amphi/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amphi-ai/amphi.git"
+  },
+  "license": "ELv2",
+  "author": {
+    "name": "Thibaut Gourdel",
+    "email": "tgourdel@amphi.ai"
+  },
+  "sideEffects": [
+    "style/*.css",
+    "style/index.js"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "style": "style/index.css",
+  "styleModule": "style/index.js",
+  "directories": {
+    "lib": "lib/"
+  },
+  "files": [
+    "lib/*.d.ts",
+    "lib/*.js.map",
+    "lib/*.js",
+    "style/*.css",
+    "style/index.js"
+  ],
+  "scripts": {
+    "build": "npx tailwindcss -i ./style/base.css -o ./style/output.css && jlpm run build:lib && jlpm run build:labextension:dev",
+    "build:labextension": "jupyter labextension build .",
+    "build:labextension:dev": "jupyter labextension build --development True .",
+    "build:lib": "tsc --build --verbose",
+    "build:prod": "npx tailwindcss -i ./style/base.css -o ./style/output.css && jlpm run build:lib && jlpm run build:labextension && jlpm install",
+    "clean": "jlpm run clean:lib && jlpm run clean:labextension",
+    "clean:labextension": "rimraf ../../amphi/ui-component",
+    "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
+    "eslint": "eslint . --ext .ts,.tsx --fix",
+    "eslint:check": "eslint . --ext .ts,.tsx",
+    "watch": "run-p watch:src watch:labextension",
+    "watch:labextension": "jupyter labextension watch .",
+    "watch:src": "tsc -w"
+  },
+  "dependencies": {
+    "@jupyterlab/application": "^4.0.9",
+    "@jupyterlab/filebrowser": "^4.0.9",
+    "@jupyterlab/launcher": "^4.0.9",
+    "@jupyterlab/mainmenu": "^4.0.9",
+    "@jupyterlab/ui-components": "^4.0.9"
+  },
+  "resolutions": {
+    "@jupyterlab/rendermime-interfaces": "^4.0.9",
+    "@lumino/widgets": "^2.0.0",
+    "@types/react": "^18.2.7"
+  },
+  "devDependencies": {
+    "@jupyterlab/builder": "^4.0.9",
+    "@typescript-eslint/eslint-plugin": "^4.8.1",
+    "@typescript-eslint/parser": "^4.8.1",
+    "eslint": "^7.14.0",
+    "eslint-config-prettier": "^6.15.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-react": "^7.18.3",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.1.1",
+    "reactflow": "11.7.2",
+    "rimraf": "^3.0.2",
+    "typescript": "~5.0.4",
+    "yarn-deduplicate": "^6.0.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "jupyterlab": {
+    "extension": true,
+    "outputDir": "../../amphi/ui-component"
+  }
+}

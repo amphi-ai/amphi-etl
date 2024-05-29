@@ -1,0 +1,1003 @@
+/*-----------------------------------------------------------------------------
+| Copyright (c) Jupyter Development Team.
+| Distributed under the terms of the Modified BSD License.
+|----------------------------------------------------------------------------*/
+@import './variables.css';
+
+#jp-main-dock-panel {
+  padding: 0
+}
+
+#jp-title-panel-title {
+  margin-left: 1rem
+}
+
+.jp-LabShell[data-shell-mode=single-document] #jp-menu-panel {
+  padding-left: 0
+}
+
+#jp-bottom-panel {
+  border-top: 1px solid var(--amphi-border-subtle)
+}
+
+#jp-bottom-panel {
+  border-top: 1px solid var(--amphi-border-subtle)
+}
+
+button.jp-mod-styled.jp-mod-accept{
+  background: var(--amphi-interactive-01);
+}
+
+/*
+button.jp-mod-styled.jp-mod-accept {
+  background: var(--amphi-interactive-01);
+  color: var(--amphi-text-04)
+}
+
+button.jp-mod-styled.jp-mod-accept:hover {
+  background: var(--amphi-hover-primary)
+}
+
+button.jp-mod-styled.jp-mod-accept:active {
+  background: var(--amphi-active-primary)
+}
+
+button.jp-mod-styled.jp-mod-reject {
+  background: var(--amphi-interactive-02);
+  color: var(--amphi-text-04)
+}
+
+button.jp-mod-styled.jp-mod-reject:hover {
+  background: var(--amphi-hover-secondary)
+}
+
+button.jp-mod-styled.jp-mod-reject:active {
+  background: var(--amphi-active-secondary)
+}
+
+button.jp-mod-styled.jp-mod-warn {
+  background: var(--amphi-danger);
+  color: var(--amphi-text-04)
+}
+
+button.jp-mod-styled.jp-mod-warn:hover {
+  background: var(--amphi-hover-danger)
+}
+
+button.jp-mod-styled.jp-mod-warn:active {
+  background: var(--amphi-active-danger)
+}
+*/
+
+:root {
+  --bottom-statusbar-height: 28px;
+  --footer-height: 113px;
+  --bottom-panel-height: calc(var(--bottom-statusbar-height) + var(--footer-height));
+  --header-panel-height: 48px
+}
+
+@media (min-width: 42rem) {
+  :root {
+      --footer-height: 43px
+  }
+}
+
+#jp-header-panel {
+  min-height: var(--header-panel-height)!important;
+  height: var(--header-panel-height)!important
+}
+
+
+:root {
+  --jp-private-menubar-height: 48px;
+  --jp-private-menu-item-height: 34px
+}
+
+#jp-top-panel {
+  background: var(--amphi-ui-01);
+  border-bottom: 1px solid var(--amphi-skeleton-01)
+}
+
+.lm-Menu {
+  background: var(--amphi-ui-01);
+  box-shadow: none;
+  border: none;
+  padding: 0;
+  box-shadow: var(--jp-elevation-z6)
+}
+
+.lm-MenuBar {
+  background: var(--amphi-ui-01)
+}
+
+.lm-MenuBar-item {
+  padding: 0 16px
+}
+
+.lm-MenuBar-item:hover {
+  cursor: pointer;
+  background-color: var(--amphi-hover-ui)
+}
+
+.lm-Menu-item:not(.lm-mod-disabled):not([data-type=separator]):hover {
+  cursor: pointer;
+  background-color: var(--amphi-hover-ui)
+}
+
+.lm-Menu-item[data-type=separator]>div {
+  height: 0
+}
+
+.lm-Menu-item[data-type=separator]>div:after {
+  border-top: 1px solid var(--amphi-ui-03);
+  top: 0
+}
+
+.lm-Menu-item.lm-mod-disabled {
+  color: var(--amphi-text-03)
+}
+
+.lm-MenuBar.lm-mod-active .lm-MenuBar-item.lm-mod-active {
+  background: var(--amphi-ui-02)
+}
+
+body {
+  background-color: var(--amphi-ui-background, #ffffff)
+}
+
+body {
+  scrollbar-color: var(--jp-scrollbar-color) var(--jp-scrollbar-bg);
+  scrollbar-face-color:var(--jp-scrollbar-color);scrollbar-track-color: var(--jp-scrollbar-bg)
+}
+
+body ::-webkit-scrollbar {
+  width: 14px;
+  height: 14px
+}
+
+body ::-webkit-scrollbar-track {
+  background: var(--jp-scrollbar-bg);
+  border-radius: 0
+}
+
+body ::-webkit-scrollbar-thumb {
+  background-color: var(--jp-scrollbar-color);
+  border-radius: 8px;
+  background-clip: padding-box;
+  border: 3px solid rgba(0,0,0,0)
+}
+
+:root {
+  --jp-private-sidebar-tab-width: 48px;
+  --jp-private-sidebar-tab-height: 48px
+}
+
+.jp-SideBar.lm-TabBar {
+  background: var(--amphi-ui-01);
+  border-right: 1px solid var(--amphi-skeleton-01);
+}
+
+.jp-SideBar .lm-TabBar-tab {
+  min-height: var(--jp-private-sidebar-tab-height);
+  padding: 0 14px;
+  align-items: center; /* Centers items vertically */
+  display: flex; /* Add this to make the tab a flex container */
+  justify-content: center; /* Centers items horizontally */
+}
+
+.jp-SideBar .lm-TabBar-tab.lm-mod-current {
+  background: var(--amphi-ui-02);
+  box-shadow: inset 3px 0 0 var(--amphi-interactive-04);
+}
+
+.jp-SideBar .lm-TabBar-tab:hover {
+  cursor: pointer
+}
+
+.jp-SideBar .lm-TabBar-tab:hover:not(.lm-mod-current) {
+  background: var(--amphi-ui-02)
+}
+
+.jp-SideBar .lm-TabBar-tab:not(.lm-mod-current) {
+  background: var(--amphi-ui-03);
+  box-shadow: inset 3px 0 #0000
+}
+
+.jp-SideBar .lm-TabBar-tab .lm-TabBar-tabIcon {
+  display: flex;
+  align-items: center; /* Centers items vertically */
+  justify-content: center; /* Centers items horizontally */
+  width: 20px;
+}
+
+.jp-SideBar.lm-TabBar .lm-TabBar-tabLabel {
+  display: none;
+}
+
+.jp-SideBar .lm-TabBar-tab.lm-mod-current .lm-TabBar-tabIcon .jp-icon3 {
+  fill: var(--amphi-interactive-04)!important
+}
+
+.p-SplitPanel-handle,.lm-SplitPanel-handle {
+  z-index: 0!important
+}
+
+#kernelusage-panel-id {
+  background-color: var(--amphi-ui-02);
+  color: var(--amphi-text-02);
+  overflow: auto!important
+}
+
+#kernelusage-panel-id hr.jp-KernelUsage-section-separator {
+  border-top-color: var(--amphi-ui-03)
+}
+
+#kernelusage-panel-id h3.jp-KernelUsage-section-separator {
+  font-size: 1.75rem;
+  font-weight: 400;
+  line-height: 1.28572;
+  letter-spacing: 0
+}
+
+#kernelusage-panel-id h4.jp-KernelUsage-section-separator {
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0
+}
+
+:root {
+  --jp-private-horizontal-tab-height: 32px
+}
+
+.lm-TabBar-tabIcon [class*=jp-icon] {
+  fill: var(--amphi-inverse-02)!important;
+}
+
+.lm-DockPanel-tabBar {
+  z-index: 0!important
+}
+
+.lm-DockPanel-tabBar .lm-TabBar-tab.lm-mod-current {
+  background: var(--amphi-ui-01)
+}
+
+.lm-DockPanel-tabBar .lm-TabBar-tab {
+  background: var(--amphi-ui-03);
+  margin-left: 2px;
+  line-height: calc(var(--jp-private-horizontal-tab-height) - var(--jp-private-horizontal-tab-active-top-border))
+}
+
+.lm-DockPanel-tabBar .lm-TabBar-tab:not(.lm-mod-current):hover {
+  cursor: pointer;
+  background: var(--amphi-hover-ui)
+}
+
+.lm-DockPanel-tabBar .lm-TabBar-tab:not(.lm-mod-current) {
+  box-shadow: inset 0 var(--jp-private-horizontal-tab-active-top-border) var(--amphi-ui-03);
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0
+}
+
+.lm-DockPanel-tabBar .lm-TabBar:not(.lm-mod-current) {
+  box-shadow: inset 0 var(--jp-private-horizontal-tab-active-top-border) var(--amphi-ui-04);
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 0
+}
+
+.lm-DockPanel-tabBar .lm-TabBar-tab.lm-mod-current:before {
+  top: 0
+}
+
+.lm-DockPanel-tabBar .lm-TabBar-addButton {
+  cursor: pointer;
+  padding-bottom: 4px
+}
+
+.lm-DockPanel-tabBar .lm-TabBar-addButton svg {
+  height: 24px
+}
+
+.lm-DockPanel-handle[data-orientation='vertical'] {
+  border-bottom: 1px solid var(--amphi-skeleton-01);
+  background-color: transparent;
+
+}
+
+.lm-CommandPalette-itemLabel {
+  line-height: 1rem
+}
+
+.lm-CommandPalette-wrapper:after {
+  background-color: #0000;
+  right: 1rem
+}
+
+/*
+.jp-Dialog-header {
+  padding: 0 1.5rem;
+  font-size: var(--amphi-productive-heading-03-font-size, 1.25rem);
+  font-weight: var(--amphi-productive-heading-03-font-weight, 400);
+  line-height: var(--amphi-productive-heading-03-line-height, 1.4);
+  letter-spacing: var(--amphi-productive-heading-03-letter-spacing, 0);
+  color: var(--amphi-text-01, #161616);
+  margin-bottom: 1rem
+}
+
+.jp-Dialog-body {
+  padding: 0 1.5rem 1.5rem;
+  min-height: 4rem;
+  background-color: var(--amphi-ui-01)
+}
+
+.jp-Dialog-body>label {
+  color: var(--amphi-text-02);
+  font-size: .75rem;
+  padding-bottom: 4px
+}
+
+.jp-Dialog-content {
+  padding: 24px 0 0;
+  min-height: 3rem;
+  background-color: var(--amphi-ui-01)
+}
+
+.jp-Dialog-footer {
+  padding: 0;
+  height: 4rem;
+  margin-top: auto;
+  margin-left: 0;
+  margin-right: 0
+}
+
+.jp-Dialog-button.jp-mod-styled {
+  flex: 0 1 50%;
+  display: inline-flex;
+  height: 4rem;
+  width: 100%;
+  line-height: unset;
+  padding-top: var(--amphi-spacing-05, 1rem);
+  letter-spacing: 0
+}
+
+.jp-Dialog-button.jp-mod-styled:not(:last-child) {
+  margin-right: 0
+}
+
+button.jp-Dialog-button:focus {
+  outline: 2px solid var(--jp-brand-color1)!important;
+  outline-offset: -2px!important
+}
+*/
+
+input.jp-mod-styled {
+  background: var(--amphi-field-02);
+  border-bottom: 1px solid var(--amphi-ui-04);
+  font-size: var(--jp-ui-font-size1);
+  height: 3rem;
+  line-height: 1.25rem;
+  outline: 2px solid rgba(0,0,0,0);
+  outline-offset: -2px;
+  padding: 0 1rem;
+  color: var(--amphi-text-01);
+  max-height: 3rem;
+  min-height: 3rem
+}
+
+.jp-DirListing-item.jp-mod-selected .jp-DirListing-itemText:focus {
+  outline: none;
+}
+
+.jp-DirListing-itemText:focus {
+  outline: none;
+  /*
+  outline-width: 2px;
+  outline-color: var(--jp-inverse-layout-color1);
+  outline-style: solid;
+  outline-offset: 1px;
+  */
+}
+/*
+input.jp-mod-styled:focus {
+  outline-color: var(--amphi-focus)
+}
+*/
+
+input.jp-Dialog-body.jp-mod-styled {
+  margin: 0 16px 16px
+}
+
+.jp-select-wrapper {
+  margin: .5rem 0
+}
+
+.jp-select-wrapper svg {
+  top: 50%
+}
+
+.jp-select-wrapper select.jp-mod-styled {
+  border: unset;
+  border-bottom: 1px solid var(--amphi-ui-4);
+  outline: 2px solid rgba(0,0,0,0);
+  outline-offset: -2px;
+  padding: 0 25px 0 16px;
+  min-height: 3rem
+}
+
+/*
+.jp-select-wrapper select.jp-mod-styled:focus {
+  outline-color: var(--amphi-focus)
+}
+*/
+
+.jp-select-wrapper select.jp-mod-styled:hover {
+  background-color: var(--amphi-hover-field);
+  box-shadow: none
+}
+
+:root {
+  --jp-private-toolbar-height: calc(48px + var(--jp-border-width))
+}
+
+.jp-Toolbar {
+  background: var(--amphi-ui-01);
+  padding-right: .625rem;
+  border-bottom: 1px solid var(--amphi-border-subtle);
+  min-height: 0px; /*var(--jp-toolbar-micro-height); */
+  padding: 0px;  
+  padding-right:5px;
+  padding-left:5px;
+}
+
+.jp-ToolbarButtonComponent-label {
+  margin-left:3px;
+  
+}
+
+.jp-Toolbar .jp-Toolbar-item {
+  display: flex;
+  align-items: center;
+  height: unset
+}
+
+.jp-Toolbar .jp-Notebook-ExecutionIndicator {
+  display: flex;
+  align-items: center
+}
+
+.jp-Toolbar .jp-Notebook-ExecutionIndicator svg {
+  height: 16px
+}
+
+.jp-Toolbar .jp-Notebook-ExecutionIndicator-tooltip {
+  border-radius: 0;
+  transform: unset!important;
+  top: var(--jp-private-toolbar-height);
+  right: 10px
+}
+
+#jp-main-dock-panel[data-mode=single-document] .jp-MainAreaWidget>.jp-Toolbar {
+  padding-left: .5rem
+}
+
+:root {
+  --jp-private-input-height: 40px
+}
+
+.bp3-input-group {
+  display: flex;
+  align-items: center;
+}
+
+.bp3-input-group .bp3-input:first-child {
+  padding-left: 3rem;
+  padding-right: 1rem
+}
+
+.bp3-input-group .bp3-input-action:last-child {
+  right: unset;
+  margin-left: .5rem
+}
+
+.bp3-input {
+  min-height: var(--jp-private-input-height)
+}
+
+.bp3-input::-moz-placeholder {
+  color: var(--amphi-text-03)!important;
+  opacity: 1
+}
+
+.bp3-input::placeholder {
+  color: var(--amphi-text-03)!important;
+  opacity: 1
+}
+
+.bp3-input-group .bp3-input-action,.bp3-input-group>.bp3-input-left-container,.bp3-input-group>.bp3-button,.bp3-input-group>.bp3-icon {
+  top: unset
+}
+
+.jp-InputArea-prompt {
+  margin: 1rem 0 0
+}
+
+.jp-InputArea-editor {
+  margin: 1rem 1rem 1rem 0
+}
+
+.jp-OutputArea-output {
+  margin-bottom: 1rem
+}
+
+.jp-Cell {
+  margin: 6px 0;
+  padding: var(--jp-cell-padding) var(--jp-cell-padding) var(--jp-cell-padding) 0;
+  background: var(--amphi-ui-01)
+}
+
+.jp-CodeCell.jp-mod-outputsScrolled .jp-Cell-outputArea {
+  box-shadow: unset
+}
+
+.jp-MarkdownOutput {
+  padding-top: 1rem;
+  padding-bottom: 1rem
+}
+
+.jp-RenderedHTMLCommon p {
+  font-size: var(--jp-ui-font-color1)
+}
+
+.jp-RenderedHTMLCommon .alert-info,.jp-RenderedHTMLCommon .alert-warning,.jp-RenderedHTMLCommon .alert-success,.jp-RenderedHTMLCommon .alert-danger {
+  color: #161616;
+  border-radius: 0;
+  border: 0
+}
+
+
+.jp-cell-toolbar {
+  min-height: auto!important;
+  padding: 1px;
+  top: 16px;
+  right: 16px
+}
+
+.jp-DocumentSearch-overlay {
+  box-shadow: -2px 2px 4px -1px var(--jp-shadow-umbra-color),0 4px 5px 0 var(--jp-shadow-penumbra-color)
+}
+
+.jp-DocumentSearch-overlay .jp-DocumentSearch-input-wrapper * {
+  background-color: var(--amphi-field-02)
+}
+
+.jp-DocumentSearch-overlay .jp-DocumentSearch-input-wrapper {
+  background-color: var(--amphi-field-02);
+  outline: 2px solid rgba(0,0,0,0)
+}
+
+.jp-DocumentSearch-overlay .jp-DocumentSearch-input-wrapper.jp-DocumentSearch-focused-input {
+  outline-color: var(--amphi-focus)
+}
+
+.jp-DocumentSearch-overlay .jp-DocumentSearch-input-wrapper .jp-DocumentSearch-button-content {
+  display: inline-flex
+}
+
+.jp-DocumentSearch-overlay .jp-DocumentSearch-input-wrapper .jp-DocumentSearch-index-counter {
+  font-size: 12px
+}
+
+.jp-extensionmanager-entry.jp-extensionmanager-entry-should-be-uninstalled {
+  display: none!important
+}
+
+.jp-extensionmanager-content header:first-of-type {
+  display: none
+}
+
+.jp-FileBrowser {
+  --jp-private-toolbar-height: calc(16px + var(--jp-border-width));
+  padding: 1rem
+}
+
+.jp-FileBrowser .jp-FileBrowser-toolbar {
+  background: var(--amphi-ui-02)
+}
+
+.jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar {
+  margin: 0
+}
+/*
+
+.jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar .jp-ToolbarButtonComponent[data-command="filebrowser:create-main-launcher"] {
+  width: 7rem;
+  height: 2.5rem;
+  background: var(--amphi-interactive-01);
+  border-radius: 5px;
+  margin-right: .5rem
+}
+
+.jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar .jp-ToolbarButtonComponent[data-command="filebrowser:create-main-launcher"] .jp-ToolbarButtonComponent-icon {
+  display: flex;
+  color: var(--amphi-text-04)
+}
+
+.jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar .jp-ToolbarButtonComponent[data-command="filebrowser:create-main-launcher"] .jp-ToolbarButtonComponent-icon:before {
+  content: "New";
+  color: var(--amphi-text-04)
+}
+
+.jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar .jp-ToolbarButtonComponent[data-command="filebrowser:create-main-launcher"] .jp-ToolbarButtonComponent-icon svg {
+  width: 20px;
+  height: 20px;
+  margin: 0 0 0 .5rem
+}
+
+.jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar .jp-ToolbarButtonComponent[data-command="filebrowser:create-main-launcher"]:hover,.jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar .jp-ToolbarButtonComponent[data-command="filebrowser:create-main-launcher"]:focus-visible {
+  background-color: var(--amphi-hover-primary)!important
+}
+
+.jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar .jp-ToolbarButtonComponent[data-command="filebrowser:create-main-launcher"] .jp-icon3[fill] {
+  fill: #fff
+}
+
+.jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar .jp-Toolbar-item:not(:first-child) .jp-ToolbarButtonComponent .jp-icon3[fill] {
+  fill: var(--amphi-link-01)
+}
+*/
+
+.jp-FileBrowser .jp-ToolbarButtonComponent-label {
+  color: #fff;
+}
+
+.jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar .jp-Toolbar-item:not(:first-child):hover {
+  background-color: var(--amphi-hover-ui)
+}
+
+.jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar .jp-Toolbar-item:not(:first-child) button.jp-Button.bp3-button.bp3-minimal:hover {
+  background-color: unset
+}
+.jp-InputGroup .jp-FilterBox {
+  background-color: var(--amphi-ui-01);
+  margin: 1rem 0 0
+}
+
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs {
+  margin: 16px 0;
+  display: flex
+}
+
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-home:nth-last-child(2) {
+  color: var(--amphi-text-01)
+}
+
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-home:not(:nth-last-child(2)) {
+  color: var(--amphi-link-01)
+}
+
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-home:not(:nth-last-child(2)):hover {
+  cursor: pointer;
+  text-decoration: underline
+}
+
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-item {
+  cursor: default
+}
+
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-item:nth-last-child(2) {
+  color: var(--amphi-text-01)
+}
+
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-item:not(:nth-last-child(2)) {
+  color: var(--amphi-link-01)
+}
+
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-item:not(:nth-last-child(2)):hover {
+  cursor: pointer;
+  text-decoration: underline
+}
+
+.jp-FileBrowser .jp-DirListing-header {
+  background-color: var(--amphi-ui-03);
+  min-height: 3rem;
+  align-items: center
+}
+
+.jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem {
+  /* display: flex; */
+  align-items: center;
+  /* height: 100% */
+}
+
+.jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem.jp-id-name {
+  font-weight: 600
+}
+
+
+.jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem.jp-id-modified {
+  flex: 0 0 8.5rem; 
+  font-weight: 600
+}
+
+
+.jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem:hover {
+  background-color: var(--amphi-hover-ui);
+  cursor: pointer
+}
+
+.jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem .jp-DirListing-headerItemText {
+  color: var(--amphi-text-01) 
+}
+
+.jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem .jp-DirListing-headerItemIcon {
+  margin-left: 1rem
+}
+
+.jp-FileBrowser .jp-DirListing-content mark {
+  color: var(--amphi-interactive-04)
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item {
+  position: relative;
+  color: var(--amphi-text-02);
+  min-height: 2.5rem;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--amphi-ui-03)
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-selected {
+  background: var(--amphi-active-ui);
+  border: none;
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-running {
+  box-shadow: inset 2px 0 var(--amphi-interactive-04)
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-running .jp-DirListing-itemIcon:before {
+  content: ""
+}
+
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-home:after {
+  content: "Workspace ";
+  white-space: pre;
+}
+
+.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs svg {
+  display:none;
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item:hover:not(.jp-mod-selected) {
+  cursor: pointer;
+  background-color: var(--amphi-hover-field)
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-dropTarget {
+  background: var(--amphi-ui-03)
+}
+
+/*
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item .jp-DirListing-itemIcon [class*=jp-icon],.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-selected [class*=jp-icon] {
+  fill: var(--amphi-icon-01)!important
+}
+*/
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item .jp-DirListing-itemText {
+  line-height: 20px
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item .jp-DirListing-editor {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding-left: calc(2.25rem - 2px);
+  flex: unset;
+  background: var(--amphi-ui-02);
+  /* border: 2px solid var(--amphi-interactive-04) */
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item .jp-DirListing-itemModified {
+  font-size: var(--jp-ui-font-size0);
+  color: var(--amphi-text-02)
+}
+
+.jp-DirListing-item.lm-mod-drag-image,.jp-DirListing-item.jp-mod-selected.lm-mod-drag-image {
+  z-index: 2
+}
+
+.jp-About-externalLinks .jp-Button-flat {
+  color: var(--amphi-link-01)
+}
+
+.jp-LogConsole-toolbarLogLevelDropdown svg {
+  top: 14px
+}
+
+.lm-SplitPanel-handle {
+  width: 2px!important;
+  background-color: var(--jp-private-split-panel-color)
+}
+
+.lm-TabBar-tabCloseIcon:hover {
+  cursor: pointer
+}
+
+
+:root {
+  --jp-private-running-item-height: 48px
+}
+
+.jp-RunningSessions-shutdownAll.jp-mod-styled {
+  color: var(--amphi-link-01);
+  height: 48px;
+  letter-spacing: 0
+}
+
+.jp-RunningSessions-shutdownAll.jp-mod-styled:hover {
+  background-color: var(--amphi-hover-ui)
+}
+
+.jp-RunningSessions-section {
+  min-height: var(--jp-private-running-item-height)
+}
+
+.jp-RunningSessions-header button.jp-Button.bp3-button.bp3-minimal {
+  width: 3rem
+}
+
+.jp-RunningSessions-header button.jp-Button.bp3-button.bp3-minimal:hover {
+  background-color: var(--amphi-hover-ui)
+}
+
+.jp-RunningSessions-sectionHeader {
+  margin-bottom: 4px;
+  height: 48px
+}
+
+.jp-RunningSessions-sectionHeader h2 {
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: .16px;
+  font-size: var(--jp-ui-font-size1);
+  line-height: var(--amphi-productive-heading-01-line-height)
+}
+
+.jp-RunningSessions-item {
+  padding: 0;
+  margin: 0 16px;
+  border-bottom: 1px solid var(--amphi-ui-03);
+  align-items: center
+}
+
+.jp-RunningSessions-item:hover {
+  cursor: pointer;
+  background: var(--amphi-ui-03)
+}
+
+.jp-RunningSessions-shutdownAll.jp-mod-styled:focus {
+  outline: 2px solid var(--jp-brand-color1);
+  outline-offset: -2px
+}
+
+.jp-RunningSessions-item .jp-icon-warn0[fill] {
+  fill: var(--amphi-icon-01)
+}
+
+.jp-About-header .jp-icon-warn0[fill] {
+  fill: #f37726
+}
+
+#jp-main-statusbar svg[data-icon="ui-components:terminal"],#jp-main-statusbar svg[data-icon="ui-components:kernel"] {
+  top: 1px
+}
+
+#jp-main-statusbar svg[data-icon="ui-components:trusted"] {
+  top: 3px
+}
+
+#jp-main-statusbar svg[data-icon="ui-components:bell"] {
+  height: 16px;
+  top: 0
+}
+
+.jp-SpinnerContent {
+  background: linear-gradient(to right,var(--amphi-brand-01) 10%,rgba(255,255,255,0) 42%)
+}
+
+.jp-SpinnerContent:before {
+  background: var(--amphi-brand-01)
+}
+
+.jp-switch[aria-checked=true] .jp-switch-track {
+  background-color: var(--amphi-interactive-01)
+}
+
+.jp-switch:hover {
+  background-color: unset
+}
+
+
+.jp-HTMLSelect.jp-DefaultStyle select {
+  cursor: pointer
+}
+
+#jp-main-dock-container-panel {
+  border-left: 2px solid var(--amphi-skeleton-01);
+  border-right: 2px solid var(--amphi-skeleton-01)
+}
+
+#jp-main-statusbar {
+  background: var(--amphi-ui-01)
+}
+
+:root {
+  --shell-header-height: 48px;
+  --shell-header-mobile-nav-width: 256px
+}
+
+.clear-search-decoration::-ms-clear,.clear-search-decoration::-ms-reveal {
+  display: none;
+  height: 0rem;
+  width: 0rem
+}
+
+.clear-search-decoration::-webkit-search-decoration,.clear-search-decoration::-webkit-search-cancel-button,.clear-search-decoration::-webkit-search-results-button,.clear-search-decoration::-webkit-search-results-decoration {
+  display: none
+}
+
+.scrollbar {
+  --scrollbar-bg: transparent;
+  --scrollbar-color: var(--amphi-skeleton-01);
+  scrollbar-color: var(--scrollbar-color) var(--scrollbar-bg);
+  scrollbar-face-color:var(--scrollbar-color);scrollbar-track-color: var(--scrollbar-bg)
+}
+
+.scrollbar-variant {
+  --scrollbar-bg: transparent;
+  --scrollbar-color: var(--amphi-text-03)
+}
+
+.scrollbar ::-webkit-scrollbar,.scrollbar::-webkit-scrollbar {
+  width: 14px;
+  height: 14px
+}
+
+.scrollbar ::-webkit-scrollbar-track,.scrollbar::-webkit-scrollbar-track {
+  background: var(--scrollbar-bg);
+  border-radius: 0
+}
+
+.scrollbar ::-webkit-scrollbar-thumb,.scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-color);
+  border-radius: 8px;
+  background-clip: padding-box;
+  border: 3px solid transparent
+}
+
+.scrollbar ::-webkit-scrollbar-corner {
+  background: var(--scrollbar-bg)
+}
+
+/*
+
+.jp-LauncherCard {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  width: var(--jp-private-launcher-card-size);
+  height: var(--jp-private-launcher-card-size);
+  margin: 8px;
+  padding: 0px;
+  border: 1px solid var(--jp-border-color2);
+  background: var(--jp-layout-color0);
+  box-shadow: var(--jp-elevation-z1);
+  transition: 0.2s box-shadow;
+  border-radius: var(--jp-border-radius);
+}
+
+*/

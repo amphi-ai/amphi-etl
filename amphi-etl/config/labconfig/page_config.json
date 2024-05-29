@@ -1,0 +1,17 @@
+{
+    "disabledExtensions": {
+      "@jupyterlab/notebook-extension": true,
+      "@jupyterlab/launcher-extension": true,
+      "@jupyterlab/running-extension": true,
+      "@jupyterlab/toc-extension": true,
+      "@jupyterlab/help-extension": true,
+      "@jupyterlab/debugger-extension": true,
+      "@jupyterlab/application-extension:property-inspector": true,
+      "@jupyterlab/inspector-extension": true,
+      "@jupyterlab/application-extension:about": true,
+      "@jupyterlab/theme-dark-extension": true,
+      "@jupyterlab/theme-light-extension": true,
+      "@jupyterlab/extensionmanager-extension": true,
+      "@jupyterlab/application-extension:logo": true   
+    }
+}

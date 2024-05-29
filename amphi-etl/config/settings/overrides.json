@@ -1,0 +1,118 @@
+{
+  "@jupyterlab/apputils-extension:themes": {
+    "theme": "Amphi Light",
+    "theme-scrollbars": true
+  },
+  "@jupyterlab/mainmenu-extension:plugin": {
+    "menus": [
+      {
+        "id": "jp-mainmenu-run",
+        "disabled": true
+      },
+      {
+        "id": "jp-mainmenu-kernel",
+        "disabled": true
+      },
+      {
+        "id": "jp-mainmenu-file",
+        "items": [
+          {
+            "type": "submenu",
+            "submenu": {
+              "id": "jp-mainmenu-file-new",
+              "items": [
+                {
+                  "command": "pipeline-editor:create-new",
+                  "rank": 1
+                },
+                {
+                  "command": "fileeditor:create-new",
+                  "disabled": true
+                },
+                {
+                  "command": "fileeditor:create-new-markdown-file",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          {
+            "command": "filebrowser:open-path",
+            "disabled": true
+          },
+          {
+            "command": "filebrowser:open-path",
+            "disabled": true
+          },
+          {
+            "command": "docmanager:reload",
+            "disabled": true
+          },
+          {
+            "command": "docmanager:restore-checkpoint",
+            "disabled": true
+          },
+          {
+            "command": "apputils:print",
+            "disabled": true
+          }
+        ]
+      },
+      {
+        "id": "jp-mainmenu-view",
+        "items": [
+          {
+            "command": "filebrowser:open-path",
+            "disabled": true
+          }
+        ]
+      },
+      {
+        "id": "jp-mainmenu-tabs",
+        "disabled": true
+      },
+      {
+        "id": "jp-mainmenu-settings",
+        "items": [
+          {
+            "command": "application:about",
+            "disabled": true
+          },
+          {
+            "command": "help:jupyter-forum",
+            "disabled": true
+          },
+          {
+            "command": "help:licenses",
+            "disabled": true
+          }
+        ]
+      },
+      {
+        "id": "jp-mainmenu-help",
+        "items": [
+          {
+            "command": "help:open",
+            "disabled": true
+          },
+          {
+            "command": "fileeditor:change-font-size",
+            "disabled": true
+          },
+          {
+            "command": "fileeditor:change-font-size",
+            "disabled": true
+          },
+          {
+            "command": "settingeditor:open",
+            "disabled": true
+          }
+        ]
+      },
+      {
+        "id": "jp-mainmenu-help",
+        "disabled": true
+      }
+    ]
+  }
+}
