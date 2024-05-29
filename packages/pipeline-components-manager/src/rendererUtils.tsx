@@ -19,8 +19,9 @@ interface IHandleProps {
 export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, internals }) => {
 
   const LimitedInputHandle = (props) => {
-    const { nodeInternals, edges, nodeId } = internals;
+    const { nodeInternals, edges, nodeId, componentService } = internals;
     const isHandleConnectable = useMemo(() => {
+
       if (typeof props.isConnectable === 'function') {
         const node = nodeInternals.get(nodeId);
         const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.target === nodeId && props.id === edge.targetHandle); // only count input edges
@@ -28,12 +29,12 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
       }
       if (typeof props.isConnectable === 'number') {
         const node = nodeInternals.get(nodeId);
-        const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.target === nodeId && props.id === edge.targetHandle) ; // only count input edges
+        const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.target === nodeId && props.id === edge.targetHandle); // only count input edges
         return connectedEdges.length < props.isConnectable;
       }
       return props.isConnectable;
     }, [nodeInternals, edges, nodeId, props.isConnectable, props.id]);
-  
+
     return <Handle {...props} isConnectable={isHandleConnectable} />;
   };
 
@@ -48,7 +49,6 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
           id="out"
         />
       );
-
     case "pandas_df_output":
     case "documents_output":
       return (
@@ -59,7 +59,7 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
     case 'documents_processor':
       return (
         <>
-          <LimitedInputHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in"/>
+          <LimitedInputHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in" />
           <Handle
             className="handle-right"
             type="source"
@@ -68,11 +68,11 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
           />
         </>
       );
-      case "pandas_df_double_processor":
+    case "pandas_df_double_processor":
       return (
         <>
-          <LimitedInputHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in1"/>
-          <LimitedInputHandle type="target" position={Position.Left} isConnectable={1} className="second-handle-left" id="in2"/>
+          <LimitedInputHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in1" />
+          <LimitedInputHandle type="target" position={Position.Left} isConnectable={1} className="second-handle-left" id="in2" />
           <Handle
             className="handle-right"
             type="source"
@@ -92,7 +92,7 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
     // Example: Zoom in 1.2 times the current zoom level
     setViewport({ zoom: 1.2, duration: 500 });
   };
-  
+
 
   return (
     <>

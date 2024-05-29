@@ -17,10 +17,10 @@ export class HtmlFileInput extends PipelineComponent<ComponentItem>() {
     idPrefix: "component__form",
     fields: [
       {
-        type: "input",
-        label: "URL",
-        id: "url",
-        placeholders: "Type full URL"
+        type: "valuesList",
+        label: "URLs",
+        id: "urls",
+        placeholders: "Enter URLs"
       }
     ],
   };
@@ -86,7 +86,7 @@ export class HtmlFileInput extends PipelineComponent<ComponentItem>() {
 
     const { nodeInternals, edges } = useStore(selector);
     const nodeId = id;
-    const internals = { nodeInternals, edges, nodeId }
+    const internals = { nodeInternals, edges, nodeId, componentService }
 
 
     // Create the handle element
@@ -126,12 +126,12 @@ export class HtmlFileInput extends PipelineComponent<ComponentItem>() {
 
   public generateComponentCode({ config, outputName }): string {
     let code = '';
-
+  
     // Initial code for loading HTML
     code += `
-# Retrieve HTML from ${config.url}
-${outputName}_loader = AsyncHtmlLoader("${config.url}")
-${outputName} = loader.load()
+# Retrieve HTML from provided URLs
+${outputName}_loader = AsyncHtmlLoader([${config.urls.map(url => `"${url}"`).join(', ')}])
+${outputName} = ${outputName}_loader.load()
 `
     return code;
   }

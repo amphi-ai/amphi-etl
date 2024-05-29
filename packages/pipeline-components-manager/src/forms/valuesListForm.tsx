@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { FieldDescriptor } from '../configUtils';
-import { minusIcon, plusIcon } from '../icons';
+import { Form, Input, Button, Space } from 'antd';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+
 
 // Define a type for your component's props
 interface ValueFormProps {
@@ -32,33 +34,32 @@ export const ValuesListForm: React.FC<ValueFormProps> = ({ field, handleChange, 
   };
 
   return (
-    <div>
-      {values.map((value, index) => (
-        <div key={index} className="flex items-center space-x-2">
-          <input
-            type="text"
-            name={`${field.id}_value_${index}`}
-            placeholder="Value"
-            id={`${field.id}_value_${index}`}
-            value={value}
-            onChange={(e) => handleChangeValue(e, index)}
-            className="mt-1 h-6 w-full rounded-sm border-gray-200 shadow-sm sm:text-xs"
-          />
-          <button
-            type="button"
-            onClick={() => handleRemoveValue(index)}
-            className="nodrag flex flex-col justify-center items-center mt-1 w-9 h-6 rounded-sm bg-gray-500 text-white shadow-sm sm:text-xs">
-            <minusIcon.react className="" />
-          </button>
-        </div>
-      ))}
-      <button
-        type="button"
-        onClick={handleAddValue}
-        className="nodrag flex flex-col justify-center items-center mt-2 w-9 h-6 rounded-sm bg-gray-500 text-white shadow-sm sm:text-xs">
-        <plusIcon.react className="" />
-      </button>
-    </div>
+    <Form.List name="values">
+    {(fields, { add, remove }) => (
+      <>
+        <Form.Item>
+          {values.map((value, index) => (
+            <Space key={index} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
+              <Input
+                name={`${field.id}_value_${index}`}
+                placeholder="Value"
+                id={`${field.id}_value_${index}`}
+                value={value}
+                onChange={(e) => handleChangeValue(e, index)}
+                autoComplete="off"
+              />
+              <MinusCircleOutlined onClick={() => handleRemoveValue(index)} />
+            </Space>
+          ))}
+        </Form.Item>
+        <Form.Item>
+          <Button type="dashed" onClick={handleAddValue} block icon={<PlusOutlined />}>
+            Add Value
+          </Button>
+        </Form.Item>
+      </>
+    )}
+  </Form.List>
   );
 };
 

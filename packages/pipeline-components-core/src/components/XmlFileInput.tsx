@@ -85,7 +85,7 @@ export class XmlFileInput extends PipelineComponent<ComponentItem>() {
 
   const { nodeInternals, edges } = useStore(selector);
   const nodeId = id;
-  const internals = { nodeInternals, edges, nodeId }
+  const internals = { nodeInternals, edges, nodeId, componentService }
 
     
     const handleElement = React.createElement(renderHandle, {

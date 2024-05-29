@@ -2,41 +2,59 @@ import React, { useCallback, useEffect } from 'react';
 import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
 
 import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
-import { fileTextIcon } from '../icons';
+import { chromaIcon } from '../icons';
 
-export class PdfTablesInput extends PipelineComponent<ComponentItem>() {
+export class ChromaOutput extends PipelineComponent<ComponentItem>() {
 
-  public _name = "PDF Tables Input";
-  public _id = "pdfTablesInput";
-  public _type = "pandas_df_input";
-  public _category = "input";
-  public _icon = fileTextIcon;
-  public _default = { pageNumber: 0, tableNumber: 0 };
+  public _name = "Chroma Output";
+  public _id = "chromaOutput";
+  public _type = "documents_output";
+  public _category = "output";
+  public _icon = chromaIcon;
+  public _default = { }; // No default options for Parquet as of now
   public _form = {
     idPrefix: "component__form",
     fields: [
       {
-        type: "file",
-        label: "File path",
-        id: "filePath",
-        placeholder: "Type file name",
-        tooltip: "This field expects a file path with a csv, tsv or txt extension such as input.csv.",
-        validation: "\\.(pdf)$",
+        type: "input",
+        label: "Collection name",
+        id: "collection",
+        placeholder: "Type collection name"
       },
       {
-        type: "inputNumber",
-        label: "Page number",
-        id: "pageNumber",
-        tooltip: "Page number where table is located starting at 0.",
+        type: "input",
+        label: "Directory to persist",
+        id: "persistDirectory",
+        placeholder: "./chroma_db",
+        advanced: true
       },
       {
-        type: "inputNumber",
-        label: "Table number",
-        id: "tableNumber",
-        tooltip: "If multiple tables are present on the page, specify the number starting at 0.",
+        type: "cascader",
+        label: "Embeddings Model",
+        id: "model",
+        placeholder: "Select ...",
+        options: [
+          {
+            value: "openai",
+            label: "OpenAI",
+            children: [
+              { value: "text-embedding-ada-002", label: "text-embedding-ada-002" },
+              { value: "text-embedding-3-small", label: "text-embedding-3-small" },
+              { value: "text-embedding-3-large", label: "text-embedding-3-large" }
+            ]
+          }
+        ]
+      },
+      {
+        type: "input",
+        inputType: "password",
+        label: "OpenAI API Key",
+        id: "openaiApiKey",
+        advanced: true
       }
     ],
   };
+
 
   public static ConfigForm = ({
     nodeId,
@@ -104,7 +122,7 @@ export class PdfTablesInput extends PipelineComponent<ComponentItem>() {
 
     // Create the handle element
     const handleElement = React.createElement(renderHandle, {
-      type: PdfTablesInput.Type,
+      type: ChromaOutput.Type,
       Handle: Handle, // Make sure Handle is imported or defined
       Position: Position, // Make sure Position is imported or defined
       internals: internals    
@@ -118,38 +136,32 @@ export class PdfTablesInput extends PipelineComponent<ComponentItem>() {
           context: context,
           manager: manager,
           commands: commands,
-          name: PdfTablesInput.Name,
-          ConfigForm: PdfTablesInput.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes }),
-          Icon: PdfTablesInput.Icon,
+          name: ChromaOutput.Name,
+          ConfigForm: ChromaOutput.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes }),
+          Icon: ChromaOutput.Icon,
           showContent: showContent,
           handle: handleElement,
           deleteNode: deleteNode,
-          setViewport: setViewport,
+          setViewport: setViewport
         })}
       </>
     );
   }
 
-  public provideDependencies({ config }): string[] {
-    let deps: string[] = [];
-    deps.push('PyMuPDF');
-    return deps;
-  }
-
   public provideImports({ config }): string[] {
-    return ["import fitz"];
+    return ["from langchain_openai import OpenAIEmbeddings", "from langchain_chroma import Chroma"];
   }
 
-  public generateComponentCode({ config, outputName }): string {
+  public generateComponentCode({ config, inputName }): string {
+    const persistDirectory = config.persistDirectory ? `persist_directory="${config.persistDirectory}", ` : '';
   
-    // Generate the Python code
     const code = `
-# Extract tables from ${config.filePath}
-${outputName}_doc = fitz.open("${config.filePath}")
-${outputName}_tabs = ${outputName}_doc[${config.pageNumber}].find_tables() # detect the tables
-${outputName} = ${outputName}_tabs[${config.tableNumber}].to_pandas()
+# Documents to Chroma with on-the-fly embedding
+${inputName}_collection_name = "${config.collection}"
+${inputName}_embeddings = OpenAIEmbeddings(api_key="${config.openaiApiKey}")
+${inputName}_to_Chroma = Chroma.from_documents(${inputName}, ${inputName}_embeddings, ${persistDirectory}collection_name=${inputName}_collection_name)
 `;
     return code;
-}
+  }
 
 }

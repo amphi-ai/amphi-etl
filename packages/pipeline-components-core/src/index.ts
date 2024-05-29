@@ -7,7 +7,8 @@ import { ComponentManager } from "@amphi/pipeline-components-manager";
 import { Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
 SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join,
 ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, RedditInput, OpenAILookUp,
-EnvVariables, EnvFile, ConvertToDocuments, PineconeOutput, FixedSizeChunking, SentenceChunking, WordFileInput, PdfTablesInput } from './components';
+EnvVariables, EnvFile, ConvertToDocuments, PineconeOutput, FixedSizeChunking, SemanticChunking, WordFileInput, PdfTablesInput, 
+RecursiveChunking, HtmlToMarkdown, ParseHTML, ChromaOutput} from './components';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-components-core',
@@ -51,7 +52,13 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(CustomTransformations.getInstance())
    componentService.addComponent(OpenAILookUp.getInstance())
    componentService.addComponent(ConvertToDocuments.getInstance())
-   
+   componentService.addComponent(FixedSizeChunking.getInstance())
+   componentService.addComponent(SemanticChunking.getInstance())
+   componentService.addComponent(RecursiveChunking.getInstance())
+   componentService.addComponent(HtmlToMarkdown.getInstance())
+   componentService.addComponent(ParseHTML.getInstance())
+
+
   // Outputs
    componentService.addComponent(CsvFileOutput.getInstance())
    componentService.addComponent(JsonFileOutput.getInstance())
@@ -63,8 +70,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(PostgresOutput.getInstance())
    componentService.addComponent(Console.getInstance())
    componentService.addComponent(PineconeOutput.getInstance())
-   componentService.addComponent(FixedSizeChunking.getInstance())
-   componentService.addComponent(SentenceChunking.getInstance())
+   componentService.addComponent(ChromaOutput.getInstance())
+
+
 
    // Other
    componentService.addComponent(EnvVariables.getInstance())

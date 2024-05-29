@@ -258,28 +258,35 @@ def _amphi_metadatapanel_deleteallvariables():
 def _amphi_display_documents_as_html(documents):
     html_content = "<div id='documents'>"
     total_docs = len(documents)
+    maxDoc = 10
     
-    if total_docs > 20:
-        # Display first 10 documents
-        for doc in documents[:10]:
-            html_content += f"<div><strong>Document Content:</strong> {doc.page_content}</div>"
-            html_content += f"<div><strong>Metadata:</strong> {doc.metadata}</div>"
-            html_content += "<hr>"
+    if total_docs > maxDoc:
+        # Display first maxDoc // 2 documents
+        for i, doc in enumerate(documents[:(maxDoc // 2)]):
+            html_content += "<div class='_amphi_document'>"
+            html_content += f"<div class='_amphi_nb'>{i+1}</div>"
+            html_content += f"<div class='_amphi_page_content'><strong>Document Content:</strong> {doc.page_content}</div>"
+            html_content += f"<div class='_amphi_metadata'><strong>Metadata:</strong> {doc.metadata}</div>"
+            html_content += "</div>"
         
         # Ellipsis to indicate skipped documents
-        html_content += "<div>...</div><hr>"
+        html_content += "<div>...</div>"
         
-        # Display last 10 documents
-        for doc in documents[-10:]:
-            html_content += f"<div><strong>Document Content:</strong> {doc.page_content}</div>"
-            html_content += f"<div><strong>Metadata:</strong> {doc.metadata}</div>"
-            html_content += "<hr>"
+        # Display last maxDoc // 2 documents
+        for i, doc in enumerate(documents[-(maxDoc // 2):], start=total_docs - (maxDoc // 2)):
+            html_content += "<div class='_amphi_document'>"
+            html_content += f"<div class='_amphi_nb'>{i+1}</div>"
+            html_content += f"<div class='_amphi_page_content'><strong>Document Content:</strong> {doc.page_content}</div>"
+            html_content += f"<div class='_amphi_metadata'><strong>Metadata:</strong> {doc.metadata}</div>"
+            html_content += "</div>"
     else:
-        # Display all documents if total is 20 or less
-        for doc in documents:
-            html_content += f"<div><strong>Document Content:</strong> {doc.page_content}</div>"
-            html_content += f"<div><strong>Metadata:</strong> {doc.metadata}</div>"
-            html_content += "<hr>"
+        # Display all documents if total is maxDoc or less
+        for i, doc in enumerate(documents):
+            html_content += "<div class='_amphi_document'>"
+            html_content += f"<div class='_amphi_nb'>{i+1}</div>"
+            html_content += f"<div class='_amphi_page_content'><strong>Document Content:</strong> {doc.page_content}</div>"
+            html_content += f"<div class='_amphi_metadata'><strong>Metadata:</strong> {doc.metadata}</div>"
+            html_content += "</div>"
     
     html_content += "</div>"
     display(HTML(html_content))

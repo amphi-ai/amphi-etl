@@ -5,25 +5,39 @@ import { FieldDescriptor } from '@amphi/pipeline-components-manager'
 import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
 import { splitIcon } from '../icons';
 
-export class SentenceChunking extends PipelineComponent<ComponentItem>() {
+export class RecursiveChunking extends PipelineComponent<ComponentItem>() {
 
-  public _name = "Sentence chunking";
-  public _id = "sentenceChunking";
+  public _name = "Recursive chunking";
+  public _id = "recursiveChunking";
   public _type = "documents_processor";
   public _category = "transform";
   public _icon = splitIcon; // You should define this icon in your icons file
-  public _default = { type: "nltk", chunkSize: 1000, chunkOverlap: 100 };
+  public _default = { separators: ["\n\n", "\n", " ", ""], regex: false, chunkSize: 1000, chunkOverlap: 100, chunkLength: "character" };
   public _form = {
     idPrefix: "component__form",
     fields: [
       {
-        type: "select",
-        label: "Type",
-        id: "type",
+        type: "selectMultipleCustomizable",
+        label: "Separators",
+        id: "separators",
+        tooltip: "The chunking strategy is parameterized by a list of separators. It tries to split on them in order until the chunks are small enough.",
         options: [
-          { value: "nltk", label: "NLTK" },
-          { value: "spacy", label: "spaCy" }
-        ]
+          { value: "\n\n", label: "Double newline (paragraph)" },
+          { value: "\n", label: "Single newline" },
+          { value: " ", label: "Space" },
+          { value: "", label: "Empty (character-based splitting)" },
+          { value: ",", label: "Comma (,)" },
+          { value: ".", label: "Period (.)" },
+          { value: "!", label: "Exclamation mark (!)" },
+          { value: "?", label: "Question mark (?)" }
+        ],
+       advanced: true
+      },
+      {
+        type: "boolean",
+        label: "Separator is a regex",
+        id: "regex",
+        advanced: true
       },
       {
         type: "inputNumber",
@@ -34,6 +48,17 @@ export class SentenceChunking extends PipelineComponent<ComponentItem>() {
         type: "inputNumber",
         label: "Chunk Overlap",
         id: "chunkOverlap",
+      },
+      {
+        type: "select",
+        label: "Chunk length",
+        tooltip: "Determine how the length of the chunks are measured. By default, the length of a chunk is measured in characters",
+        id: "chunkLength",
+        options: [
+          { value: "character", label: "Character" },
+          { value: "word", label: "Word" }
+        ],
+        advanced: true
       }
     ],
   };
@@ -100,11 +125,11 @@ export class SentenceChunking extends PipelineComponent<ComponentItem>() {
 
   const { nodeInternals, edges } = useStore(selector);
   const nodeId = id;
-  const internals = { nodeInternals, edges, nodeId }
+  const internals = { nodeInternals, edges, nodeId, componentService }
 
   // Create the handle element
   const handleElement = React.createElement(renderHandle, {
-    type: SentenceChunking.Type,
+    type: RecursiveChunking.Type,
     Handle: Handle, // Make sure Handle is imported or defined
     Position: Position, // Make sure Position is imported or defined
     internals: internals
@@ -118,9 +143,9 @@ export class SentenceChunking extends PipelineComponent<ComponentItem>() {
         context: context,
         manager: manager,
         commands: commands,
-        name: SentenceChunking.Name,
-        ConfigForm: SentenceChunking.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
-        Icon: SentenceChunking.Icon,
+        name: RecursiveChunking.Name,
+        ConfigForm: RecursiveChunking.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
+        Icon: RecursiveChunking.Icon,
         showContent: showContent,
         handle: handleElement,
         deleteNode: deleteNode,
@@ -130,6 +155,18 @@ export class SentenceChunking extends PipelineComponent<ComponentItem>() {
   );
   }
 
+  public provideFunctions({ config }): string[] {
+    let functions: string[] = [];
+    if (config.chunkLength === "word") {
+        const code = `
+def word_length_function(text):
+    return len(text.split())
+`;
+        functions.push(code);
+    }
+    return functions;
+}
+
   public provideDependencies({config}): string[] {
     let deps: string[] = [];
     deps.push('tiktoken');
@@ -137,39 +174,20 @@ export class SentenceChunking extends PipelineComponent<ComponentItem>() {
   }
 
   public provideImports({config}): string[] {
-
-    let imports: string[] = [];
-    switch (config.type) {
-      case 'nltk':
-        imports.push('from langchain.text_splitters import NLTKTextSplitter');
-        break;
-      case 'spacy':
-        imports.push('from langchain.text_splitter import SpacyTextSplitter');
-        break;
-      default:
-        console.error('Unknown option');
-    }
-
-    return imports;
+    return ["from langchain_text_splitters import RecursiveCharacterTextSplitter"];
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-  
-    let splitter: string;
-    switch (config.type) {
-      case 'nltk':
-        splitter = `${outputName}_text_splitter = NLTKTextSplitter(chunk_size=${config.chunkSize}, chunk_overlap=${config.chunkOverlap})`;
-        break;
-      case 'spacy':
-        splitter = `${outputName}_text_splitter = SpaCyTextSplitter(chunk_size=${config.chunkSize}, chunk_overlap=${config.chunkOverlap})`;
-        break;
-      default:
-        console.error('Unknown option');
-    }
+    const lengthFunction = config.chunkLength === "word" ? ",\n  length_function=word_length_function" : "";
 
     const code = `
-# Sentence chunking
-${splitter}
+# Recursive chunking (character split)
+${outputName}_text_splitter = RecursiveCharacterTextSplitter(
+  separators = "${config.separator}",
+  chunk_size = ${config.chunkSize},
+  chunk_overlap  = ${config.chunkOverlap},
+  is_separator_regex = ${config.regex ? "True" : "False"}${lengthFunction}
+)
 ${outputName} = ${outputName}_text_splitter.split_documents(${inputName})
 `;
     return code;

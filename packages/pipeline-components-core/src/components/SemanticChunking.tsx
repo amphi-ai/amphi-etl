@@ -1,28 +1,43 @@
-import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
-import { editIcon } from '../icons';
+import { FieldDescriptor } from '@amphi/pipeline-components-manager'
 
-export class RenameColumns extends PipelineComponent<ComponentItem>() {
+import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
+import { splitIcon } from '../icons';
 
-  public _name = "Rename Columns";
-  public _id = "rename";
-  public _type = "pandas_df_processor";
+export class SemanticChunking extends PipelineComponent<ComponentItem>() {
+
+  public _name = "Semantic chunking";
+  public _id = "semanticChunking";
+  public _type = "documents_processor";
   public _category = "transform";
-  public _icon = editIcon;
-  public _default = {};
+  public _icon = splitIcon; // You should define this icon in your icons file
+  public _default = { type: "nltk", chunkSize: 1000, chunkOverlap: 100 };
   public _form = {
     idPrefix: "component__form",
     fields: [
       {
-        type: "keyvalueColumns",
-        label: "Columns",
-        id: "columns",
-        placeholders: { key: "column name", value: "new column name"},
-        advanced: true
+        type: "select",
+        label: "Type",
+        id: "type",
+        options: [
+          { value: "nltk", label: "NLTK" },
+          { value: "spacy", label: "spaCy" }
+        ]
+      },
+      {
+        type: "inputNumber",
+        label: "Chunk Size",
+        id: "chunkSize",
+      },
+      {
+        type: "inputNumber",
+        label: "Chunk Overlap",
+        id: "chunkOverlap",
       }
     ],
   };
+
 
   public static ConfigForm = ({ 
     nodeId, 
@@ -87,10 +102,9 @@ export class RenameColumns extends PipelineComponent<ComponentItem>() {
   const nodeId = id;
   const internals = { nodeInternals, edges, nodeId, componentService }
 
-  
   // Create the handle element
   const handleElement = React.createElement(renderHandle, {
-    type: RenameColumns.Type,
+    type: SemanticChunking.Type,
     Handle: Handle, // Make sure Handle is imported or defined
     Position: Position, // Make sure Position is imported or defined
     internals: internals
@@ -104,9 +118,9 @@ export class RenameColumns extends PipelineComponent<ComponentItem>() {
         context: context,
         manager: manager,
         commands: commands,
-        name: RenameColumns.Name,
-        ConfigForm: RenameColumns.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
-        Icon: RenameColumns.Icon,
+        name: SemanticChunking.Name,
+        ConfigForm: SemanticChunking.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
+        Icon: SemanticChunking.Icon,
         showContent: showContent,
         handle: handleElement,
         deleteNode: deleteNode,
@@ -116,35 +130,59 @@ export class RenameColumns extends PipelineComponent<ComponentItem>() {
   );
   }
 
+  public provideDependencies({config}): string[] {
+    let deps: string[] = [];
+    switch (config.type) {
+      case 'nltk':
+        deps.push('nltk');
+        break;
+      case 'spacy':
+        break;
+      default:
+        console.error('Unknown option');
+    }
+    deps.push('nltk');
+    return deps;
+  }
+
   public provideImports({config}): string[] {
-    return ["import pandas as pd"];
+
+    let imports: string[] = [];
+    switch (config.type) {
+      case 'nltk':
+        imports.push('from langchain_text_splitters import NLTKTextSplitter');
+        break;
+      case 'spacy':
+        imports.push('from langchain_text_splitters import SpacyTextSplitter');
+        break;
+      default:
+        console.error('Unknown option');
+    }
+
+    return imports;
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    let columnsParam = "{";
-    if (config.columns && config.columns.length > 0) {
-      columnsParam += config.columns.map(column => {
-        if (column.key.named) {
-          // Handle named columns as strings
-          return `"${column.key.value}": "${column.value}"`;
-        } else {
-          // Handle unnamed (numeric index) columns, converting them to strings
-          return `${column.key.value}: "${column.value}"`;
-        }
-      }).join(", ");
-      columnsParam += "}";
-    } else {
-      columnsParam = "{}"; // Ensure columnsParam is always initialized
-    }
   
-    // Template for the pandas rename columns code, explicitly setting axis='columns'
+    let splitter: string;
+    switch (config.type) {
+      case 'nltk':
+        splitter = `${outputName}_text_splitter = NLTKTextSplitter(chunk_size=${config.chunkSize}, chunk_overlap=${config.chunkOverlap})`;
+        break;
+      case 'spacy':
+        splitter = `${outputName}_text_splitter = SpacyTextSplitter(chunk_size=${config.chunkSize}, chunk_overlap=${config.chunkOverlap})`;
+        break;
+      default:
+        console.error('Unknown option');
+    }
+
     const code = `
-# Rename columns
-${outputName} = ${inputName}.rename(columns=${columnsParam})
+# Sentence chunking
+${splitter}
+${outputName} = ${outputName}_text_splitter.split_documents(${inputName})
 `;
     return code;
   }
-
-
   
+
 }

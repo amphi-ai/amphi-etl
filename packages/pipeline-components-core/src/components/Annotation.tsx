@@ -47,11 +47,6 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
     edges: s.edges,
   });
 
-  const { nodeInternals, edges } = useStore(selector);
-  const nodeId = id;
-  const internals = { nodeInternals, edges, nodeId }
-
-
     return (
       <>
         <div className="mt-[5px] border-0 bg-white mx-auto box-border w-full">

@@ -98,7 +98,7 @@ export class PdfFileInput extends PipelineComponent<ComponentItem>() {
 
     const { nodeInternals, edges } = useStore(selector);
     const nodeId = id;
-    const internals = { nodeInternals, edges, nodeId }
+    const internals = { nodeInternals, edges, nodeId, componentService }
 
 
     // Create the handle element
@@ -131,7 +131,17 @@ export class PdfFileInput extends PipelineComponent<ComponentItem>() {
 
   public provideDependencies({ config }): string[] {
     let deps: string[] = [];
-    deps.push('pypdf');
+    switch (config.library) {
+      case 'PyPDF':
+        deps.push('pypdf');
+        break;
+      case 'PyMuPDF':
+        deps.push('pymupdf');
+        break;
+      default:
+        console.error('Unknown option');
+    }
+
     return deps;
   }
 

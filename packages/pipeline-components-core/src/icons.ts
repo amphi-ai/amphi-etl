@@ -30,7 +30,9 @@ import pineconeIconSvgStr from '../style/icons/pinecone.svg';
 import changeCircleIconSvgStr from '../style/icons/change-circle-24.svg';
 import bracesIconSvgStr from '../style/icons/braces.svg';
 import htmlIconSvgStr from '../style/icons/html.svg';
-
+import MarkdownSvgStr from '../style/icons/markdown-fill.svg';
+import htmlLineSvgStr from '../style/icons/html-line.svg';
+import chromaSvgStr from '../style/icons/chroma.svg'
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -180,6 +182,21 @@ export const bracesIcon = new LabIcon({
 export const htmlIcon = new LabIcon({
   name: 'amphi:html-icon',
   svgstr: htmlIconSvgStr
+});
+
+export const markdownIcon = new LabIcon({
+  name: 'amphi:markdown-icon',
+  svgstr: MarkdownSvgStr
+});
+
+export const htmlLineIcon = new LabIcon({
+  name: 'amphi:htmlLine-icon',
+  svgstr: htmlLineSvgStr
+});
+
+export const chromaIcon = new LabIcon({
+  name: 'amphi:chroma-icon',
+  svgstr: chromaSvgStr
 });
 
 

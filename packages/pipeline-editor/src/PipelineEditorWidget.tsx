@@ -182,11 +182,33 @@ const PipelineWrapper: React.FC<IProps> = ({
 
     const onConnect = useCallback((params) => setEdges((eds) => addEdge({ ...params, type: 'custom-edge' }, eds)), [setEdges]);
 
-    /* TODO (edge management)
-    const onConnect = (params) => setElements((els) =>
-    addEdge({ ...params, type: 'custom-edge' }, els)
-    );
-    */
+    const getCategory = (nodeId: string): string | undefined => {      
+      const node = nodes.find(node => node.id === nodeId);
+      console.log("node %o", node)
+      if (node) {
+        return componentService.getComponent(node.type)._type;
+      }
+      return undefined;
+    };
+
+    const isValidConnection = (connection): boolean => {
+      console.log("connection %o", connection);
+    
+      const sourceCategory = getCategory(connection.source);
+      console.log("sourceCategory %o", sourceCategory);
+      const targetCategory = getCategory(connection.target);
+      console.log("targetCategory %o", targetCategory);
+    
+      if ((sourceCategory === "pandas_df_to_documents_processor")) {
+        return targetCategory.startsWith("documents");
+      } else if (sourceCategory.startsWith("documents")) {
+        return targetCategory.startsWith("documents");
+      } else if (sourceCategory.startsWith("pandas_df")) {
+        return targetCategory.startsWith("pandas_df");
+      } else {
+        return false;
+      }
+    };
 
     const onNodesDelete = useCallback(
       (deleted) => {
@@ -318,6 +340,7 @@ const PipelineWrapper: React.FC<IProps> = ({
             onNodesDelete={onNodesDelete}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            isValidConnection={isValidConnection}
             onDrop={onDrop}
             onDragOver={onDragOver}
             onInit={setRfInstance}

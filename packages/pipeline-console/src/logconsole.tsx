@@ -3,7 +3,8 @@ import { IPipelineConsole } from './tokens';
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import ReactDOMServer from 'react-dom/server';
-import DataView from './DataView'; // Assume DataView is your React component
+import DataView from './DataView';
+import DocumentView from './DocumentView'
 import { Alert, Spin, DatePicker, Typography, Space } from 'antd';
 import { ClockCircleOutlined, LoadingOutlined } from '@ant-design/icons';
 
@@ -151,7 +152,7 @@ export class PipelineConsolePanel
         const firstDiv = doc.querySelector('div');
 
         if (firstDiv && firstDiv.id === 'documents') {
-          container.innerHTML = content;
+          ReactDOM.render(<DocumentView htmlData={content} />, container);
         } else {
           ReactDOM.render(<DataView htmlData={content} />, container);
         }

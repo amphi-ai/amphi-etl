@@ -39,9 +39,14 @@ export { PostgresOutput } from './PostgresOutput';
 export { ConvertToDocuments } from './ConvertToDocuments';
 export { PineconeOutput } from './PineconeOutput';
 export { FixedSizeChunking } from './FixedSizeChunking';
-export { SentenceChunking } from './SentenceChunking';
+export { SemanticChunking } from './SemanticChunking';
+export { RecursiveChunking } from './RecursiveChunking';
 export { WordFileInput } from './WordFileInput';
 export { PdfTablesInput } from './PdfTablesInput';
+export { HtmlToMarkdown } from './HtmlToMarkdown';
+export { ParseHTML } from './ParseHTML';
+export { ChromaOutput } from './ChromaOutput';
+
 
 
 

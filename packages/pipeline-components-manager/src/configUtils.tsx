@@ -18,7 +18,7 @@ import SelectColumns from './forms/selectColumns';
 import SelectColumn from './forms/selectColumn';
 import KeyValueColumns from './forms/keyValueColumns';
 import KeyValueColumnsSelect from './forms/keyValueColumnsSelect';
-
+import SelectMultipleCustomizable from './forms/selectMultipleCustomizable';
 import TransferData from './forms/transferData';
 import TextareaRegular from './forms/TextareaRegular';
 import DataMapping from './forms/dataMapping';
@@ -260,6 +260,12 @@ export const generateUIInputs = ({
                 <SelectCustomizable field={field} handleChange={handleChange} defaultValue={value} inDialog={advanced} />
               </Form.Item>
             );
+            case "selectMultipleCustomizable":
+              return (
+                <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                  <SelectMultipleCustomizable field={field} handleChange={handleChange} defaultValues={values} inDialog={advanced} />
+                </Form.Item>
+              );
           case "selectTokenization":
             return (
               <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
@@ -477,7 +483,9 @@ export interface Option {
 }
 
 export interface FieldDescriptor {
-  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio' | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple';
+  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio' 
+      | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' 
+      | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable';
   label: string;
   id: string;
   placeholder?: any;

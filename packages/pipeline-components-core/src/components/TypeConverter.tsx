@@ -153,7 +153,7 @@ export class TypeConverter extends PipelineComponent<ComponentItem>() {
 
   const { nodeInternals, edges } = useStore(selector);
   const nodeId = id;
-  const internals = { nodeInternals, edges, nodeId }
+  const internals = { nodeInternals, edges, nodeId, componentService }
 
   
   // Create the handle element
