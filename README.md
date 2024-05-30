@@ -2,11 +2,9 @@
 
 <img height="60" src="https://amphi.ai/icons/amphi_logo_paths.svg">
 <p align="center">
-    <em>No-code Python-Based ETL for structured and unstructured data.</em>
+    <em>Low-code Python-Based ETL for structured and unstructured data.</em>
 </p>
 <hr>
-
-<br/>
 
 <p align="center">
 <a href="https://github.com/airbytehq/airbyte/stargazers/" target="_blank">
@@ -65,7 +63,7 @@ To start Amphi, simply run:
 amphi start
 ```
 
-Use the following parameters to specify your working workspace (where you can access files and create pipelines on your system) and/or port to use:
+Use the following parameters to specify your workspace (where you can access files and create pipelines on your system) and port to use:
 
 ```bash
 amphi start -w /your/workspace/path -p 8888
@@ -80,7 +78,7 @@ amphi start -w /your/workspace/path -p 8888
 
 > \[!NOTE]
 >
-> Amphi focuses on structured and unstructured data manipulation for data and AI pipelines. It aims to empower data scientists and data engineers to easily create and experiment pipelines with and intuitive no-code interface.
+> Amphi focuses on structured and unstructured data manipulation for data and AI pipelines. It aims to empower data scientists and data engineers to easily develop pipelines with an intuitive low-code interface while generating Python code you can deploy anywhere.
 
 ![amphi-screenshot-github](https://github.com/amphi-ai/amphi-etl/assets/15718239/de1ccaa5-35ea-40e4-a464-2e498946c43a)
 
@@ -88,8 +86,7 @@ amphi start -w /your/workspace/path -p 8888
 
 - 🧑‍💻 **No-code/Low-code**: Accelerate data and AI pipeline development and reduce maintenance time.
 - 🐍 **Python-code Generation**: Generate native Python code leveraging common libraries such as [pandas](https://github.com/pandas-dev/pandas), [DuckDB](https://github.com/duckdb/duckdb) and [LangChain](https://github.com/langchain-ai/langchain) that you can run anywhere.
-- 🔒 **Private and secure**: Self-host Amphi on your laptop or in the cloud for complete privacy and security over your data.
-
+- 🔒 **Private and Secure**: Self-host Amphi on your laptop or in the cloud for complete privacy and security over your data.
 
 **Structured & Unstructured**
 
@@ -99,7 +96,7 @@ amphi start -w /your/workspace/path -p 8888
 
 <br/>
 
-**Design Evolution / In Progress**
+**Features In Progress**
 
 - [ ] **Implement connections** - Add the ability to securely create connections to reuse in components
 - [ ] **Developer documentation** - Write comprehensive documentation to allow extensions
@@ -118,9 +115,9 @@ TBA
 
 ## 🤝 Contributing
 
-- **Use and Innovate**: Try Amphi and share your use case with us. Your real-world usage and feedback are invaluable.
-- **Voice Your Insights**: Encounter a glitch? Have a query? Your perspectives matter. Share them by submitting [issues][https://github.com/amphi-ai/amphi-etl/issues] and help us enhance the user experience.
-- **Shape the Future**: Have code enhancements or feature ideas? We invite you to propose [pull requests][https://github.com/amphi-ai/amphi-etl/pulls] and contribute directly to the evolution of our codebase.
+- **Use and Innovate**: Try Amphi and share your use case with us. Your real-world usage and feedback help us improve our product.
+- **Voice Your Insights**: Encounter a glitch? Have a query? Share them by submitting [issues][https://github.com/amphi-ai/amphi-etl/issues] and help us enhance the user experience.
+- **Shape the Future**: Have code enhancements or feature ideas? We invite you to propose [pull requests][https://github.com/amphi-ai/amphi-etl/pulls] and contribute directly.
 
 Every contribution, big or small, is celebrated. Join us in our mission to refine and elevate the world of ETL for data and AI. 😃
 
@@ -128,7 +125,7 @@ Every contribution, big or small, is celebrated. Join us in our mission to refin
 
 ## 🛣️ Ecosystem
 
-Amphi is available as an extension for Jupyterlab and Amphi ETL is a distribution based on Jupyterlab. Therefore Jupyterlab extensions can be installed on Amphi ETL.
+Amphi is available as an extension for Jupyterlab, and Amphi ETL is based on Jupyterlab. Therefore Jupyterlab extensions can be installed on Amphi ETL.
 
 - **[Jupyterlab](https://github.com/jupyterlab/jupyterlab)** - JupyterLab computational environment.
 - **[jupyterlab-git](https://github.com/jupyterlab/jupyterlab-git)** - A Git extension for JupyterLab.
