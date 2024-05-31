@@ -9,6 +9,7 @@ export class ParquetFileInput extends PipelineComponent<ComponentItem>() {
   public _name = "Parquet File Input";
   public _id = "parquetFileInput";
   public _type = "pandas_df_input";
+  public _fileDrop = [ "parquet" ];
   public _category = "input";
   public _icon = fileTextIcon;
   public _default = {};

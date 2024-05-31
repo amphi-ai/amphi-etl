@@ -7,7 +7,7 @@
 <hr>
 
 <p align="center">
-<a href="https://github.com/airbytehq/airbyte/stargazers/" target="_blank">
+<a href="https://github.com/amphi-ai/amphi-etl/stargazers" target="_blank">
     <img src="https://img.shields.io/github/stars/amphi-ai/amphi-etl?style=social&label=Star&maxAge=2592000" alt="Test">
 </a>
 <a href="https://join.slack.com/t/amphi-ai/shared_invite/zt-2ci2ptvoy-FENw8AW4ISDXUmz8wcd3bw" target="_blank">
@@ -114,8 +114,8 @@ TBA
 ## 🤝 Contributing
 
 - **Use and Innovate**: Try Amphi and share your use case with us. Your real-world usage and feedback help us improve our product.
-- **Voice Your Insights**: Encounter a glitch? Have a query? Share them by submitting [issues][https://github.com/amphi-ai/amphi-etl/issues] and help us enhance the user experience.
-- **Shape the Future**: Have code enhancements or feature ideas? We invite you to propose [pull requests][https://github.com/amphi-ai/amphi-etl/pulls] and contribute directly.
+- **Voice Your Insights**: Encounter a glitch? Have a query? Share them by submitting [issues](https://github.com/amphi-ai/amphi-etl/issues) and help us enhance the user experience.
+- **Shape the Future**: Have code enhancements or feature ideas? We invite you to propose [pull requests](https://github.com/amphi-ai/amphi-etl/pulls) and contribute directly.
 
 Every contribution, big or small, is celebrated. Join us in our mission to refine and elevate the world of ETL for data and AI. 😃
 
