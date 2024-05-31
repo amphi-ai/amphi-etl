@@ -8,7 +8,7 @@ def main():
     parser.add_argument('command', choices=['start'], help='Command to start Amphi ETL')
     parser.add_argument('-w', '--workspace', default='.', help='Workspace directory for Amphi ETL')
     parser.add_argument('-p', '--port', type=int, default=8888, help='Port for Amphi ETL')
-    parser.add_argument('-i', '--ip', default='0.0.0.0', help='IP address for Amphi ETL')
+    parser.add_argument('-i', '--ip', default='localhost', help='IP address for Amphi ETL')
 
     args = parser.parse_args()
 
