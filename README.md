@@ -84,7 +84,7 @@ amphi start -w /your/workspace/path -p 8888
 
 **Open-source ETL for the AI age:**
 
-- 🧑‍💻 **No-code/Low-code**: Accelerate data and AI pipeline development and reduce maintenance time.
+- 🧑‍💻 **Low-code**: Accelerate data and AI pipeline development and reduce maintenance time.
 - 🐍 **Python-code Generation**: Generate native Python code leveraging common libraries such as [pandas](https://github.com/pandas-dev/pandas), [DuckDB](https://github.com/duckdb/duckdb) and [LangChain](https://github.com/langchain-ai/langchain) that you can run anywhere.
 - 🔒 **Private and Secure**: Self-host Amphi on your laptop or in the cloud for complete privacy and security over your data.
 
@@ -105,8 +105,6 @@ amphi start -w /your/workspace/path -p 8888
 
 <!--
 ## 👀 Showcase
-
-Let's showcase some of ProChat's signature features:
 
 TBA
 

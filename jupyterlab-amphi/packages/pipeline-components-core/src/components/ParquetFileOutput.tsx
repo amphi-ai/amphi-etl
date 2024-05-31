@@ -131,6 +131,12 @@ export class ParquetFileOutput extends PipelineComponent<ComponentItem>() {
     );
   }
 
+  public provideDependencies({config}): string[] {
+    let deps: string[] = [];
+    deps.push('pyarrow');
+    return deps;
+  }
+
   public provideImports({ config }): string[] {
     return ["import pandas as pd"];
   }
