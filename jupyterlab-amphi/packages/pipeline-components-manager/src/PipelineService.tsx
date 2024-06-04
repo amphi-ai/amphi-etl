@@ -230,8 +230,6 @@ export class PipelineService {
 
 
     // const envFileNodes = flow.nodes.filter(node => node.type === 'envFile' );
-
-
   
     return variablesList;
   }

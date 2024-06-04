@@ -28,19 +28,19 @@ Editor components styles
 }
 
 .component .handle-right {
-  @apply absolute top-[54px] right-[-3px] w-[6px] h-[25px] rounded-[2px] bg-[#778899];
+  @apply absolute top-[54px] right-[-6px] w-[8px] h-[25px] rounded-[2px] bg-[#778899];
 }
 
 .component .handle-left {
-  @apply absolute top-[54px] left-[-3px] w-[6px] h-[25px] rounded-[2px] bg-[#778899];
+  @apply absolute top-[54px] left-[-6px] w-[8px] h-[25px] rounded-[2px] bg-[#778899];
 }
 
 .component .second-handle-left {
-  @apply absolute top-[114px] left-[-3px] w-[6px] h-[25px] rounded-[2px] bg-[#778899];
+  @apply absolute top-[114px] left-[-6px] w-[8px] h-[25px] rounded-[2px] bg-[#778899];
 }
 
 .component .handle-bottom {
-  @apply absolute bottom-[-3px] w-[25px] h-[6px] rounded-[2px] bg-[#c6cfd6];
+  @apply absolute bottom-[-6px] w-[25px] h-[6px] rounded-[2px] bg-[#c6cfd6];
 }
 
 .component_label {
@@ -128,6 +128,10 @@ Components palette sidebar
 .palette-component {
   position: relative;
   z-index: 1000; /* Ensure the draggable elements are always on top */
+  cursor: move; /* fallback if grab cursor is unsupported */
+  cursor: grab;
+  cursor: -moz-grab;
+  cursor: -webkit-grab;
 }
 
 .palette-component-category {

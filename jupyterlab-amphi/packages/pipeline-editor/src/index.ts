@@ -431,6 +431,8 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
 
             const future = current.context.sessionContext.session.kernel!.requestExecute({ code: args.code });
 
+            console.log("future %o", future)
+
             future.onReply = reply => {
               const end = performance.now();
               const delay = end - start;
@@ -488,7 +490,6 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
         const nodeId = args.nodeId.toString();
         const context = args.context;
         const code = CodeGenerator.generateCodeUntil(current.context.model.toString(), commands, componentService, nodeId, context);
-
 
         commands.execute('pipeline-editor:run-pipeline', { code }).catch(reason => {
           console.error(
