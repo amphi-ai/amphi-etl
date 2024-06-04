@@ -77,24 +77,24 @@
   bottom: 0px !important;
 }
 
-.bottom-\[-3px\] {
-  bottom: -3px !important;
+.bottom-\[-6px\] {
+  bottom: -6px !important;
 }
 
 .end-0 {
   inset-inline-end: 0px !important;
 }
 
-.left-\[-3px\] {
-  left: -3px !important;
+.left-\[-6px\] {
+  left: -6px !important;
 }
 
 .right-0 {
   right: 0px !important;
 }
 
-.right-\[-3px\] {
-  right: -3px !important;
+.right-\[-6px\] {
+  right: -6px !important;
 }
 
 .start-0 {
@@ -306,8 +306,8 @@
   width: 25px !important;
 }
 
-.w-\[6px\] {
-  width: 6px !important;
+.w-\[8px\] {
+  width: 8px !important;
 }
 
 .w-auto {
@@ -916,9 +916,9 @@ Editor components styles
 .component .handle-right {
   position: absolute;
   top: 54px;
-  right: -3px;
+  right: -6px;
   height: 25px;
-  width: 6px;
+  width: 8px;
   border-radius: 2px;
   --tw-bg-opacity: 1;
   background-color: rgb(119 136 153 / var(--tw-bg-opacity));
@@ -927,9 +927,9 @@ Editor components styles
 .component .handle-left {
   position: absolute;
   top: 54px;
-  left: -3px;
+  left: -6px;
   height: 25px;
-  width: 6px;
+  width: 8px;
   border-radius: 2px;
   --tw-bg-opacity: 1;
   background-color: rgb(119 136 153 / var(--tw-bg-opacity));
@@ -938,9 +938,9 @@ Editor components styles
 .component .second-handle-left {
   position: absolute;
   top: 114px;
-  left: -3px;
+  left: -6px;
   height: 25px;
-  width: 6px;
+  width: 8px;
   border-radius: 2px;
   --tw-bg-opacity: 1;
   background-color: rgb(119 136 153 / var(--tw-bg-opacity));
@@ -948,7 +948,7 @@ Editor components styles
 
 .component .handle-bottom {
   position: absolute;
-  bottom: -3px;
+  bottom: -6px;
   height: 6px;
   width: 25px;
   border-radius: 2px;
@@ -1090,6 +1090,10 @@ Components palette sidebar
   position: relative;
   z-index: 1000;
   /* Ensure the draggable elements are always on top */
+  cursor: move;
+  /* fallback if grab cursor is unsupported */
+  cursor: grab;
+  cursor: -webkit-grab;
 }
 
 .palette-component-category {

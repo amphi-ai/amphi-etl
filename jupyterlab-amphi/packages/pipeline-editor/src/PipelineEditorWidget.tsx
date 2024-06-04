@@ -260,13 +260,11 @@ const PipelineWrapper: React.FC<IProps> = ({
             x: (location.x - transformX) * zoomMultiplier,
             y: (location.y - transformY) * zoomMultiplier,
           };
-    
-          console.log("adjustedPosition %o", adjustedPosition);
-    
+        
           Array.from(fileBrowser.selectedItems()).forEach((item: any) => {
             const filePath = item.path;
             const { id: nodeType, default: nodeDefaults } = PipelineService.getComponentIdForFileExtension(item, componentService);
-    
+
             // Check if nodeType exists
             if (nodeType) {
               const newNode = {
@@ -274,7 +272,7 @@ const PipelineWrapper: React.FC<IProps> = ({
                 type: nodeType,
                 position: adjustedPosition,
                 data: {
-                  filePath: filePath,
+                  filePath: PipelineService.getRelativePath(context.context.sessionContext.path, filePath), // Relative path
                   lastUpdated: Date.now(),
                   ...(nodeDefaults || {}) // Merge nodeDefaults into the data field
                 }
@@ -567,7 +565,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       componentService: this.componentService,
     };
 
-    context.sessionContext.kernelPreference = { autoStartDefault: true, name: 'python', shutdownOnDispose: false };
+    context.sessionContext.kernelPreference = { autoStartDefault: true, name: 'python', shutdownOnDispose: true };
 
     const content = new PipelineEditorWidget(props);
     const widget = new DocumentWidget({ content, context });

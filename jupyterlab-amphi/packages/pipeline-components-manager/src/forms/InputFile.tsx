@@ -103,15 +103,12 @@ export const InputFile = ({ field, value, handleChange, context, advanced, manag
           {
             multiselect: false,
             includeDir: true,
-            rootPath: "/myrootpath/",
-            startPath: "/mystartpath/",
             filter: (model: any): boolean => {
               return model.path !== context.path;
             }
           });
 
           console.log("res %o", res)
-
 
           // Get relative path
           handleInputChange(PipelineService.getRelativePath(context.path, res.value[0].path));
