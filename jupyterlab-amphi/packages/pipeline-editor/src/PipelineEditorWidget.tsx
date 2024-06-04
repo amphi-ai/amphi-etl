@@ -23,7 +23,8 @@ import ReactFlow, {
   getOutgoers,
   useEdgesState,
   useNodesState,
-  useReactFlow
+  useReactFlow,
+  useStoreApi
 } from 'reactflow';
 
 import { Tree, TabsProps, Tabs, ConfigProvider } from 'antd';
@@ -171,6 +172,8 @@ const PipelineWrapper: React.FC<IProps> = ({
     const [elements, setElements] = useState([]); // State for elements
     const [reactFlowInstance, setRfInstance] = useState(null);
     const { setViewport } = useReactFlow();
+    const store = useStoreApi();
+
 
     const updatedPipeline = pipeline;
     updatedPipeline['pipelines'][0]['flow']['nodes'] = nodes;
@@ -236,56 +239,65 @@ const PipelineWrapper: React.FC<IProps> = ({
 
     const handleAddFileToPipeline = useCallback(
       (location?: { x: number; y: number }) => {
-
+        console.log("location %o", location);
         const fileBrowser = defaultFileBrowser;
-
+    
         // Only add file to pipeline if it is currently in focus
         if (shell.currentWidget?.id !== widgetId) {
           return;
         }
-
+    
         if (reactFlowInstance && location) {
-          const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
-          // Adjust the position based on the React Flow instance's coordinate system
-          const adjustedPosition = reactFlowInstance.project({
-            x: location.x - reactFlowBounds.left,
-            y: location.y - reactFlowBounds.top,
-          });
-
+          const {
+            height,
+            width,
+            transform: [transformX, transformY, zoomLevel]
+          } = store.getState();
+          const zoomMultiplier = 1 / zoomLevel;
+    
+          // Calculate the adjusted position based on the transformation values and zoom level
+          const adjustedPosition = {
+            x: (location.x - transformX) * zoomMultiplier,
+            y: (location.y - transformY) * zoomMultiplier,
+          };
+    
+          console.log("adjustedPosition %o", adjustedPosition);
+    
           Array.from(fileBrowser.selectedItems()).forEach((item: any) => {
             const filePath = item.path;
             const { id: nodeType, default: nodeDefaults } = PipelineService.getComponentIdForFileExtension(item, componentService);
-
+    
             // Check if nodeType exists
             if (nodeType) {
               const newNode = {
                 id: getNodeId(),
                 type: nodeType,
-                position: adjustedPosition, // Make sure adjustedPosition is defined earlier as per the previous suggestions
+                position: adjustedPosition,
                 data: {
                   filePath: filePath,
                   lastUpdated: Date.now(),
                   ...(nodeDefaults || {}) // Merge nodeDefaults into the data field
                 }
               };
-
+    
               // Add the new node to the pipeline
               setNodes((nds) => nds.concat(newNode));
             } else {
               // If nodeType doesn't exist, show the dialog
               showDialog({
                 title: 'Unsupported File(s)',
-                body: 'Only supported files (CSV, JSON, PDF, HTML, etc...) can be added to a pipeline.',
+                body: 'Only supported files can be added to a pipeline.',
                 buttons: [Dialog.okButton()]
               });
             }
           });
-
         }
         return;
       },
-      [defaultFileBrowser, defaultPosition, shell, widgetId, reactFlowInstance]
+      [defaultFileBrowser, shell, widgetId, reactFlowInstance]
     );
+    
+    
 
     const handleFileDrop = async (e: Drag.Event): Promise<void> => {
       handleAddFileToPipeline({ x: e.offsetX, y: e.offsetY });
@@ -349,7 +361,6 @@ const PipelineWrapper: React.FC<IProps> = ({
             snapToGrid={true}
             snapGrid={[15, 15]}
             fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0 }}
-            fitView
             defaultViewport={defaultViewport}
             deleteKeyCode={[]}
           >
