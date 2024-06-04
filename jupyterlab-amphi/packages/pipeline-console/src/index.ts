@@ -189,14 +189,6 @@ const pipelines: JupyterFrontEndPlugin<void> = {
 
           handler.ready.then(() => {
             resolve(handler);
-
-            // Check if kernel needs reconnection
-            connector.reconnectKernel().then(() => {
-              console.log('Kernel reconnected and ready.');
-            }).catch(error => {
-              console.error('Failed to reconnect kernel:', error);
-            });
-
             connector.ready.then(async () => {
               session.session.kernel.anyMessage.connect((sender, args) => {
 

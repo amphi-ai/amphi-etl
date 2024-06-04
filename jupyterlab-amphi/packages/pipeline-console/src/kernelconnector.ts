@@ -77,15 +77,6 @@ export class KernelConnector {
     return this._session.session.kernel.requestExecute(content);
   }
 
-  reconnectKernel(): Promise<void> {
-    if (!this._session.session?.kernel) {
-      return Promise.reject('No session available.');
-    }
-    return this._session.session.kernel.restart().then(() => {
-      return this._session.ready;
-    });
-  }
-
 }
 
 export namespace KernelConnector {
