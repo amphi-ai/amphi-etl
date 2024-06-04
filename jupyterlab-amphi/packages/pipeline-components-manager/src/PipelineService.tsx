@@ -214,6 +214,11 @@ export class PipelineService {
     return lastUpdatedList;
   }
 
+  static getRelativePath(pipelinePath: string, selectedFilePath: string): string {
+    const pipelineDir = PathExt.dirname(pipelinePath);
+    const relativePath = PathExt.relative(pipelineDir, selectedFilePath);
+    return relativePath;
+}
 
   static getEnvironmentVariables(pipelineJson: string): any[] {
     const flow = PipelineService.filterPipeline(pipelineJson);

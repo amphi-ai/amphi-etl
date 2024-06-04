@@ -197,7 +197,7 @@ export class CsvFileInput extends PipelineComponent<ComponentItem>() {
     let optionsString = Object.entries(csvOptions)
         .filter(([key, value]) => value !== null && value !== '' && !(key === 'sep' && value === 'infer'))
         .map(([key, value]) => {
-            if (key === 'header' && (typeof value === 'number' || value === 'None')) {
+            if (key === 'header' && (typeof value === 'number' || value === 'None' || value === 'string ')) {
                 return `${key}=${value}`; // Handle header as number or None without quotes
             } else if (key === 'names') {
                 return `${key}=${value}`; // Directly use the formatted names list

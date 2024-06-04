@@ -159,7 +159,7 @@ const pipelines: JupyterFrontEndPlugin<void> = {
     }
 
     /**
-     * Subscribes to the creation of new consoles. If a new pipeline is created, build a new handler for the consoles.
+     * Subscribes to the creation of new pipelines. If a new pipeline is created, build a new handler for the consoles.
      * Adds a promise for a instanced handler to the 'handlers' collection.
      */
     pipelines.widgetAdded.connect((sender, pipelinePanel) => {
@@ -180,6 +180,7 @@ const pipelines: JupyterFrontEndPlugin<void> = {
             id: session.path //Using the sessions path as an identifier for now.
           };
           const handler = new PipelineConsoleHandler(options);
+
           manager.addHandler(handler);
           pipelinePanel.disposed.connect(() => {
             delete handlers[pipelinePanel.id];
@@ -188,6 +189,14 @@ const pipelines: JupyterFrontEndPlugin<void> = {
 
           handler.ready.then(() => {
             resolve(handler);
+
+            // Check if kernel needs reconnection
+            connector.reconnectKernel().then(() => {
+              console.log('Kernel reconnected and ready.');
+            }).catch(error => {
+              console.error('Failed to reconnect kernel:', error);
+            });
+
             connector.ready.then(async () => {
               session.session.kernel.anyMessage.connect((sender, args) => {
 

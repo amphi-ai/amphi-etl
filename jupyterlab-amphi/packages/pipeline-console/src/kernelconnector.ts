@@ -25,6 +25,7 @@ export class KernelConnector {
         switch (newStatus) {
           case 'restarting':
             this._kernelRestarted.emit(this._session.ready);
+            break;
           case 'autorestarting':
             this._kernelRestarted.emit(this._session.ready);
             break;
@@ -74,6 +75,15 @@ export class KernelConnector {
       throw new Error('No session available.');
     }
     return this._session.session.kernel.requestExecute(content);
+  }
+
+  reconnectKernel(): Promise<void> {
+    if (!this._session.session?.kernel) {
+      return Promise.reject('No session available.');
+    }
+    return this._session.session.kernel.restart().then(() => {
+      return this._session.ready;
+    });
   }
 
 }

@@ -4,13 +4,12 @@ import { CheckOutlined, CloseOutlined, EyeInvisibleOutlined, EyeTwoTone, SearchO
 
 import styled from 'styled-components';
 
-import { PathExt } from '@jupyterlab/coreutils';
 
-import { showBrowseFileDialog } from './BrowseFileDialog';
 import { KeyValueForm } from './forms/keyValueForm';
 import { ValuesListForm } from './forms/valuesListForm';
 import { crosshairIcon, playCircleIcon, searchIcon, settingsIcon, warningIcon } from './icons';
 import InputRegular from './forms/InputRegular';
+import InputFile from './forms/InputFile';
 import SelectCustomizable from './forms/selectCustomizable';
 import SelectTokenization from './forms/selectTokenization';
 import SelectRegular from './forms/selectRegular';
@@ -211,35 +210,9 @@ export const generateUIInputs = ({
           case "file":
             return (
               <Form.Item style={{ marginTop: "5px", padding: "0 0 2px" }} label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <Space.Compact style={{ width: '100%' }}>
-                  <Input
-                    id={field.id}
-                    size={advanced ? "middle" : "small"}
-                    name={field.id}
-                    placeholder={field.placeholder}
-                    onChange={(e: any) => handleChange(e.target.value, field.id)}
-                    value={value}
-                    {...(isInvalid ? { status: "warning" } : {})}
-                  />
-                  <Button type="primary" size={advanced ? "middle" : "small"} onClick={async () => {
-                    // TODO, there is something wrong here
-                    const workspacePath: string = PathExt.resolve(
-                      '/',
-                      PathExt.dirname(context.path)
-                    );
-                    const res = await showBrowseFileDialog(
-                      manager,
-                      {
-                        multiselect: false,
-                        includeDir: true,
-                        rootPath: PathExt.dirname(context.path),
-                        filter: (model: any): boolean => {
-                          return model.path !== context.path;
-                        }
-                      });
-                    handleChange(res.value[0].path, field.id);
-                  }}><SearchOutlined /></Button>
-                </Space.Compact>
+                <InputFile
+                  field={field} value={value} handleChange={handleChange} context={context} advanced={advanced} manager={manager}
+                />
               </Form.Item>
             );
           case "columns":
