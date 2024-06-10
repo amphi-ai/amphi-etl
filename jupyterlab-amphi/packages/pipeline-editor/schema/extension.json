@@ -4,6 +4,12 @@
     "title": "Amphi Pipeline",
     "description": "Amphi Pipeline Editor Configuration.",
     "properties": {
+      "enableExecution": {
+        "type": "boolean",
+        "title": "Enable Execution",
+        "description": "Enable pipeline execution and kernel usage.",
+        "default": true
+      }
     },
     "additionalProperties": false,
     "type": "object"

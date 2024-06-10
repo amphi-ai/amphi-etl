@@ -1,6 +1,6 @@
 {
   "name": "@amphi/pipeline-editor",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Amphi Pipeline Editor",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {
@@ -31,7 +31,8 @@
     "lib/*.js.map",
     "lib/*.js",
     "style/*.css",
-    "style/index.js"
+    "style/index.js",
+    "schema/*.json"
   ],
   "scripts": {
     "build": "npx tailwindcss -i ./style/canvas.css -o ./style/output.css && jlpm run build:lib && jlpm build:labextension:dev",
@@ -92,6 +93,7 @@
   "jupyterlab": {
     "extension": true,
     "outputDir": "../../amphi/pipeline-editor",
+    "schemaDir": "schema",
     "sharedPackages": {
       "@amphi/pipeline-components-manager": {
         "bundled": false,

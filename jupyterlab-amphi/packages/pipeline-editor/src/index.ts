@@ -42,20 +42,19 @@ namespace CommandIDs {
 const PIPELINE_FACTORY = 'Pipeline Editor';
 const PIPELINE = 'amphi-pipeline';
 const PIPELINE_EDITOR_NAMESPACE = 'amphi-pipeline-editor';
-const PLUGIN_ID = '@amphi/pipeline-editor:extension';
+const EXTENSION_ID = '@amphi/pipeline-editor:extension';
+const EXTENSION_TRACKER = 'pipeline-editor-tracker';
 
 // Export a token so other extensions can require it
 export const IPipelineTracker = new Token<IWidgetTracker<DocumentWidget>>(
-  'pipeline-editor-tracker'
+  EXTENSION_TRACKER
 );
 
-
-
 /**
- * Initialization data for the react-widget extension.
+ * Initialization data for the Pipeline Editor (DocumentWidget) extension.
  */
 const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
-  id: '@amphi/pipeline-editor:plugin',
+  id: EXTENSION_ID,
   autoStart: true,
   requires: [
     ICommandPalette,
@@ -82,7 +81,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
     statusBar: IStatusBar,
     restorer: ILayoutRestorer,
     menu: IMainMenu,
-    registry: ISettingRegistry,
+    settings: ISettingRegistry,
     toolbarRegistry: IToolbarWidgetRegistry,
     sessionDialogs: ISessionContextDialogs,
     componentService: any
@@ -98,8 +97,32 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
       namespace: PIPELINE_EDITOR_NAMESPACE
     });
 
+    let enableExecution: boolean;
+
     // Fetch the initial state of the settings.
-    const settings = registry.load(PLUGIN_ID).catch(error => console.log(error));
+    function loadSetting(setting: ISettingRegistry.ISettings): void {
+      // Read the settings and convert to the correct type
+      enableExecution = setting.get('enableExecution').composite as boolean;
+
+      console.log(
+        `Settings extension: enableExecution is set to '${enableExecution}'`
+      );
+    }
+
+    Promise.all([app.restored, settings.load(EXTENSION_ID)])
+      .then(([, setting]) => {
+        // Read the settings
+        loadSetting(setting);
+
+        // Listen for your plugin setting changes using Signal
+        setting.changed.connect(loadSetting);
+
+      })
+      .catch(reason => {
+        console.error(
+          `Something went wrong when reading the settings.\n${reason}`
+        );
+      });
 
     // Handle state restoration.
     if (restorer) {
