@@ -1,0 +1,8 @@
+{
+    "ServerApp": {
+      "contents_manager_class": "jupyterfs.metamanager.MetaManager",
+      "jpserver_extensions": {
+        "jupyterfs.extension": true
+      }
+    }
+  }
