@@ -28,7 +28,7 @@ button.jp-mod-styled.jp-mod-accept{
   background: var(--amphi-interactive-01);
 }
 
-/*
+
 button.jp-mod-styled.jp-mod-accept {
   background: var(--amphi-interactive-01);
   color: var(--amphi-text-04)
@@ -67,7 +67,7 @@ button.jp-mod-styled.jp-mod-warn:hover {
 button.jp-mod-styled.jp-mod-warn:active {
   background: var(--amphi-active-danger)
 }
-*/
+
 
 :root {
   --bottom-statusbar-height: 28px;
@@ -214,10 +214,6 @@ body ::-webkit-scrollbar-thumb {
   display: none;
 }
 
-.jp-SideBar .lm-TabBar-tab.lm-mod-current .lm-TabBar-tabIcon .jp-icon3 {
-  fill: var(--amphi-interactive-04)!important
-}
-
 .p-SplitPanel-handle,.lm-SplitPanel-handle {
   z-index: 0!important
 }
@@ -248,10 +244,6 @@ body ::-webkit-scrollbar-thumb {
 
 :root {
   --jp-private-horizontal-tab-height: 32px
-}
-
-.lm-TabBar-tabIcon [class*=jp-icon] {
-  fill: var(--amphi-inverse-02)!important;
 }
 
 .lm-DockPanel-tabBar {
@@ -404,10 +396,6 @@ input.jp-mod-styled:focus {
   outline-color: var(--amphi-focus)
 }
 */
-
-input.jp-Dialog-body.jp-mod-styled {
-  margin: 0 16px 16px
-}
 
 .jp-select-wrapper {
   margin: .5rem 0
@@ -648,20 +636,12 @@ input.jp-Dialog-body.jp-mod-styled {
 }
 */
 
-.jp-FileBrowser .jp-ToolbarButtonComponent-label {
-  color: #fff;
-}
-
 .jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar .jp-Toolbar-item:not(:first-child):hover {
   background-color: var(--amphi-hover-ui)
 }
 
 .jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar .jp-Toolbar-item:not(:first-child) button.jp-Button.bp3-button.bp3-minimal:hover {
   background-color: unset
-}
-.jp-InputGroup .jp-FilterBox {
-  background-color: var(--amphi-ui-01);
-  margin: 1rem 0 0
 }
 
 .jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs {
@@ -742,15 +722,10 @@ input.jp-Dialog-body.jp-mod-styled {
 .jp-FileBrowser .jp-DirListing-content .jp-DirListing-item {
   position: relative;
   color: var(--amphi-text-02);
-  min-height: 2.5rem;
+  min-height: 2rem;
   align-items: center;
   padding: 0 12px;
   border-bottom: 1px solid var(--amphi-ui-03)
-}
-
-.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-selected {
-  background: var(--amphi-active-ui);
-  border: none;
 }
 
 .jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-running {
@@ -770,25 +745,17 @@ input.jp-Dialog-body.jp-mod-styled {
   display:none;
 }
 
-.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item:hover:not(.jp-mod-selected) {
-  cursor: pointer;
-  background-color: var(--amphi-hover-field)
-}
 
-.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-dropTarget {
-  background: var(--amphi-ui-03)
-}
-
-/*
 .jp-FileBrowser .jp-DirListing-content .jp-DirListing-item .jp-DirListing-itemIcon [class*=jp-icon],.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-selected [class*=jp-icon] {
   fill: var(--amphi-icon-01)!important
 }
-*/
+
 
 .jp-FileBrowser .jp-DirListing-content .jp-DirListing-item .jp-DirListing-itemText {
   line-height: 20px
 }
 
+/*
 .jp-FileBrowser .jp-DirListing-content .jp-DirListing-item .jp-DirListing-editor {
   position: absolute;
   top: 0;
@@ -798,8 +765,9 @@ input.jp-Dialog-body.jp-mod-styled {
   padding-left: calc(2.25rem - 2px);
   flex: unset;
   background: var(--amphi-ui-02);
-  /* border: 2px solid var(--amphi-interactive-04) */
+   border: 2px solid var(--amphi-interactive-04) 
 }
+*/
 
 .jp-FileBrowser .jp-DirListing-content .jp-DirListing-item .jp-DirListing-itemModified {
   font-size: var(--jp-ui-font-size0);
@@ -884,13 +852,6 @@ input.jp-Dialog-body.jp-mod-styled {
   outline-offset: -2px
 }
 
-.jp-RunningSessions-item .jp-icon-warn0[fill] {
-  fill: var(--amphi-icon-01)
-}
-
-.jp-About-header .jp-icon-warn0[fill] {
-  fill: #f37726
-}
 
 #jp-main-statusbar svg[data-icon="ui-components:terminal"],#jp-main-statusbar svg[data-icon="ui-components:kernel"] {
   top: 1px

@@ -225,7 +225,7 @@
     --amphi-brand-02: #393939;
     --amphi-brand-03: #5A8F7B;
     --amphi-active-01: #c6c6c6;
-    --amphi-hover-field: #EBEBEA;
+    --amphi-hover-field: #accbbf;
     --amphi-danger: #da1e28;
   
     --jp-content-link-color: var(--amphi-link-01);
@@ -321,7 +321,6 @@
     */
     --jp-private-sidebar-tab-width: 48px;
     --jp-private-sidebar-tab-height: 48px;
-
 
     --accent-fill-rest: var(--jp-info-color1);
 
