@@ -22,5 +22,5 @@
     "types": ["node"],
     "skipLibCheck": true
   },
-  "include": ["src/*", "src/components/*"]
+  "include": ["src/*", "src/components/**/*"]
 }

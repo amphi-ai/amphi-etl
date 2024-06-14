@@ -1,56 +1,56 @@
-export { CsvFileInput } from './CsvFileInput';
-export { ExcelFileInput } from './ExcelFileInput';
-export { Filter } from './Filter';
-export { Aggregate } from './Aggregate';
-export { Console } from './Console';
-export { RestInput } from './RestInput';
-export { CsvFileOutput } from './CsvFileOutput';
-export { ExcelFileOutput } from './ExcelFileOutput';
-export { JsonFileInput } from './JsonFileInput';
-export { CustomTransformations } from './CustomTransformations';
-export { SplitColumn } from './SplitColumn';
-export { Deduplicate } from './Deduplicate';
-export { ExpandList } from './ExpandList';
-export { Sample } from './Sample';
-export { Sort } from './Sort';
-export { JsonFileOutput } from './JsonFileOutput';
-export { RenameColumns } from './RenameColumns';
-export { TypeConverter } from './TypeConverter';
-export { Extract } from './Extract';
-export { GoogleSheetsInput } from './GoogleSheetsInput';
-export { GoogleSheetsOutput } from './GoogleSheetsOutput';
-export { ParquetFileInput } from './ParquetFileInput';
-export { ParquetFileOutput } from './ParquetFileOutput';
-export { MySQLInput } from './MySQLInput';
-export { MySQLOutput } from './MySQLOutput';
-export { XmlFileInput } from './XmlFileInput';
-export { XmlFileOutput } from './XmlFileOutput';
-export { HtmlFileInput } from './HtmlFileInput';
-export { PdfFileInput } from './PdfFileInput';
-export { SQLQuery } from './SqlQuery';
-export { RedditInput } from './RedditInput';
-export { FilterColumns } from './FilterColumns';
-export { Join } from './Join';
-export { OpenAILookUp } from './OpenAILookUp';
-export { EnvFile } from './EnvFile';
-export { EnvVariables } from './EnvVariables';
-export { PostgresInput } from './PostgresInput';
-export { PostgresOutput } from './PostgresOutput';
-export { ConvertToDocuments } from './ConvertToDocuments';
-export { PineconeOutput } from './PineconeOutput';
-export { FixedSizeChunking } from './FixedSizeChunking';
-export { SemanticChunking } from './SemanticChunking';
-export { RecursiveChunking } from './RecursiveChunking';
-export { WordFileInput } from './WordFileInput';
-export { PdfTablesInput } from './PdfTablesInput';
-export { HtmlToMarkdown } from './HtmlToMarkdown';
-export { ParseHTML } from './ParseHTML';
-export { ChromaOutput } from './ChromaOutput';
+// Inputs
+export { CsvFileInput } from './inputs/files/CsvFileInput';
+export { ExcelFileInput } from './inputs/files/ExcelFileInput';
+export { JsonFileInput } from './inputs/files/JsonFileInput';
+export { ParquetFileInput } from './inputs/files/ParquetFileInput';
+export { XmlFileInput } from './inputs/files/XmlFileInput';
+export { WordFileInput } from './inputs/files/WordFileInput';
+export { PdfTablesInput } from './inputs/files/PdfTablesInput';
+export { HtmlFileInput } from './inputs/files/HtmlFileInput';
+export { PdfFileInput } from './inputs/files/PdfFileInput';
 
+export { RestInput } from './inputs/cloud/RestInput';
+export { GoogleSheetsInput } from './inputs/cloud/GoogleSheetsInput';
+export { MySQLInput } from './inputs/databases/MySQLInput';
+export { PostgresInput } from './inputs/databases/PostgresInput';
+export { RedditInput } from './inputs/cloud/RedditInput';
 
+// Transforms
+export { Filter } from './transforms/Filter';
+export { Aggregate } from './transforms/Aggregate';
+export { CustomTransformations } from './transforms/CustomTransformations';
+export { SplitColumn } from './transforms/SplitColumn';
+export { Deduplicate } from './transforms/Deduplicate';
+export { ExpandList } from './transforms/ExpandList';
+export { Sample } from './transforms/Sample';
+export { Sort } from './transforms/Sort';
+export { RenameColumns } from './transforms/RenameColumns';
+export { TypeConverter } from './transforms/TypeConverter';
+export { Extract } from './transforms/Extract';
+export { FixedSizeChunking } from './transforms/FixedSizeChunking';
+export { SemanticChunking } from './transforms/SemanticChunking';
+export { RecursiveChunking } from './transforms/RecursiveChunking';
+export { SQLQuery } from './transforms/SqlQuery';
+export { FilterColumns } from './transforms/FilterColumns';
+export { Join } from './transforms/Join';
+export { OpenAILookUp } from './transforms/OpenAILookUp';
+export { ConvertToDocuments } from './transforms/ConvertToDocuments';
+export { HtmlToMarkdown } from './transforms/HtmlToMarkdown';
+export { ParseHTML } from './transforms/ParseHTML';
 
+// Outputs
+export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';
+export { CsvFileOutput } from './outputs/files/CsvFileOutput';
+export { Console } from './outputs/Console';
+export { JsonFileOutput } from './outputs/files/JsonFileOutput';
+export { GoogleSheetsOutput } from './outputs/cloud/GoogleSheetsOutput';
+export { ParquetFileOutput } from './outputs/files/ParquetFileOutput';
+export { MySQLOutput } from './outputs/databases/MySQLOutput';
+export { XmlFileOutput } from './outputs/files/XmlFileOutput';
+export { PostgresOutput } from './outputs/databases/PostgresOutput';
+export { PineconeOutput } from './outputs/vector-stores/PineconeOutput';
+export { ChromaOutput } from './outputs/vector-stores/ChromaOutput';
 
-// export { EmailLogger } from './EmailLogger';
-// export { Annotation } from './Annotation';
-// export { FileLogger } from './FileLogger';
-
+// Others
+export { EnvFile } from './other/EnvFile';
+export { EnvVariables } from './other/EnvVariables';
