@@ -212,9 +212,9 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
                     edges: [
                     ],
                     viewport: {
-                      x: 86,
-                      y: 38,
-                      zoom: 0.5
+                      x: 0,
+                      y: 0,
+                      zoom: 1
                     }
                   },
                   app_data: {
@@ -535,34 +535,6 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
       category: 'Pipeline',
       args: { isPalette: true }
     });
-
-    /*
-    function replaceCategoryIcon(
-      category: React.ReactElement,
-      icon: LabIcon,
-    ): React.ReactElement {
-      const children = React.Children.map(category.props.children, (child) => {
-        if (child.props.className === 'jp-Launcher-sectionHeader') {
-          const grandchildren = React.Children.map(
-            child.props.children,
-            (grandchild) => {
-              if (grandchild.props.className !== 'jp-Launcher-sectionTitle') {
-                return <icon.react stylesheet="launcherSection" />;
-              } else {
-                return grandchild;
-              }
-            },
-          );
-    
-          return React.cloneElement(child, child.props, grandchildren);
-        } else {
-          return child;
-        }
-      });
-    
-      return React.cloneElement(category, category.props, children);
-    }
-    */
 
     // Add launcher
     if (launcher) {

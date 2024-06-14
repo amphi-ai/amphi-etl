@@ -7,9 +7,11 @@ import {
   DocumentWidget
 } from '@jupyterlab/docregistry';
 import { IDefaultFileBrowser, IFileBrowserFactory } from '@jupyterlab/filebrowser';
-import { Toolbar as UIToolbar, buildIcon, extensionIcon, inspectorIcon, listIcon, runIcon, saveIcon } from '@jupyterlab/ui-components';
+import { Toolbar as UIToolbar, buildIcon, listIcon, runIcon, saveIcon } from '@jupyterlab/ui-components';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { Drag } from '@lumino/dragdrop';
+import { Widget } from '@lumino/widgets';
+
 
 import React, { useCallback, useRef, useState, useEffect } from 'react';
 import ReactFlow, {
@@ -38,6 +40,10 @@ import 'reactflow/dist/style.css';
 import '../style/output.css';
 import { pipelineIcon } from './icons';
 import { Dropzone } from './Dropzone';
+import ReactDOM from 'react-dom';
+
+import CodeEditor from './CodeEditor'; 
+
 
 const PIPELINE_CLASS = 'amphi-PipelineEditor';
 
@@ -234,8 +240,6 @@ const PipelineWrapper: React.FC<IProps> = ({
       [nodes, edges]
     );
 
-    // Manage drag and drop
-    const [defaultPosition, setDefaultPosition] = useState(10);
 
     const handleAddFileToPipeline = useCallback(
       (location?: { x: number; y: number }) => {
@@ -581,19 +585,55 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
     });
     widget.toolbar.addItem('save', saveButton);
 
+    async function showCodeModal(code: string, commands) {
+      const editorDiv = document.createElement('div');
+      editorDiv.style.width = '100%';
+      editorDiv.style.height = '500px';
+    
+      const widget = new Widget({ node: editorDiv });
+      ReactDOM.render(<CodeEditor code={code} />, editorDiv);
+
+      const saveAsFile = async () => {
+        console.log("Before file")
+
+        console.log("context %o", context)
+        const file =  await commands.execute('docmanager:new-untitled', { path: '/', type: 'file', ext: '.py' });
+        console.log("before doc")
+
+        const doc = await commands.execute('docmanager:open', { path: file.path });
+        doc.context.model.fromString(code);
+
+      };
+
+      const result = await showDialog({
+        title: 'Generated Python Code',
+        body: widget,
+        buttons: [Dialog.okButton({ label: 'Close' }),
+          Dialog.createButton({
+            label: 'Open in new file',
+            className: '',
+            accept: true
+          })],
+      });
+      
+      console.log("result %o", result)
+
+      if (result.button.label === 'Open in new file') {
+        console.log("Before save as")
+        await saveAsFile();
+      }
+
+      // Render the AceEditor inside the dialog
+    }
+    
     // Add generate code button
     const generateCodeButton = new ToolbarButton({
       label: 'Export to Python code',
       iconLabel: 'Export to Python code',
       icon: buildIcon,
       onClick: async () => {
-        const code = CodeGenerator.generateCode(context.model.toString(), this.commands, this.componentService);
-        // Create a new untitled python file
-        const file = await this.commands.execute('docmanager:new-untitled', { path: '/', type: 'file', ext: '.py' }); // TODO, create file in same folder
-        // Open the newly created python file
-        const doc = await this.commands.execute('docmanager:open', { path: file.path });
-        // Set the generated code into the file
-        doc.context.model.fromString(code);
+        const code = await CodeGenerator.generateCode(context.model.toString(), this.commands, this.componentService);
+        showCodeModal(code, this.commands);
       }
     });
     widget.toolbar.addItem('generateCode', generateCodeButton);
