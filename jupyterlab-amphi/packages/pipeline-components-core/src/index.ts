@@ -58,7 +58,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(HtmlToMarkdown.getInstance())
    componentService.addComponent(ParseHTML.getInstance())
 
-
   // Outputs
    componentService.addComponent(CsvFileOutput.getInstance())
    componentService.addComponent(JsonFileOutput.getInstance())
