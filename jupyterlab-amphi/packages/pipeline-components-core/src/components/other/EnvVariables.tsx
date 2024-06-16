@@ -101,7 +101,7 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
           toggleEdit();
           handleSave({ ...record, ...values });
         } catch (errInfo) {
-          console.log('Save failed:', errInfo);
+          console.error('Save failed:', errInfo);
         }
       };
     

@@ -306,7 +306,7 @@ export class CodeGenerator {
     
           });    
         } else {
-          console.log('No env variables component found.');
+          console.error('No env variables component found.');
         }
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@amphi/pipeline-log-console",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Amphi Pipeline Log Console",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {
@@ -92,6 +92,7 @@
   "jupyterlab": {
     "extension": true,
     "outputDir": "../../amphi/pipeline-log-console",
+    "schemaDir": "schema",
     "sharedPackages": {
       "@amphi/pipeline-editor": {
         "bundled": false,

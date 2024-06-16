@@ -1,5 +1,5 @@
 {
-    "jupyter.lab.setting-icon": "amphi:pipeline",
+    "jupyter.lab.setting-icon": "amphi:pipeline-icon",
     "jupyter.lab.setting-icon-label": "Amphi Pipeline Editor",
     "title": "Amphi Pipeline",
     "description": "Amphi Pipeline Editor Configuration.",

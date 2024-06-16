@@ -1,6 +1,6 @@
 {
-    "title": "Amphi Pipeline Console",
-    "description": "Settings of Amphi Pipeline Console",
+    "title": "Amphi Console",
+    "description": "Settings of Amphi Console",
     "properties": {
         "maxPreview": {
           "type": "integer",

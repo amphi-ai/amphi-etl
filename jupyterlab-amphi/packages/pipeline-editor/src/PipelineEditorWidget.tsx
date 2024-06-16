@@ -243,7 +243,6 @@ const PipelineWrapper: React.FC<IProps> = ({
 
     const handleAddFileToPipeline = useCallback(
       (location?: { x: number; y: number }) => {
-        console.log("location %o", location);
         const fileBrowser = defaultFileBrowser;
     
         // Only add file to pipeline if it is currently in focus
@@ -569,7 +568,15 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       componentService: this.componentService,
     };
 
-    context.sessionContext.kernelPreference = { autoStartDefault: true, name: 'python', shutdownOnDispose: false };
+    let enableExecution = this.settings.get('enableExecution').composite as boolean;
+    console.log(
+      `Settings extension in PipelineEditor: enableExecution is set to '${enableExecution}'`
+    );
+    if (enableExecution) {
+      context.sessionContext.kernelPreference = { autoStartDefault: true, name: 'python', shutdownOnDispose: false };
+    } else {
+      context.sessionContext.kernelPreference = { shouldStart: false, canStart: false, shutdownOnDispose: true };
+    }
 
     const content = new PipelineEditorWidget(props);
     const widget = new DocumentWidget({ content, context });
@@ -599,7 +606,6 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
         console.log("context %o", context)
         const file =  await commands.execute('docmanager:new-untitled', { path: '/', type: 'file', ext: '.py' });
         console.log("before doc")
-
         const doc = await commands.execute('docmanager:open', { path: file.path });
         doc.context.model.fromString(code);
 
@@ -655,7 +661,8 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
             `An error occurred during the execution of 'pipeline-editor:run-pipeline'.\n${reason}`
           );
         });
-      }
+      },
+      enabled: enableExecution
     });
     widget.toolbar.addItem('runPipeline', runButton);
 
@@ -691,7 +698,8 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
             `An error occurred during the execution of ${command}.\n${reason}`
           );
         });
-      }
+      },
+      enabled: enableExecution
     });
     widget.toolbar.addItem('openlogconsole', logconsole);
 

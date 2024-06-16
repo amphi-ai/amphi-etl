@@ -152,18 +152,13 @@ export class Launcher extends JupyterlabLauncher {
     });
 
     const handleNewPipelineClick = () => {
-      console.log("open new pipeline")
       this.myCommands.execute('pipeline-editor:create-new');
-      
     };
 
     const handleUploadFiles = () => {
-      console.log("upload new files")
       this.myCommands.execute('ui-components:file-upload');
     };
 
-
-  
     // Wrap the sections in body and content divs.
     return (
     <div className="jp-Launcher-body">

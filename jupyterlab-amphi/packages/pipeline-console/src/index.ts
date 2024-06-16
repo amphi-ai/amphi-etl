@@ -5,6 +5,7 @@ import { DocumentWidget } from '@jupyterlab/docregistry';
 import { renderText } from '@jupyterlab/rendermime';
 import { KernelMessage } from '@jupyterlab/services';
 import { listIcon } from '@jupyterlab/ui-components';
+import { ISettingRegistry } from '@jupyterlab/settingregistry';
 
 import { IPipelineTracker } from '@amphi/pipeline-editor';
 import { PipelineConsoleHandler } from './handler';
@@ -22,15 +23,16 @@ namespace CommandIDs {
  * A service providing variable introspection.
  */
 const logsconsole: JupyterFrontEndPlugin<IPipelineConsoleManager> = {
-  id: '@amphi/pipeline-log-console',
-  requires: [ICommandPalette, ILayoutRestorer, ILabShell],
+  id: '@amphi/pipeline-log-console:extension',
+  requires: [ICommandPalette, ILayoutRestorer, ILabShell, ISettingRegistry],
   provides: IPipelineConsoleManager,
   autoStart: true,
   activate: (
     app: JupyterFrontEnd,
     palette: ICommandPalette,
     restorer: ILayoutRestorer,
-    labShell: ILabShell
+    labShell: ILabShell,
+    settings: ISettingRegistry
   ): IPipelineConsoleManager => {
     const manager = new LogConsoleManager();
 
@@ -39,28 +41,111 @@ const logsconsole: JupyterFrontEndPlugin<IPipelineConsoleManager> = {
     const label = 'Pipeline Console';
     const namespace = 'pipeline-console';
     const tracker = new WidgetTracker<PipelineConsolePanel>({ namespace });
+    let maxPreview = 80;
 
-    /**
-     * Create and track a new inspector.
-     */
-    function newPanel(): PipelineConsolePanel {
-      const panel = new PipelineConsolePanel();
+    function loadSetting(setting: ISettingRegistry.ISettings): void {
+      // Read the settings and convert to the correct type
+      maxPreview = setting.get('maxPreview').composite as number;
 
-      panel.id = 'amphi-logConsole';
-      panel.title.label = 'Pipeline Console';
-      panel.title.icon = listIcon;
-      panel.title.closable = true;
-      panel.disposed.connect(() => {
-        if (manager.panel === panel) {
-          manager.panel = null;
+      console.log(
+        `Settings Example extension: maxPreview is set to '${maxPreview}'`
+      );
+    }
+
+    Promise.all([app.restored, settings.load('@amphi/pipeline-log-console:extension')])
+      .then(([, setting]) => {
+        // Read the settings
+        loadSetting(setting);
+
+        // Listen for your plugin setting changes using Signal
+        setting.changed.connect(loadSetting);
+
+        /**
+         * Create and track a new inspector.
+         */
+        function newPanel(): PipelineConsolePanel {
+          const panel = new PipelineConsolePanel();
+
+          panel.id = 'amphi-logConsole';
+          panel.title.label = 'Pipeline Console';
+          panel.title.icon = listIcon;
+          panel.title.closable = true;
+          panel.disposed.connect(() => {
+            if (manager.panel === panel) {
+              manager.panel = null;
+            }
+          });
+
+          //Track the inspector panel
+          tracker.add(panel);
+
+          return panel;
         }
+
+        // Add command to palette
+        app.commands.addCommand(command, {
+          label,
+          execute: () => {
+            const metadataPanelId = 'amphi-metadataPanel'; // Using the provided log console panel ID
+            let metadataPanel = null;
+
+            // Iterate over each widget in the 'main' area to find the log console
+            for (const widget of app.shell.widgets('main')) {
+              if (widget.id === metadataPanelId) {
+                metadataPanel = widget;
+                break;
+              }
+            }
+
+            if (!manager.panel || manager.panel.isDisposed) {
+              manager.panel = newPanel();
+            }
+
+            // Check if the metadata panel is found and is attached
+            if (metadataPanel && metadataPanel.isAttached) {
+              // If log console panel is open, add the preview panel as a tab next to it
+              if (!manager.panel.isAttached) {
+                app.shell.add(manager.panel, 'main', { ref: metadataPanel.id, mode: 'tab-after' });
+              }
+            } else {
+              // If log console panel is not open, open the preview panel in split-bottom mode
+              if (!manager.panel.isAttached) {
+                app.shell.add(manager.panel, 'main', { mode: 'split-bottom' });
+              }
+            }
+            app.shell.activateById(manager.panel.id);
+          }
+        });
+
+        palette.addItem({ command, category });
+
+        app.commands.addCommand('pipeline-console:clear', {
+          execute: () => {
+            manager.panel.clearLogs();
+          },
+          label: 'Clear Console'
+        });
+
+        app.commands.addCommand('pipeline-console:settings', {
+          execute: () => {
+
+          },
+          label: 'Console Settings'
+        });
+
+        app.contextMenu.addItem({
+          command: 'pipeline-console:clear',
+          selector: '.amphi-Console',
+          rank: 1
+        });
+
+      })
+      .catch(reason => {
+        console.error(
+          `Something went wrong when reading the settings.\n${reason}`
+        );
       });
 
-      //Track the inspector panel
-      tracker.add(panel);
-
-      return panel;
-    }
 
     // Enable state restoration
     restorer.restore(tracker, {
@@ -69,75 +154,14 @@ const logsconsole: JupyterFrontEndPlugin<IPipelineConsoleManager> = {
       name: () => 'amphi-logConsole'
     });
 
-
-    // Add command to palette
-    app.commands.addCommand(command, {
-      label,
-      execute: () => {
-        const metadataPanelId = 'amphi-metadataPanel'; // Using the provided log console panel ID
-        let metadataPanel = null;
-
-        // Iterate over each widget in the 'main' area to find the log console
-        for (const widget of app.shell.widgets('main')) {
-          if (widget.id === metadataPanelId) {
-            metadataPanel = widget;
-            break;
-          }
-        }
-
-        if (!manager.panel || manager.panel.isDisposed) {
-          manager.panel = newPanel();
-        }
-
-        // Check if the metadata panel is found and is attached
-        if (metadataPanel && metadataPanel.isAttached) {
-          // If log console panel is open, add the preview panel as a tab next to it
-          if (!manager.panel.isAttached) {
-            app.shell.add(manager.panel, 'main', { ref: metadataPanel.id, mode: 'tab-after' });
-          }
-        } else {
-          // If log console panel is not open, open the preview panel in split-bottom mode
-          if (!manager.panel.isAttached) {
-            app.shell.add(manager.panel, 'main', { mode: 'split-bottom' });
-          }
-        }
-        app.shell.activateById(manager.panel.id);
-      }
-    });
-
-    palette.addItem({ command, category });
-
-    app.commands.addCommand('pipeline-console:clear', {
-      execute: () => {
-        manager.panel.clearLogs();
-      },
-      label: 'Clear Console'
-    });
-
-    app.commands.addCommand('pipeline-console:settings', {
-      execute: () => {
-        
-      },
-      label: 'Console Settings'
-    });
-
-
-    app.contextMenu.addItem({
-      command: 'pipeline-console:clear',
-      selector: '.amphi-Console',
-      rank: 1
-     });
-
     console.log('JupyterLab extension @amphi/pipeline-log-console is activated!');
     return manager;
-
-
 
   }
 };
 
 /**
- * An extension that registers consoles for variable inspection.
+ * An extension that registers pipelines for variable inspection.
  */
 const pipelines: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-log-console:pipelines',
@@ -159,7 +183,7 @@ const pipelines: JupyterFrontEndPlugin<void> = {
     }
 
     /**
-     * Subscribes to the creation of new pipelines. If a new pipeline is created, build a new handler for the consoles.
+     * Subscribes to the creation of new pipelines. If a new pipeline is created, build a new handler for the pipelines.
      * Adds a promise for a instanced handler to the 'handlers' collection.
      */
     pipelines.widgetAdded.connect((sender, pipelinePanel) => {
