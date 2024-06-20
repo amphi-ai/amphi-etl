@@ -29,10 +29,10 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
         label: "Sheets",
         id: "excelOptions.sheet",
         placeholder: "Default: O (first sheet)",
+        tooltip: "Select the sheet number or all of them. Use custom number to select a specific sheet. You can also select multiple sheets if they have the same structure with [0, 1, 2]",
         options: [
-          { value: "0", label: "0" },
-          { value: "1", label: "1t" },
-          { value: "[0, 1, 'Sheet5']", label: "[0, 1, 'Sheet5']" },
+          { value: "0", label: "0 (First sheet)" },
+          { value: "1", label: "1 (Second sheet)" },
           { value: "None", label: "All" }
         ],
       },
