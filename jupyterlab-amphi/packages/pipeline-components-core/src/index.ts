@@ -7,7 +7,7 @@ import { ComponentManager } from "@amphi/pipeline-components-manager";
 import { Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
 SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join,
 ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, RedditInput, OpenAILookUp,
-EnvVariables, EnvFile, ConvertToDocuments, PineconeOutput, FixedSizeChunking, SemanticChunking, WordFileInput, PdfTablesInput, 
+EnvVariables, EnvFile, ConvertToDocuments, PineconeOutput, FixedSizeChunking, SemanticChunking, WordFileInput, PdfTablesInput, Transpose,
 RecursiveChunking, HtmlToMarkdown, ParseHTML, ChromaOutput} from './components';
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -45,6 +45,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(SplitColumn.getInstance())
    componentService.addComponent(Extract.getInstance())
    componentService.addComponent(Sort.getInstance())
+   componentService.addComponent(Transpose.getInstance())
    componentService.addComponent(Deduplicate.getInstance())
    componentService.addComponent(ExpandList.getInstance())
    componentService.addComponent(Sample.getInstance())

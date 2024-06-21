@@ -10,7 +10,7 @@ export class CsvFileOutput extends PipelineComponent<ComponentItem>() {
   public _type = "pandas_df_output";
   public _category = "output";
   public _icon = filePlusIcon;
-  public _default = { csvOptions: { sep: ","} };
+  public _default = { csvOptions: { sep: ",", header: true, index: false} };
   public _form = {
     idPrefix: "component__form",
     fields: [
@@ -56,6 +56,13 @@ export class CsvFileOutput extends PipelineComponent<ComponentItem>() {
         type: "boolean",
         label: "Header",
         id: "csvOptions.header",
+        advanced: true
+      },
+      {
+        type: "boolean",
+        label: "Row index",
+        tooltip: "Write row names (index).",
+        id: "csvOptions.index",
         advanced: true
       }
     ],
@@ -165,9 +172,14 @@ export class CsvFileOutput extends PipelineComponent<ComponentItem>() {
   public generateComponentCode({ config, inputName }): string {
 
     let optionsString = Object.entries(config.csvOptions)
-      .filter(([key, value]) => value !== null && value !== '')
-      .map(([key, value]) => `${key}='${value}'`)
-      .join(', ');
+    .filter(([key, value]) => value !== null && value !== '')
+    .map(([key, value]) => {
+      if (typeof value === 'boolean') {
+        return `${key}=${value ? 'True' : 'False'}`;
+      }
+      return `${key}='${value}'`;
+    })
+    .join(', ');
 
     // Add comma only if optionsString is not empty
     optionsString = optionsString ? `, ${optionsString}` : '';
@@ -176,7 +188,7 @@ export class CsvFileOutput extends PipelineComponent<ComponentItem>() {
 
     const code = `
 # Export to CSV file
-${createFoldersCode}${inputName}.to_csv("${config.filePath}", index=False${optionsString})
+${createFoldersCode}${inputName}.to_csv("${config.filePath}"${optionsString})
 `;
     return code;
   }

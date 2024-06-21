@@ -158,10 +158,13 @@ export class Aggregate extends PipelineComponent<ComponentItem>() {
 ${outputName} = ${inputName}.groupby([`;
   
       // Add group columns
-      groupColumns.forEach(col => {
-          code += `"${col}",`;
-      });
-  
+      groupColumns.forEach((col, index) => {
+        code += `"${col}"`;
+        if (index < groupColumns.length - 1) { // Avoid trailing comma
+            code += ",";
+        }
+    });
+
       // Complete the aggregation function call
       code += `]).agg(${aggArgs}).reset_index()\n`;
   

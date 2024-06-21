@@ -37,6 +37,8 @@ export { OpenAILookUp } from './transforms/OpenAILookUp';
 export { ConvertToDocuments } from './transforms/ConvertToDocuments';
 export { HtmlToMarkdown } from './transforms/HtmlToMarkdown';
 export { ParseHTML } from './transforms/ParseHTML';
+export { Transpose } from './transforms/Transpose';
+
 
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';
