@@ -3,7 +3,7 @@ import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow
 import { FieldDescriptor } from '@amphi/pipeline-components-manager'
 
 import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
-import { sortIcon } from '../../icons';
+import { transposeIcon } from '../../icons';
 
 export class Transpose extends PipelineComponent<ComponentItem>() {
 
@@ -11,7 +11,7 @@ export class Transpose extends PipelineComponent<ComponentItem>() {
   public _id = "transpose";
   public _type = "pandas_df_processor";
   public _category = "transform";
-  public _icon = sortIcon; // You should define this icon in your icons file
+  public _icon = transposeIcon; // You should define this icon in your icons file
   public _default = { order: "True" };
   public _form = {
     idPrefix: "component__form",

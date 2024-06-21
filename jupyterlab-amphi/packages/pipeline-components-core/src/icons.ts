@@ -33,6 +33,8 @@ import htmlIconSvgStr from '../style/icons/html.svg';
 import MarkdownSvgStr from '../style/icons/markdown-fill.svg';
 import htmlLineSvgStr from '../style/icons/html-line.svg';
 import chromaSvgStr from '../style/icons/chroma.svg'
+import transposeSvgStr from '../style/icons/repeat-24.svg'
+
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -198,6 +200,12 @@ export const chromaIcon = new LabIcon({
   name: 'amphi:chroma-icon',
   svgstr: chromaSvgStr
 });
+
+export const transposeIcon = new LabIcon({
+  name: 'amphi:transpose-icon',
+  svgstr: transposeSvgStr
+});
+
 
 
 
