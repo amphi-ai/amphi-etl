@@ -82,7 +82,7 @@ amphi start -w /your/workspace/path -p 8888
 
 ![amphi-screenshot-github](https://github.com/amphi-ai/amphi-etl/assets/15718239/de1ccaa5-35ea-40e4-a464-2e498946c43a)
 
-**Open-source ETL for the AI age:**
+**Modern ETL for the AI age:**
 
 - 🧑‍💻 **Low-code**: Accelerate data and AI pipeline development and reduce maintenance time.
 - 🐍 **Python-code Generation**: Generate native Python code leveraging common libraries such as [pandas](https://github.com/pandas-dev/pandas), [DuckDB](https://github.com/duckdb/duckdb) and [LangChain](https://github.com/langchain-ai/langchain) that you can run anywhere.
@@ -98,6 +98,7 @@ amphi start -w /your/workspace/path -p 8888
 
 **Features In Progress**
 
+- [ ] **Custom components** - Add the ability to develop your own component and wrap configured ones.
 - [ ] **Implement connections** - Add the ability to securely create connections to reuse in components
 - [ ] **Developer documentation** - Write comprehensive documentation to allow extensions
 

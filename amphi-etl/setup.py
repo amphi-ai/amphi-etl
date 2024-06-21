@@ -23,7 +23,7 @@ data_files = (
 
 setup(
     name='amphi-etl',
-    version='0.4.3',
+    version='0.4.5',
     description='Open-source and Python-based ETL',
     author='Thibaut Gourdel',
     author_email='tgourdel@amphi.ai',

@@ -1,0 +1,1 @@
+{"doc_type":"Amphi Pipeline","version":"1","json_schema":"http://docs.amphi.ai/schemas/pipeline-v1-schema.json","id":"pipeline_1718965914773","pipelines":[{"id":"primary","flow":{"nodes":[],"edges":[],"viewport":{"x":0,"y":0,"zoom":1}},"app_data":{"ui_data":{"comments":[]},"version":1,"runtime_type":"LOCAL"},"runtime_ref":"python"}]}
