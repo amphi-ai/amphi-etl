@@ -10,7 +10,7 @@ export class ExcelFileOutput extends PipelineComponent<ComponentItem>() {
   public _type = "pandas_df_output";
   public _category = "output";
   public _icon = filePlusIcon;
-  public _default = { excelOptions: {} };
+  public _default = { excelOptions: { header: true} };
   public _form = {
     idPrefix: "component__form",
     fields: [
@@ -25,7 +25,7 @@ export class ExcelFileOutput extends PipelineComponent<ComponentItem>() {
       {
         type: "input",
         label: "Sheet",
-        id: "excelOptions.sheet",
+        id: "excelOptions.sheet_name",
         placeholder: "default: Sheet1"
       },
       {
@@ -44,6 +44,19 @@ export class ExcelFileOutput extends PipelineComponent<ComponentItem>() {
         ],
         advanced: true
       },
+      {
+        type: "boolean",
+        label: "Header",
+        id: "csvOptions.header",
+        advanced: true
+      },
+      {
+        type: "boolean",
+        label: "Row index",
+        tooltip: "Write row names (index).",
+        id: "csvOptions.index",
+        advanced: true
+      }
     ],
   };
 
@@ -161,11 +174,15 @@ export class ExcelFileOutput extends PipelineComponent<ComponentItem>() {
     // Remove mode from options as it's handled separately
     delete options.mode;
     
-    // Construct options string, adding sheet if specified
-    let optionsString = Object.entries(options)
-      .filter(([key, value]) => value !== null && value !== '')
-      .map(([key, value]) => `${key}='${value}'`)
-      .join(', ');
+    let optionsString = Object.entries(config.excelOptions)
+    .filter(([key, value]) => value !== null && value !== '')
+    .map(([key, value]) => {
+      if (typeof value === 'boolean') {
+        return `${key}=${value ? 'True' : 'False'}`;
+      }
+      return `${key}='${value}'`;
+    })
+    .join(', ');
   
     optionsString = optionsString ? `, ${optionsString}` : '';
   
@@ -174,11 +191,11 @@ export class ExcelFileOutput extends PipelineComponent<ComponentItem>() {
     let code = '';
     if (excelWriterNeeded) {
       code = `with pd.ExcelWriter("${config.filePath}", mode="a") as writer:\n` +
-             `    ${inputName}.to_excel(writer, index=False${optionsString})
+             `    ${inputName}.to_excel(writer${optionsString})
   `;
     } else {
       code = `
-${inputName}.to_excel("${config.filePath}", index=False${optionsString})
+${inputName}.to_excel("${config.filePath}"${optionsString})
   `;
     }
 

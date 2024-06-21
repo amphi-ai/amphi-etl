@@ -268,6 +268,7 @@ export const generateUIInputs = ({
                 </Form.Item>
               );
           case "boolean":
+            console.log("bool %o", value)
             return (
               <Form.Item
                 style={{ marginTop: "5px", padding: "0 0 2px" }}
