@@ -158,7 +158,7 @@ export class Extract extends PipelineComponent<ComponentItem>() {
     const columnType = config.column.type; // current type of the column (e.g., 'int', 'string')
     const columnNamed = config.column.named; // boolean, true if column is named, false if index is used
   
-    const columnAccess = columnNamed ? `['${columnName}']` : `[${columnName}]`;
+    const columnAccess = columnNamed ? `'${columnName}'` : `${columnName}`;
 
     const regex = config.regex;
     let flagsCode = '';
