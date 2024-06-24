@@ -51,7 +51,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(Sample.getInstance())
    componentService.addComponent(SQLQuery.getInstance())
    componentService.addComponent(CustomTransformations.getInstance())
-   componentService.addComponent(CustomCodeDocuments.getInstance())
    componentService.addComponent(OpenAILookUp.getInstance())
    componentService.addComponent(ConvertToDocuments.getInstance())
    componentService.addComponent(FixedSizeChunking.getInstance())
@@ -59,6 +58,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(RecursiveChunking.getInstance())
    componentService.addComponent(HtmlToMarkdown.getInstance())
    componentService.addComponent(ParseHTML.getInstance())
+   componentService.addComponent(CustomCodeDocuments.getInstance())
 
   // Outputs
    componentService.addComponent(CsvFileOutput.getInstance())
