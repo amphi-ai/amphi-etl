@@ -8,7 +8,7 @@ import { Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonF
 SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join,
 ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, RedditInput, OpenAILookUp,
 EnvVariables, EnvFile, ConvertToDocuments, PineconeOutput, FixedSizeChunking, SemanticChunking, WordFileInput, PdfTablesInput, Transpose,
-RecursiveChunking, HtmlToMarkdown, ParseHTML, ChromaOutput} from './components';
+RecursiveChunking, HtmlToMarkdown, ParseHTML, ChromaOutput, CustomCodeDocuments} from './components';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-components-core',
@@ -51,6 +51,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(Sample.getInstance())
    componentService.addComponent(SQLQuery.getInstance())
    componentService.addComponent(CustomTransformations.getInstance())
+   componentService.addComponent(CustomCodeDocuments.getInstance())
    componentService.addComponent(OpenAILookUp.getInstance())
    componentService.addComponent(ConvertToDocuments.getInstance())
    componentService.addComponent(FixedSizeChunking.getInstance())

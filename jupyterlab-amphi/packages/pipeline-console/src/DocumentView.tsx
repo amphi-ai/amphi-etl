@@ -60,7 +60,9 @@ const createTreeData = (documents: Document[]): DataNode[] => {
       key: `doc-${index}`,
       children: [
           {
-              title: doc.page_content,
+            title: (
+              <pre style={{ userSelect: 'text', cursor: 'text'}}>{doc.page_content}</pre>
+            ) as any,
               key: `doc-${index}-page-content`
           },
           {

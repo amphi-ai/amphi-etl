@@ -172,8 +172,21 @@ export class Filter extends PipelineComponent<ComponentItem>() {
     switch (condition) {
       case "==":
       case "!=":
+      case ">":
+      case "<":
+      case ">=":
+      case "<=":
         columnReference = /[^a-zA-Z0-9_]/.test(columnName) ? `\`${columnName}\`` : columnName;
-        queryExpression = `${columnReference} ${condition} '${conditionValue}'`;
+
+        // If columnType is not a string or category, don't wrap into quotes
+        if (enforceString) {
+          queryExpression = `${columnReference} ${condition} '${conditionValue}'`;
+        }
+        else if (columnType === 'string' || columnType === 'category') {
+          queryExpression = `${columnReference} ${condition} '${conditionValue}'`;
+        } else {
+          queryExpression = `${columnReference} ${condition} ${conditionValue}`;
+        }
         code += `${outputName} = ${inputName}.query("${queryExpression}")`;
         break;
       case "contains":

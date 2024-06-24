@@ -38,7 +38,7 @@ export { ConvertToDocuments } from './transforms/ConvertToDocuments';
 export { HtmlToMarkdown } from './transforms/HtmlToMarkdown';
 export { ParseHTML } from './transforms/ParseHTML';
 export { Transpose } from './transforms/Transpose';
-
+export { CustomCodeDocuments } from './transforms/CustomCodeDocuments';
 
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';

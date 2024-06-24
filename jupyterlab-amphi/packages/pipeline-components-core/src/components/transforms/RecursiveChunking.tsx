@@ -43,11 +43,13 @@ export class RecursiveChunking extends PipelineComponent<ComponentItem>() {
         type: "inputNumber",
         label: "Chunk Size",
         id: "chunkSize",
+        noneOption: true
       },
       {
         type: "inputNumber",
         label: "Chunk Overlap",
         id: "chunkOverlap",
+        noneOption: true
       },
       {
         type: "select",
@@ -179,11 +181,12 @@ def word_length_function(text):
 
   public generateComponentCode({ config, inputName, outputName }): string {
     const lengthFunction = config.chunkLength === "word" ? ",\n  length_function=word_length_function" : "";
+    const separatorsList = config.separators.map(separator => `"${separator}"`).join(", ");
 
     const code = `
 # Recursive chunking (character split)
 ${outputName}_text_splitter = RecursiveCharacterTextSplitter(
-  separators = "${config.separator}",
+  separators=[${separatorsList}],
   chunk_size = ${config.chunkSize},
   chunk_overlap  = ${config.chunkOverlap},
   is_separator_regex = ${config.regex ? "True" : "False"}${lengthFunction}

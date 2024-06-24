@@ -145,8 +145,11 @@ export class Aggregate extends PipelineComponent<ComponentItem>() {
               const columnName = op.key.named ? op.key.value : `col${op.key.value}`;
               const operationName = `${columnName}_${operation}`;
   
+              const sanitizeColumnName = (name: string) => name.replace(/[^a-zA-Z0-9_]/g, '_');
+              const operationNameReference = sanitizeColumnName(operationName);
+              
               // Construct each aggregation argument
-              aggArgs += `${operationName}=(${columnReference}, '${operation}')`;
+              aggArgs += `${operationNameReference}=(${columnReference}, '${operation}')`;
               if (index < config.columnsOperations.length - 1) {
                   aggArgs += ", ";
               }

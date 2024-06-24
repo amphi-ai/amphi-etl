@@ -9,6 +9,7 @@ import { KeyValueForm } from './forms/keyValueForm';
 import { ValuesListForm } from './forms/valuesListForm';
 import { crosshairIcon, playCircleIcon, searchIcon, settingsIcon, warningIcon } from './icons';
 import InputRegular from './forms/InputRegular';
+import InputQuantity from './forms/InputQuantity';
 import InputFile from './forms/InputFile';
 import SelectCustomizable from './forms/selectCustomizable';
 import SelectTokenization from './forms/selectTokenization';
@@ -325,7 +326,7 @@ export const generateUIInputs = ({
             case "inputNumber":
               return (
                 <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                   <InputNumber {...(field.min ? { min: field.min } : {})} {...(field.max ? { max: field.max } : {})} id={field.id} name={field.id} value={value} onChange={value => handleChange(value, field.id)} changeOnWheel/>
+                   <InputQuantity field={field} value={value} handleChange={handleChange} context={context} advanced={advanced}/>
                 </Form.Item>
               );            
           case "transferData":
@@ -483,6 +484,7 @@ export interface FieldDescriptor {
   imports?: string[];
   query?: string;
   onlyLastValue?: boolean;
+  noneOption?: boolean;
 }
 
 interface ConfigModalProps {

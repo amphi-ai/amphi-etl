@@ -9,10 +9,10 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
   public _name = "Excel File Input";
   public _id = "excelfileInput";
   public _type = "pandas_df_input";
-  public _fileDrop = [ "xlsx" ];
+  public _fileDrop = ["xlsx", "xls", "ods", "xlsb"];
   public _category = "input";
   public _icon = fileTextIcon;
-  public _default = {};
+  public _default = { engine: "None" };
   public _form = {
     idPrefix: "component__form",
     fields: [
@@ -55,6 +55,21 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
         placeholder: "false",
         advanced: true
       },
+      {
+        type: "select",
+        label: "Engine",
+        id: "engine",
+        tooltip: "Depending on the file format, different engines might be used.\nopenpyxl supports newer Excel file formats.\n calamine supports Excel (.xls, .xlsx, .xlsm, .xlsb) and OpenDocument (.ods) file formats.\n odf supports OpenDocument file formats (.odf, .ods, .odt).\n pyxlsb supports Binary Excel files.\n xlrd supports old-style Excel files (.xls).",
+        options: [
+          { value: "openpyxl", label: "openpyxl" },
+          { value: "calamine", label: "calamine" },
+          { value: "odf", label: "odf (for .ods files)" },
+          { value: "pyxlsb", label: "pyxlsb (for *.xlsb)" },
+          { value: "xlrd", label: "xlrd (for *.xls)" },
+          { value: "None", label: "Default" }
+        ],
+        advanced: true
+      }
     ],
   };
 
@@ -91,7 +106,7 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
           form: this.Form,
           data: data,
           context: context,
-         componentService: componentService,
+          componentService: componentService,
           manager: manager,
           commands: commands,
           handleChange: handleChange,
@@ -109,17 +124,17 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
       deleteElements({ nodes: [{ id }] });
     }, [id, deleteElements]);
 
-  const zoomSelector = createZoomSelector();
-  const showContent = useStore(zoomSelector);
-  
-  const selector = (s) => ({
-    nodeInternals: s.nodeInternals,
-    edges: s.edges,
-  });
+    const zoomSelector = createZoomSelector();
+    const showContent = useStore(zoomSelector);
 
-  const { nodeInternals, edges } = useStore(selector);
-  const nodeId = id;
-  const internals = { nodeInternals, edges, nodeId, componentService }
+    const selector = (s) => ({
+      nodeInternals: s.nodeInternals,
+      edges: s.edges,
+    });
+
+    const { nodeInternals, edges } = useStore(selector);
+    const nodeId = id;
+    const internals = { nodeInternals, edges, nodeId, componentService }
 
 
     // Create the handle element
@@ -127,7 +142,7 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
       type: ExcelFileInput.Type,
       Handle: Handle, // Make sure Handle is imported or defined
       Position: Position, // Make sure Position is imported or defined
-      internals: internals    
+      internals: internals
     });
 
     return (
@@ -152,7 +167,24 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
 
   public provideDependencies({ config }): string[] {
     let deps: string[] = [];
-    deps.push('openpyxl');
+
+    const engine = config.engine;
+    
+    if (engine === 'None' || engine === 'openpyxl') {
+      deps.push('openpyxl');
+    } if (engine === 'calamine') {
+      deps.push('python-calamine');
+    } if (engine === 'odf') {
+      deps.push('odfpy');
+    } if (engine === 'pyxlsb') {
+      deps.push('pyxlsb');
+    } if (engine === 'xlrd') {
+      deps.push('xlrd');
+    }
+    else {
+      deps.push(config.engine);
+    }
+
     return deps;
   }
 
@@ -168,10 +200,12 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
         .join(', ')
       : null;
 
+    const engine = config.engine !== 'None' ? `'${config.engine}'` : config.engine;
+
     const code = optionsString
-      ? `${outputName} = pd.read_excel("${config.filePath}", ${optionsString}).convert_dtypes()
+      ? `${outputName} = pd.read_excel("${config.filePath}", engine=${engine}, ${optionsString}).convert_dtypes()
 `
-      : `${outputName} = pd.read_excel("${config.filePath}").convert_dtypes()
+      : `${outputName} = pd.read_excel("${config.filePath}", engine=${engine}).convert_dtypes()
 `;
 
     return code;

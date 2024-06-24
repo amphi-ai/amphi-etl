@@ -10,7 +10,7 @@ export class ExcelFileOutput extends PipelineComponent<ComponentItem>() {
   public _type = "pandas_df_output";
   public _category = "output";
   public _icon = filePlusIcon;
-  public _default = { excelOptions: { header: true} };
+  public _default = { excelOptions: { header: true}, engine: 'xlsxwriter' };
   public _form = {
     idPrefix: "component__form",
     fields: [
@@ -55,6 +55,17 @@ export class ExcelFileOutput extends PipelineComponent<ComponentItem>() {
         label: "Row index",
         tooltip: "Write row names (index).",
         id: "csvOptions.index",
+        advanced: true
+      },
+      {
+        type: "select",
+        label: "Engine",
+        id: "engine",
+        tooltip: "Depending on the file format, different engines might be used.\nopenpyxl supports newer Excel file formats.\n calamine supports Excel (.xls, .xlsx, .xlsm, .xlsb) and OpenDocument (.ods) file formats.\n odf supports OpenDocument file formats (.odf, .ods, .odt).\n pyxlsb supports Binary Excel files.\n xlrd supports old-style Excel files (.xls).",
+        options: [
+          { value: "openpyxl", label: "openpyxl" },
+          { value: "xlsxwriter", label: "xlsxwriter" }
+        ],
         advanced: true
       }
     ],
@@ -153,9 +164,17 @@ export class ExcelFileOutput extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  public provideDependencies({config}): string[] {
+  public provideDependencies({ config }): string[] {
     let deps: string[] = [];
-    deps.push('openpyxl');
+
+    const engine = config.engine;
+    
+    if (engine === 'None' || engine === 'openpyxl') {
+      deps.push('openpyxl');
+    } if (engine === 'xlsxwriter') {
+      deps.push('xlsxwriter');
+    }
+
     return deps;
   }
 
@@ -187,6 +206,7 @@ export class ExcelFileOutput extends PipelineComponent<ComponentItem>() {
     optionsString = optionsString ? `, ${optionsString}` : '';
   
     const createFoldersCode = config.createFoldersIfNotExist ? `os.makedirs(os.path.dirname("${config.filePath}"), exist_ok=True)\n` : '';
+    const engine = config.engine !== 'None' ? `'${config.engine}'` : config.engine;
 
     let code = '';
     if (excelWriterNeeded) {
@@ -195,7 +215,7 @@ export class ExcelFileOutput extends PipelineComponent<ComponentItem>() {
   `;
     } else {
       code = `
-${inputName}.to_excel("${config.filePath}"${optionsString})
+${inputName}.to_excel("${config.filePath}", engine=${engine}${optionsString})
   `;
     }
 
