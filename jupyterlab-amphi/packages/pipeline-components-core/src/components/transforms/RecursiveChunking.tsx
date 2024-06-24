@@ -42,14 +42,12 @@ export class RecursiveChunking extends PipelineComponent<ComponentItem>() {
       {
         type: "inputNumber",
         label: "Chunk Size",
-        id: "chunkSize",
-        noneOption: true
+        id: "chunkSize"
       },
       {
         type: "inputNumber",
         label: "Chunk Overlap",
-        id: "chunkOverlap",
-        noneOption: true
+        id: "chunkOverlap"
       },
       {
         type: "select",
