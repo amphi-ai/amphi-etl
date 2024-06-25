@@ -27,13 +27,13 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
       {
         type: "selectCustomizable",
         label: "Sheets",
-        id: "excelOptions.sheet",
+        id: "excelOptions.sheet_name",
         placeholder: "Default: O (first sheet)",
-        tooltip: "Select the sheet number or all of them. Use custom number to select a specific sheet. You can also select multiple sheets if they have the same structure with [0, 1, 2]",
+        tooltip: "Select the sheet number or all of them. Use custom number to select a specific sheet. You can also select multiple sheets if they have the same structure with [0, 1, 'Sheet5'] for example.",
         options: [
-          { value: "0", label: "0 (First sheet)" },
+          { value: "0" , label: "0 (First sheet)" },
           { value: "1", label: "1 (Second sheet)" },
-          { value: "None", label: "All" }
+          { value: "None", label: "All worksheets" }
         ],
       },
       {
@@ -46,13 +46,6 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
           { value: "1", label: "1 (2nd row)" },
           { value: "None", label: "None (No header)" }
         ],
-        advanced: true
-      },
-      {
-        type: "boolean",
-        label: "Verbose",
-        id: "excelOptions.verbose",
-        placeholder: "false",
         advanced: true
       },
       {
@@ -69,7 +62,14 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
           { value: "None", label: "Default" }
         ],
         advanced: true
-      }
+      },
+      {
+        type: "boolean",
+        label: "Verbose",
+        id: "excelOptions.verbose",
+        placeholder: "false",
+        advanced: true
+      },
     ],
   };
 
@@ -193,12 +193,23 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
   }
 
   public generateComponentCode({ config, outputName }): string {
-    let optionsString = config.excelOptions ?
-      Object.entries(config.excelOptions)
-        .filter(([key, value]) => value !== null && value !== '')
-        .map(([key, value]) => `${key}='${value}'`)
-        .join(', ')
-      : null;
+
+    let optionsString = Object.entries(config.excelOptions)
+    .filter(([key, value]) => value !== null && value !== '')
+    .map(([key, value]) => {
+        if (typeof value === 'boolean') {
+            return `${key}=${value ? 'True' : 'False'}`;
+        } else if (value === null) { // Handle null values
+            return `${key}=None`;
+        } else if (typeof value === 'string' && /^\d+$/.test(value)) { // Check if value is a string containing only digits
+            return `${key}=${value}`;
+        } else if (typeof value === 'string' && value.startsWith('[') && value.endsWith(']')) { // Check if value is an array-like string
+            return `${key}=${value}`;
+        } else {
+            return `${key}='${value}'`;
+        }
+    })
+    .join(', ');
 
     const engine = config.engine !== 'None' ? `'${config.engine}'` : config.engine;
 

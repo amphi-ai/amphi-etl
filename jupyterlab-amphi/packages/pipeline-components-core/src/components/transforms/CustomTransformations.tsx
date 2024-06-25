@@ -8,7 +8,7 @@ export class CustomTransformations extends PipelineComponent<ComponentItem>() {
   public _name = "Custom Code";
   public _id = "customTransformations";
   public _type = "pandas_df_processor";
-  public _category = "transform";
+  public _category = "Custom";
   public _icon = codeIcon;
   public _default = { code: "output = input"};
   public _form = {
