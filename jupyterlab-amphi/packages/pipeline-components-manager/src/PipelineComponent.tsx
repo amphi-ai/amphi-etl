@@ -49,6 +49,12 @@ export function PipelineComponent<T extends ComponentItem>() {
       const instance = this.getInstance();
       return instance._form;
     }
+
+    // Static method to update the type
+    public static updateType(newType: string) {
+      const instance = this.getInstance();
+      instance._type = newType;
+    }
   }
 }
 

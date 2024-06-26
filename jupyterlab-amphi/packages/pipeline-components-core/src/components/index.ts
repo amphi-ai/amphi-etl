@@ -18,7 +18,7 @@ export { RedditInput } from './inputs/cloud/RedditInput';
 // Transforms
 export { Filter } from './transforms/Filter';
 export { Aggregate } from './transforms/Aggregate';
-export { CustomTransformations } from './transforms/CustomTransformations';
+export { CustomTransformations } from './custom/CustomTransformations';
 export { SplitColumn } from './transforms/SplitColumn';
 export { Deduplicate } from './transforms/Deduplicate';
 export { ExpandList } from './transforms/ExpandList';
@@ -38,7 +38,7 @@ export { ConvertToDocuments } from './transforms/ConvertToDocuments';
 export { HtmlToMarkdown } from './transforms/HtmlToMarkdown';
 export { ParseHTML } from './transforms/ParseHTML';
 export { Transpose } from './transforms/Transpose';
-export { CustomCodeDocuments } from './transforms/CustomCodeDocuments';
+export { CustomCodeDocuments } from './custom/CustomCodeDocuments';
 
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';

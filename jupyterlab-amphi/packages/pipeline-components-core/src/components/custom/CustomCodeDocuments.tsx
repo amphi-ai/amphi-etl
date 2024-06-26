@@ -18,7 +18,7 @@ export class CustomCodeDocuments extends PipelineComponent<ComponentItem>() {
         type: "info",
         label: "Instructions",
         id: "instructions",
-        text: "Write Python code (LangChain) with input as a document input and output as the document output.",
+        text: "Write Python code (LangChain) with 'input' as input document and 'output' as output document.",
       },
       {
         type: "codeTextarea",
@@ -132,9 +132,21 @@ public UIComponent({ id, data, context, componentService, manager, commands }) {
   );
 }
 
-  public provideImports(config): string[] {
-    return config.imports ? config.imports.split('\n').filter(line => line.startsWith('import ')) : [];
+public provideImports(config): string[] {
+  let imports: string[] = [];
+
+  // Check if config.imports exists and is a string
+  if (config.imports && typeof config.imports === 'string') {
+    // Split config.imports by lines, filter lines starting with 'import '
+    const importLines = config.imports.split('\n').filter(line => line.trim().startsWith('import ') || line.trim().startsWith('from '));
+    console.log("imports lines: %o ", importLines)
+
+    // Push each filtered import line to the imports array
+    imports.push(...importLines);
   }
+
+  return imports;
+}
 
   public generateComponentCode({config, inputName, outputName}): string {
     let code = `\n${config.code}`.replace(/input/g, inputName);

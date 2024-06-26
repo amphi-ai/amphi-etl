@@ -11,7 +11,7 @@ import { Toolbar as UIToolbar, buildIcon, listIcon, runIcon, saveIcon } from '@j
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { Drag } from '@lumino/dragdrop';
 import { Widget } from '@lumino/widgets';
-
+import { useCopyPaste, useUndoRedo } from './Commands';
 
 import React, { useCallback, useRef, useState, useEffect } from 'react';
 import ReactFlow, {
@@ -23,10 +23,14 @@ import ReactFlow, {
   getConnectedEdges,
   getIncomers,
   getOutgoers,
+  OnConnect,
   useEdgesState,
   useNodesState,
   useReactFlow,
-  useStoreApi
+  useStoreApi,
+  NodeDragHandler,
+  SelectionDragHandler,
+  OnEdgesDelete
 } from 'reactflow';
 
 import { Tree, TabsProps, Tabs, ConfigProvider } from 'antd';
@@ -180,6 +184,28 @@ const PipelineWrapper: React.FC<IProps> = ({
     const { setViewport } = useReactFlow();
     const store = useStoreApi();
 
+    // Undo and Redo
+    const { undo, redo, canUndo, canRedo, takeSnapshot } = useUndoRedo();
+    const onNodeDragStart: NodeDragHandler = useCallback(() => {
+      // 👇 make dragging a node undoable
+      takeSnapshot();
+      // 👉 you can place your event handlers here
+    }, [takeSnapshot]);
+  
+    const onSelectionDragStart: SelectionDragHandler = useCallback(() => {
+      // 👇 make dragging a selection undoable
+      takeSnapshot();
+    }, [takeSnapshot]);
+  
+    const onEdgesDelete: OnEdgesDelete = useCallback(() => {
+      // 👇 make deleting edges undoable
+      takeSnapshot();
+    }, [takeSnapshot]);
+
+    // Copy Paste
+    // const { cut, copy, paste, bufferedNodes } = useCopyPaste();
+    // const canCopy = nodes.some(({ selected }) => selected);
+    // const canPaste = bufferedNodes.length > 0;
 
     const updatedPipeline = pipeline;
     updatedPipeline['pipelines'][0]['flow']['nodes'] = nodes;
@@ -189,7 +215,17 @@ const PipelineWrapper: React.FC<IProps> = ({
     // This means the file can then been save on "disk"
     context.context.model.fromJSON(updatedPipeline);
 
-    const onConnect = useCallback((params) => setEdges((eds) => addEdge({ ...params, type: 'custom-edge' }, eds)), [setEdges]);
+    // const onConnect = useCallback((params) => setEdges((eds) => addEdge({ ...params, type: 'custom-edge' }, eds)), [setEdges]);
+
+    const onConnect: OnConnect = useCallback(
+      (connection) => {
+        // 👇 make adding edges undoable
+        takeSnapshot();
+        setEdges((edges) => addEdge({ ...connection, type: 'custom-edge' }, edges));
+      },
+      [setEdges, takeSnapshot]
+    );
+  
 
     const getCategory = (nodeId: string): string | undefined => {      
       const node = nodes.find(node => node.id === nodeId);
@@ -201,12 +237,9 @@ const PipelineWrapper: React.FC<IProps> = ({
     };
 
     const isValidConnection = (connection): boolean => {
-      console.log("connection %o", connection);
     
       const sourceCategory = getCategory(connection.source);
-      console.log("sourceCategory %o", sourceCategory);
       const targetCategory = getCategory(connection.target);
-      console.log("targetCategory %o", targetCategory);
     
       if ((sourceCategory === "pandas_df_to_documents_processor")) {
         return targetCategory.startsWith("documents");
@@ -236,8 +269,9 @@ const PipelineWrapper: React.FC<IProps> = ({
             return [...remainingEdges, ...createdEdges];
           }, edges)
         );
+        takeSnapshot();
       },
-      [nodes, edges]
+      [nodes, edges, takeSnapshot]
     );
 
 
@@ -298,9 +332,8 @@ const PipelineWrapper: React.FC<IProps> = ({
       [defaultFileBrowser, shell, widgetId, reactFlowInstance]
     );
     
-    
-
     const handleFileDrop = async (e: Drag.Event): Promise<void> => {
+      takeSnapshot();
       handleAddFileToPipeline({ x: e.offsetX, y: e.offsetY });
     };
 
@@ -311,6 +344,7 @@ const PipelineWrapper: React.FC<IProps> = ({
 
     const onDrop = useCallback(
       (event) => {
+        takeSnapshot();
         event.preventDefault();
 
         const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
@@ -353,6 +387,8 @@ const PipelineWrapper: React.FC<IProps> = ({
             onNodesDelete={onNodesDelete}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            onNodeDragStart={onNodeDragStart}
+            onSelectionDragStart={onSelectionDragStart}
             isValidConnection={isValidConnection}
             onDrop={onDrop}
             onDragOver={onDragOver}

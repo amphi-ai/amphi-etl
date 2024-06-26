@@ -227,7 +227,7 @@ export class Filter extends PipelineComponent<ComponentItem>() {
         break;
     }
 
-    return code;
+    return code + '\n';
   }
 
 
