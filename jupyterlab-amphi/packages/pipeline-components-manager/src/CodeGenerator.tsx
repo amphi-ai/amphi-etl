@@ -20,7 +20,7 @@ export class CodeGenerator {
 
     const flow = PipelineService.filterPipeline(pipelineJson);
 
-    
+
     // Only generate code up until target node
     let fromStart: boolean = true;
     const previousNodesIds = PipelineService.findMultiplePreviousNodeIds(flow, targetNode); // list of previous nodes
@@ -30,10 +30,10 @@ export class CodeGenerator {
       .filter(node => previousNodesIds.includes(node.id)) // Get lastExecuted from previous nodes
       .map(node => node.data.lastExecuted); // Map to lastExecuted
     const lastUpdatedValues = PipelineService.getLastUpdatedInPath(flow, targetNode); // Get last updated values
-    
+
     // Add lastExecuted to the list of previous last executed values
     const allLastExecutedValues = [...previousLastExecutedValues, lastExecuted];
-    
+
     // Check if any lastUpdated is greater than any of the lastExecuted values
     const updatesSinceLastExecutions = lastUpdatedValues.some(updatedValue =>
       allLastExecutedValues.some(executedValue => updatedValue > executedValue)
@@ -72,7 +72,7 @@ export class CodeGenerator {
     }
     */
 
-    if(true) {
+    if (true) {
       const command = 'pipeline-metadata-panel:delete-all';
       commands.execute(command, {}).catch(reason => {
         console.error(
@@ -127,36 +127,36 @@ export class CodeGenerator {
     const nodePaths = new Map<string, Set<string>>();
 
     const topologicalSortWithPathTracking = (node: string, path: Set<string>) => {
-        if (visited.has(node)) {
-            // Combine the current path with the existing path for the node
-            const existingPath = nodePaths.get(node) || new Set();
-            nodePaths.set(node, new Set([...existingPath, ...path]));
-            return;
-        }
-        visited.add(node);
+      if (visited.has(node)) {
+        // Combine the current path with the existing path for the node
+        const existingPath = nodePaths.get(node) || new Set();
+        nodePaths.set(node, new Set([...existingPath, ...path]));
+        return;
+      }
+      visited.add(node);
 
-        const dependencies = flow.edges
-            .filter(edge => edge.target === node)
-            .map(edge => edge.source);
+      const dependencies = flow.edges
+        .filter(edge => edge.target === node)
+        .map(edge => edge.source);
 
-        nodeDependencies.set(node, dependencies);
+      nodeDependencies.set(node, dependencies);
 
-        // Include the current node in the path for subsequent calls
-        const currentPath = new Set([...path, node]);
-        nodePaths.set(node, currentPath);
+      // Include the current node in the path for subsequent calls
+      const currentPath = new Set([...path, node]);
+      nodePaths.set(node, currentPath);
 
-        dependencies.forEach(dependency => {
-            topologicalSortWithPathTracking(dependency, currentPath);
-        });
+      dependencies.forEach(dependency => {
+        topologicalSortWithPathTracking(dependency, currentPath);
+      });
 
-        sortedNodes.push(node);
+      sortedNodes.push(node);
     };
 
     // Perform topological sort with path tracking
     flow.nodes.forEach(node => {
-        if (!visited.has(node.id)) {
-            topologicalSortWithPathTracking(node.id, new Set());
-        }
+      if (!visited.has(node.id)) {
+        topologicalSortWithPathTracking(node.id, new Set());
+      }
     });
 
     // Assume sortedNodes is already populated from the topological sort
@@ -168,19 +168,19 @@ export class CodeGenerator {
       let pathToTarget = new Set<string>();
 
       while (nodesToConsider.size > 0) {
-          let nextNodesToConsider = new Set<string>();
+        let nextNodesToConsider = new Set<string>();
 
-          nodesToConsider.forEach(nodeId => {
-              pathToTarget.add(nodeId);
-              const dependencies = nodeDependencies.get(nodeId) || [];
-              dependencies.forEach(dep => {
-                  if (!pathToTarget.has(dep)) {
-                      nextNodesToConsider.add(dep);
-                  }
-              });
+        nodesToConsider.forEach(nodeId => {
+          pathToTarget.add(nodeId);
+          const dependencies = nodeDependencies.get(nodeId) || [];
+          dependencies.forEach(dep => {
+            if (!pathToTarget.has(dep)) {
+              nextNodesToConsider.add(dep);
+            }
           });
+        });
 
-          nodesToConsider = nextNodesToConsider;
+        nodesToConsider = nextNodesToConsider;
       }
       // Filter the sortedNodes to include only those in pathToTarget, preserving the topological order
       nodesToTraverse = sortedNodes.filter(nodeId => pathToTarget.has(nodeId));
@@ -192,10 +192,10 @@ export class CodeGenerator {
 
     for (const nodeId of nodesToTraverse) {
       const node = nodesMap.get(nodeId);
-        if (!node) {
-            console.error(`Node with id ${nodeId} not found.`);
-            continue;
-        }
+      if (!node) {
+        console.error(`Node with id ${nodeId} not found.`);
+        continue;
+      }
 
       let config: any = node.data as any; // Initialize config
       const component = componentService.getComponent(node.type);
@@ -204,18 +204,18 @@ export class CodeGenerator {
 
       // Only gather additionnal dependencies if the function exists
       if (typeof component?.provideDependencies === 'function') {
-        const deps = component.provideDependencies({config}); 
+        const deps = component.provideDependencies({ config });
         deps.forEach(dep => uniqueDependencies.add(dep));
       }
-      
-      const imports = component.provideImports({config}); // Gather imports
+
+      const imports = component.provideImports({ config }); // Gather imports
       imports.forEach(importStatement => uniqueImports.add(importStatement));
 
       // Gather functions
       if (typeof component?.provideFunctions === 'function') {
-        component.provideFunctions({config}).forEach(func => functions.add(func));
+        component.provideFunctions({ config }).forEach(func => functions.add(func));
       }
-        
+
       // Initiliaze input and output variables
       let inputName = '';
       let outputName = '';
@@ -245,6 +245,18 @@ export class CodeGenerator {
             outputName
           });
           break;
+        case 'pandas_df_multi_processor':
+          const inputIds = PipelineService.findMultiplePreviousNodeIds(flow, nodeId);
+          incrementCounter(component_id);
+          outputName = `${node.type}${counters.get(component_id)}`;
+          nodeOutputs.set(node.id, outputName);
+          const inputNames = inputIds.map(inputId => nodeOutputs.get(inputId));
+          lastCodeGenerated = componentService.getComponent(node.type).generateComponentCode({
+            config,
+            inputNames,
+            outputName
+          });
+          break;
         case 'pandas_df_input':
         case 'documents_input':
           incrementCounter(component_id);
@@ -263,11 +275,11 @@ export class CodeGenerator {
       }
 
       code += lastCodeGenerated;
-    
+
       // If target node....  
       if (nodeId === targetNodeId) {
         if (component_type.includes('processor') || component_type.includes('input')) {
-          if(component_type .includes('documents') ) {
+          if (component_type.includes('documents')) {
             if (!fromStart) {
               code = lastCodeGenerated;
             }
@@ -278,7 +290,7 @@ export class CodeGenerator {
             }
             code += '\n' + nodeOutputs.get(nodeId);
           }
-          
+
         } else if (component_type.includes('output')) {
           // Add try block and indent existing code
           const indentedCode = code.split('\n').map(line => '    ' + line).join('\n');
@@ -291,23 +303,23 @@ export class CodeGenerator {
     }
 
     let envVariablesCode = '';
-        // Loggers when full pipeline execution
-        if (envVariablesMap.size > 0) {
-          envVariablesMap.forEach((node, nodeId) => {
-            // Process each logger
-            const component = componentService.getComponent(node.type);
-    
-            let config: any = node.data as any; // Initialize config
+    // Loggers when full pipeline execution
+    if (envVariablesMap.size > 0) {
+      envVariablesMap.forEach((node, nodeId) => {
+        // Process each logger
+        const component = componentService.getComponent(node.type);
 
-            const imports = component.provideImports({config}); // Gather imports
-            imports.forEach(importStatement => uniqueImports.add(importStatement));
-    
-            envVariablesCode += componentService.getComponent(node.type).generateComponentCode({ config });
-    
-          });    
-        } else {
-          console.error('No env variables component found.');
-        }
+        let config: any = node.data as any; // Initialize config
+
+        const imports = component.provideImports({ config }); // Gather imports
+        imports.forEach(importStatement => uniqueImports.add(importStatement));
+
+        envVariablesCode += componentService.getComponent(node.type).generateComponentCode({ config });
+
+      });
+    } else {
+      console.error('No env variables component found.');
+    }
 
 
 
@@ -315,7 +327,7 @@ export class CodeGenerator {
     if (loggersMap.size > 0) {
 
       let loggerCode = '';
-  
+
       loggersMap.forEach((node, nodeId) => {
         // Process each logger
         const component = componentService.getComponent(node.type);
@@ -323,27 +335,27 @@ export class CodeGenerator {
         let config: any = node.data as any; // Initialize config
         // Only gather additionnal dependencies if the function exists
         if (typeof component?.provideDependencies === 'function') {
-          const deps = component.provideDependencies({config}); 
+          const deps = component.provideDependencies({ config });
           deps.forEach(dep => uniqueDependencies.add(dep));
         }
 
         if (typeof component?.provideFunctions === 'function') {
-          component.provideFunctions({config}).forEach(func => functions.add(func));
+          component.provideFunctions({ config }).forEach(func => functions.add(func));
         }
-        
-        const imports = component.provideImports({config}); // Gather imports
+
+        const imports = component.provideImports({ config }); // Gather imports
         imports.forEach(importStatement => uniqueImports.add(importStatement));
 
         loggerCode += componentService.getComponent(node.type).generateComponentCode({ config });
 
       });
 
-  // Indentation for the Python code block
-  const indent = '    ';
-  loggerCode = loggerCode.split('\n').map(line => indent + line).join('\n');
-  code = code.split('\n').map(line => indent + line).join('\n');
+      // Indentation for the Python code block
+      const indent = '    ';
+      loggerCode = loggerCode.split('\n').map(line => indent + line).join('\n');
+      code = code.split('\n').map(line => indent + line).join('\n');
 
-  code = `
+      code = `
 try:
 ${code}
 except Exception as e:
@@ -363,8 +375,8 @@ ${loggerCode}
     // Replace variabale string 
     code = this.convertToFString(code);
 
-    const generatedCode = 
-`${dateComment}
+    const generatedCode =
+      `${dateComment}
 ${additionalImports}
 ${Array.from(uniqueImports).join('\n')}
 \n${envVariablesCode}${Array.from(functions).join('\n\n')}
@@ -376,7 +388,7 @@ ${code}`;
 
   static convertToFString(pythonCode: string): string {
     const envVarRegex = /{os\.environ\['(\w+)'\]}/g;
-  
+
     return pythonCode.replace(/"([^"]*)"/g, (match, group) => {
       let replacedGroup = group;
       let matchResult;

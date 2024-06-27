@@ -34,6 +34,8 @@ import MarkdownSvgStr from '../style/icons/markdown-fill.svg';
 import htmlLineSvgStr from '../style/icons/html-line.svg';
 import chromaSvgStr from '../style/icons/chroma.svg'
 import transposeSvgStr from '../style/icons/repeat-24.svg'
+import checkDiamondSvgStr from '../style/icons/check-diamond-24.svg'
+import plusCircleSvgStr from '../style/icons/plus-circle-24.svg'
 
 
 export const fileTextIcon = new LabIcon({
@@ -206,9 +208,13 @@ export const transposeIcon = new LabIcon({
   svgstr: transposeSvgStr
 });
 
+export const checkDiamondIcon = new LabIcon({
+  name: 'amphi:check-diamond-icon',
+  svgstr: checkDiamondSvgStr
+});
 
-
-
-
-
+export const plusCircleIcon = new LabIcon({
+  name: 'amphi:plus-circle-icon',
+  svgstr: plusCircleSvgStr
+});
 

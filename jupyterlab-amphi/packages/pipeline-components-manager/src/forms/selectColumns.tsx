@@ -112,14 +112,13 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
           <Divider style={{ margin: '8px 0' }} />
           <Space style={{ padding: '0 8px 4px' }}>
             <Input
-              placeholder="Custom"
+              placeholder="Add column"
               ref={inputRef}
               value={name}
               onChange={onNameChange}
               onKeyDown={(e: any) => e.stopPropagation()}
             />
             <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
-              Add column
             </Button>
           </Space>
         </>

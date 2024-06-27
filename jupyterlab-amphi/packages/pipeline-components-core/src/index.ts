@@ -8,7 +8,8 @@ import { Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonF
 SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join,
 ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, RedditInput, OpenAILookUp,
 EnvVariables, EnvFile, ConvertToDocuments, PineconeOutput, FixedSizeChunking, SemanticChunking, WordFileInput, PdfTablesInput, Transpose,
-RecursiveChunking, HtmlToMarkdown, ParseHTML, ChromaOutput, CustomCodeDocuments} from './components';
+RecursiveChunking, HtmlToMarkdown, ParseHTML, ChromaOutput, CustomCodeDocuments, Unite,
+FillMissingValues} from './components';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-components-core',
@@ -42,6 +43,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(Aggregate.getInstance())
    componentService.addComponent(Join.getInstance())
    componentService.addComponent(TypeConverter.getInstance())
+   componentService.addComponent(FillMissingValues.getInstance())
    componentService.addComponent(SplitColumn.getInstance())
    componentService.addComponent(Extract.getInstance())
    componentService.addComponent(Sort.getInstance())
@@ -50,6 +52,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(ExpandList.getInstance())
    componentService.addComponent(Sample.getInstance())
    componentService.addComponent(SQLQuery.getInstance())
+   componentService.addComponent(Unite.getInstance())
    componentService.addComponent(CustomTransformations.getInstance())
    componentService.addComponent(OpenAILookUp.getInstance())
    componentService.addComponent(ConvertToDocuments.getInstance())
