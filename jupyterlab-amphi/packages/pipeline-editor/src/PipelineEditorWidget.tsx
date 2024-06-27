@@ -12,6 +12,7 @@ import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { Drag } from '@lumino/dragdrop';
 import { Widget } from '@lumino/widgets';
 import { useCopyPaste, useUndoRedo } from './Commands';
+import DownloadImageButton from './ExportToImage';
 
 import React, { useCallback, useRef, useState, useEffect } from 'react';
 import ReactFlow, {
@@ -30,7 +31,8 @@ import ReactFlow, {
   useStoreApi,
   NodeDragHandler,
   SelectionDragHandler,
-  OnEdgesDelete
+  OnEdgesDelete,
+  ControlButton
 } from 'reactflow';
 
 import { Tree, TabsProps, Tabs, ConfigProvider } from 'antd';
@@ -46,7 +48,7 @@ import { pipelineIcon } from './icons';
 import { Dropzone } from './Dropzone';
 import ReactDOM from 'react-dom';
 
-import CodeEditor from './CodeEditor'; 
+import CodeEditor from './CodeEditor';
 
 
 const PIPELINE_CLASS = 'amphi-PipelineEditor';
@@ -191,12 +193,12 @@ const PipelineWrapper: React.FC<IProps> = ({
       takeSnapshot();
       // 👉 you can place your event handlers here
     }, [takeSnapshot]);
-  
+
     const onSelectionDragStart: SelectionDragHandler = useCallback(() => {
       // 👇 make dragging a selection undoable
       takeSnapshot();
     }, [takeSnapshot]);
-  
+
     const onEdgesDelete: OnEdgesDelete = useCallback(() => {
       // 👇 make deleting edges undoable
       takeSnapshot();
@@ -225,9 +227,9 @@ const PipelineWrapper: React.FC<IProps> = ({
       },
       [setEdges, takeSnapshot]
     );
-  
 
-    const getCategory = (nodeId: string): string | undefined => {      
+
+    const getCategory = (nodeId: string): string | undefined => {
       const node = nodes.find(node => node.id === nodeId);
       console.log("node %o", node)
       if (node) {
@@ -237,10 +239,10 @@ const PipelineWrapper: React.FC<IProps> = ({
     };
 
     const isValidConnection = (connection): boolean => {
-    
+
       const sourceCategory = getCategory(connection.source);
       const targetCategory = getCategory(connection.target);
-    
+
       if ((sourceCategory === "pandas_df_to_documents_processor")) {
         return targetCategory.startsWith("documents");
       } else if (sourceCategory.startsWith("documents")) {
@@ -278,12 +280,12 @@ const PipelineWrapper: React.FC<IProps> = ({
     const handleAddFileToPipeline = useCallback(
       (location?: { x: number; y: number }) => {
         const fileBrowser = defaultFileBrowser;
-    
+
         // Only add file to pipeline if it is currently in focus
         if (shell.currentWidget?.id !== widgetId) {
           return;
         }
-    
+
         if (reactFlowInstance && location) {
           const {
             height,
@@ -291,13 +293,13 @@ const PipelineWrapper: React.FC<IProps> = ({
             transform: [transformX, transformY, zoomLevel]
           } = store.getState();
           const zoomMultiplier = 1 / zoomLevel;
-    
+
           // Calculate the adjusted position based on the transformation values and zoom level
           const adjustedPosition = {
             x: (location.x - transformX) * zoomMultiplier,
             y: (location.y - transformY) * zoomMultiplier,
           };
-        
+
           Array.from(fileBrowser.selectedItems()).forEach((item: any) => {
             const filePath = item.path;
             const { id: nodeType, default: nodeDefaults } = PipelineService.getComponentIdForFileExtension(item, componentService);
@@ -314,7 +316,7 @@ const PipelineWrapper: React.FC<IProps> = ({
                   ...(nodeDefaults || {}) // Merge nodeDefaults into the data field
                 }
               };
-    
+
               // Add the new node to the pipeline
               setNodes((nds) => nds.concat(newNode));
             } else {
@@ -331,7 +333,7 @@ const PipelineWrapper: React.FC<IProps> = ({
       },
       [defaultFileBrowser, shell, widgetId, reactFlowInstance]
     );
-    
+
     const handleFileDrop = async (e: Drag.Event): Promise<void> => {
       takeSnapshot();
       handleAddFileToPipeline({ x: e.offsetX, y: e.offsetY });
@@ -376,8 +378,7 @@ const PipelineWrapper: React.FC<IProps> = ({
     );
 
     return (
-      <div className="reactflow-wrapper" ref={reactFlowWrapper}>
-
+      <div className="reactflow-wrapper" data-id={pipelineId} ref={reactFlowWrapper}>
         <Dropzone onDrop={handleFileDrop}>
           <ReactFlow
             id={pipelineId}
@@ -403,171 +404,174 @@ const PipelineWrapper: React.FC<IProps> = ({
           >
             <Panel position="top-right">
             </Panel>
-            <Controls />
+            <Controls>
+              <DownloadImageButton pipelineName={context.context.sessionContext.path} pipelineId={pipelineId} />
+            </Controls>
             <Background color="#aaa" gap={15} />
+           
           </ReactFlow>
         </Dropzone>
       </div >
     );
   }
 
-function Sidebar() {
+  function Sidebar() {
 
-  const onDragStart = (event, nodeType, config) => {
-    event.dataTransfer.setData('application/reactflow', nodeType);
-    // Here, you can add more data as needed
-    event.dataTransfer.setData('additionalData', config);
-    event.dataTransfer.effectAllowed = 'move';
-  };
+    const onDragStart = (event, nodeType, config) => {
+      event.dataTransfer.setData('application/reactflow', nodeType);
+      // Here, you can add more data as needed
+      event.dataTransfer.setData('additionalData', config);
+      event.dataTransfer.effectAllowed = 'move';
+    };
 
 
-  // Simulating componentService.getComponents()
-  const components = componentService.getComponents();
+    // Simulating componentService.getComponents()
+    const components = componentService.getComponents();
 
-  // Categorizing components with potential subcategories and classifications
-  const categorizedComponents: Record<string, Record<string, Record<string, any[]>>> = { structured: {}, unstructured: {} };
+    // Categorizing components with potential subcategories and classifications
+    const categorizedComponents: Record<string, Record<string, Record<string, any[]>>> = { structured: {}, unstructured: {} };
 
-  components.forEach(component => {
-    let [category, subcategory] = component._category.split('.');
-    let classification = component._type.includes('pandas') ? 'structured' : component._type.includes('documents') ? 'unstructured' : null;
+    components.forEach(component => {
+      let [category, subcategory] = component._category.split('.');
+      let classification = component._type.includes('pandas') ? 'structured' : component._type.includes('documents') ? 'unstructured' : null;
 
-    if (classification) {
-      if (!categorizedComponents[classification][category]) {
-        categorizedComponents[classification][category] = {};
-      }
-      if (subcategory) {
-        if (!categorizedComponents[classification][category][subcategory]) {
-          categorizedComponents[classification][category][subcategory] = [];
+      if (classification) {
+        if (!categorizedComponents[classification][category]) {
+          categorizedComponents[classification][category] = {};
         }
-        categorizedComponents[classification][category][subcategory].push(component);
-      } else {
-        if (!categorizedComponents[classification][category]['_']) {
-          categorizedComponents[classification][category]['_'] = [];
-        }
-        categorizedComponents[classification][category]['_'].push(component);
-      }
-    }
-  });
-
-
-  // Transforming categorized components into tree data structure
-  const getTreeData = (classification: 'structured' | 'unstructured') => {
-    return Object.keys(categorizedComponents[classification]).map((category, index) => {
-      const subCategories = Object.keys(categorizedComponents[classification][category]);
-      let children = [];
-
-      subCategories.forEach((subCat, subIndex) => {
-        if (subCat === '_') {
-          children.push(...categorizedComponents[classification][category][subCat].map((component, childIndex) => ({
-            title: (
-              <span
-                draggable
-                className="palette-component"
-                onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
-                key={`category-${index}-item-${childIndex}`}
-              >
-                {component._name}
-              </span>
-            ),
-            key: `category-${index}-item-${childIndex}`,
-            isLeaf: true,
-            icon: <component._icon.react height="14px" width="14px;" />
-          })));
+        if (subcategory) {
+          if (!categorizedComponents[classification][category][subcategory]) {
+            categorizedComponents[classification][category][subcategory] = [];
+          }
+          categorizedComponents[classification][category][subcategory].push(component);
         } else {
-          children.push({
-            title: <span className="palette-component-category">{subCat.charAt(0).toUpperCase() + subCat.slice(1)}</span>,
-            key: `category-${index}-sub-${subIndex}`,
-            children: categorizedComponents[classification][category][subCat].map((component, childIndex) => ({
+          if (!categorizedComponents[classification][category]['_']) {
+            categorizedComponents[classification][category]['_'] = [];
+          }
+          categorizedComponents[classification][category]['_'].push(component);
+        }
+      }
+    });
+
+
+    // Transforming categorized components into tree data structure
+    const getTreeData = (classification: 'structured' | 'unstructured') => {
+      return Object.keys(categorizedComponents[classification]).map((category, index) => {
+        const subCategories = Object.keys(categorizedComponents[classification][category]);
+        let children = [];
+
+        subCategories.forEach((subCat, subIndex) => {
+          if (subCat === '_') {
+            children.push(...categorizedComponents[classification][category][subCat].map((component, childIndex) => ({
               title: (
                 <span
                   draggable
                   className="palette-component"
                   onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
-                  key={`category-${index}-sub-${subIndex}-item-${childIndex}`}
+                  key={`category-${index}-item-${childIndex}`}
                 >
                   {component._name}
                 </span>
               ),
-              key: `category-${index}-sub-${subIndex}-item-${childIndex}`,
+              key: `category-${index}-item-${childIndex}`,
               isLeaf: true,
               icon: <component._icon.react height="14px" width="14px;" />
-            }))
-          });
-        }
+            })));
+          } else {
+            children.push({
+              title: <span className="palette-component-category">{subCat.charAt(0).toUpperCase() + subCat.slice(1)}</span>,
+              key: `category-${index}-sub-${subIndex}`,
+              children: categorizedComponents[classification][category][subCat].map((component, childIndex) => ({
+                title: (
+                  <span
+                    draggable
+                    className="palette-component"
+                    onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
+                    key={`category-${index}-sub-${subIndex}-item-${childIndex}`}
+                  >
+                    {component._name}
+                  </span>
+                ),
+                key: `category-${index}-sub-${subIndex}-item-${childIndex}`,
+                isLeaf: true,
+                icon: <component._icon.react height="14px" width="14px;" />
+              }))
+            });
+          }
+        });
+
+        return {
+          title: <span className="palette-component-category">{category.charAt(0).toUpperCase() + category.slice(1)}</span>,
+          key: `category-${index}`,
+          children: children
+        };
       });
+    };
 
-      return {
-        title: <span className="palette-component-category">{category.charAt(0).toUpperCase() + category.slice(1)}</span>,
-        key: `category-${index}`,
-        children: children
-      };
-    });
-  };
+    // Output tree data (for debugging, you might want to console.log or use it directly in your components)
+    console.log(getTreeData('structured'));
+    console.log(getTreeData('unstructured'));
 
-  // Output tree data (for debugging, you might want to console.log or use it directly in your components)
-  console.log(getTreeData('structured'));
-  console.log(getTreeData('unstructured'));
+    const structuredTreeData = getTreeData('structured');
+    const unstructuredTreeData = getTreeData('unstructured');
 
-  const structuredTreeData = getTreeData('structured');
-  const unstructuredTreeData = getTreeData('unstructured');
+    // Define the tab items
+    const items: TabsProps['items'] = [
+      {
+        key: '1',
+        label: 'Structured',
+        children: (
+          <DirectoryTree
+            selectable={false}
+            multiple
+            blockNode
+            defaultExpandAll
+            treeData={structuredTreeData}
+            key={"structured-components"}
+          />
+        ),
+      },
+      {
+        key: '2',
+        label: 'Unstructured',
+        children: (
+          <DirectoryTree
+            selectable={false}
+            multiple
+            blockNode
+            defaultExpandAll
+            treeData={unstructuredTreeData}
+            key={"unstructured-components"}
+          />
+        ),
+      },
+    ];
 
-  // Define the tab items
-  const items: TabsProps['items'] = [
-    {
-      key: '1',
-      label: 'Structured',
-      children: (
-        <DirectoryTree
-          selectable={false}
-          multiple
-          blockNode
-          defaultExpandAll
-          treeData={structuredTreeData}
-          key={"structured-components"}
-        />
-      ),
-    },
-    {
-      key: '2',
-      label: 'Unstructured',
-      children: (
-        <DirectoryTree
-          selectable={false}
-          multiple
-          blockNode
-          defaultExpandAll
-          treeData={unstructuredTreeData}
-          key={"unstructured-components"}
-        />
-      ),
-    },
-  ];
+    return (
+
+      <aside title={'Components'}>
+        <Tabs defaultActiveKey="1" items={items} tabBarStyle={{ width: '100%', marginLeft: '15px' }} />
+      </aside>
+    );
+  }
 
   return (
-
-    <aside title={'Components'}>
-      <Tabs defaultActiveKey="1" items={items} tabBarStyle={{ width: '100%', marginLeft: '15px' }} />
-    </aside>
+    <div className="palette" id="pipeline-panel">
+      <ConfigProvider
+        theme={{
+          token: {
+            // Seed Token
+            colorPrimary: '#5F9B97',
+          },
+        }}
+      >
+        <ReactFlowProvider>
+          <PipelineFlow context={context} />
+          <Sidebar />
+        </ReactFlowProvider>
+      </ConfigProvider>
+    </div>
   );
-}
-
-return (
-  <div className="palette" id="pipeline-panel">
-    <ConfigProvider
-      theme={{
-        token: {
-          // Seed Token
-          colorPrimary: '#5F9B97',
-        },
-      }}
-    >
-      <ReactFlowProvider>
-        <PipelineFlow context={context} />
-        <Sidebar />
-      </ReactFlowProvider>
-    </ConfigProvider>
-  </div>
-);
 }
 
 export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
@@ -632,7 +636,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       const editorDiv = document.createElement('div');
       editorDiv.style.width = '100%';
       editorDiv.style.height = '500px';
-    
+
       const widget = new Widget({ node: editorDiv });
       ReactDOM.render(<CodeEditor code={code} />, editorDiv);
 
@@ -640,7 +644,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
         console.log("Before file")
 
         console.log("context %o", context)
-        const file =  await commands.execute('docmanager:new-untitled', { path: '/', type: 'file', ext: '.py' });
+        const file = await commands.execute('docmanager:new-untitled', { path: '/', type: 'file', ext: '.py' });
         console.log("before doc")
         const doc = await commands.execute('docmanager:open', { path: file.path });
         doc.context.model.fromString(code);
@@ -651,13 +655,13 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
         title: 'Generated Python Code',
         body: widget,
         buttons: [Dialog.okButton({ label: 'Close' }),
-          Dialog.createButton({
-            label: 'Open in new file',
-            className: '',
-            accept: true
-          })],
+        Dialog.createButton({
+          label: 'Open in new file',
+          className: '',
+          accept: true
+        })],
       });
-      
+
       console.log("result %o", result)
 
       if (result.button.label === 'Open in new file') {
@@ -667,7 +671,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
 
       // Render the AceEditor inside the dialog
     }
-    
+
     // Add generate code button
     const generateCodeButton = new ToolbarButton({
       label: 'Export to Python code',
