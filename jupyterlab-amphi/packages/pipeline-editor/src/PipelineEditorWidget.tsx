@@ -1,4 +1,4 @@
-import { ILabShell } from '@jupyterlab/application';
+import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
 import { IToolbarWidgetRegistry, Dialog, showDialog, ReactWidget, Toolbar, ToolbarButton } from '@jupyterlab/apputils';
 import {
   ABCWidgetFactory,
@@ -11,8 +11,8 @@ import { Toolbar as UIToolbar, buildIcon, listIcon, runIcon, saveIcon } from '@j
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { Drag } from '@lumino/dragdrop';
 import { Widget } from '@lumino/widgets';
-import { useCopyPaste, useUndoRedo } from './Commands';
 import DownloadImageButton from './ExportToImage';
+import { useUndoRedo } from './Commands';
 
 import React, { useCallback, useRef, useState, useEffect } from 'react';
 import ReactFlow, {
@@ -36,7 +36,6 @@ import ReactFlow, {
 } from 'reactflow';
 
 import { Tree, TabsProps, Tabs, ConfigProvider } from 'antd';
-import type { GetProps, TreeDataNode } from 'antd';
 
 const { DirectoryTree } = Tree;
 
@@ -186,8 +185,100 @@ const PipelineWrapper: React.FC<IProps> = ({
     const { setViewport } = useReactFlow();
     const store = useStoreApi();
 
+    // Proximity connect
+    const MIN_DISTANCE = 150;
+
+    const getClosestEdge = useCallback((node) => {
+      const { nodeInternals } = store.getState();
+      const storeNodes = Array.from(nodeInternals.values());
+
+      const closestNode = storeNodes.reduce(
+        (res, n) => {
+          if (n.id !== node.id) {
+            const dx = n.positionAbsolute.x - node.positionAbsolute.x;
+            const dy = n.positionAbsolute.y - node.positionAbsolute.y;
+            const d = Math.sqrt(dx * dx + dy * dy);
+
+            if (d < res.distance && d < MIN_DISTANCE) {
+              res.distance = d;
+              res.node = n;
+            }
+          }
+
+          return res;
+        },
+        {
+          distance: Number.MAX_VALUE,
+          node: null,
+        },
+      );
+
+      if (!closestNode.node) {
+        return null;
+      }
+
+      const closeNodeIsSource =
+        closestNode.node.positionAbsolute.x < node.positionAbsolute.x;
+
+      return {
+        id: closeNodeIsSource
+          ? `${closestNode.node.id}-${node.id}`
+          : `${node.id}-${closestNode.node.id}`,
+        source: closeNodeIsSource ? closestNode.node.id : node.id,
+        target: closeNodeIsSource ? node.id : closestNode.node.id,
+      };
+    }, []);
+
+    const onNodeDrag = useCallback(
+      (_, node) => {
+        const closeEdge = getClosestEdge(node);
+  
+        setEdges((es) => {
+          const nextEdges = es.filter((e) => e.className !== 'temp');
+  
+          if (
+            closeEdge &&
+            !nextEdges.find(
+              (ne) =>
+                ne.source === closeEdge.source && ne.target === closeEdge.target,
+            )
+          ) {
+            // closeEdge.className = 'temp';
+            nextEdges.push(closeEdge);
+          }
+  
+          return nextEdges;
+        });
+      },
+      [getClosestEdge, setEdges],
+    );
+  
+    const onNodeDragStop = useCallback(
+      (_, node) => {
+        const closeEdge = getClosestEdge(node);
+  
+        setEdges((es) => {
+          const nextEdges = es.filter((e) => e.className !== 'temp');
+  
+          if (
+            closeEdge &&
+            !nextEdges.find(
+              (ne) =>
+                ne.source === closeEdge.source && ne.target === closeEdge.target,
+            )
+          ) {
+            nextEdges.push(closeEdge);
+          }
+  
+          return nextEdges;
+        });
+      },
+      [getClosestEdge],
+    );
+
     // Undo and Redo
     const { undo, redo, canUndo, canRedo, takeSnapshot } = useUndoRedo();
+
     const onNodeDragStart: NodeDragHandler = useCallback(() => {
       // 👇 make dragging a node undoable
       takeSnapshot();
@@ -204,10 +295,6 @@ const PipelineWrapper: React.FC<IProps> = ({
       takeSnapshot();
     }, [takeSnapshot]);
 
-    // Copy Paste
-    // const { cut, copy, paste, bufferedNodes } = useCopyPaste();
-    // const canCopy = nodes.some(({ selected }) => selected);
-    // const canPaste = bufferedNodes.length > 0;
 
     const updatedPipeline = pipeline;
     updatedPipeline['pipelines'][0]['flow']['nodes'] = nodes;
@@ -386,6 +473,7 @@ const PipelineWrapper: React.FC<IProps> = ({
             edges={edges}
             onNodesChange={onNodesChange}
             onNodesDelete={onNodesDelete}
+            onEdgesDelete={onEdgesDelete}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
             onNodeDragStart={onNodeDragStart}
@@ -393,6 +481,8 @@ const PipelineWrapper: React.FC<IProps> = ({
             isValidConnection={isValidConnection}
             onDrop={onDrop}
             onDragOver={onDragOver}
+            onNodeDrag={onNodeDrag}
+            onNodeDragStop={onNodeDragStop}
             onInit={setRfInstance}
             edgeTypes={edgeTypes}
             nodeTypes={nodeTypes}
@@ -408,7 +498,7 @@ const PipelineWrapper: React.FC<IProps> = ({
               <DownloadImageButton pipelineName={context.context.sessionContext.path} pipelineId={pipelineId} />
             </Controls>
             <Background color="#aaa" gap={15} />
-           
+
           </ReactFlow>
         </Dropzone>
       </div >

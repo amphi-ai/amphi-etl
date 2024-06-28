@@ -22,7 +22,7 @@ function DownloadImageButton({ pipelineName, pipelineId }: { pipelineName: strin
       const viewportElement = document.querySelector(`.reactflow-wrapper[data-id="${pipelineId}"]`);
       if (viewportElement instanceof HTMLElement) {
         const { width, height } = viewportElement.getBoundingClientRect();
-        const transform = getTransformForBounds(nodesBounds, width, height, 0.5, 2);
+        // const transform = getTransformForBounds(nodesBounds, width, height, 0.5, 2);
 
         toSvg(viewportElement, {
           backgroundColor: '#ffffff',

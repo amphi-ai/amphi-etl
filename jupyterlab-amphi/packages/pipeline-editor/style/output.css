@@ -1114,6 +1114,11 @@ Components palette sidebar
 Edges 
 */
 
+.temp .react-flow__edge-path {
+  stroke: #bbb;
+  stroke-dasharray: 5 5;
+}
+
 .edgebutton {
   height: 20px;
   width: 20px;

@@ -28,8 +28,9 @@ export function useCopyPaste<NodeData, EdgeData>() {
     const events = ['cut', 'copy', 'paste'];
 
     if (rfDomNode) {
-      const preventDefault = (e: Event) => e.preventDefault();
+      // const preventDefault = (e: Event) => e.preventDefault();
 
+      /*
       const onMouseMove = (event: MouseEvent) => {
         mousePosRef.current = {
           x: event.clientX,
@@ -50,6 +51,8 @@ export function useCopyPaste<NodeData, EdgeData>() {
 
         rfDomNode.removeEventListener('mousemove', onMouseMove);
       };
+      */
+      
     }
   }, [rfDomNode]);
 

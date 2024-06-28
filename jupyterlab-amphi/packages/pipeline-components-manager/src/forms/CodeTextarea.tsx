@@ -1,9 +1,12 @@
 import { FieldDescriptor, Option } from '../configUtils';
 import React, { useState, useEffect, useRef } from 'react';
 import AceEditor from "react-ace";
+
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/mode-sql";
 import "ace-builds/src-noconflict/theme-xcode";
+import "ace-builds/src-noconflict/ext-language_tools";  // Import for language tools
+
 
 export const CodeTextarea = ({ field, value, handleChange, advanced, rows }) => {
   const [inputValue, setInputValue] = useState(value);

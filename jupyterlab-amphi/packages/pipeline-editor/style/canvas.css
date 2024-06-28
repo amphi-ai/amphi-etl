@@ -151,6 +151,12 @@ Components palette sidebar
 Edges 
 */
 
+.temp .react-flow__edge-path {
+  stroke: #bbb;
+  stroke-dasharray: 5 5;
+}
+
+
 .edgebutton {
   @apply w-[20px] h-[20px] bg-[#eee] border border-white bg-[#F2F4F7] cursor-pointer rounded-full text-[12px] leading-none;
 }

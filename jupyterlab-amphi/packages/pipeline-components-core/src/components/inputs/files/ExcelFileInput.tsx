@@ -12,7 +12,7 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
   public _fileDrop = ["xlsx", "xls", "ods", "xlsb"];
   public _category = "input";
   public _icon = fileTextIcon;
-  public _default = { engine: "None" };
+  public _default = { excelOptions: { sheet_name: 0 }, engine: "None" };
   public _form = {
     idPrefix: "component__form",
     fields: [
@@ -31,9 +31,9 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
         placeholder: "Default: O (first sheet)",
         tooltip: "Select the sheet number or all of them. Use custom number to select a specific sheet. You can also select multiple sheets if they have the same structure with [0, 1, 'Sheet5'] for example.",
         options: [
-          { value: "0" , label: "0 (First sheet)" },
+          { value: "0", label: "0 (First sheet)" },
           { value: "1", label: "1 (Second sheet)" },
-          { value: "None", label: "All worksheets" }
+          { value: "None", label: "All worksheets (multiple)" }
         ],
       },
       {
@@ -169,16 +169,16 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
     let deps: string[] = [];
 
     const engine = config.engine;
-    
+
     if (engine === 'None' || engine === 'openpyxl') {
       deps.push('openpyxl');
-    } if (engine === 'calamine') {
+    } else if (engine === 'calamine') {
       deps.push('python-calamine');
-    } if (engine === 'odf') {
+    } else if (engine === 'odf') {
       deps.push('odfpy');
-    } if (engine === 'pyxlsb') {
+    } else if (engine === 'pyxlsb') {
       deps.push('pyxlsb');
-    } if (engine === 'xlrd') {
+    } else if (engine === 'xlrd') {
       deps.push('xlrd');
     }
     else {
@@ -194,30 +194,46 @@ export class ExcelFileInput extends PipelineComponent<ComponentItem>() {
 
   public generateComponentCode({ config, outputName }): string {
 
+    let listOfDataframes = false;
+    let code = ''
+
     let optionsString = Object.entries(config.excelOptions)
-    .filter(([key, value]) => value !== null && value !== '')
-    .map(([key, value]) => {
+      .filter(([key, value]) => value !== null && value !== '')
+      .map(([key, value]) => {
         if (typeof value === 'boolean') {
-            return `${key}=${value ? 'True' : 'False'}`;
-        } else if (value === null) { // Handle null values
-            return `${key}=None`;
-        } else if (typeof value === 'string' && /^\d+$/.test(value)) { // Check if value is a string containing only digits
-            return `${key}=${value}`;
+          return `${key}=${value ? 'True' : 'False'}`;
+        } else if (value === "None") { // Handle None values
+          listOfDataframes = true;
+          return `${key}=None`;
+        } else if (/^\d+$/.test(value as string)) {
+          return `${key}=${value}`;
         } else if (typeof value === 'string' && value.startsWith('[') && value.endsWith(']')) { // Check if value is an array-like string
-            return `${key}=${value}`;
+          listOfDataframes = true;
+          return `${key}=${value}`;
         } else {
-            return `${key}='${value}'`;
+          return `${key}='${value}'`;
         }
-    })
-    .join(', ');
+      })
+      .join(', ');
 
     const engine = config.engine !== 'None' ? `'${config.engine}'` : config.engine;
 
-    const code = optionsString
-      ? `${outputName} = pd.read_excel("${config.filePath}", engine=${engine}, ${optionsString}).convert_dtypes()
+    const readExcelcode = optionsString
+      ? `pd.read_excel("${config.filePath}", engine=${engine}, ${optionsString})`
+      : `pd.read_excel("${config.filePath}", engine=${engine})`;
+
+    if (listOfDataframes) {
+      code = `# Read multiple sheets from Excel file
+${outputName}_dict = ${readExcelcode}
+
+# Concatenate the dataframes into a single dataframe
+${outputName} = pd.concat(${outputName}_dict.values(), ignore_index=True).convert_dtypes()
 `
-      : `${outputName} = pd.read_excel("${config.filePath}", engine=${engine}).convert_dtypes()
-`;
+    } else {
+      code = `# Read Excel sheet
+${outputName} = ${readExcelcode}.convert_dtypes()
+`
+    }
 
     return code;
   }

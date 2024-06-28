@@ -198,6 +198,8 @@ export class ExcelFileOutput extends PipelineComponent<ComponentItem>() {
     .map(([key, value]) => {
       if (typeof value === 'boolean') {
         return `${key}=${value ? 'True' : 'False'}`;
+      } else if (value === "None") { // Handle None values
+        return `${key}=None`;
       }
       return `${key}='${value}'`;
     })

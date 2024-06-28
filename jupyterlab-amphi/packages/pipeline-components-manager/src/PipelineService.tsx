@@ -248,6 +248,7 @@ export interface Edge {
   source: string;
   target: string;
   data: any;
+  className?: string;
   [key: string]: any; // To include other properties with unknown names
 }
 

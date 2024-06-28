@@ -21,6 +21,8 @@ import { IDefaultFileBrowser, IFileBrowserFactory } from '@jupyterlab/filebrowse
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { IStatusBar } from '@jupyterlab/statusbar';
 import { PromiseDelegate, ReadonlyJSONValue, ReadonlyPartialJSONObject, Token } from '@lumino/coreutils';
+import { JSONObject } from '@lumino/coreutils';
+import { useCopyPaste } from './Commands';
 
 import { ComponentManager, CodeGenerator, PipelineService } from '@amphi/pipeline-components-manager';
 import { pipelineCategoryIcon, pipelineBrandIcon } from './icons';
@@ -519,6 +521,78 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           category: 'Pipeline',
           args: { isPalette: true }
         });
+
+
+        // Components //
+        // ----
+        // ----
+            // Copy Paste
+          //const { cut, copy, paste, bufferedNodes } = useCopyPaste();
+          // const canCopy = nodes.some(({ selected }) => selected);
+          // const canPaste = bufferedNodes.length > 0;
+
+        commands.addCommand('pipeline-editor-component:copy', {
+          execute: async args => {
+            const contextNode: HTMLElement | undefined = app.contextMenuHitTest(
+              node => !!node.dataset.id
+            );
+            if (contextNode) {
+              const nodeId = contextNode.getAttribute('data-id');
+              console.log(nodeId);
+            }
+          },
+          label: 'Copy'
+        });
+        
+        commands.addCommand('pipeline-editor-component:cut', {
+          execute: args => {
+            const contextNode: HTMLElement | undefined = app.contextMenuHitTest(
+              node => !!node.dataset.id
+            );
+            if (contextNode) {
+              console.log(contextNode)
+            }
+          },
+          label: 'Cut'
+        });
+        
+        commands.addCommand('pipeline-editor-component:paste', {
+          execute: async args => {
+
+          },
+          label: 'Paste'
+        });
+
+        const contextMenuItems = [
+          {
+            command: 'pipeline-editor-component:copy',
+            selector: '.component',
+            rank: 1,
+          },
+          {
+            command: 'pipeline-editor-component:cut',
+            selector: '.component',
+            rank: 2,
+          },
+          {
+            command: 'pipeline-editor-component:paste',
+            selector: '.component',
+            rank: 3,
+          },
+        ];
+
+        // Add each context menu item with the args function
+        contextMenuItems.forEach(item => {
+          app.contextMenu.addItem({
+            command: item.command,
+            selector: item.selector,
+            rank: item.rank     
+          });
+        });
+
+        // ----
+        // ----
+        
 
         // Add launcher
         if (launcher) {
