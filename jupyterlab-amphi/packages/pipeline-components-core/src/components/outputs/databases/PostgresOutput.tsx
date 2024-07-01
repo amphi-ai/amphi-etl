@@ -284,11 +284,11 @@ ${inputName} = ${inputName}[[${selectedColumns}]]
       }
     }
 
-    const ifExistsAction = config.ifTableExists === "fail" ? "fail" : "replace";
+    const ifExistsAction = config.ifTableExists; /* default value */
 
     const schemaParam = (config.dbOptions.schema && config.dbOptions.schema.toLowerCase() !== 'public')
       ? `,
-schema="${config.dbOptions.schema}"`
+  schema="${config.dbOptions.schema}"`
       : '';
 
     const code = `
