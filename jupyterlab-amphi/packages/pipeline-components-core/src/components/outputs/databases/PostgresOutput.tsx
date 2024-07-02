@@ -284,7 +284,7 @@ ${inputName} = ${inputName}[[${selectedColumns}]]
       }
     }
 
-    const ifExistsAction = config.ifTableExists; /* default value */
+    const ifExistsAction = config.ifTableExists;
 
     const schemaParam = (config.dbOptions.schema && config.dbOptions.schema.toLowerCase() !== 'public')
       ? `,

@@ -246,8 +246,8 @@ ${inputName} = ${inputName}[[${selectedColumns}]]
     }
   }
 
-  const ifExistsAction = config.ifTableExists === "fail" ? "fail" : "replace";
-
+  const ifExistsAction = config.ifTableExists;
+  
   const code = `
 # Connect to MySQL and output into table
 ${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
