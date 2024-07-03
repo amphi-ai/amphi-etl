@@ -186,6 +186,7 @@ const PipelineWrapper: React.FC<IProps> = ({
     const store = useStoreApi();
 
     // Proximity connect
+    /*
     const MIN_DISTANCE = 150;
 
     const getClosestEdge = useCallback((node) => {
@@ -275,6 +276,7 @@ const PipelineWrapper: React.FC<IProps> = ({
       },
       [getClosestEdge],
     );
+    */
 
     // Undo and Redo
     const { undo, redo, canUndo, canRedo, takeSnapshot } = useUndoRedo();
@@ -481,8 +483,8 @@ const PipelineWrapper: React.FC<IProps> = ({
             isValidConnection={isValidConnection}
             onDrop={onDrop}
             onDragOver={onDragOver}
-            onNodeDrag={onNodeDrag}
-            onNodeDragStop={onNodeDragStop}
+            // onNodeDrag={onNodeDrag}
+            // onNodeDragStop={onNodeDragStop}
             onInit={setRfInstance}
             edgeTypes={edgeTypes}
             nodeTypes={nodeTypes}
@@ -491,7 +493,7 @@ const PipelineWrapper: React.FC<IProps> = ({
             fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0 }}
             defaultViewport={defaultViewport}
             deleteKeyCode={[]}
-          >
+            >
             <Panel position="top-right">
             </Panel>
             <Controls>

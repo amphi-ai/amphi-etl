@@ -531,6 +531,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           // const canCopy = nodes.some(({ selected }) => selected);
           // const canPaste = bufferedNodes.length > 0;
 
+          
         commands.addCommand('pipeline-editor-component:copy', {
           execute: async args => {
             const contextNode: HTMLElement | undefined = app.contextMenuHitTest(

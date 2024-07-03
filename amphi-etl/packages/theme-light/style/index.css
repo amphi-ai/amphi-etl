@@ -597,6 +597,11 @@ input.jp-mod-styled:focus {
 .jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar {
   margin: 0
 }
+
+.jp-Toolbar .jp-ToolbarButtonComponent {
+  color: #F2F4F7;
+}
+
 /*
 
 .jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar .jp-ToolbarButtonComponent[data-command="filebrowser:create-main-launcher"] {
@@ -942,6 +947,10 @@ input.jp-mod-styled:focus {
 
 .scrollbar ::-webkit-scrollbar-corner {
   background: var(--scrollbar-bg)
+}
+
+.jp-DirListing-item.jp-mod-selected {
+  background: #F2F4F7;
 }
 
 /*
