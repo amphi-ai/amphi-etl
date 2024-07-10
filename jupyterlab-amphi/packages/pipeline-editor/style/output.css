@@ -519,11 +519,6 @@
   border-right-width: 1px !important;
 }
 
-.border-\[\#D6D8DC\] {
-  --tw-border-opacity: 1 !important;
-  border-color: rgb(214 216 220 / var(--tw-border-opacity)) !important;
-}
-
 .border-\[\#F0F5F7\] {
   --tw-border-opacity: 1 !important;
   border-color: rgb(240 245 247 / var(--tw-border-opacity)) !important;
@@ -909,8 +904,7 @@ Editor components styles
 }
 
 .react-flow__node.selected {
-  --tw-border-opacity: 1;
-  border-color: rgb(214 216 220 / var(--tw-border-opacity));
+  border-color: 1px solid black;
 }
 
 .component .handle-right {

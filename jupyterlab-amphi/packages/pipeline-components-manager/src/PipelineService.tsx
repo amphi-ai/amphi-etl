@@ -34,6 +34,18 @@ export class PipelineService {
     return null;
   }
 
+  static getNodeById = (pipelineJson: string, nodeId: string): any => {
+    const pipeline = JSON.parse(pipelineJson);
+    const pipelineFlow = pipeline.pipelines[0].flow;
+    const node = pipelineFlow.nodes.find((n) => n.id === nodeId);
+  
+    if (!node) {
+      return null; // Return null if the node is not found
+    }
+    
+    return node;
+  }
+
   static findStartNodes = (flow: Flow, componentService: any): string[] => {
     const targetMap = new Set<string>();
     flow.edges.forEach(edge => targetMap.add(edge.target));
@@ -164,9 +176,8 @@ export class PipelineService {
     return relativePath;
   }
 
-  static getComponentIdForFileExtension(item: { name: string }, componentService: any): { id: string | null, default: any | null } {
+  static getComponentIdForFileExtension(fileExtension: string, componentService: any): { id: string | null, default: any | null } {
     // Extract file extension from item.name
-    const fileExtension = item.name.split('.').pop();
   
     if (!fileExtension) return { id: null, default: null }; // Return nulls if there is no file extension
   

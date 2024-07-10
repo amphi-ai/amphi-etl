@@ -6,6 +6,7 @@ import monitorIconSvgStr from '../style/icons/monitor-24.svg';
 import apiIconSvgStr from '../style/icons/api-24.svg';
 import pipelineCategoryIconSvgStr from '../style/icons/pipeline-brand-24.svg';
 import pipelineBrandIconSvgStr from '../style/icons/pipeline-brand-16.svg';
+import componentIconSvgStr from '../style/icons/node-24.svg';
 
 
 export const fileTextIcon = new LabIcon({
@@ -31,6 +32,11 @@ export const apiIcon = new LabIcon({
 export const pipelineIcon = new LabIcon({
   name: 'amphi:pipeline-icon',
   svgstr: pipelineBrandIconSvgStr
+});
+
+export const componentIcon = new LabIcon({
+  name: 'amphi:component-icon',
+  svgstr: componentIconSvgStr
 });
 
 export const pipelineBrandIcon = new LabIcon({

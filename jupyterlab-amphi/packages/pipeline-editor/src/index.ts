@@ -25,7 +25,7 @@ import { JSONObject } from '@lumino/coreutils';
 import { useCopyPaste } from './Commands';
 
 import { ComponentManager, CodeGenerator, PipelineService } from '@amphi/pipeline-components-manager';
-import { pipelineCategoryIcon, pipelineBrandIcon } from './icons';
+import { pipelineCategoryIcon, pipelineBrandIcon, componentIcon } from './icons';
 import { PipelineEditorFactory, commandIDs } from './PipelineEditorWidget';
 
 import { LabIcon } from '@jupyterlab/ui-components';
@@ -162,6 +162,18 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           [PIPELINE_FACTORY, 'JSON']
         );
         app.docRegistry.addWidgetFactory(pipelineEditorFactory);
+
+
+        app.docRegistry.addFileType(
+          {
+            name: 'amphi-component',
+            displayName: 'component',
+            extensions: ['.amcpn'],
+            icon: componentIcon,
+            fileFormat: 'text'
+          },
+          ['JSON']
+        );
 
         // Add command to create new Pipeline
         commands.addCommand(command, {
@@ -531,6 +543,51 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           // const canCopy = nodes.some(({ selected }) => selected);
           // const canPaste = bufferedNodes.length > 0;
 
+
+          commands.addCommand('pipeline-editor-component:save-as-file', {
+            execute: async args => {
+              const current = getCurrent(args);
+              if (!current) {
+                return;
+              }
+          
+              const contextNode: HTMLElement | undefined = app.contextMenuHitTest(
+                node => !!node.dataset.id
+              );
+          
+              if (contextNode) {
+                const nodeId = contextNode.dataset.id; // Extract the node ID
+                console.log("contextNode %o", contextNode);
+                console.log("Node ID: %s", nodeId);
+          
+                // Assuming PipelineService.getNodeById is available
+                const nodeJson = PipelineService.getNodeById(current.context.model.toString(), nodeId);
+                console.log("Node JSON: %o", nodeJson);
+          
+                // Extract data and type attributes
+                const { data, type } = nodeJson;
+                const { lastUpdated, lastExecuted, ...filteredData } = data;
+
+                console.log("Node data: %s", data);
+
+                const componentJson = JSON.stringify({ component: { data: filteredData, type } });
+                console.log("componentJson : %o", componentJson);
+          
+                // Create new file and open it
+                const file = await commands.execute('docmanager:new-untitled', { path: '/', type: 'file', ext: '.amcpn' });
+                const doc = await commands.execute('docmanager:open', { path: file.path });
+                
+                // Ensure the document context model is loaded
+                await doc.context.ready;
+
+                // Save componentJson string to the file
+                doc.context.model.fromString(componentJson);
+                await commands.execute('docmanager:save', { path: file.path });
+              }
+            },
+            label: 'Save as file'
+          });
+
           
         commands.addCommand('pipeline-editor-component:copy', {
           execute: async args => {
@@ -564,7 +621,10 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           label: 'Paste'
         });
 
+
+
         const contextMenuItems = [
+          /*
           {
             command: 'pipeline-editor-component:copy',
             selector: '.component',
@@ -577,6 +637,12 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           },
           {
             command: 'pipeline-editor-component:paste',
+            selector: '.component',
+            rank: 3,
+          },
+          */
+          {
+            command: 'pipeline-editor-component:save-as-file',
             selector: '.component',
             rank: 3,
           },

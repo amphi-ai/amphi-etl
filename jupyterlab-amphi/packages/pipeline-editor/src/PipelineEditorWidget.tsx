@@ -12,7 +12,8 @@ import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { Drag } from '@lumino/dragdrop';
 import { Widget } from '@lumino/widgets';
 import DownloadImageButton from './ExportToImage';
-import { useUndoRedo } from './Commands';
+import { useCopyPaste, useUndoRedo } from './Commands';
+import { ContentsManager } from '@jupyterlab/services';
 
 import React, { useCallback, useRef, useState, useEffect } from 'react';
 import ReactFlow, {
@@ -278,6 +279,9 @@ const PipelineWrapper: React.FC<IProps> = ({
     );
     */
 
+    // Copy paste
+    const { cut, copy, paste, bufferedNodes } = useCopyPaste();
+
     // Undo and Redo
     const { undo, redo, canUndo, canRedo, takeSnapshot } = useUndoRedo();
 
@@ -296,7 +300,6 @@ const PipelineWrapper: React.FC<IProps> = ({
       // 👇 make deleting edges undoable
       takeSnapshot();
     }, [takeSnapshot]);
-
 
     const updatedPipeline = pipeline;
     updatedPipeline['pipelines'][0]['flow']['nodes'] = nodes;
@@ -365,7 +368,6 @@ const PipelineWrapper: React.FC<IProps> = ({
       [nodes, edges, takeSnapshot]
     );
 
-
     const handleAddFileToPipeline = useCallback(
       (location?: { x: number; y: number }) => {
         const fileBrowser = defaultFileBrowser;
@@ -389,9 +391,54 @@ const PipelineWrapper: React.FC<IProps> = ({
             y: (location.y - transformY) * zoomMultiplier,
           };
 
-          Array.from(fileBrowser.selectedItems()).forEach((item: any) => {
+          Array.from(fileBrowser.selectedItems()).forEach(async (item: any) => {
             const filePath = item.path;
-            const { id: nodeType, default: nodeDefaults } = PipelineService.getComponentIdForFileExtension(item, componentService);
+            const fileExtension = item.name.split('.').pop();
+            
+            if (fileExtension === "amcpn") {
+              const contentsManager = new ContentsManager();
+              try {
+                const file = await contentsManager.get(filePath);
+                console.log('File %o:', file);
+
+                const content = file.content;
+                console.log('File Content:', content);
+
+                const fileData = JSON.parse(content);
+                console.log("fileData %o", fileData)
+
+                const { type: nodeType, data: nodeData } = fileData.component;
+
+                if (nodeType && nodeData) {
+                  const newNode = {
+                    id: getNodeId(),
+                    type: nodeType,
+                    position: adjustedPosition,
+                    data: {
+                      ...nodeData,
+                      lastUpdated: Date.now()
+                    }
+                  };
+          
+                  setNodes((nds) => nds.concat(newNode));
+                } else {
+                  showDialog({
+                    title: 'Invalid Component',
+                    body: 'The selected file does not contain valid component data.',
+                    buttons: [Dialog.okButton()]
+                  });
+                }
+              } catch (error) {
+                showDialog({
+                  title: 'Error Reading File',
+                  body: `There was an error reading the file.`,
+                  buttons: [Dialog.okButton()]
+                });
+              }
+              return;
+            }
+
+            const { id: nodeType, default: nodeDefaults } = PipelineService.getComponentIdForFileExtension(fileExtension, componentService);
 
             // Check if nodeType exists
             if (nodeType) {

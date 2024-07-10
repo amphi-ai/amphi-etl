@@ -10,6 +10,8 @@ import {
   useStore,
 } from 'reactflow';
 
+const Format = "application/react-flow-format";
+
 export function useCopyPaste<NodeData, EdgeData>() {
   const mousePosRef = useRef<XYPosition>({ x: 0, y: 0 });
   const rfDomNode = useStore((state) => state.domNode);
@@ -17,20 +19,13 @@ export function useCopyPaste<NodeData, EdgeData>() {
   const { getNodes, setNodes, getEdges, setEdges, screenToFlowPosition } =
     useReactFlow<NodeData, EdgeData>();
 
-  // Set up the paste buffers to store the copied nodes and edges.
   const [bufferedNodes, setBufferedNodes] = useState([] as Node<NodeData>[]);
   const [bufferedEdges, setBufferedEdges] = useState([] as Edge<EdgeData>[]);
 
-  // initialize the copy/paste hook
-  // 1. remove native copy/paste/cut handlers
-  // 2. add mouse move handler to keep track of the current mouse position
   useEffect(() => {
     const events = ['cut', 'copy', 'paste'];
 
     if (rfDomNode) {
-      // const preventDefault = (e: Event) => e.preventDefault();
-
-      /*
       const onMouseMove = (event: MouseEvent) => {
         mousePosRef.current = {
           x: event.clientX,
@@ -38,21 +33,11 @@ export function useCopyPaste<NodeData, EdgeData>() {
         };
       };
 
-      for (const event of events) {
-        rfDomNode.addEventListener(event, preventDefault);
-      }
-
       rfDomNode.addEventListener('mousemove', onMouseMove);
 
       return () => {
-        for (const event of events) {
-          rfDomNode.removeEventListener(event, preventDefault);
-        }
-
         rfDomNode.removeEventListener('mousemove', onMouseMove);
       };
-      */
-      
     }
   }, [rfDomNode]);
 
@@ -71,8 +56,12 @@ export function useCopyPaste<NodeData, EdgeData>() {
       }
     );
 
-    setBufferedNodes(selectedNodes);
-    setBufferedEdges(selectedEdges);
+    const data = JSON.stringify({
+      type: 'nodes-and-edges',
+      nodes: selectedNodes,
+      edges: selectedEdges,
+    });
+    navigator.clipboard.writeText(data);
   }, [getNodes, getEdges]);
 
   const cut = useCallback(() => {
@@ -90,60 +79,100 @@ export function useCopyPaste<NodeData, EdgeData>() {
       }
     );
 
-    setBufferedNodes(selectedNodes);
-    setBufferedEdges(selectedEdges);
+    const data = JSON.stringify({
+      type: 'nodes-and-edges',
+      nodes: selectedNodes,
+      edges: selectedEdges,
+    });
+    navigator.clipboard.writeText(data);
 
-    // A cut action needs to remove the copied nodes and edges from the graph.
     setNodes((nodes) => nodes.filter((node) => !node.selected));
     setEdges((edges) => edges.filter((edge) => !selectedEdges.includes(edge)));
   }, [getNodes, setNodes, getEdges, setEdges]);
 
-  const paste = useCallback(
-    (
-      { x: pasteX, y: pasteY } = screenToFlowPosition({
-        x: mousePosRef.current.x,
-        y: mousePosRef.current.y,
-      })
-    ) => {
-      const minX = Math.min(...bufferedNodes.map((s) => s.position.x));
-      const minY = Math.min(...bufferedNodes.map((s) => s.position.y));
+  const paste = useCallback(async () => {
+    const pastePos = screenToFlowPosition({
+      x: mousePosRef.current.x,
+      y: mousePosRef.current.y,
+    });
+  
+    try {
+      const text = await navigator.clipboard.readText();
+      let parsedData;
+      try {
+        parsedData = JSON.parse(text);
+      } catch (jsonError) {
+        // If JSON parsing fails, it means it's plain text
+        parsedData = null;
+      }
+  
+      if (parsedData && parsedData.type === 'nodes-and-edges') {
+        const { nodes: bufferedNodes, edges: bufferedEdges } = parsedData;
+  
+        const minX = Math.min(...bufferedNodes.map((s) => s.position.x));
+        const minY = Math.min(...bufferedNodes.map((s) => s.position.y));
+  
+        const now = Date.now();
+  
+        const newNodes: Node<NodeData>[] = bufferedNodes.map((node) => {
+          const id = `${node.id}-${now}`;
+          const x = pastePos.x + (node.position.x - minX);
+          const y = pastePos.y + (node.position.y - minY);
+  
+          return { ...node, id, position: { x, y } };
+        });
+  
+        const newEdges: Edge<EdgeData>[] = bufferedEdges.map((edge) => {
+          const id = `${edge.id}-${now}`;
+          const source = `${edge.source}-${now}`;
+          const target = `${edge.target}-${now}`;
+  
+          return { ...edge, id, source, target };
+        });
+  
+        setNodes((nodes) => [
+          ...nodes.map((node) => ({ ...node, selected: false })),
+          ...newNodes,
+        ]);
+        setEdges((edges) => [
+          ...edges.map((edge) => ({ ...edge, selected: false })),
+          ...newEdges,
+        ]);
+      } else if (!parsedData) {
+        // Handle plain text paste
+        console.log("plain text")
+        const activeElement = document.activeElement as HTMLElement;
+        console.log("active element %o", activeElement)
+        console.log("active element tagname %o", activeElement.tagName)
+        console.log("text %o", text)
+        
 
-      const now = Date.now();
+        if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
+          (activeElement as HTMLInputElement | HTMLTextAreaElement).value += text;
+  
+          // Manually trigger input event to ensure React picks up the change
+          const event = new Event('input', { bubbles: true });
+          activeElement.dispatchEvent(event);
+        } else {
+          console.log("Pasted text: ", text);
+        }
+      } else {
+        // Fallback to normal text paste if it's not nodes and edges
+        console.log("fallback to normal");
+      }
+    } catch (error) {
+      console.error("Failed to read clipboard contents: ", error);
+    }
+  }, [screenToFlowPosition, setNodes, setEdges]);
+  
 
-      const newNodes: Node<NodeData>[] = bufferedNodes.map((node) => {
-        const id = `${node.id}-${now}`;
-        const x = pasteX + (node.position.x - minX);
-        const y = pasteY + (node.position.y - minY);
-
-        return { ...node, id, position: { x, y } };
-      });
-
-      const newEdges: Edge<EdgeData>[] = bufferedEdges.map((edge) => {
-        const id = `${edge.id}-${now}`;
-        const source = `${edge.source}-${now}`;
-        const target = `${edge.target}-${now}`;
-
-        return { ...edge, id, source, target };
-      });
-
-      setNodes((nodes) => [
-        ...nodes.map((node) => ({ ...node, selected: false })),
-        ...newNodes,
-      ]);
-      setEdges((edges) => [
-        ...edges.map((edge) => ({ ...edge, selected: false })),
-        ...newEdges,
-      ]);
-    },
-    [bufferedNodes, bufferedEdges, screenToFlowPosition, setNodes, setEdges]
-  );
-
-  // useShortcut(['Meta+x', 'Control+x'], cut);
-  // useShortcut(['Meta+c', 'Control+c'], copy);
-  // useShortcut(['Meta+v', 'Control+v'], paste);
+  useShortcut(['Meta+x', 'Control+x'], cut);
+  useShortcut(['Meta+c', 'Control+c'], copy);
+  useShortcut(['Meta+v', 'Control+v'], paste);
 
   return { cut, copy, paste, bufferedNodes, bufferedEdges };
 }
+
 
 function useShortcut(keyCode: KeyCode, callback: Function): void {
   const [didRun, setDidRun] = useState(false);
@@ -158,6 +187,7 @@ function useShortcut(keyCode: KeyCode, callback: Function): void {
     }
   }, [shouldRun, didRun, callback]);
 }
+
 
 
 type UseUndoRedoOptions = {

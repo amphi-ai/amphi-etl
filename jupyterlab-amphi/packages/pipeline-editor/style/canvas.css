@@ -24,7 +24,7 @@ Editor components styles
 }
 
 .react-flow__node.selected {
-  @apply border-[#D6D8DC];
+  border-color: 1px solid black;
 }
 
 .component .handle-right {
