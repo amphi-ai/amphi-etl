@@ -4,5 +4,8 @@
       "jpserver_extensions": {
         "jupyterfs.extension": true
       }
+    },
+    "ContentsManager": {
+      "allow_hidden": true
     }
   }

@@ -3,11 +3,12 @@
 // Import necessary hooks and other dependencies
 import { LabIcon } from '@jupyterlab/ui-components';
 import { xIcon } from './icons';
-import React, { useMemo } from 'react';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import React, { useMemo, useState } from 'react';
+import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons';
+import styled from 'styled-components';
 
 import { getConnectedEdges, Handle, useNodeId, useStore } from 'reactflow';
-import { Popconfirm } from 'antd';
+import { Popconfirm, Typography, ConfigProvider } from 'antd';
 
 interface IHandleProps {
   type: string;
@@ -98,19 +99,43 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
   }
 };
 
-export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, context, manager, commands, name, ConfigForm, Icon, showContent, handle, deleteNode, setViewport }) => {
+export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, context, manager, commands, name, ConfigForm, Icon, showContent, handle, deleteNode, setViewport, handleChange, isSelected }) => {
 
   const handleDoubleClick = () => {
     // Example: Zoom in 1.2 times the current zoom level
-    setViewport({ zoom: 1.2, duration: 500 });
+    setViewport({ zoom: 1.1, duration: 500 });
   };
 
+  const { Text } = Typography;
+  const initialTitleName = data?.customTitle || name;
+  const [titleName, setTitleName] = useState(initialTitleName);
+
+  const onTitleChange = (newTitle: string) => {
+    setTitleName(newTitle);
+    handleChange(newTitle, 'customTitle');
+  };
+
+  const stopPropagation = (event: React.MouseEvent) => {
+    event.stopPropagation();
+  };
+
+  // Disable dragging
+  const disableDrag = (event: React.DragEvent) => {
+    event.preventDefault();
+  };
 
   return (
     <>
       <div className="component" onDoubleClick={handleDoubleClick}>
         <div className="component__header">
-          {name}
+          <Text
+            onDoubleClick={stopPropagation}
+            onDragStart={disableDrag}
+            editable={isSelected ? { onChange: onTitleChange, tooltip: false, icon: <EditOutlined style={{ color: '#5F9B97' }} /> } : undefined}
+            className='ant-select-sm'
+          >
+            {titleName}
+          </Text>
           <Popconfirm title="Sure to delete?" placement="right" onConfirm={() => deleteNode()} icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
             <div className='deletebutton'>
               <xIcon.react className="group-hover:text-primary" />
@@ -135,7 +160,7 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
 };
 
 export const createZoomSelector = () => {
-  return (s: { transform: number[] }): boolean => s.transform[2] >= 0.7;
+  return (s: { transform: number[] }): boolean => s.transform[2] >= 0.75;
 };
 
 export interface UIComponentProps {
@@ -151,6 +176,8 @@ export interface UIComponentProps {
   handle: React.JSX.Element;
   deleteNode: any;
   setViewport: any;
+  handleChange: any;
+  isSelected: boolean;
 };
 
 interface ICustomHandleProps {

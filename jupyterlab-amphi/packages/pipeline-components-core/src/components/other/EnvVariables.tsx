@@ -25,14 +25,10 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
     manager,
     commands,
     store,
-    setNodes
+    setNodes,
+    handleChange
   }) => {
    // Define your default config
-  
-    const handleChange = useCallback((evtTargetValue: any, field: string) => {
-
-      onChange({ evtTargetValue, field, nodeId, store, setNodes });
-    }, [nodeId, store, setNodes]);
 
     type FormInstance<T> = GetRef<typeof Form<T>>;
 
@@ -348,7 +344,15 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
     Position: Position, // Make sure Position is imported or defined
     internals: internals
   });
+
+  const handleChange = useCallback((evtTargetValue: any, field: string) => {
+
+    onChange({ evtTargetValue, field, nodeId, store, setNodes });
+  }, [nodeId, store, setNodes]);
   
+    // Selector to determine if the node is selected
+    const isSelected = useStore((state) => !!state.nodeInternals.get(id)?.selected);
+
   return (
     <>
       {renderComponentUI({
@@ -358,12 +362,14 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
         manager: manager,
         commands: commands,
         name: EnvVariables.Name,
-        ConfigForm: EnvVariables.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
+        ConfigForm: EnvVariables.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes, handleChange}),
         Icon: EnvVariables.Icon,
         showContent: showContent,
         handle: handleElement,
         deleteNode: deleteNode,
-        setViewport: setViewport
+        setViewport: setViewport,
+        handleChange,
+        isSelected
       })}
     </>
   );

@@ -1,150 +1,54 @@
-import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
-import React, { useCallback, useEffect } from 'react';
-import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
 import { apiIcon } from '../../../icons';
+import { BaseCoreComponent } from '../../BaseCoreComponent'; 
 
-export class RestInput extends PipelineComponent<ComponentItem>() {
+export class RestInput extends BaseCoreComponent {
+  constructor() {
+    const defaultConfig = { method: "GET", headers: [] };
+    const form = {
+      idPrefix: "component__form",
+      fields: [
+        {
+          type: "input",
+          label: "URL",
+          id: "url",
+          placeholder: "Endpoint URL",
+        },
+        {
+          type: "radio",
+          label: "Method",
+          id: "method",
+          options: [
+            { value: "GET", label: "GET" },
+            { value: "PUT", label: "PUT" },
+            { value: "POST", label: "POST" },
+            { value: "DELETE", label: "DELETE" }
+          ],
+          advanced: true
+        },
+        {
+          type: "keyvalue",
+          label: "Headers",
+          id: "headers",
+          advanced: true
+        },
+        {
+          type: "textarea",
+          label: "Body",
+          id: "body",
+          placeholder: "Write body in JSON",
+          advanced: true
+        },
+        {
+          type: "input",
+          label: "JSON Path",
+          id: "jsonPath",
+          placeholder: "JSON Path to retrieve from response",
+          advanced: true
+        }
+      ],
+    };
 
-  public _name = "REST Input";
-  public _id = "restInput";
-  public _type = "pandas_df_input";
-  public _category = "input";
-  public _icon = apiIcon;
-  public _default = { method: "GET", headers: [] };
-  public _form = {
-    idPrefix: "component__form",
-    fields: [
-      {
-        type: "input",
-        label: "URL",
-        id: "url",
-        placeholder: "Endpoint URL",
-      },
-      {
-        type: "radio",
-        label: "Method",
-        id: "method",
-        options: [
-          { value: "GET", label: "GET" },
-          { value: "PUT", label: "PUT" },
-          { value: "POST", label: "POST" },
-          { value: "DELETE", label: "DELETE" }
-        ],
-        advanced: true
-      },
-      {
-        type: "keyvalue",
-        label: "Headers",
-        id: "headers",
-        advanced: true
-      },
-      {
-        type: "textarea",
-        label: "Body",
-        id: "body",
-        placeholder: "Write body in JSON",
-        advanced: true
-      },
-      {
-        type: "input",
-        label: "JSON Path",
-        id: "jsonPath",
-        placeholder: "JSON Path to retrieve from response",
-        advanced: true
-      }
-    ],
-  };
-
-  public static ConfigForm = ({
-    nodeId,
-    data,
-    context,
-    componentService,
-    manager,
-    commands,
-    store,
-    setNodes
-  }) => {
-    const defaultConfig = this.Default; // Define your default config
-
-    const handleSetDefaultConfig = useCallback(() => {
-      setDefaultConfig({ nodeId, store, setNodes, defaultConfig });
-    }, [nodeId, store, setNodes, defaultConfig]);
-
-    useEffect(() => {
-      handleSetDefaultConfig();
-    }, [handleSetDefaultConfig]);
-
-    const handleChange = useCallback((evtTargetValue: any, field: string) => {
-      onChange({ evtTargetValue, field, nodeId, store, setNodes });
-    }, [nodeId, store, setNodes]);
-
-    return (
-      <>
-        {generateUIFormComponent({
-          nodeId: nodeId,
-          type: this.Type,
-          name: this.Name,
-          form: this.Form,
-          data: data,
-          context: context,
-          componentService: componentService,
-          manager: manager,
-          commands: commands,
-          handleChange: handleChange,
-        })}
-      </>
-    );
-  }
-
-  public UIComponent({ id, data, context, componentService, manager, commands }) {
-
-    const { setNodes, deleteElements, setViewport } = useReactFlow();
-    const store = useStoreApi();
-
-    const deleteNode = useCallback(() => {
-      deleteElements({ nodes: [{ id }] });
-    }, [id, deleteElements]);
-
-  const zoomSelector = createZoomSelector();
-  const showContent = useStore(zoomSelector);
-  
-  const selector = (s) => ({
-    nodeInternals: s.nodeInternals,
-    edges: s.edges,
-  });
-
-  const { nodeInternals, edges } = useStore(selector);
-  const nodeId = id;
-  const internals = { nodeInternals, edges, nodeId, componentService }
-
-
-    // Create the handle element
-    const handleElement = React.createElement(renderHandle, {
-      type: RestInput.Type,
-      Handle: Handle, // Make sure Handle is imported or defined
-      Position: Position, // Make sure Position is imported or defined
-      internals: internals    
-    });
-
-    return (
-      <>
-        {renderComponentUI({
-          id: id,
-          data: data,
-          context: context,
-          manager: manager,
-          commands: commands,
-          name: RestInput.Name,
-          ConfigForm: RestInput.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes }),
-          Icon: RestInput.Icon,
-          showContent: showContent,
-          handle: handleElement,
-          deleteNode: deleteNode,
-          setViewport: setViewport
-        })}
-      </>
-    );
+    super("REST Input", "restInput", "pandas_df_input", [], "input", apiIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

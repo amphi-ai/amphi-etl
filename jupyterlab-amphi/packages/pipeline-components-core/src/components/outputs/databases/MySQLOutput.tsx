@@ -1,202 +1,118 @@
-import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
-import React, { useCallback, useEffect } from 'react';
-import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
 import { mySQLIcon } from '../../../icons';
+import { BaseCoreComponent } from '../../BaseCoreComponent'; // Adjust the import path
 
-export class MySQLOutput extends PipelineComponent<ComponentItem>() {
-
-  public _name = "MySQL Output";
-  public _id = "mySQLOutput";
-  public _type = "pandas_df_output";
-  public _category = "output";
-  public _icon = mySQLIcon; // Adjust if there's a different icon for databases
-  public _default = { dbOptions: { host: "localhost", port: "3306", databaseName: "", tableName: "", username: "", password: "" }, ifTableExists: "fail", mode: "insert" };
-  public _form = {
-    idPrefix: "component__form",
-    fields: [
-      {
-        type: "input",
-        label: "Host",
-        id: "dbOptions.host",
-        placeholder: "Enter database host",
-        advanced: true
+export class MySQLOutput extends BaseCoreComponent {
+  constructor() {
+    const defaultConfig = {
+      dbOptions: {
+        host: "localhost",
+        port: "3306",
+        databaseName: "",
+        tableName: "",
+        username: "",
+        password: ""
       },
-      {
-        type: "input",
-        label: "Port",
-        id: "dbOptions.port",
-        placeholder: "Enter database port",
-        advanced: true
-      },
-      {
-        type: "input",
-        label: "Database Name",
-        id: "dbOptions.databaseName",
-        placeholder: "Enter database name"
-      },
-      {
-        type: "input",
-        label: "Table Name",
-        id: "dbOptions.tableName",
-        placeholder: "Enter table name",
-      },
-      {
-        type: "input",
-        label: "Username",
-        id: "dbOptions.username",
-        placeholder: "Enter username",
-        advanced: true
-      },
-      {
-        type: "input",
-        inputType: "password",
-        label: "Password",
-        id: "dbOptions.password",
-        placeholder: "Enter password",
-        advanced: true
-      },
-      {
-        type: "radio",
-        label: "If Table Exists",
-        id: "ifTableExists",
-        options: [
-          { value: "fail", label: "Fail" },
-          { value: "replace", label: "Replace" },
-          { value: "append", label: "Append" }
+      ifTableExists: "fail",
+      mode: "insert"
+    };
+    const form = {
+      idPrefix: "component__form",
+      fields: [
+        {
+          type: "input", 
+          label: "Host",
+          id: "dbOptions.host",
+          placeholder: "Enter database host",
+          advanced: true
+        },
+        {
+          type: "input",
+          label: "Port",
+          id: "dbOptions.port",
+          placeholder: "Enter database port",
+          advanced: true
+        },
+        {
+          type: "input",
+          label: "Database Name",
+          id: "dbOptions.databaseName",
+          placeholder: "Enter database name"
+        },
+        {
+          type: "input",
+          label: "Table Name",
+          id: "dbOptions.tableName",
+          placeholder: "Enter table name",
+        },
+        {
+          type: "input",
+          label: "Username",
+          id: "dbOptions.username",
+          placeholder: "Enter username",
+          advanced: true
+        },
+        {
+          type: "input",
+          inputType: "password",
+          label: "Password",
+          id: "dbOptions.password",
+          placeholder: "Enter password",
+          advanced: true
+        },
+        {
+          type: "radio",
+          label: "If Table Exists",
+          id: "ifTableExists",
+          options: [
+            { value: "fail", label: "Fail" },
+            { value: "replace", label: "Replace" },
+            { value: "append", label: "Append" }
+          ],
+          advanced: true
+        },
+        {
+          type: "radio",
+          label: "Mode",
+          id: "mode",
+          options: [
+            { value: "insert", label: "INSERT" }
+          ],
+          advanced: true
+        },
+        {
+          type: "dataMapping",
+          imports: ["pymysql"],
+          label: "Mapping",
+          id: "mapping",
+          tooltip: "By default the mapping is inferred from the input data. By specifying a schema you override the incoming schema.",
+          outputType: "relationalDatabase",
+          drivers: "mysql+pymysql",
+          query: "DESCRIBE {{table}}",
+          typeOptions: [
+            { value: "INT", label: "INT" },
+            { value: "VARCHAR", label: "VARCHAR" },
+            { value: "TEXT", label: "TEXT" },
+            { value: "DATE", label: "DATE" },
+            { value: "DATETIME", label: "DATETIME" },
+            { value: "TIMESTAMP", label: "TIMESTAMP" },
+            { value: "TIME", label: "TIME" },
+            { value: "YEAR", label: "YEAR" },
+            { value: "BOOLEAN", label: "BOOLEAN" },
+            { value: "DECIMAL", label: "DECIMAL" },
+            { value: "FLOAT", label: "FLOAT" },
+            { value: "DOUBLE", label: "DOUBLE" },
+            { value: "BLOB", label: "BLOB" },
+            { value: "BIT", label: "BIT" },
+            { value: "ENUM", label: "ENUM" },
+            { value: "SET", label: "SET" },
+            { value: "JSON", label: "JSON" }
+          ],
+          advanced: true
+        }
+      ],
+    };
 
-        ],
-        advanced: true
-      },
-      {
-        type: "radio",
-        label: "Mode",
-        id: "mode",
-        options: [
-          { value: "insert", label: "INSERT" }
-        ],
-        advanced: true
-      },
-      {
-        type: "dataMapping",
-        imports: ["pymysql"],
-        label: "Mapping",
-        id: "mapping",
-        tooltip: "By default the mapping is inferred from the input data. By specifying a schema you override the incoming schema.",
-        outputType: "relationalDatabase",
-        drivers: "mysql+pymysql",
-        query: "DESCRIBE {{table}}",
-        typeOptions: [
-          { value: "INT", label: "INT" },
-          { value: "VARCHAR", label: "VARCHAR" },
-          { value: "TEXT", label: "TEXT" },
-          { value: "DATE", label: "DATE" },
-          { value: "DATETIME", label: "DATETIME" },
-          { value: "TIMESTAMP", label: "TIMESTAMP" },
-          { value: "TIME", label: "TIME" },
-          { value: "YEAR", label: "YEAR" },
-          { value: "BOOLEAN", label: "BOOLEAN" },
-          { value: "DECIMAL", label: "DECIMAL" },
-          { value: "FLOAT", label: "FLOAT" },
-          { value: "DOUBLE", label: "DOUBLE" },
-          { value: "BLOB", label: "BLOB" },
-          { value: "BIT", label: "BIT" },
-          { value: "ENUM", label: "ENUM" },
-          { value: "SET", label: "SET" },
-          { value: "JSON", label: "JSON" }
-        ],
-        advanced: true
-      }
-    ],
-  };
-
-  public static ConfigForm = ({
-    nodeId,
-    data,
-    context,
-    componentService,
-    manager,
-    commands,
-    store,
-    setNodes
-  }) => {
-    const defaultConfig = this.Default; // Define your default config
-
-    const handleSetDefaultConfig = useCallback(() => {
-      setDefaultConfig({ nodeId, store, setNodes, defaultConfig });
-    }, [nodeId, store, setNodes, defaultConfig]);
-
-    useEffect(() => {
-      handleSetDefaultConfig();
-    }, [handleSetDefaultConfig]);
-
-    const handleChange = useCallback((evtTargetValue: any, field: string) => {
-      onChange({ evtTargetValue, field, nodeId, store, setNodes });
-    }, [nodeId, store, setNodes]);
-
-    return (
-      <>
-        {generateUIFormComponent({
-          nodeId: nodeId,
-          type: this.Type,
-          name: this.Name,
-          form: this.Form,
-          data: data,
-          context: context,
-          componentService: componentService,
-          manager: manager,
-          commands: commands,
-          handleChange: handleChange,
-        })}
-      </>
-    );
-  }
-
-  public UIComponent({ id, data, context, componentService, manager, commands }) {
-
-    const { setNodes, deleteElements, setViewport } = useReactFlow();
-    const store = useStoreApi();
-
-    const deleteNode = useCallback(() => {
-      deleteElements({ nodes: [{ id }] });
-    }, [id, deleteElements]);
-
-  const zoomSelector = createZoomSelector();
-  const showContent = useStore(zoomSelector);
-  
-  const selector = (s) => ({
-    nodeInternals: s.nodeInternals,
-    edges: s.edges,
-  });
-
-  const { nodeInternals, edges } = useStore(selector);
-  const nodeId = id;
-  const internals = { nodeInternals, edges, nodeId, componentService }
-
-    const handleElement = React.createElement(renderHandle, {
-      type: MySQLOutput.Type,
-      Handle: Handle,
-      Position: Position,
-      internals: internals
-    });
-
-    return (
-      <>
-        {renderComponentUI({
-          id: id,
-          data: data,
-          context: context,
-          manager: manager,
-          commands: commands,
-          name: MySQLOutput.Name,
-          ConfigForm: MySQLOutput.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes }),
-          Icon: MySQLOutput.Icon,
-          showContent: showContent,
-          handle: handleElement,
-          deleteNode: deleteNode,
-          setViewport: setViewport
-        })}
-      </>
-    );
+    super("MySQL Output", "mySQLOutput", "pandas_df_output", [], "output", mySQLIcon, defaultConfig, form);
   }
 
   // https://stackoverflow.com/questions/63881687/how-to-upsert-pandas-dataframe-to-mysql-with-sqlalchemy
@@ -210,12 +126,12 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
     const uniqueEngineName = `${inputName}Engine`;
     let mappingsCode = "";
     let columnsCode = "";
-  
+
     const selectedColumns = config.mapping
       .filter(map => map.value !== null && map.value !== undefined && map.input?.value !== null && map.input?.value !== undefined)
       .map(map => `"${map.value}"`)
       .join(', ');
-  
+
     if (config.mapping && config.mapping.length > 0) {
       const renameMap = config.mapping
         .filter(map => map.input && (map.input.value || typeof map.input.value === 'number'))
@@ -230,25 +146,25 @@ export class MySQLOutput extends PipelineComponent<ComponentItem>() {
           return undefined; // Explicitly return undefined for clarity
         })
         .filter(value => value !== undefined); // Remove undefined values
-  
+
       if (renameMap.length > 0) {
         mappingsCode = `
 # Rename columns based on the mapping
 ${inputName} = ${inputName}.rename(columns={${renameMap.join(", ")}})
 `;
-    }
+      }
 
-    if (selectedColumns !== '' && selectedColumns !== undefined) {
-      columnsCode = `
+      if (selectedColumns !== '' && selectedColumns !== undefined) {
+        columnsCode = `
 # Only keep relevant columns
 ${inputName} = ${inputName}[[${selectedColumns}]]
 `;
+      }
     }
-  }
 
-  const ifExistsAction = config.ifTableExists;
-  
-  const code = `
+    const ifExistsAction = config.ifTableExists;
+
+    const code = `
 # Connect to MySQL and output into table
 ${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
 ${mappingsCode}
@@ -262,6 +178,6 @@ ${inputName}.to_sql(
 `;
     return code;
   }
-  
+
 
 }

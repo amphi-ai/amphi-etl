@@ -9,7 +9,7 @@ SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter
 ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, RedditInput, OpenAILookUp,
 EnvVariables, EnvFile, ConvertToDocuments, PineconeOutput, FixedSizeChunking, SemanticChunking, WordFileInput, PdfTablesInput, Transpose,
 RecursiveChunking, HtmlToMarkdown, ParseHTML, ChromaOutput, CustomCodeDocuments, Unite,
-FillMissingValues} from './components';
+FillMissingValues, GenerateIDColumn} from './components';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-components-core',
@@ -62,6 +62,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(HtmlToMarkdown.getInstance())
    componentService.addComponent(ParseHTML.getInstance())
    componentService.addComponent(CustomCodeDocuments.getInstance())
+   componentService.addComponent(GenerateIDColumn.getInstance())
 
   // Outputs
    componentService.addComponent(CsvFileOutput.getInstance())

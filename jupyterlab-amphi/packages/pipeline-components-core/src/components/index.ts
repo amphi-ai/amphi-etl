@@ -1,5 +1,6 @@
 // Inputs
 export { CsvFileInput } from './inputs/files/CsvFileInput';
+
 export { ExcelFileInput } from './inputs/files/ExcelFileInput';
 export { JsonFileInput } from './inputs/files/JsonFileInput';
 export { ParquetFileInput } from './inputs/files/ParquetFileInput';
@@ -41,6 +42,7 @@ export { Transpose } from './transforms/Transpose';
 export { FillMissingValues } from './transforms/FillMissingValues';
 export { Unite } from './transforms/Unite';
 export { CustomCodeDocuments } from './custom/CustomCodeDocuments';
+export { GenerateIDColumn } from './transforms/GenerateIDColumn';
 
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';

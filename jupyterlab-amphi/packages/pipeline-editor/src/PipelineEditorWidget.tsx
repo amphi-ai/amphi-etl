@@ -168,7 +168,6 @@ const PipelineWrapper: React.FC<IProps> = ({
     return acc;
   }, {});
 
-
   const getNodeId = () => `node_${+new Date()}`;
 
   function PipelineFlow(context) {
@@ -181,7 +180,6 @@ const PipelineWrapper: React.FC<IProps> = ({
     const initialEdges = pipeline['pipelines'][0]['flow']['edges'];
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
-    const [elements, setElements] = useState([]); // State for elements
     const [reactFlowInstance, setRfInstance] = useState(null);
     const { setViewport } = useReactFlow();
     const store = useStoreApi();
@@ -280,7 +278,7 @@ const PipelineWrapper: React.FC<IProps> = ({
     */
 
     // Copy paste
-    const { cut, copy, paste, bufferedNodes } = useCopyPaste();
+    // const { cut, copy, paste, bufferedNodes } = useCopyPaste();
 
     // Undo and Redo
     const { undo, redo, canUndo, canRedo, takeSnapshot } = useUndoRedo();
@@ -319,7 +317,6 @@ const PipelineWrapper: React.FC<IProps> = ({
       },
       [setEdges, takeSnapshot]
     );
-
 
     const getCategory = (nodeId: string): string | undefined => {
       const node = nodes.find(node => node.id === nodeId);

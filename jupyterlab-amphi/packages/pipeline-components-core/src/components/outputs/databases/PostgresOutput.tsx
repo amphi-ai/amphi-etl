@@ -1,96 +1,100 @@
-import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
-import React, { useCallback, useEffect } from 'react';
-import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
 import { postgresIcon } from '../../../icons';
+import { BaseCoreComponent } from '../../BaseCoreComponent'; // Adjust the import path
 
-export class PostgresOutput extends PipelineComponent<ComponentItem>() {
-
-  public _name = "Postgres Output";
-  public _id = "postgresOutput";
-  public _type = "pandas_df_output";
-  public _category = "output";
-  public _icon = postgresIcon; // Adjust if there's a different icon for databases
-  public _default = { dbOptions: { host: "localhost", port: "5432", databaseName: "", schema: "public", tableName: "", username: "", password: "" }, ifTableExists: "fail", mode: "insert" };
-  public _form = {
-    idPrefix: "component__form",
-    fields: [
-      {
-        type: "input",
-        label: "Host",
-        id: "dbOptions.host",
-        placeholder: "Enter database host",
-        advanced: true
-      },
-      {
-        type: "input",
-        label: "Port",
-        id: "dbOptions.port",
-        placeholder: "Enter database port",
-        advanced: true
-      },
-      {
-        type: "input",
-        label: "Database Name",
-        id: "dbOptions.databaseName",
-        placeholder: "Enter database name"
-      },
-      {
-        type: "input",
-        label: "Schema",
-        id: "dbOptions.schema",
-        placeholder: "Enter schema name",
-      },
-      {
-        type: "input",
-        label: "Table Name",
-        id: "dbOptions.tableName",
-        placeholder: "Enter table name",
-      },
-      {
-        type: "input",
-        label: "Username",
-        id: "dbOptions.username",
-        placeholder: "Enter username",
-        advanced: true
-      },
-      {
-        type: "input",
-        inputType: "password",
-        label: "Password",
-        id: "dbOptions.password",
-        placeholder: "Enter password",
-        advanced: true
-      },
-      {
-        type: "radio",
-        label: "If Table Exists",
-        id: "ifTableExists",
-        options: [
-          { value: "fail", label: "Fail" },
-          { value: "replace", label: "Replace" },
-          { value: "append", label: "Append" }
-
-        ],
-        advanced: true
-      },
-      {
-        type: "radio",
-        label: "Mode",
-        id: "mode",
-        options: [
-          { value: "insert", label: "INSERT" }
-        ],
-        advanced: true
-      },
-      {
-        type: "dataMapping",
-        label: "Mapping",
-        id: "mapping",
-        tooltip: "By default the mapping is inferred from the input data. By specifying a schema you override the incoming schema.",
-        outputType: "relationalDatabase",
-        imports: ["psycopg2-binary"],
-        drivers: "postgresql",
-        query: `
+export class PostgresOutput extends BaseCoreComponent {
+  constructor() {
+    const defaultConfig = { 
+      dbOptions: { 
+        host: "localhost", 
+        port: "5432", 
+        databaseName: "", 
+        schema: "public", 
+        tableName: "", 
+        username: "", 
+        password: "" 
+      }, 
+      ifTableExists: "fail", 
+      mode: "insert" 
+    };
+    const form = {
+      idPrefix: "component__form",
+      fields: [
+        {
+          type: "input",
+          label: "Host",
+          id: "dbOptions.host",
+          placeholder: "Enter database host",
+          advanced: true
+        },
+        {
+          type: "input",
+          label: "Port",
+          id: "dbOptions.port",
+          placeholder: "Enter database port",
+          advanced: true
+        },
+        {
+          type: "input",
+          label: "Database Name",
+          id: "dbOptions.databaseName",
+          placeholder: "Enter database name"
+        },
+        {
+          type: "input",
+          label: "Schema",
+          id: "dbOptions.schema",
+          placeholder: "Enter schema name",
+        },
+        {
+          type: "input",
+          label: "Table Name",
+          id: "dbOptions.tableName",
+          placeholder: "Enter table name",
+        },
+        {
+          type: "input",
+          label: "Username",
+          id: "dbOptions.username",
+          placeholder: "Enter username",
+          advanced: true
+        },
+        {
+          type: "input",
+          inputType: "password",
+          label: "Password",
+          id: "dbOptions.password",
+          placeholder: "Enter password",
+          advanced: true
+        },
+        {
+          type: "radio",
+          label: "If Table Exists",
+          id: "ifTableExists",
+          options: [
+            { value: "fail", label: "Fail" },
+            { value: "replace", label: "Replace" },
+            { value: "append", label: "Append" }
+          ],
+          advanced: true
+        },
+        {
+          type: "radio",
+          label: "Mode",
+          id: "mode",
+          options: [
+            { value: "insert", label: "INSERT" }
+          ],
+          advanced: true
+        },
+        {
+          type: "dataMapping",
+          label: "Mapping",
+          id: "mapping",
+          tooltip: "By default the mapping is inferred from the input data. By specifying a schema you override the incoming schema.",
+          outputType: "relationalDatabase",
+          imports: ["psycopg2-binary"],
+          drivers: "postgresql",
+          query: `
 SELECT 
     column_name AS "Field",
     data_type AS "Type",
@@ -105,132 +109,45 @@ FROM
 WHERE 
     table_schema = '{{schema}}' AND
     table_name = '{{table}}';`,
-        typeOptions: [
-          { value: "SMALLINT", label: "SMALLINT" },
-          { value: "INTEGER", label: "INTEGER" },
-          { value: "BIGINT", label: "BIGINT" },
-          { value: "SERIAL", label: "SERIAL" },
-          { value: "BIGSERIAL", label: "BIGSERIAL" },
-          { value: "DECIMAL", label: "DECIMAL" },
-          { value: "NUMERIC", label: "NUMERIC" },
-          { value: "REAL", label: "REAL" },
-          { value: "DOUBLE PRECISION", label: "DOUBLE PRECISION" },
-          { value: "SMALLSERIAL", label: "SMALLSERIAL" },
-          { value: "MONEY", label: "MONEY" },
-          { value: "CHAR", label: "CHAR" },
-          { value: "VARCHAR", label: "VARCHAR" },
-          { value: "TEXT", label: "TEXT" },
-          { value: "BYTEA", label: "BYTEA" },
-          { value: "TIMESTAMP", label: "TIMESTAMP" },
-          { value: "DATE", label: "DATE" },
-          { value: "TIME", label: "TIME" },
-          { value: "INTERVAL", label: "INTERVAL" },
-          { value: "BOOLEAN", label: "BOOLEAN" },
-          { value: "UUID", label: "UUID" },
-          { value: "XML", label: "XML" },
-          { value: "JSON", label: "JSON" },
-          { value: "JSONB", label: "JSONB" },
-          { value: "ARRAY", label: "ARRAY" },
-          { value: "CIDR", label: "CIDR" },
-          { value: "INET", label: "INET" },
-          { value: "MACADDR", label: "MACADDR" },
-          { value: "BIT", label: "BIT" },
-          { value: "TSVECTOR", label: "TSVECTOR" },
-          { value: "TSQUERY", label: "TSQUERY" }
-        ],
-        advanced: true
-      }
-    ],
-  };
+          typeOptions: [
+            { value: "SMALLINT", label: "SMALLINT" },
+            { value: "INTEGER", label: "INTEGER" },
+            { value: "BIGINT", label: "BIGINT" },
+            { value: "SERIAL", label: "SERIAL" },
+            { value: "BIGSERIAL", label: "BIGSERIAL" },
+            { value: "DECIMAL", label: "DECIMAL" },
+            { value: "NUMERIC", label: "NUMERIC" },
+            { value: "REAL", label: "REAL" },
+            { value: "DOUBLE PRECISION", label: "DOUBLE PRECISION" },
+            { value: "SMALLSERIAL", label: "SMALLSERIAL" },
+            { value: "MONEY", label: "MONEY" },
+            { value: "CHAR", label: "CHAR" },
+            { value: "VARCHAR", label: "VARCHAR" },
+            { value: "TEXT", label: "TEXT" },
+            { value: "BYTEA", label: "BYTEA" },
+            { value: "TIMESTAMP", label: "TIMESTAMP" },
+            { value: "DATE", label: "DATE" },
+            { value: "TIME", label: "TIME" },
+            { value: "INTERVAL", label: "INTERVAL" },
+            { value: "BOOLEAN", label: "BOOLEAN" },
+            { value: "UUID", label: "UUID" },
+            { value: "XML", label: "XML" },
+            { value: "JSON", label: "JSON" },
+            { value: "JSONB", label: "JSONB" },
+            { value: "ARRAY", label: "ARRAY" },
+            { value: "CIDR", label: "CIDR" },
+            { value: "INET", label: "INET" },
+            { value: "MACADDR", label: "MACADDR" },
+            { value: "BIT", label: "BIT" },
+            { value: "TSVECTOR", label: "TSVECTOR" },
+            { value: "TSQUERY", label: "TSQUERY" }
+          ],
+          advanced: true
+        }
+      ],
+    };
 
-  public static ConfigForm = ({
-    nodeId,
-    data,
-    context,
-    componentService,
-    manager,
-    commands,
-    store,
-    setNodes
-  }) => {
-    const defaultConfig = this.Default; // Define your default config
-
-    const handleSetDefaultConfig = useCallback(() => {
-      setDefaultConfig({ nodeId, store, setNodes, defaultConfig });
-    }, [nodeId, store, setNodes, defaultConfig]);
-
-    useEffect(() => {
-      handleSetDefaultConfig();
-    }, [handleSetDefaultConfig]);
-
-    const handleChange = useCallback((evtTargetValue: any, field: string) => {
-      onChange({ evtTargetValue, field, nodeId, store, setNodes });
-    }, [nodeId, store, setNodes]);
-
-    return (
-      <>
-        {generateUIFormComponent({
-          nodeId: nodeId,
-          type: this.Type,
-          name: this.Name,
-          form: this.Form,
-          data: data,
-          context: context,
-          componentService: componentService,
-          manager: manager,
-          commands: commands,
-          handleChange: handleChange,
-        })}
-      </>
-    );
-  }
-
-  public UIComponent({ id, data, context, componentService, manager, commands }) {
-
-    const { setNodes, deleteElements, setViewport } = useReactFlow();
-    const store = useStoreApi();
-
-    const deleteNode = useCallback(() => {
-      deleteElements({ nodes: [{ id }] });
-    }, [id, deleteElements]);
-
-    const zoomSelector = createZoomSelector();
-    const showContent = useStore(zoomSelector);
-
-    const selector = (s) => ({
-      nodeInternals: s.nodeInternals,
-      edges: s.edges,
-    });
-
-    const { nodeInternals, edges } = useStore(selector);
-    const nodeId = id;
-    const internals = { nodeInternals, edges, nodeId, componentService }
-
-    const handleElement = React.createElement(renderHandle, {
-      type: PostgresOutput.Type,
-      Handle: Handle,
-      Position: Position,
-      internals: internals
-    });
-
-    return (
-      <>
-        {renderComponentUI({
-          id: id,
-          data: data,
-          context: context,
-          manager: manager,
-          commands: commands,
-          name: PostgresOutput.Name,
-          ConfigForm: PostgresOutput.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes }),
-          Icon: PostgresOutput.Icon,
-          showContent: showContent,
-          handle: handleElement,
-          deleteNode: deleteNode,
-          setViewport: setViewport
-        })}
-      </>
-    );
+    super("Postgres Output", "postgresOutput", "pandas_df_output", [], "output", postgresIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

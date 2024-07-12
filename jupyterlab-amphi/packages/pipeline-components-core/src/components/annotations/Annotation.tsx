@@ -42,10 +42,6 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
   const zoomSelector = createZoomSelector();
   const showContent = useStore(zoomSelector);
   
-  const selector = (s) => ({
-    nodeInternals: s.nodeInternals,
-    edges: s.edges,
-  });
 
     return (
       <>

@@ -1,17 +1,11 @@
-import React, { useCallback, useEffect } from 'react';
-import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
 
-import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
 import { mySQLIcon } from '../../../icons';
+import { BaseCoreComponent } from '../../BaseCoreComponent'; 
 
-export class MySQLInput extends PipelineComponent<ComponentItem>() {
-  public _name = "MySQL Input";
-  public _id = "mySQLInput";
-  public _type = "pandas_df_input";
-  public _category = "input";
-  public _icon = mySQLIcon; // Adjust if there's a different icon for databases
-    public _default = { dbOptions: { host: "localhost", port: "3306", databaseName: "", username: "", password: "", tableName: ""} };
-    public _form = {
+export class MySQLInput extends BaseCoreComponent {
+  constructor() {
+    const defaultConfig = { dbOptions: { host: "localhost", port: "3306", databaseName: "", username: "", password: "", tableName: ""} };
+    const form = {
       fields: [
         {
           type: "input",
@@ -66,96 +60,9 @@ export class MySQLInput extends PipelineComponent<ComponentItem>() {
         }
       ],
     };
-  
-    public static ConfigForm = ({ 
-        nodeId, 
-        data,
-        context,
-        componentService,
-        manager,
-        commands,
-        store,
-        setNodes
-      }) => {
-        const defaultConfig = this.Default; 
-    
-        const handleSetDefaultConfig = useCallback(() => {
-          setDefaultConfig({ nodeId, store, setNodes, defaultConfig });
-        }, [nodeId, store, setNodes, defaultConfig]);
-      
-        useEffect(() => {
-          handleSetDefaultConfig();
-        }, [handleSetDefaultConfig]);
-      
-        const handleChange = useCallback((evtTargetValue: any, field: string) => {
-          onChange({ evtTargetValue, field, nodeId, store, setNodes });
-        }, [nodeId, store, setNodes]);
-    
-        return (
-          <>
-            {generateUIFormComponent({
-              nodeId: nodeId,
-              type: this.Type,
-              name: this.Name,
-              form: this.Form,
-              data: data,
-              context: context,
-              componentService: componentService,
-              manager: manager,
-              commands: commands,
-              handleChange: handleChange,
-            })}
-          </>
-        );
-    }
-  
-    public UIComponent({ id, data, context, componentService, manager, commands  }) {
-  
-      const { setNodes, deleteElements, setViewport } = useReactFlow();
-      const store = useStoreApi();
-  
-      const deleteNode = useCallback(() => {
-        deleteElements({ nodes: [{ id }] });
-      }, [id, deleteElements]);
-  
-      const zoomSelector = createZoomSelector();
-      const showContent = useStore(zoomSelector);
-      
-      const selector = (s) => ({
-        nodeInternals: s.nodeInternals,
-        edges: s.edges,
-      });
 
-      const { nodeInternals, edges } = useStore(selector);
-      const nodeId = id;
-      const internals = { nodeInternals, edges, nodeId, componentService }
-
-      const handleElement = React.createElement(renderHandle, {
-        type: MySQLInput.Type,
-        Handle: Handle,
-        Position: Position,
-        internals: internals
-      });
-      
-      return (
-        <>
-          {renderComponentUI({
-            id: id,
-            data: data,
-            context: context,
-            manager: manager,
-            commands: commands,
-            name: MySQLInput.Name,
-            ConfigForm: MySQLInput.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
-            Icon: MySQLInput.Icon,
-            showContent: showContent,
-            handle: handleElement,
-            deleteNode: deleteNode,
-            setViewport: setViewport,
-          })}
-        </>
-      );
-    }
+    super("MySQL Input", "mySQLInput", "pandas_df_input", [], "input", mySQLIcon, defaultConfig, form);
+  }
   
     public provideImports({config}): string[] {
       return ["import pandas as pd", "import sqlalchemy", "import pymysql"];

@@ -370,10 +370,12 @@ export default function ConfigModal({
   modalOpen,
   setModalOpen
 }: ConfigModalProps) {
+  const componentName = data?.customTitle || name;
+
   return (
     <>
       <Modal
-        title={name}
+        title={componentName}
         centered
         open={modalOpen}
         onOk={() => setModalOpen(false)}
@@ -490,7 +492,7 @@ interface ConfigModalProps {
   name: string;
   nodeId: string;
   form: object;
-  data: object;
+  data: any;
   context: any;
   componentService: any;
   manager: any

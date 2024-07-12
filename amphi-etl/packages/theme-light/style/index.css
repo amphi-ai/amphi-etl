@@ -598,9 +598,6 @@ input.jp-mod-styled:focus {
   margin: 0
 }
 
-.jp-Toolbar .jp-ToolbarButtonComponent {
-  color: #F2F4F7;
-}
 
 /*
 
@@ -758,6 +755,12 @@ input.jp-mod-styled:focus {
 
 .jp-FileBrowser .jp-DirListing-content .jp-DirListing-item .jp-DirListing-itemText {
   line-height: 20px
+}
+
+.jp-FileBrowser-toolbar .jp-ToolbarButtonComponent[data-command='launcher:create'] {
+  width: 72px;
+  background: var(--jp-brand-color1);
+  color: #fff;
 }
 
 /*

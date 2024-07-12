@@ -36,6 +36,8 @@ import chromaSvgStr from '../style/icons/chroma.svg'
 import transposeSvgStr from '../style/icons/repeat-24.svg'
 import checkDiamondSvgStr from '../style/icons/check-diamond-24.svg'
 import plusCircleSvgStr from '../style/icons/plus-circle-24.svg'
+import hashSvgStr from '../style/icons/hash-24.svg'
+
 
 
 export const fileTextIcon = new LabIcon({
@@ -218,3 +220,7 @@ export const plusCircleIcon = new LabIcon({
   svgstr: plusCircleSvgStr
 });
 
+export const hashIcon = new LabIcon({
+  name: 'amphi:hash-icon',
+  svgstr: hashSvgStr
+});

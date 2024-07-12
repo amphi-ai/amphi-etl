@@ -1,140 +1,45 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
-import { FieldDescriptor } from '@amphi/pipeline-components-manager'
 
-import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
 import { checkDiamondIcon } from '../../icons'; // Define this icon in your icons file
+import { BaseCoreComponent } from '../BaseCoreComponent';
 
-export class FillMissingValues extends PipelineComponent<ComponentItem>() {
+export class FillMissingValues extends BaseCoreComponent {
+  constructor() {
+    const defaultConfig = { method: "value", value: 0, forward: false, backward: false };
+    const form = {
+      idPrefix: "component__form",
+      fields: [
+        {
+          type: "select",
+          label: "Filling Method",
+          id: "method",
+          options: [
+            { value: "value", label: "Fill with value" },
+            { value: "mean", label: "Fill with mean" },
+            { value: "median", label: "Fill with median" },
+            { value: "ffill", label: "Forward fill" },
+            { value: "bfill", label: "Backward fill" },
+          ],
+        },
+        {
+          type: "input",
+          label: "Value",
+          id: "value",
+          placeholder: "Enter value"
+        },
+        {
+          type: "columns",
+          label: "Apply to columns",
+          id: "columns",
+          placeholder: "Default (All)",
+          advanced: true
+        },
+      ],
+    };
 
-  public _name = "Fill Missing Values";
-  public _id = "fillMissingValues";
-  public _type = "pandas_df_processor";
-  public _category = "transform";
-  public _icon = checkDiamondIcon;
-  public _default = { method: "value", value: 0, forward: false, backward: false };
-  public _form = {
-    idPrefix: "component__form",
-    fields: [
-      {
-        type: "select",
-        label: "Filling Method",
-        id: "method",
-        options: [
-          { value: "value", label: "Fill with value" },
-          { value: "mean", label: "Fill with mean" },
-          { value: "median", label: "Fill with median" },
-          { value: "ffill", label: "Forward fill" },
-          { value: "bfill", label: "Backward fill" },
-        ],
-      },
-      {
-        type: "input",
-        label: "Value",
-        id: "value",
-        placeholder: "Enter value"
-      },
-      {
-        type: "columns",
-        label: "Apply to columns",
-        id: "columns",
-        placeholder: "Default (All)",
-        advanced: true
-      },
-    ],
-  };
-
-  public static ConfigForm = ({ 
-    nodeId, 
-    data,
-    context,
-    componentService,
-    manager,
-    commands,
-    store,
-    setNodes
-  }) => {
-    const defaultConfig = this.Default;
-
-    const handleSetDefaultConfig = useCallback(() => {
-      setDefaultConfig({ nodeId, store, setNodes, defaultConfig });
-    }, [nodeId, store, setNodes, defaultConfig]);
-  
-    useEffect(() => {
-      handleSetDefaultConfig();
-    }, [handleSetDefaultConfig]);
-  
-    const handleChange = useCallback((evtTargetValue: any, field: string) => {
-      onChange({ evtTargetValue, field, nodeId, store, setNodes });
-    }, [nodeId, store, setNodes]);
-
-    return (
-      <>
-        {generateUIFormComponent({
-          nodeId: nodeId,
-          type: this.Type,
-          name: this.Name,
-          form: this.Form,
-          data: data,
-          context: context,
-          componentService: componentService,
-          manager: manager,
-          commands: commands,
-          handleChange: handleChange,
-        })}
-      </>
-    );
+    super("Fill Missing Values", "fillMissingValues", "pandas_df_processor", [], "transform", checkDiamondIcon, defaultConfig, form);
   }
 
-  public UIComponent({ id, data, context, componentService, manager, commands }) {
-
-  const { setNodes, deleteElements, setViewport } = useReactFlow();
-  const store = useStoreApi();
-
-  const deleteNode = useCallback(() => {
-    deleteElements({ nodes: [{ id }] });
-  }, [id, deleteElements]);
-
-  const zoomSelector = createZoomSelector();
-  const showContent = useStore(zoomSelector);
-  
-  const selector = (s) => ({
-    nodeInternals: s.nodeInternals,
-    edges: s.edges,
-  });
-
-  const { nodeInternals, edges } = useStore(selector);
-  const nodeId = id;
-  const internals = { nodeInternals, edges, nodeId, componentService }
-
-  const handleElement = React.createElement(renderHandle, {
-    type: FillMissingValues.Type,
-    Handle: Handle,
-    Position: Position,
-    internals: internals
-  });
-  
-  return (
-    <>
-      {renderComponentUI({
-        id: id,
-        data: data,
-        context: context,
-        manager: manager,
-        commands: commands,
-        name: FillMissingValues.Name,
-        ConfigForm: FillMissingValues.ConfigForm({nodeId:id, data, context, componentService, manager, commands, store, setNodes}),
-        Icon: FillMissingValues.Icon,
-        showContent: showContent,
-        handle: handleElement,
-        deleteNode: deleteNode,
-        setViewport: setViewport
-      })}
-    </>
-  );
-  }
-
-  public provideImports({config}): string[] {
+  public provideImports({ config }): string[] {
     return ["import pandas as pd"];
   }
 

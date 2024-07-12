@@ -23,6 +23,8 @@ import { IStatusBar } from '@jupyterlab/statusbar';
 import { PromiseDelegate, ReadonlyJSONValue, ReadonlyPartialJSONObject, Token } from '@lumino/coreutils';
 import { JSONObject } from '@lumino/coreutils';
 import { useCopyPaste } from './Commands';
+import { IDocumentManager } from '@jupyterlab/docmanager';
+
 
 import { ComponentManager, CodeGenerator, PipelineService } from '@amphi/pipeline-components-manager';
 import { pipelineCategoryIcon, pipelineBrandIcon, componentIcon } from './icons';
@@ -70,6 +72,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
     ISettingRegistry,
     IToolbarWidgetRegistry,
     ISessionContextDialogs,
+    IDocumentManager,
     ComponentManager
   ],
   provides: IPipelineTracker,
@@ -86,6 +89,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
     settings: ISettingRegistry,
     toolbarRegistry: IToolbarWidgetRegistry,
     sessionDialogs: ISessionContextDialogs,
+    manager: IDocumentManager,
     componentService: any
   ): WidgetTracker<DocumentWidget> => {
     console.log("Amphi Pipeline Extension activation...")
@@ -538,57 +542,62 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
         // Components //
         // ----
         // ----
-            // Copy Paste
-          //const { cut, copy, paste, bufferedNodes } = useCopyPaste();
-          // const canCopy = nodes.some(({ selected }) => selected);
-          // const canPaste = bufferedNodes.length > 0;
+        // Copy Paste
+        //const { cut, copy, paste, bufferedNodes } = useCopyPaste();
+        // const canCopy = nodes.some(({ selected }) => selected);
+        // const canPaste = bufferedNodes.length > 0;
+
+        commands.addCommand('pipeline-editor-component:save-as-file', {
+          execute: async args => {
+            const current = getCurrent(args);
+            if (!current) {
+              return;
+            }
+
+            const contextNode: HTMLElement | undefined = app.contextMenuHitTest(
+              node => !!node.dataset.id
+            );
+
+            if (contextNode) {
+              const nodeId = contextNode.dataset.id; // Extract the node ID
+              console.log("contextNode %o", contextNode);
+              console.log("Node ID: %s", nodeId);
+
+              // Assuming PipelineService.getNodeById is available
+              const nodeJson = PipelineService.getNodeById(current.context.model.toString(), nodeId);
+              console.log("Node JSON: %o", nodeJson);
+
+              // Extract data and type attributes
+              const { data, type } = nodeJson;
+              const { lastUpdated, lastExecuted, ...filteredData } = data;
+
+              console.log("Node data: %s", data);
+
+              const componentJson = JSON.stringify({ component: { data: filteredData, type } });
+              console.log("componentJson : %o", componentJson);
+
+              console.log("current.context %o", current.context)
+              const file = await commands.execute('docmanager:new-untitled', { path:  '/' , type: 'file', ext: '.amcpn' });
+
+              const doc = await commands.execute('docmanager:open', { path: file.path });
+            
+              // Ensure the document context model is loaded
+              await doc.context.ready;
+
+              // Save componentJson string to the file
+              doc.context.model.fromString(componentJson);
+              await doc.context.save();
+              await commands.execute('docmanager:reload', { path: file.path });
+              await commands.execute('docmanager:rename');
 
 
-          commands.addCommand('pipeline-editor-component:save-as-file', {
-            execute: async args => {
-              const current = getCurrent(args);
-              if (!current) {
-                return;
-              }
-          
-              const contextNode: HTMLElement | undefined = app.contextMenuHitTest(
-                node => !!node.dataset.id
-              );
-          
-              if (contextNode) {
-                const nodeId = contextNode.dataset.id; // Extract the node ID
-                console.log("contextNode %o", contextNode);
-                console.log("Node ID: %s", nodeId);
-          
-                // Assuming PipelineService.getNodeById is available
-                const nodeJson = PipelineService.getNodeById(current.context.model.toString(), nodeId);
-                console.log("Node JSON: %o", nodeJson);
-          
-                // Extract data and type attributes
-                const { data, type } = nodeJson;
-                const { lastUpdated, lastExecuted, ...filteredData } = data;
+              // await commands.execute('docmanager:save', { path: file.path });
+            }
+          },
+          label: 'Save as file'
+        });
 
-                console.log("Node data: %s", data);
 
-                const componentJson = JSON.stringify({ component: { data: filteredData, type } });
-                console.log("componentJson : %o", componentJson);
-          
-                // Create new file and open it
-                const file = await commands.execute('docmanager:new-untitled', { path: '/', type: 'file', ext: '.amcpn' });
-                const doc = await commands.execute('docmanager:open', { path: file.path });
-                
-                // Ensure the document context model is loaded
-                await doc.context.ready;
-
-                // Save componentJson string to the file
-                doc.context.model.fromString(componentJson);
-                await commands.execute('docmanager:save', { path: file.path });
-              }
-            },
-            label: 'Save as file'
-          });
-
-          
         commands.addCommand('pipeline-editor-component:copy', {
           execute: async args => {
             const contextNode: HTMLElement | undefined = app.contextMenuHitTest(
@@ -601,7 +610,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           },
           label: 'Copy'
         });
-        
+
         commands.addCommand('pipeline-editor-component:cut', {
           execute: args => {
             const contextNode: HTMLElement | undefined = app.contextMenuHitTest(
@@ -613,7 +622,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           },
           label: 'Cut'
         });
-        
+
         commands.addCommand('pipeline-editor-component:paste', {
           execute: async args => {
 
@@ -653,13 +662,13 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           app.contextMenu.addItem({
             command: item.command,
             selector: item.selector,
-            rank: item.rank     
+            rank: item.rank
           });
         });
 
         // ----
         // ----
-        
+
 
         // Add launcher
         if (launcher) {
