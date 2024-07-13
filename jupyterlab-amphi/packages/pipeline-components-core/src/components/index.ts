@@ -14,6 +14,8 @@ export { RestInput } from './inputs/cloud/RestInput';
 export { GoogleSheetsInput } from './inputs/cloud/GoogleSheetsInput';
 export { MySQLInput } from './inputs/databases/MySQLInput';
 export { PostgresInput } from './inputs/databases/PostgresInput';
+export { OracleInput } from './inputs/databases/OracleInput';
+export { SqlServerInput } from './inputs/databases/SqlServerInput';
 export { RedditInput } from './inputs/cloud/RedditInput';
 
 // Transforms

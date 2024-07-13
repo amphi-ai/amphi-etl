@@ -29,6 +29,8 @@ from IPython.display import display, HTML
 !pip install --quiet tqdm --disable-pip-version-check
 !pip install --quiet sqlalchemy==2.0.4 --disable-pip-version-check
 
+%load_ext jupyter_ai_magics
+
 _amphi_metadatapanel_nms = NamespaceMagics()
 _amphi_metadatapanel_Jupyter = get_ipython()
 # _amphi_metadatapanel_nms.shell = _amphi_metadatapanel_Jupyter.kernel.shell  

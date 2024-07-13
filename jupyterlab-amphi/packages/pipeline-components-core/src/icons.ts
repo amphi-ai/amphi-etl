@@ -37,7 +37,8 @@ import transposeSvgStr from '../style/icons/repeat-24.svg'
 import checkDiamondSvgStr from '../style/icons/check-diamond-24.svg'
 import plusCircleSvgStr from '../style/icons/plus-circle-24.svg'
 import hashSvgStr from '../style/icons/hash-24.svg'
-
+import oracleIconSvgStr from '../style/icons/oracle.svg'
+import sqlServerIconSvgStr from '../style/icons/sql-server.svg'
 
 
 export const fileTextIcon = new LabIcon({
@@ -223,4 +224,14 @@ export const plusCircleIcon = new LabIcon({
 export const hashIcon = new LabIcon({
   name: 'amphi:hash-icon',
   svgstr: hashSvgStr
+});
+
+export const oracleIcon = new LabIcon({
+  name: 'amphi:oracle-icon',
+  svgstr: oracleIconSvgStr
+});
+
+export const sqlServerIcon = new LabIcon({
+  name: 'amphi:sqlServer-icon',
+  svgstr: sqlServerIconSvgStr
 });

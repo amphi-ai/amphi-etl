@@ -58,7 +58,7 @@ export const onChange = ({ evtTargetValue, field, nodeId, store, setNodes }: OnC
         // Set or update the main field
         if (fieldParts.length === 1) {
           // Top-level field
-            node.data = { ...node.data, [field]: newValue };
+          node.data = { ...node.data, [field]: newValue };
         } else {
           // Nested field
           const [outerField, innerField] = fieldParts;
@@ -72,7 +72,7 @@ export const onChange = ({ evtTargetValue, field, nodeId, store, setNodes }: OnC
         }
 
         // Set or update the lastUpdated field with the current timestamp
-        if(field !== 'lastExecuted') {
+        if (field !== 'lastExecuted') {
           node.data = { ...node.data, lastUpdated: currentTimestamp };
         } else {
           node.data = { ...node.data };
@@ -100,12 +100,16 @@ export const generateUIFormComponent = ({
 
   const executeUntilComponent = () => {
     commands.execute('pipeline-editor:run-pipeline-until', { nodeId: nodeId, context: context });
-    handleChange(Date.now(), 'lastExecuted'); 
+    handleChange(Date.now(), 'lastExecuted');
+  };
+
+  const stopPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation();
   };
 
   return (
-
-        <Form
+    <div onDoubleClick={stopPropagation}>
+      <Form
         layout="vertical"
         size="small">
         {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: false })}
@@ -122,7 +126,7 @@ export const generateUIFormComponent = ({
         </div>
         <ConfigModal modalOpen={modalOpen} setModalOpen={setModalOpen} name={name} nodeId={nodeId} form={form} data={data} context={context} componentService={componentService} manager={manager} commands={commands} handleChange={handleChange} advanced />
       </Form>
-
+    </div>
   );
 };
 
@@ -196,18 +200,18 @@ export const generateUIInputs = ({
                 />
               </Form.Item>
             );
-            case "radio":
-              return (
-                <Form.Item label={field.label} className="nodrag"  {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                  <Flex vertical gap="middle">
-                    <Radio.Group defaultValue={value} onChange={(e: any) => handleChange(e.target.value, field.id)} buttonStyle="solid">
-                      {field.options.map(option => (
-                        <Radio.Button value={option.value}>{option.label}</Radio.Button>
-                      ))}
-                    </Radio.Group>
-                  </Flex>
-                </Form.Item>
-              );
+          case "radio":
+            return (
+              <Form.Item label={field.label} className="nodrag"  {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                <Flex vertical gap="middle">
+                  <Radio.Group defaultValue={value} onChange={(e: any) => handleChange(e.target.value, field.id)} buttonStyle="solid">
+                    {field.options.map(option => (
+                      <Radio.Button value={option.value}>{option.label}</Radio.Button>
+                    ))}
+                  </Radio.Group>
+                </Flex>
+              </Form.Item>
+            );
           case "file":
             return (
               <Form.Item style={{ marginTop: "5px", padding: "0 0 2px" }} label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
@@ -234,12 +238,12 @@ export const generateUIInputs = ({
                 <SelectCustomizable field={field} handleChange={handleChange} defaultValue={value} inDialog={advanced} />
               </Form.Item>
             );
-            case "selectMultipleCustomizable":
-              return (
-                <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                  <SelectMultipleCustomizable field={field} handleChange={handleChange} defaultValues={values} inDialog={advanced} />
-                </Form.Item>
-              );
+          case "selectMultipleCustomizable":
+            return (
+              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                <SelectMultipleCustomizable field={field} handleChange={handleChange} defaultValues={values} inDialog={advanced} />
+              </Form.Item>
+            );
           case "selectTokenization":
             return (
               <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
@@ -257,17 +261,17 @@ export const generateUIInputs = ({
               <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
                 <TextareaRegular
                   field={field} value={value} handleChange={handleChange} advanced={advanced} rows={field.rows}
-                />        
+                />
               </Form.Item>
             );
-            case "codeTextarea":
-              return (
-                <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                  <CodeTextarea
-                    field={field} value={value} handleChange={handleChange} advanced={advanced} rows={field.rows}
-                  />        
-                </Form.Item>
-              );
+          case "codeTextarea":
+            return (
+              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                <CodeTextarea
+                  field={field} value={value} handleChange={handleChange} advanced={advanced} rows={field.rows}
+                />
+              </Form.Item>
+            );
           case "boolean":
             return (
               <Form.Item
@@ -284,18 +288,18 @@ export const generateUIInputs = ({
                 />
               </Form.Item>
             );
-            case "cascader":
-              return (
-                <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                  <Cascader
-                    value={values}
-                    placeholder={field.placeholder}
-                    options={field.options}
-                    {...(field.onlyLastValue ? { displayRender: (labels: string[]) => labels[labels.length - 1] } : {})}
-                    onChange={(value: any) => handleChange(value, field.id)}
-                  />             
-                </Form.Item>
-              );
+          case "cascader":
+            return (
+              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                <Cascader
+                  value={values}
+                  placeholder={field.placeholder}
+                  options={field.options}
+                  {...(field.onlyLastValue ? { displayRender: (labels: string[]) => labels[labels.length - 1] } : {})}
+                  onChange={(value: any) => handleChange(value, field.id)}
+                />
+              </Form.Item>
+            );
           case "keyvalue":
             return (
               <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
@@ -309,44 +313,44 @@ export const generateUIInputs = ({
                 <KeyValueColumns field={field} handleChange={handleChange} initialValues={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
               </Form.Item>
             );
-            case "keyvalueColumnsSelect":
-              return (
-                <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+          case "keyvalueColumnsSelect":
+            return (
+              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
 
-                  <KeyValueColumnsSelect field={field} handleChange={handleChange} initialValues={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
-                </Form.Item>
-              );
+                <KeyValueColumnsSelect field={field} handleChange={handleChange} initialValues={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
+              </Form.Item>
+            );
           case "valuesList":
             return (
               <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
                 <ValuesListForm field={field} handleChange={handleChange} initialValues={values} />
               </Form.Item>
             );
-            case "inputNumber":
-              return (
-                <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                   <InputQuantity field={field} value={value} handleChange={handleChange} context={context} advanced={advanced}/>
-                </Form.Item>
-              );            
+          case "inputNumber":
+            return (
+              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                <InputQuantity field={field} value={value} handleChange={handleChange} context={context} advanced={advanced} />
+              </Form.Item>
+            );
           case "transferData":
             return (
               <Form.Item label={field.label} {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
                 <TransferData field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
               </Form.Item>
             );
-            case "dataMapping":
-              return (
-                <Form.Item label={field.label} {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                  <DataMapping data={data} field={field} handleChange={handleChange} defaultValue={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
-                </Form.Item>
-              );
-              case "info":
-                const { Paragraph } = Typography;
-                return (
-                  <Paragraph style={{ padding: '5px' }}>
-                    {field.text}
-                  </Paragraph>
-                );
+          case "dataMapping":
+            return (
+              <Form.Item label={field.label} {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
+                <DataMapping data={data} field={field} handleChange={handleChange} defaultValue={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
+              </Form.Item>
+            );
+          case "info":
+            const { Paragraph } = Typography;
+            return (
+              <Paragraph style={{ padding: '5px' }}>
+                {field.text}
+              </Paragraph>
+            );
           default:
             return null;
         }
@@ -372,6 +376,10 @@ export default function ConfigModal({
 }: ConfigModalProps) {
   const componentName = data?.customTitle || name;
 
+  const stopPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
   return (
     <>
       <Modal
@@ -383,14 +391,17 @@ export default function ConfigModal({
         width={800}
         footer={(_, { OkBtn }) => (
           <>
-          <OkBtn />
+            <OkBtn />
           </>
         )}
       >
-        <Form
-          layout="vertical" >
-          {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: true })}
-        </Form>
+        <div onDoubleClick={stopPropagation}>
+          <Form
+            layout="vertical" >
+            {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: true })}
+          </Form>
+        </div>
+
       </Modal>
     </>
   )
@@ -459,9 +470,9 @@ export interface Option {
 }
 
 export interface FieldDescriptor {
-  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio' 
-      | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' 
-      | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable';
+  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio'
+  | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect'
+  | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable';
   label: string;
   id: string;
   placeholder?: any;

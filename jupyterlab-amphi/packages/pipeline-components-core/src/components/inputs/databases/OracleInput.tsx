@@ -1,10 +1,9 @@
+import { oracleIcon } from '../../../icons';
+import { BaseCoreComponent } from '../../BaseCoreComponent'; 
 
-import { postgresIcon } from '../../../icons';
-import { BaseCoreComponent } from '../../BaseCoreComponent';
-
-export class PostgresInput extends BaseCoreComponent {
+export class OracleInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { dbOptions: { host: "localhost", port: "5432", databaseName: "", username: "", password: "", schema: "public", tableName: "" } };
+    const defaultConfig = { dbOptions: { host: "localhost", port: "1521", databaseName: "", username: "", password: "", tableName: ""} };
     const form = {
       fields: [
         {
@@ -44,12 +43,6 @@ export class PostgresInput extends BaseCoreComponent {
         },
         {
           type: "input",
-          label: "Schema",
-          id: "dbOptions.schema",
-          placeholder: "Enter schema name",
-        },
-        {
-          type: "input",
           label: "Table Name",
           id: "dbOptions.tableName",
           placeholder: "Enter table name",
@@ -67,33 +60,19 @@ export class PostgresInput extends BaseCoreComponent {
       ],
     };
 
-    super("Postgres Input", "postgresInput", "pandas_df_input", [], "input", postgresIcon, defaultConfig, form);
-  }
-
-  public provideDependencies({ config }): string[] {
-    let deps: string[] = [];
-    deps.push('psycopg2-binary');
-    return deps;
+    super("Oracle Input", "oracleInput", "pandas_df_input", [], "input", oracleIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "import sqlalchemy", "import psycopg2"];
+    return ["import pandas as pd", "import sqlalchemy", "import cx_Oracle"];
   }
 
   public generateComponentCode({ config, outputName }): string {
-    let connectionString = `postgresql://${config.dbOptions.username}:${config.dbOptions.password}@${config.dbOptions.host}:${config.dbOptions.port}/${config.dbOptions.databaseName}`;
+    let connectionString = `oracle+cx_oracle://${config.dbOptions.username}:${config.dbOptions.password}@${config.dbOptions.host}:${config.dbOptions.port}/?service_name=${config.dbOptions.databaseName}`;
     const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
-
-    const tableReference = (config.dbOptions.schema && config.dbOptions.schema.toLowerCase() !== 'public')
-      ? `${config.dbOptions.schema}.${config.dbOptions.tableName}`
-      : config.dbOptions.tableName;
-
-    const sqlQuery = config.dbOptions.sqlQuery && config.dbOptions.sqlQuery.trim()
-      ? config.dbOptions.sqlQuery
-      : `SELECT * FROM ${tableReference}`;
-
+    const sqlQuery = config.dbOptions.sqlQuery && config.dbOptions.sqlQuery.trim() ? config.dbOptions.sqlQuery : `SELECT * FROM ${config.dbOptions.tableName}`;
     const code = `
-# Connect to the PostgreSQL database
+# Connect to the Oracle database
 ${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
 with ${uniqueEngineName}.connect() as conn:
     ${outputName} = pd.read_sql(
@@ -103,5 +82,4 @@ with ${uniqueEngineName}.connect() as conn:
 `;
     return code;
   }
-
 }

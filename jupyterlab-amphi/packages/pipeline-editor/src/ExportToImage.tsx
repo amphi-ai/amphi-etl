@@ -1,5 +1,5 @@
 import React from 'react';
-import { Panel, useReactFlow, getRectOfNodes, getTransformForBounds, ControlButton } from 'reactflow';
+import { Panel, useReactFlow, getRectOfNodes, getNodesBounds, getViewportForBounds, ControlButton } from 'reactflow';
 import { toSvg } from 'html-to-image';
 
 function sanitizeFilename(filename: string) {
@@ -18,8 +18,8 @@ function downloadImage(dataUrl: string, pipelineName: string) {
 function DownloadImageButton({ pipelineName, pipelineId }: { pipelineName: string, pipelineId: string }) {
     const { getNodes } = useReactFlow();
     const onClick = () => {
-      const nodesBounds = getRectOfNodes(getNodes());
-      const viewportElement = document.querySelector(`.reactflow-wrapper[data-id="${pipelineId}"]`);
+      const nodesBounds = getNodesBounds(getNodes());
+      const viewportElement = document.querySelector(`.reactflow-wrapper[data-id="${pipelineId}"] .react-flow__viewport`);
       if (viewportElement instanceof HTMLElement) {
         const { width, height } = viewportElement.getBoundingClientRect();
         // const transform = getTransformForBounds(nodesBounds, width, height, 0.5, 2);

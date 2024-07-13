@@ -33,8 +33,10 @@ import ReactFlow, {
   NodeDragHandler,
   SelectionDragHandler,
   OnEdgesDelete,
-  ControlButton
+  ControlButton,
+  useOnViewportChange
 } from 'reactflow';
+
 
 import { Tree, TabsProps, Tabs, ConfigProvider } from 'antd';
 
@@ -173,15 +175,16 @@ const PipelineWrapper: React.FC<IProps> = ({
   function PipelineFlow(context) {
 
     const reactFlowWrapper = useRef(null);
-    const defaultViewport = { x: 0, y: 0, zoom: 1 };
     const [pipeline, setPipeline] = useState<any>(context.context.model.toJSON());
     const pipelineId = pipeline['id']
     const initialNodes = pipeline['pipelines'][0]['flow']['nodes'];
     const initialEdges = pipeline['pipelines'][0]['flow']['edges'];
+    const initialViewport =  pipeline['pipelines'][0]['flow']['viewport'];
+    const defaultViewport = { x: 0, y: 0, zoom: 1 };
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const [reactFlowInstance, setRfInstance] = useState(null);
-    const { setViewport } = useReactFlow();
+    const { getViewport,  setViewport } = useReactFlow();
     const store = useStoreApi();
 
     // Proximity connect
@@ -302,6 +305,8 @@ const PipelineWrapper: React.FC<IProps> = ({
     const updatedPipeline = pipeline;
     updatedPipeline['pipelines'][0]['flow']['nodes'] = nodes;
     updatedPipeline['pipelines'][0]['flow']['edges'] = edges;
+    console.log("viewport: %o", getViewport())
+    updatedPipeline['pipelines'][0]['flow']['viewport'] = getViewport();
 
     // Save pipeline in current model
     // This means the file can then been save on "disk"
@@ -510,6 +515,16 @@ const PipelineWrapper: React.FC<IProps> = ({
       [reactFlowInstance]
     );
 
+    const onViewportChange = useCallback(
+      (viewport) => {
+        const updatedPipeline = { ...pipeline };
+        updatedPipeline['pipelines'][0]['flow']['viewport'] = viewport;
+        console.log("update viewport")
+        context.context.model.fromJSON(updatedPipeline);
+      },
+      [pipeline, context]
+    );
+
     return (
       <div className="reactflow-wrapper" data-id={pipelineId} ref={reactFlowWrapper}>
         <Dropzone onDrop={handleFileDrop}>
@@ -534,8 +549,10 @@ const PipelineWrapper: React.FC<IProps> = ({
             nodeTypes={nodeTypes}
             snapToGrid={true}
             snapGrid={[15, 15]}
-            fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0 }}
-            defaultViewport={defaultViewport}
+            // fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0 }}
+            defaultViewport={initialViewport}
+            // viewport={initialViewport}
+            // onViewportChange={onViewportChange}
             deleteKeyCode={[]}
             >
             <Panel position="top-right">

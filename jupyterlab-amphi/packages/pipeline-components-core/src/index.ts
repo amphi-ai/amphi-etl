@@ -9,7 +9,7 @@ SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter
 ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, RedditInput, OpenAILookUp,
 EnvVariables, EnvFile, ConvertToDocuments, PineconeOutput, FixedSizeChunking, SemanticChunking, WordFileInput, PdfTablesInput, Transpose,
 RecursiveChunking, HtmlToMarkdown, ParseHTML, ChromaOutput, CustomCodeDocuments, Unite,
-FillMissingValues, GenerateIDColumn} from './components';
+FillMissingValues, GenerateIDColumn, SqlServerInput, OracleInput} from './components';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-components-core',
@@ -35,6 +35,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
    componentService.addComponent(PdfTablesInput.getInstance())
    componentService.addComponent(WordFileInput.getInstance())
    componentService.addComponent(RedditInput.getInstance())
+   componentService.addComponent(OracleInput.getInstance())
+   componentService.addComponent(SqlServerInput.getInstance())
 
    // Processors
    componentService.addComponent(FilterColumns.getInstance())
