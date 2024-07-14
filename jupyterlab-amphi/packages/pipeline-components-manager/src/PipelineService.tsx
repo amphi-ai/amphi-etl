@@ -141,7 +141,9 @@ export class PipelineService {
 
   // Function to generate pip install commands from a list of package names
   static getInstallCommandsFromPackageNames(packageNames: string[]): string[] {
-    return packageNames.map(pkgName => `!pip install ${pkgName} -q -q`);
+    return packageNames
+      .filter(pkgName => pkgName.trim() !== '')
+      .map(pkgName => `!pip install ${pkgName} -q -q`);
   }
 
   static extractPythonImportPackages(code: string): string[] {

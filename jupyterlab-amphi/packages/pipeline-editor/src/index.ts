@@ -385,6 +385,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
               if (packages.length > 0 && packages[0] != null && packages[0] !== '') {
 
                 const pips_code = PipelineService.getInstallCommandsFromPackageNames(packages).join('\n');
+                console.log("pips_code: " + pips_code);
                 // Install packages
                 try {
 
@@ -538,7 +539,6 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           args: { isPalette: true }
         });
 
-
         // Components //
         // ----
         // ----
@@ -560,25 +560,15 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
 
             if (contextNode) {
               const nodeId = contextNode.dataset.id; // Extract the node ID
-              console.log("contextNode %o", contextNode);
-              console.log("Node ID: %s", nodeId);
 
               // Assuming PipelineService.getNodeById is available
               const nodeJson = PipelineService.getNodeById(current.context.model.toString(), nodeId);
-              console.log("Node JSON: %o", nodeJson);
 
               // Extract data and type attributes
               const { data, type } = nodeJson;
               const { lastUpdated, lastExecuted, ...filteredData } = data;
-
-              console.log("Node data: %s", data);
-
               const componentJson = JSON.stringify({ component: { data: filteredData, type } });
-              console.log("componentJson : %o", componentJson);
-
-              console.log("current.context %o", current.context)
               const file = await commands.execute('docmanager:new-untitled', { path:  '/' , type: 'file', ext: '.amcpn' });
-
               const doc = await commands.execute('docmanager:open', { path: file.path });
             
               // Ensure the document context model is loaded
