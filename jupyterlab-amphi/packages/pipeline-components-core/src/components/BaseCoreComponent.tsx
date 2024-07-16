@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect } from 'react';
-import { Handle, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Handle, Position, useReactFlow, useStore, useStoreApi, NodeToolbar } from 'reactflow';
 import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
+import { playCircleIcon, settingsIcon } from '../icons';
 
 export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
   constructor(name, id, type, fileDrop, category, icon, defaultConfig, form) {
@@ -28,7 +29,9 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
     name,
     defaultConfig,
     form,
-    handleChange
+    handleChange,
+    modalOpen,
+    setModalOpen
   }) => {
     const handleSetDefaultConfig = useCallback(() => {
       setDefaultConfig({ nodeId, store, setNodes, defaultConfig });
@@ -53,6 +56,8 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
           manager: manager,
           commands: commands,
           handleChange: handleChange,
+          modalOpen,
+          setModalOpen
         })}
       </>
     );
@@ -82,7 +87,7 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
       type: this._type,
       Handle: Handle,
       Position: Position,
-      internals: internals    
+      internals: internals
     });
 
     const handleChange = useCallback((evtTargetValue: any, field: string) => {
@@ -91,6 +96,13 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
 
     // Selector to determine if the node is selected
     const isSelected = useStore((state) => !!state.nodeInternals.get(id)?.selected);
+
+    const executeUntilComponent = () => {
+      commands.execute('pipeline-editor:run-pipeline-until', { nodeId: nodeId, context: context });
+      handleChange(Date.now(), 'lastExecuted');
+    };
+
+    const [modalOpen, setModalOpen] = useState(false);
 
     return (
       <>
@@ -101,20 +113,22 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
           manager: manager,
           commands: commands,
           name: this._name,
-          ConfigForm: BaseCoreComponent.ConfigForm({ 
-            nodeId: id, 
-            data, 
-            context, 
-            componentService, 
-            manager, 
-            commands, 
-            store, 
+          ConfigForm: BaseCoreComponent.ConfigForm({
+            nodeId: id,
+            data,
+            context,
+            componentService,
+            manager,
+            commands,
+            store,
             setNodes,
             type: this._type,
             name: this._name,
-            defaultConfig: this._default, 
+            defaultConfig: this._default,
             form: this._form,
-            handleChange
+            handleChange,
+            modalOpen,
+            setModalOpen
           }),
           Icon: this._icon,
           showContent: showContent,
@@ -124,6 +138,12 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
           handleChange,
           isSelected
         })}
+        <NodeToolbar isVisible position={Position.Bottom}>
+          <button onClick={() => setModalOpen(true)}><settingsIcon.react/></button>
+          {(this._type.includes('input') || this._type.includes('processor') || this._type.includes('output')) && (
+            <button onClick={() => executeUntilComponent()}><playCircleIcon.react/></button>
+          )}
+        </NodeToolbar>
       </>
     );
   }

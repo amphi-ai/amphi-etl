@@ -22,7 +22,7 @@ export class Unite extends BaseCoreComponent {
       ],
     };
 
-    super("Unite/Concat Dataset", "concat", "pandas_df_multi_processor", [], "transform", plusCircleIcon, defaultConfig, form);
+    super("Concat Dataset", "concat", "pandas_df_multi_processor", [], "transform", plusCircleIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

@@ -94,14 +94,9 @@ export const generateUIFormComponent = ({
   manager,
   commands,
   handleChange,
+  modalOpen,
+  setModalOpen
 }: FormComponentProps) => {
-
-  const [modalOpen, setModalOpen] = useState(false);
-
-  const executeUntilComponent = () => {
-    commands.execute('pipeline-editor:run-pipeline-until', { nodeId: nodeId, context: context });
-    handleChange(Date.now(), 'lastExecuted');
-  };
 
   const stopPropagation = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -113,17 +108,7 @@ export const generateUIFormComponent = ({
         layout="vertical"
         size="small">
         {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: false })}
-        <div className="flex justify-center mt-1 pt-1.5 space-x-4">
-          <span onClick={() => setModalOpen(true)}
-            className="inline-flex items-center justify-center cursor-pointer group">
-            <settingsIcon.react className="h-3 w-3 group-hover:text-primary" />
-          </span>
-          {(type.includes('input') || type.includes('processor') || type.includes('output')) && (
-            <span onClick={executeUntilComponent} className="inline-flex items-center justify-center cursor-pointer group">
-              <playCircleIcon.react className="h-3 w-3 group-hover:text-primary" />
-            </span>
-          )}
-        </div>
+
         <ConfigModal modalOpen={modalOpen} setModalOpen={setModalOpen} name={name} nodeId={nodeId} form={form} data={data} context={context} componentService={componentService} manager={manager} commands={commands} handleChange={handleChange} advanced />
       </Form>
     </div>
@@ -443,6 +428,8 @@ interface FormComponentProps {
   commands: any;
   // handleChange: (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | HTMLDataListElement>, fieldId: string) => void;
   handleChange: any;
+  modalOpen: boolean;
+  setModalOpen: any;
 }
 
 interface UIInputsProps {

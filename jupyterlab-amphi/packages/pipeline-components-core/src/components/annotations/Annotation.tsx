@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { useReactFlow, useStore, useStoreApi } from 'reactflow';
+import { useReactFlow, useStore, useStoreApi, NodeToolbar } from 'reactflow';
 
 import { ComponentItem, PipelineComponent, createZoomSelector } from '@amphi/pipeline-components-manager';
 import { annotationIcon } from '../../icons';
@@ -32,8 +32,21 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
       );
     }, []);
 
+//       <textarea id="text" name="text" onChange={(e) => onChange(e, 'text')} value={data.text} className="nodrag mt-[5px] border-0 bg-white block w-full box-border" ></textarea>
+
+
     return (
-      <textarea id="text" name="text" onChange={(e) => onChange(e, 'text')} value={data.text} className="nodrag mt-[5px] border-0 bg-white block w-full box-border" ></textarea>
+      <>
+      <div style={{ padding: 10, display: 'flex' }}>
+        <div style={{ marginRight: 4 }}>{data.level}.</div>
+        <div>{data.label}</div>
+      </div>
+      {data.arrowStyle && (
+        <div className="arrow" style={data.arrowStyle}>
+          ⤹
+        </div>
+      )}
+    </>
     );
   }
 

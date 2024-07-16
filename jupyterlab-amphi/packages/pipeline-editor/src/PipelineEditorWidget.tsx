@@ -281,7 +281,7 @@ const PipelineWrapper: React.FC<IProps> = ({
     */
 
     // Copy paste
-    // const { cut, copy, paste, bufferedNodes } = useCopyPaste();
+    const { cut, copy, paste, bufferedNodes } = useCopyPaste();
 
     // Undo and Redo
     const { undo, redo, canUndo, canRedo, takeSnapshot } = useUndoRedo();
@@ -549,7 +549,7 @@ const PipelineWrapper: React.FC<IProps> = ({
             nodeTypes={nodeTypes}
             snapToGrid={true}
             snapGrid={[15, 15]}
-            // fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0 }}
+            fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0 }}
             defaultViewport={initialViewport}
             // viewport={initialViewport}
             // onViewportChange={onViewportChange}

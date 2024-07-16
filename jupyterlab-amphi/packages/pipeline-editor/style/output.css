@@ -690,10 +690,6 @@
   padding-top: 0.25rem !important;
 }
 
-.pt-1\.5 {
-  padding-top: 0.375rem !important;
-}
-
 .pt-5 {
   padding-top: 1.25rem !important;
 }
@@ -839,7 +835,7 @@
 
 .backdrop-filter {
   -webkit-backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia) !important;
-          backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia) !important;
+  backdrop-filter: var(--tw-backdrop-blur) var(--tw-backdrop-brightness) var(--tw-backdrop-contrast) var(--tw-backdrop-grayscale) var(--tw-backdrop-hue-rotate) var(--tw-backdrop-invert) var(--tw-backdrop-opacity) var(--tw-backdrop-saturate) var(--tw-backdrop-sepia) !important;
 }
 
 .transition {
@@ -905,6 +901,41 @@ Editor components styles
 
 .react-flow__node.selected {
   border-color: 1px solid black;
+}
+
+.react-flow__node-toolbar {
+  border-radius: 5px;
+  box-shadow: 0 0 6px 1px rgba(0, 0, 0, 0.08);
+}
+
+.react-flow__node-toolbar button {
+  border: 1px solid #eee;
+  background: white;
+  cursor: pointer;
+  padding:
+}
+
+.react-flow__node-toolbar button:hover {
+  background: #f5f5f6;
+}
+
+.react-flow__node-toolbar svg {
+  margin-top: 4px;
+}
+
+.react-flow__node-toolbar button:hover svg {
+  color: #5F9B97;
+  /* Change icon color on hover */
+}
+
+.react-flow__node-toolbar button:first-child {
+  border-radius: 5px 0 0 5px;
+  border-right: none;
+}
+
+.react-flow__node-toolbar button:last-child {
+  border-radius: 0 5px 5px 0;
+  border-left: none;
 }
 
 .component .handle-right {

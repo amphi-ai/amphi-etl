@@ -24,7 +24,6 @@ import mergeIconSvgStr from '../style/icons/git-merge-24.svg';
 import crosshairIconSvgStr from '../style/icons/crosshair-24.svg';
 import randomIconSvgStr from '../style/icons/random-24.svg';
 import openAiSvgStr from '../style/icons/openai.svg';
-import settingsIconSvgStr from '../style/icons/settings-16.svg';
 import postgresIconSvgStr from '../style/icons/postgres.svg';
 import pineconeIconSvgStr from '../style/icons/pinecone.svg';
 import changeCircleIconSvgStr from '../style/icons/change-circle-24.svg';
@@ -39,7 +38,8 @@ import plusCircleSvgStr from '../style/icons/plus-circle-24.svg'
 import hashSvgStr from '../style/icons/hash-24.svg'
 import oracleIconSvgStr from '../style/icons/oracle.svg'
 import sqlServerIconSvgStr from '../style/icons/sql-server.svg'
-
+import playCircleIconSvgStr from '../style/icons/play-circle-16.svg';
+import settingsIconSvgStr from '../style/icons/settings-16.svg';
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -234,4 +234,9 @@ export const oracleIcon = new LabIcon({
 export const sqlServerIcon = new LabIcon({
   name: 'amphi:sqlServer-icon',
   svgstr: sqlServerIconSvgStr
+});
+
+export const playCircleIcon = new LabIcon({
+  name: 'amphi:play-circle-icon',
+  svgstr: playCircleIconSvgStr
 });

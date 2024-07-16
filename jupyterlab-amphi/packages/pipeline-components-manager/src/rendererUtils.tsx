@@ -7,7 +7,7 @@ import React, { useMemo, useState } from 'react';
 import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
-import { getConnectedEdges, Handle, useNodeId, useStore } from 'reactflow';
+import { getConnectedEdges, Handle, useNodeId, useStore, NodeToolbar } from 'reactflow';
 import { Popconfirm, Typography, ConfigProvider } from 'antd';
 
 interface IHandleProps {
