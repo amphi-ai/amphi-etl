@@ -29,7 +29,7 @@ export class PdfFileInput extends BaseCoreComponent {
       ],
     };
 
-    super("PDF File Input", "pdfInput", "documents_input", ["pdf"], "input", fileTextIcon, defaultConfig, form);
+    super("PDF File Input", "pdfInput", "documents_input", ["pdf"], "inputs", fileTextIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

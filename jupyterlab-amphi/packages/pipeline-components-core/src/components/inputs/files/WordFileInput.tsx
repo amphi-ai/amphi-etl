@@ -19,7 +19,7 @@ export class WordFileInput extends BaseCoreComponent {
       ],
     };
 
-    super("Word File Input", "wordInput", "documents_input", ["docx"], "input", fileTextIcon, defaultConfig, form);
+    super("Word File Input", "wordInput", "documents_input", ["docx"], "inputs", fileTextIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

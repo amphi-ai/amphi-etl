@@ -16,6 +16,8 @@ export { MySQLInput } from './inputs/databases/MySQLInput';
 export { PostgresInput } from './inputs/databases/PostgresInput';
 export { OracleInput } from './inputs/databases/OracleInput';
 export { SqlServerInput } from './inputs/databases/SqlServerInput';
+export { SnowflakeInput } from './inputs/databases/SnowflakeInput';
+
 export { RedditInput } from './inputs/cloud/RedditInput';
 
 // Transforms
@@ -59,6 +61,7 @@ export { PostgresOutput } from './outputs/databases/PostgresOutput';
 export { PineconeOutput } from './outputs/vector-stores/PineconeOutput';
 export { ChromaOutput } from './outputs/vector-stores/ChromaOutput';
 
-// Others
-export { EnvFile } from './other/EnvFile';
-export { EnvVariables } from './other/EnvVariables';
+// Settings
+export { EnvFile } from './settings/EnvFile';
+export { EnvVariables } from './settings/EnvVariables';
+export { Connection } from './settings/Connection';

@@ -1,30 +1,25 @@
 
-import { postgresIcon } from '../../../icons';
+import { snowflakeIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 
-export class PostgresInput extends BaseCoreComponent {
+export class SnowflakeInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { dbOptions: { host: "localhost", port: "5432", databaseName: "", username: "", password: "", schema: "public", tableName: "" } };
+    const defaultConfig = { dbOptions: { schema: "public", tableName: "" } };
     const form = {
       fields: [
         {
           type: "input",
-          label: "Host",
-          id: "dbOptions.host",
-          placeholder: "Enter database host",
-          advanced: true
-        },
-        {
-          type: "input",
-          label: "Port",
-          id: "dbOptions.port",
-          placeholder: "Enter database port",
+          label: "Account",
+          id: "dbOptions.account",
+          placeholder: "Enter Account",
+          connection: "Snowflake",
           advanced: true
         },
         {
           type: "input",
           label: "Database Name",
           id: "dbOptions.databaseName",
+          connection: "Snowflake",
           placeholder: "Enter database name",
         },
         {
@@ -32,6 +27,7 @@ export class PostgresInput extends BaseCoreComponent {
           label: "Username",
           id: "dbOptions.username",
           placeholder: "Enter username",
+          connection: "Snowflake",
           advanced: true
         },
         {
@@ -39,7 +35,15 @@ export class PostgresInput extends BaseCoreComponent {
           label: "Password",
           id: "dbOptions.password",
           placeholder: "Enter password",
+          connection: "Snowflake",
           inputType: "password",
+          advanced: true
+        },
+        {
+          type: "input",
+          label: "Warehouse",
+          id: "dbOptions.warehouse",
+          placeholder: "Enter warehouse name",
           advanced: true
         },
         {
@@ -47,6 +51,7 @@ export class PostgresInput extends BaseCoreComponent {
           label: "Schema",
           id: "dbOptions.schema",
           placeholder: "Enter schema name",
+          advanced: true
         },
         {
           type: "input",
@@ -67,23 +72,21 @@ export class PostgresInput extends BaseCoreComponent {
       ],
     };
 
-    super("Postgres Input", "postgresInput", "pandas_df_input", [], "inputs.Databases", postgresIcon, defaultConfig, form);
+    super("Snowflake Input", "snowflakeInput", "pandas_df_input", [], "inputs.Databases", snowflakeIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {
     let deps: string[] = [];
-    deps.push('psycopg2-binary');
+    deps.push('snowflake-sqlalchemy');
     return deps;
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "import sqlalchemy", "import psycopg2"];
+    return ["import pandas as pd", "import sqlalchemy", "import urllib.parse", "from snowflake.sqlalchemy import URL"];
   }
 
   public generateComponentCode({ config, outputName }): string {
-    let connectionString = `postgresql://${config.dbOptions.username}:${config.dbOptions.password}@${config.dbOptions.host}:${config.dbOptions.port}/${config.dbOptions.databaseName}`;
     const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
-
     const tableReference = (config.dbOptions.schema && config.dbOptions.schema.toLowerCase() !== 'public')
       ? `${config.dbOptions.schema}.${config.dbOptions.tableName}`
       : config.dbOptions.tableName;
@@ -93,8 +96,15 @@ export class PostgresInput extends BaseCoreComponent {
       : `SELECT * FROM ${tableReference}`;
 
     const code = `
-# Connect to the PostgreSQL database
-${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
+# Connect to the Snowflake database
+${uniqueEngineName} = sqlalchemy.create_engine(URL(
+    account = '${config.dbOptions.account}',
+    user = '${config.dbOptions.username}',
+    password = urllib.parse.quote("${config.dbOptions.password}"),
+    database = '${config.dbOptions.database}',
+    schema = '${config.dbOptions.schema}',
+    warehouse = '${config.dbOptions.warehouse}'
+))
 
 # Execute SQL statement
 try:

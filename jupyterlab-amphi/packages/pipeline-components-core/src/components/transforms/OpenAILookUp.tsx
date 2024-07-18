@@ -33,6 +33,7 @@ export class OpenAILookUp extends BaseCoreComponent {
           type: "input",
           label: "API Token",
           id: "token",
+          connection: "OpenAI",
           advanced: true
         },
         {

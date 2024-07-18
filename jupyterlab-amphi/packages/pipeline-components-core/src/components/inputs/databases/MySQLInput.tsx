@@ -12,6 +12,7 @@ export class MySQLInput extends BaseCoreComponent {
           label: "Host",
           id: "dbOptions.host",
           placeholder: "Enter database host",
+          connection: 'MySQL',
           advanced: true
         },
         {
@@ -19,6 +20,7 @@ export class MySQLInput extends BaseCoreComponent {
           label: "Port",
           id: "dbOptions.port",
           placeholder: "Enter database port",
+          connection: 'MySQL',
           advanced: true
         },
         {
@@ -26,12 +28,14 @@ export class MySQLInput extends BaseCoreComponent {
           label: "Database Name",
           id: "dbOptions.databaseName",
           placeholder: "Enter database name",
+          connection: 'MySQL'
         },
         {
           type: "input",
           label: "Username",
           id: "dbOptions.username",
           placeholder: "Enter username",
+          connection: "MySQL",
           advanced: true
         },
         {
@@ -40,6 +44,7 @@ export class MySQLInput extends BaseCoreComponent {
           id: "dbOptions.password",
           placeholder: "Enter password",
           inputType: "password",
+          connection: "MySQL",
           advanced: true
         },
         {
@@ -61,7 +66,7 @@ export class MySQLInput extends BaseCoreComponent {
       ],
     };
 
-    super("MySQL Input", "mySQLInput", "pandas_df_input", [], "input", mySQLIcon, defaultConfig, form);
+    super("MySQL Input", "mySQLInput", "pandas_df_input", [], "input.Databases", mySQLIcon, defaultConfig, form);
   }
   
     public provideImports({config}): string[] {
@@ -75,11 +80,16 @@ export class MySQLInput extends BaseCoreComponent {
       const code = `
 # Connect to the MySQL database
 ${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
-with ${uniqueEngineName}.connect() as conn:
-    ${outputName} = pd.read_sql(
-        """${sqlQuery}""",
-        con=conn.connection
-    ).convert_dtypes()
+
+# Execute SQL statement
+try:
+    with ${uniqueEngineName}.connect() as conn:
+        ${outputName} = pd.read_sql(
+            """${sqlQuery}""",
+            con=conn.connection
+        ).convert_dtypes()
+finally:
+    ${uniqueEngineName}.dispose()
 `;
       return code;
     }

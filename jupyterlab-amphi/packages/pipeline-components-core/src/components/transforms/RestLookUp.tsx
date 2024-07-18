@@ -48,7 +48,7 @@ export class RestLookup extends BaseCoreComponent {
       ],
     };
 
-    super("REST Lookup", "restLookup", "pandas_df_lookup", [], "input", apiIcon, defaultConfig, form);
+    super("REST Lookup", "restLookup", "pandas_df_lookup", [], "inputs", apiIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

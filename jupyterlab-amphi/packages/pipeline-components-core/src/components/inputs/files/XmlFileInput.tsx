@@ -25,7 +25,7 @@ export class XmlFileInput extends BaseCoreComponent {
       ],
     };
 
-    super("XML File Input", "xmlFileInput", "pandas_df_input", ["xml"], "input", fileTextIcon, defaultConfig, form);
+    super("XML File Input", "xmlFileInput", "pandas_df_input", ["xml"], "inputs", fileTextIcon, defaultConfig, form);
   }
 
   public provideImports({config}): string[] {

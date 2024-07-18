@@ -60,7 +60,7 @@ export class OracleInput extends BaseCoreComponent {
       ],
     };
 
-    super("Oracle Input", "oracleInput", "pandas_df_input", [], "input", oracleIcon, defaultConfig, form);
+    super("Oracle Input", "oracleInput", "pandas_df_input", [], "inputs.Databases", oracleIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {
@@ -74,11 +74,16 @@ export class OracleInput extends BaseCoreComponent {
     const code = `
 # Connect to the Oracle database
 ${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
-with ${uniqueEngineName}.connect() as conn:
-    ${outputName} = pd.read_sql(
-        """${sqlQuery}""",
-        con=conn.connection
-    ).convert_dtypes()
+
+# Execute SQL statement
+try:
+    with ${uniqueEngineName}.connect() as conn:
+        ${outputName} = pd.read_sql(
+            """${sqlQuery}""",
+            con=conn.connection
+        ).convert_dtypes()
+finally:
+    ${uniqueEngineName}.dispose()
 `;
     return code;
   }

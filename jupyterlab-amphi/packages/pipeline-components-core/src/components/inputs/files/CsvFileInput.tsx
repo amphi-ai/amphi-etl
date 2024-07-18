@@ -67,7 +67,7 @@ export class CsvFileInput extends BaseCoreComponent {
       ],
     };
 
-    super("CSV File Input", "csvFileInput", "pandas_df_input", ["csv", "tsv"], "input", fileTextIcon, defaultConfig, form);
+    super("CSV File Input", "csvFileInput", "pandas_df_input", ["csv", "tsv"], "inputs", fileTextIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {
@@ -75,6 +75,11 @@ export class CsvFileInput extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, outputName }): string {
+    return this.generatePandasComponentCode({ config, outputName });
+  }
+
+
+  public generatePandasComponentCode({ config, outputName }): string {
     // Initialize an object to modify without affecting the original config
     let csvOptions = { ...config.csvOptions };
 
@@ -117,4 +122,48 @@ ${outputName} = pd.read_csv("${config.filePath}"${optionsString ? `, ${optionsSt
 `;
     return code;
   }
+
+  public generateComponentIbisCode({ config, outputName }): string {
+    // Initialize an object to modify without affecting the original config
+    let csvOptions = { ...config.csvOptions };
+  
+    // Handle 'infer' option
+    if (csvOptions.sep === 'infer') {
+      csvOptions.sep = ','; // Default to comma for Ibis
+    }
+  
+    // Adjust handling for 'header' and 'names'
+    if (typeof config.header === 'number' || config.header === 'None') {
+      csvOptions.header = config.header; // Use the header value directly if it's a number or 'None'
+    }
+  
+    if (config.names && Array.isArray(config.names) && config.names.length > 0) {
+      csvOptions.names = `['${config.names.join("', '")}']`; // Format names as a Python list
+    }
+  
+    // Prepare options string for Ibis CSV reader
+    let optionsString = Object.entries(csvOptions)
+      .filter(([key, value]) => value !== null && value !== '' && !(key === 'sep' && value === 'infer'))
+      .map(([key, value]) => {
+        if (key === 'header' && (typeof value === 'number' || value === 'None')) {
+          return `${key}=${value}`; // Handle header as number or None without quotes
+        } else if (key === 'names') {
+          return `${key}=${value}`; // Directly use the formatted names list
+        } else if (typeof value === 'string' && value !== 'None') {
+          return `${key}="${value}"`; // Handle strings with quotes, except for 'None'
+        } else {
+          return `${key}=${value}`; // Handle numbers and Python's None without quotes
+        }
+      })
+      .join(', ');
+  
+    // Generate the Python code for Ibis
+    const code = `
+  # Reading data from ${config.filePath}
+  ${outputName} = ibis.read_csv("${config.filePath}"${optionsString ? `, ${optionsString}` : ''})
+  `;
+    return code;
+  }
+
+
 }

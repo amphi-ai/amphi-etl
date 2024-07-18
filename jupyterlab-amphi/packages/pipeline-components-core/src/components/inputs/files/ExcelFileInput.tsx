@@ -64,7 +64,7 @@ export class ExcelFileInput extends BaseCoreComponent {
       ],
     };
 
-    super("Excel File Input", "excelfileInput", "pandas_df_input", ["xlsx", "xls", "ods", "xlsb"], "input", fileTextIcon, defaultConfig, form);
+    super("Excel File Input", "excelfileInput", "pandas_df_input", ["xlsx", "xls", "ods", "xlsb"], "inputs", fileTextIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

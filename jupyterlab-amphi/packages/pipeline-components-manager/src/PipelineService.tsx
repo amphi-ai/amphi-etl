@@ -247,6 +247,32 @@ export class PipelineService {
     return variablesList;
   }
 
+  static extractConnections(componentService: any): Connection[] {
+    const components = componentService.getComponents();
+    const connectionMap: { [key: string]: ConnectionField[] } = {};
+
+    components.forEach(component => {
+      if (component._form && component._form.fields) {
+        component._form.fields.forEach(field => {
+          if (field.connection) {
+            if (!connectionMap[field.connection]) {
+              connectionMap[field.connection] = [];
+            }
+            const existingField = connectionMap[field.connection].find(f => f.id === field.id);
+            if (!existingField) {
+              connectionMap[field.connection].push({ id: field.id, label: field.label });
+            }
+          }
+        });
+      }
+    });
+
+    return Object.keys(connectionMap).map(connection => ({
+      connection,
+      fields: connectionMap[connection]
+    }));
+  }
+
 }
 
 export interface Node {
@@ -268,6 +294,16 @@ export interface Edge {
 export interface Flow {
   nodes: Node[];
   edges: Edge[];
+}
+
+export interface Connection {
+  connection: string;
+  fields: ConnectionField[];
+}
+
+export interface ConnectionField {
+  id: string;
+  label: string;
 }
 
 export interface Pipeline {

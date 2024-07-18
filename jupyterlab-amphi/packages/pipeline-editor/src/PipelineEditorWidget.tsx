@@ -14,6 +14,7 @@ import { Widget } from '@lumino/widgets';
 import DownloadImageButton from './ExportToImage';
 import { useCopyPaste, useUndoRedo } from './Commands';
 import { ContentsManager } from '@jupyterlab/services';
+import Sidebar from './Sidebar'; 
 
 import React, { useCallback, useRef, useState, useEffect } from 'react';
 import ReactFlow, {
@@ -38,9 +39,8 @@ import ReactFlow, {
 } from 'reactflow';
 
 
-import { Tree, TabsProps, Tabs, ConfigProvider } from 'antd';
+import { Tree, TreeDataNode, TabsProps, Tabs, ConfigProvider, Input } from 'antd';
 
-const { DirectoryTree } = Tree;
 
 import { CodeGenerator, PipelineService } from '@amphi/pipeline-components-manager';
 import CustomEdge from './customEdge';
@@ -281,7 +281,7 @@ const PipelineWrapper: React.FC<IProps> = ({
     */
 
     // Copy paste
-    const { cut, copy, paste, bufferedNodes } = useCopyPaste();
+    // const { cut, copy, paste, bufferedNodes } = useCopyPaste();
 
     // Undo and Redo
     const { undo, redo, canUndo, canRedo, takeSnapshot } = useUndoRedo();
@@ -568,163 +568,24 @@ const PipelineWrapper: React.FC<IProps> = ({
     );
   }
 
-  function Sidebar() {
 
-    const onDragStart = (event, nodeType, config) => {
-      event.dataTransfer.setData('application/reactflow', nodeType);
-      // Here, you can add more data as needed
-      event.dataTransfer.setData('additionalData', config);
-      event.dataTransfer.effectAllowed = 'move';
-    };
-
-
-    // Simulating componentService.getComponents()
-    const components = componentService.getComponents();
-
-    // Categorizing components with potential subcategories and classifications
-    const categorizedComponents: Record<string, Record<string, Record<string, any[]>>> = { structured: {}, unstructured: {} };
-
-    components.forEach(component => {
-      let [category, subcategory] = component._category.split('.');
-      let classification = component._type.includes('pandas') ? 'structured' : component._type.includes('documents') ? 'unstructured' : null;
-
-      if (classification) {
-        if (!categorizedComponents[classification][category]) {
-          categorizedComponents[classification][category] = {};
-        }
-        if (subcategory) {
-          if (!categorizedComponents[classification][category][subcategory]) {
-            categorizedComponents[classification][category][subcategory] = [];
-          }
-          categorizedComponents[classification][category][subcategory].push(component);
-        } else {
-          if (!categorizedComponents[classification][category]['_']) {
-            categorizedComponents[classification][category]['_'] = [];
-          }
-          categorizedComponents[classification][category]['_'].push(component);
-        }
-      }
-    });
-
-
-    // Transforming categorized components into tree data structure
-    const getTreeData = (classification: 'structured' | 'unstructured') => {
-      return Object.keys(categorizedComponents[classification]).map((category, index) => {
-        const subCategories = Object.keys(categorizedComponents[classification][category]);
-        let children = [];
-
-        subCategories.forEach((subCat, subIndex) => {
-          if (subCat === '_') {
-            children.push(...categorizedComponents[classification][category][subCat].map((component, childIndex) => ({
-              title: (
-                <span
-                  draggable
-                  className="palette-component"
-                  onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
-                  key={`category-${index}-item-${childIndex}`}
-                >
-                  {component._name}
-                </span>
-              ),
-              key: `category-${index}-item-${childIndex}`,
-              isLeaf: true,
-              icon: <component._icon.react height="14px" width="14px;" />
-            })));
-          } else {
-            children.push({
-              title: <span className="palette-component-category">{subCat.charAt(0).toUpperCase() + subCat.slice(1)}</span>,
-              key: `category-${index}-sub-${subIndex}`,
-              children: categorizedComponents[classification][category][subCat].map((component, childIndex) => ({
-                title: (
-                  <span
-                    draggable
-                    className="palette-component"
-                    onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
-                    key={`category-${index}-sub-${subIndex}-item-${childIndex}`}
-                  >
-                    {component._name}
-                  </span>
-                ),
-                key: `category-${index}-sub-${subIndex}-item-${childIndex}`,
-                isLeaf: true,
-                icon: <component._icon.react height="14px" width="14px;" />
-              }))
-            });
-          }
-        });
-
-        return {
-          title: <span className="palette-component-category">{category.charAt(0).toUpperCase() + category.slice(1)}</span>,
-          key: `category-${index}`,
-          children: children
-        };
-      });
-    };
-
-    // Output tree data (for debugging, you might want to console.log or use it directly in your components)
-    console.log(getTreeData('structured'));
-    console.log(getTreeData('unstructured'));
-
-    const structuredTreeData = getTreeData('structured');
-    const unstructuredTreeData = getTreeData('unstructured');
-
-    // Define the tab items
-    const items: TabsProps['items'] = [
-      {
-        key: '1',
-        label: 'Structured',
-        children: (
-          <DirectoryTree
-            selectable={false}
-            multiple
-            blockNode
-            defaultExpandAll
-            treeData={structuredTreeData}
-            key={"structured-components"}
-          />
-        ),
-      },
-      {
-        key: '2',
-        label: 'Unstructured',
-        children: (
-          <DirectoryTree
-            selectable={false}
-            multiple
-            blockNode
-            defaultExpandAll
-            treeData={unstructuredTreeData}
-            key={"unstructured-components"}
-          />
-        ),
-      },
-    ];
-
-    return (
-
-      <aside title={'Components'}>
-        <Tabs defaultActiveKey="1" items={items} tabBarStyle={{ width: '100%', marginLeft: '15px' }} />
-      </aside>
-    );
-  }
-
-  return (
-    <div className="palette" id="pipeline-panel">
-      <ConfigProvider
-        theme={{
-          token: {
-            // Seed Token
-            colorPrimary: '#5F9B97',
-          },
-        }}
-      >
-        <ReactFlowProvider>
-          <PipelineFlow context={context} />
-          <Sidebar />
-        </ReactFlowProvider>
-      </ConfigProvider>
-    </div>
-  );
+return (
+  <div className="palette" id="pipeline-panel">
+    <ConfigProvider
+      theme={{
+        token: {
+          // Seed Token
+          colorPrimary: '#5F9B97',
+        },
+      }}
+    >
+      <ReactFlowProvider>
+        <PipelineFlow context={context} />
+        <Sidebar componentService={componentService} />
+      </ReactFlowProvider>
+    </ConfigProvider>
+  </div>
+);
 }
 
 export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {

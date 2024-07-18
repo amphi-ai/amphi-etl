@@ -36,7 +36,7 @@ export class GoogleSheetsInput extends BaseCoreComponent {
       ],
     };
 
-    super("G. Sheets Input", "googleSheetsInput", "pandas_df_input", [], "input", googleSheetsIcon, defaultConfig, form);
+    super("G. Sheets Input", "googleSheetsInput", "pandas_df_input", [], "inputs", googleSheetsIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

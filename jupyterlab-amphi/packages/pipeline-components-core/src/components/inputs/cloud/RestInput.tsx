@@ -48,7 +48,7 @@ export class RestInput extends BaseCoreComponent {
       ],
     };
 
-    super("REST Input", "restInput", "pandas_df_input", [], "input", apiIcon, defaultConfig, form);
+    super("REST Input", "restInput", "pandas_df_input", [], "inputs", apiIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

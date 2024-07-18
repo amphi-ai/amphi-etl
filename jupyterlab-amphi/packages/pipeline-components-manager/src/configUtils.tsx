@@ -484,6 +484,7 @@ export interface FieldDescriptor {
   query?: string;
   onlyLastValue?: boolean;
   noneOption?: boolean;
+  connection?: string;
 }
 
 interface ConfigModalProps {

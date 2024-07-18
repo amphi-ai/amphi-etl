@@ -43,7 +43,7 @@ export class JsonFileInput extends BaseCoreComponent {
       ],
     };
 
-    super("JSON File Input", "jsonFileInput", "pandas_df_input", ["json", "jsonl"], "input", fileTextIcon, defaultConfig, form);
+    super("JSON File Input", "jsonFileInput", "pandas_df_input", ["json", "jsonl"], "inputs", fileTextIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

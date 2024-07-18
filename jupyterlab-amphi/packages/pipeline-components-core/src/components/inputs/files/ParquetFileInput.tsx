@@ -19,7 +19,7 @@ export class ParquetFileInput extends BaseCoreComponent {
       ],
     };
 
-    super("Parquet File Input", "parquetFileInput", "pandas_df_input", ["parquet"], "input", fileTextIcon, defaultConfig, form);
+    super("Parquet File Input", "parquetFileInput", "pandas_df_input", ["parquet"], "inputs", fileTextIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

@@ -48,7 +48,7 @@ export class ChromaOutput extends BaseCoreComponent {
       ],
     };
 
-    super("Chroma Output", "chromaOutput", "documents_output", [], "output", chromaIcon, defaultConfig, form);
+    super("Chroma Output", "chromaOutput", "documents_output", [], "output.vector stores", chromaIcon, defaultConfig, form);
   }
 
 

@@ -29,12 +29,12 @@
      inkscape:document-units="mm"
      inkscape:zoom="11.428174"
      inkscape:cx="19.163166"
-     inkscape:cy="16.188063"
-     inkscape:window-width="1312"
-     inkscape:window-height="713"
-     inkscape:window-x="0"
-     inkscape:window-y="75"
-     inkscape:window-maximized="0"
+     inkscape:cy="16.231814"
+     inkscape:window-width="2560"
+     inkscape:window-height="1412"
+     inkscape:window-x="1512"
+     inkscape:window-y="149"
+     inkscape:window-maximized="1"
      inkscape:current-layer="layer1" />
   <defs
      id="defs1">
@@ -79,13 +79,11 @@
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(-43.459922,-57.723277)">
-    <text
-       xml:space="preserve"
-       transform="matrix(0.20027273,0,0,0.20138729,18.938464,3.5602989)"
+    <path
+       d="m 139.98799,286.27021 h -2.16 v -2.13333 q -2.37334,2.61333 -5.46668,2.61333 -3.09333,0 -5.30667,-2.26667 -2.18667,-2.29333 -2.18667,-5.44 0,-3.17334 2.21334,-5.41334 2.21333,-2.26667 5.38667,-2.26667 3.2,0 5.36001,2.58667 v -2.21334 h 2.16 z m -7.46668,-1.57333 q 2.21334,0 3.81334,-1.6 1.6,-1.60001 1.6,-3.97334 0,-2.40001 -1.57333,-4.00001 -1.57334,-1.62667 -3.86667,-1.62667 -2.26667,0 -3.84001,1.68001 -1.57333,1.65333 -1.57333,3.92 0,2.26667 1.6,3.94667 1.6,1.65334 3.84,1.65334 z"
        id="text1"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:26.6667px;font-family:'Heiti SC';-inkscape-font-specification:'Heiti SC, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect1);display:inline;fill:#5a8f7b;fill-opacity:1;fill-rule:nonzero"><tspan
-         x="123.66797"
-         y="287.87022"
-         id="tspan2">a</tspan></text>
+       style="font-size:26.6667px;font-family:'Heiti SC';-inkscape-font-specification:'Heiti SC, Normal';white-space:pre;fill:#5a8f7b"
+       transform="matrix(0.20027273,0,0,0.20138729,18.938464,3.5602989)"
+       aria-label="a" />
   </g>
 </svg>

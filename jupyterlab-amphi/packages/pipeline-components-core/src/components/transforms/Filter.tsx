@@ -65,8 +65,6 @@ export class Filter extends BaseCoreComponent {
     const conditionValue = config.conditionValue;
     const enforceString = config.enforceString;
 
-
-
     let code = `
 # Filter rows based on condition
 `;

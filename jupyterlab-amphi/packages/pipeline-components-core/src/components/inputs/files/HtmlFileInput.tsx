@@ -16,7 +16,7 @@ export class HtmlFileInput extends BaseCoreComponent {
       ],
     };
 
-    super("HTML Input", "htmlInput", "documents_input", ["html", "htm"], "input", htmlIcon, defaultConfig, form);
+    super("HTML Input", "htmlInput", "documents_input", ["html", "htm"], "inputs", htmlIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

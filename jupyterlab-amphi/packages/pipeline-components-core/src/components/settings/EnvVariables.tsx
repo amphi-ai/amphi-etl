@@ -12,7 +12,7 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
   public _name = "Env. Variables";
   public _id = "envVariables";
   public _type = "env_variables";
-  public _category = "other";
+  public _category = "settings";
   public _icon = bracesIcon;
   public _default = { };
   public _form = { };

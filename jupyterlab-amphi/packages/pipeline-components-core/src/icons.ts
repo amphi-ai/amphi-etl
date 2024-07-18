@@ -40,6 +40,9 @@ import oracleIconSvgStr from '../style/icons/oracle.svg'
 import sqlServerIconSvgStr from '../style/icons/sql-server.svg'
 import playCircleIconSvgStr from '../style/icons/play-circle-16.svg';
 import settingsIconSvgStr from '../style/icons/settings-16.svg';
+import keyIconSvgStr from '../style/icons/key-24.svg'
+import snowflakeIconSvgStr from '../style/icons/snowflake.svg'
+
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -239,4 +242,14 @@ export const sqlServerIcon = new LabIcon({
 export const playCircleIcon = new LabIcon({
   name: 'amphi:play-circle-icon',
   svgstr: playCircleIconSvgStr
+});
+
+export const keyIcon = new LabIcon({
+  name: 'amphi:key-icon',
+  svgstr: keyIconSvgStr
+});
+
+export const snowflakeIcon = new LabIcon({
+  name: 'amphi:snowflake-icon',
+  svgstr: snowflakeIconSvgStr
 });

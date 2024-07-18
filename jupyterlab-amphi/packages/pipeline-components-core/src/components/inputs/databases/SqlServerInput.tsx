@@ -67,7 +67,7 @@ export class SqlServerInput extends BaseCoreComponent {
             ],
         };
 
-        super("SQL Server Input", "sqlServerInput", "pandas_df_input", [], "input", sqlServerIcon, defaultConfig, form);
+        super("SQL Server Input", "sqlServerInput", "pandas_df_input", [], "inputs.Databases", sqlServerIcon, defaultConfig, form);
     }
 
     public provideImports({ config }): string[] {
@@ -81,11 +81,16 @@ export class SqlServerInput extends BaseCoreComponent {
         const code = `
 # Connect to the SQL Server database
 ${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
-with ${uniqueEngineName}.connect() as conn:
-    ${outputName} = pd.read_sql(
-        """${sqlQuery}""",
-        con=conn.connection
-    ).convert_dtypes()
+
+# Execute SQL statement
+try:
+    with ${uniqueEngineName}.connect() as conn:
+        ${outputName} = pd.read_sql(
+            """${sqlQuery}""",
+            con=conn.connection
+        ).convert_dtypes()
+finally:
+    ${uniqueEngineName}.dispose()
 `;
         return code;
     }

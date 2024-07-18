@@ -22,7 +22,7 @@ export class EnvFile extends BaseCoreComponent {
       ],
     };
 
-    super("Env. File", "envFile", "env_file", [], "other", bracesIcon, defaultConfig, form);
+    super("Env. File", "envFile", "env_file", [], "settings", bracesIcon, defaultConfig, form);
   }
 
   public provideImports({config}): string[] {
