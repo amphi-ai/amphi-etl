@@ -1,5 +1,4 @@
 import { LabIcon } from '@jupyterlab/ui-components';
-
 import trashIconSvgStr from '../style/icons/trash-16.svg';
 import xIconSvgStr from '../style/icons/x-16.svg';
 import searchIconSvgStr from '../style/icons/search-16.svg';
@@ -9,6 +8,7 @@ import plusIconSvgStr from '../style/icons/plus-16.svg';
 import playIconSvgStr from '../style/icons/play-16.svg';
 import playCircleIconSvgStr from '../style/icons/play-circle-16.svg';
 import settingsIconSvgStr from '../style/icons/settings-16.svg';
+import bracesIconSvgStr from '../style/icons/braces.svg';
 
 import warningIconSvgStr from '../style/icons/alert-triangle-fill-16.svg';
 
@@ -64,8 +64,7 @@ export const warningIcon = new LabIcon({
   svgstr: warningIconSvgStr
 });
 
-
-
-
-
-
+export const bracesIcon = new LabIcon({
+  name: 'amphi:braces-icon',
+  svgstr: bracesIconSvgStr
+});

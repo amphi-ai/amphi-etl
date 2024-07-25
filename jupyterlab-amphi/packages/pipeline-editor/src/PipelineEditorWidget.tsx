@@ -305,7 +305,6 @@ const PipelineWrapper: React.FC<IProps> = ({
     const updatedPipeline = pipeline;
     updatedPipeline['pipelines'][0]['flow']['nodes'] = nodes;
     updatedPipeline['pipelines'][0]['flow']['edges'] = edges;
-    console.log("viewport: %o", getViewport())
     updatedPipeline['pipelines'][0]['flow']['viewport'] = getViewport();
 
     // Save pipeline in current model

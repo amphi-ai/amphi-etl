@@ -1,28 +1,25 @@
-import React, { Fragment, useEffect, useState } from 'react';
-import { ConfigProvider, Button, Form, Input, Radio, Flex, Cascader, Space, Switch, InputNumber, Modal, Typography } from 'antd';
-import { CheckOutlined, CloseOutlined, EyeInvisibleOutlined, EyeTwoTone, SearchOutlined, SettingOutlined } from '@ant-design/icons';
-
-import styled from 'styled-components';
-
-
-import { KeyValueForm } from './forms/keyValueForm';
-import { ValuesListForm } from './forms/valuesListForm';
-import { crosshairIcon, playCircleIcon, searchIcon, settingsIcon, warningIcon } from './icons';
-import InputRegular from './forms/InputRegular';
-import InputQuantity from './forms/InputQuantity';
+import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { Card, Cascader, Flex, Form, Modal, Radio, Switch, Typography, Select, Divider, Space, Button } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { renderFormItem } from './formUtils'
+import CodeTextarea from './forms/CodeTextarea';
 import InputFile from './forms/InputFile';
-import SelectCustomizable from './forms/selectCustomizable';
-import SelectTokenization from './forms/selectTokenization';
-import SelectRegular from './forms/selectRegular';
-import SelectColumns from './forms/selectColumns';
-import SelectColumn from './forms/selectColumn';
-import KeyValueColumns from './forms/keyValueColumns';
-import KeyValueColumnsSelect from './forms/keyValueColumnsSelect';
-import SelectMultipleCustomizable from './forms/selectMultipleCustomizable';
-import TransferData from './forms/transferData';
+import InputQuantity from './forms/InputQuantity';
+import InputRegular from './forms/InputRegular';
 import TextareaRegular from './forms/TextareaRegular';
 import DataMapping from './forms/dataMapping';
-import CodeTextarea from './forms/CodeTextarea';
+import KeyValueColumns from './forms/keyValueColumns';
+import KeyValueColumnsSelect from './forms/keyValueColumnsSelect';
+import KeyValueForm from './forms/keyValueForm';
+import SelectColumn from './forms/selectColumn';
+import SelectColumns from './forms/selectColumns';
+import SelectCustomizable from './forms/selectCustomizable';
+import SelectMultipleCustomizable from './forms/selectMultipleCustomizable';
+import SelectRegular from './forms/selectRegular';
+import SelectTokenization from './forms/selectTokenization';
+import TransferData from './forms/transferData';
+import ValuesListForm from './forms/valuesListForm';
+import { PipelineService } from './PipelineService';
 
 export const setDefaultConfig = ({
   nodeId,
@@ -128,222 +125,240 @@ export const generateUIInputs = ({
   advanced
 }: UIInputsProps) => {
 
+  const [connections, setConnections] = useState([]);
+  const [optionsConnections, setOptionsConnections] = useState<Record<string, any[]>>({});
+
+
+  const fetchConnections = () => {
+    const allConnections = PipelineService.getConnections(context.model.toString());
+    setConnections(allConnections);
+    console.log("allConnections %o", allConnections);
+    
+    const connectionsByType = allConnections.reduce((acc, connection) => {
+      const connectionType = connection.connectionType; // Change to group by connectionType
+      if (!acc[connectionType]) {
+        acc[connectionType] = [];
+      }
+      acc[connectionType].push(renderItem(connection.connectionName)); // Use connectionName for display
+      return acc;
+    }, {} as Record<string, any[]>);
+  
+    setOptionsConnections(connectionsByType);
+    console.log("optionsConnections %o", optionsConnections);
+  };
+
+  const renderItem = (title: string) => ({
+    value: title,
+    label: (
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+        }}
+      >
+        {title}
+      </div>
+    ),
+  });
+
+  const handleSelectConnection = (connectionName: string, attributeId: string) => {
+    console.log("connections: %o", connections)
+    console.log("connectionName: %o", connectionName)
+    const selectedConnection = connections.find(conn => conn.connectionName === connectionName);
+    console.log("selectedConnection %o", selectedConnection)
+    if (selectedConnection) {
+      selectedConnection.variables.forEach(variable => {
+        const { key, name } = variable;
+        console.log("key %o", key);
+        const VarName = name;
+        const fieldId = `${key}`;
+        handleChange('{' + `${VarName}` + '}', fieldId);
+      });
+      handleChange(connectionName, attributeId);
+    }
+  };
+
+  const handleRemoveConnection = (attributeId: string) => {
+    console.log("Removing connection for attributeId: %o", attributeId);
+    const connectionName = data[attributeId];
+    const selectedConnection = connections.find(conn => conn.connectionName === connectionName);
+    if (selectedConnection) {
+      selectedConnection.variables.forEach(variable => {
+        const { key } = variable;
+        const fieldId = `${key}`;
+        handleChange('', fieldId);
+      });
+      handleChange('', attributeId);
+    }
+  };
+
+  // Group fields by connection
+  const groupedFields = form.fields.reduce((acc: Record<string, FieldDescriptor[]>, field: FieldDescriptor) => {
+    const connection = field.connection || 'default';
+    if (!acc[connection]) {
+      acc[connection] = [];
+    }
+    acc[connection].push(field);
+    return acc;
+  }, {});
+
+  const renderField = (field: FieldDescriptor, index: number) => {
+    if (!advanced && field.advanced) {
+      return null;
+    }
+
+    let value: any;
+    let values: any[] = [];
+    const fieldParts = field.id.split('.');
+
+    if (Array.isArray(data[field.id])) {
+      values = data[field.id];
+    } else if (fieldParts.length === 1) {
+      if (data[field.id] !== undefined) {
+        value = data[field.id];
+      }
+    } else {
+      const [outerField, innerField] = fieldParts;
+      if (data[outerField] && data[outerField][innerField] !== undefined) {
+        value = data[outerField][innerField];
+      }
+    }
+
+    const validateInput = (value: any) => {
+      if (field.validation) {
+        const pattern = new RegExp(field.validation, "i");
+        setIsInvalid(!pattern.test(value));
+      } else {
+        setIsInvalid(false);
+      }
+    };
+
+    const [isInvalid, setIsInvalid] = useState(false);
+    useEffect(() => {
+      validateInput(value);
+    }, [value]);
+
+    const commonProps = { field, handleChange, context, advanced };
+
+    switch (field.type) {
+      case "input":
+        return renderFormItem(field, <InputRegular {...commonProps} value={value} />);
+      case "radio":
+        return renderFormItem(field, (
+          <Flex vertical gap="middle">
+            <Radio.Group defaultValue={value} onChange={(e: any) => handleChange(e.target.value, field.id)} buttonStyle="solid">
+              {field.options.map((option: any) => (
+                <Radio.Button value={option.value}>{option.label}</Radio.Button>
+              ))}
+            </Radio.Group>
+          </Flex>
+        ));
+      case "file":
+        return renderFormItem(field, <InputFile {...commonProps} value={value} manager={manager} />);
+      case "columns":
+        return renderFormItem(field, <SelectColumns {...commonProps} defaultValues={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
+      case "column":
+        return renderFormItem(field, <SelectColumn {...commonProps} defaultValue={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
+      case "selectCustomizable":
+        return renderFormItem(field, <SelectCustomizable {...commonProps} defaultValue={value} />);
+      case "selectMultipleCustomizable":
+        return renderFormItem(field, <SelectMultipleCustomizable {...commonProps} defaultValues={values} />);
+      case "selectTokenization":
+        return renderFormItem(field, <SelectTokenization {...commonProps} defaultValue={value} />);
+      case "select":
+        return renderFormItem(field, <SelectRegular {...commonProps} defaultValue={value} />);
+      case "textarea":
+        return renderFormItem(field, <TextareaRegular {...commonProps} value={value} rows={field.rows} />);
+      case "codeTextarea":
+        return renderFormItem(field, <CodeTextarea {...commonProps} value={value} rows={field.rows} />);
+      case "boolean":
+        return renderFormItem(field, (
+          <Switch
+            onChange={(checked) => handleChange(checked, field.id)}
+            checkedChildren={<CheckOutlined />}
+            unCheckedChildren={<CloseOutlined />}
+            defaultChecked={value === true}
+          />
+        ));
+      case "cascader":
+        return renderFormItem(field, (
+          <Cascader
+            value={values}
+            placeholder={field.placeholder}
+            options={field.options}
+            {...(field.onlyLastValue ? { displayRender: (labels: string[]) => labels[labels.length - 1] } : {})}
+            onChange={(value: any) => handleChange(value, field.id)}
+          />
+        ));
+      case "keyvalue":
+        return renderFormItem(field, <KeyValueForm {...commonProps} initialValues={values} />);
+      case "keyvalueColumns":
+        return renderFormItem(field, <KeyValueColumns {...commonProps} initialValues={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
+      case "keyvalueColumnsSelect":
+        return renderFormItem(field, <KeyValueColumnsSelect {...commonProps} initialValues={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
+      case "valuesList":
+        return renderFormItem(field, <ValuesListForm {...commonProps} initialValues={values} />);
+      case "inputNumber":
+        return renderFormItem(field, <InputQuantity {...commonProps} value={value} />);
+      case "transferData":
+        return renderFormItem(field, <TransferData {...commonProps} defaultValue={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
+      case "dataMapping":
+        return renderFormItem(field, <DataMapping data={data} {...commonProps} defaultValue={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
+      case "info":
+        return <Typography.Paragraph style={{ padding: '5px' }}>{field.text}</Typography.Paragraph>;
+      default:
+        return null;
+    }
+  };
+
   return (
     <>
-      {form.fields.map((field: FieldDescriptor, index: number) => {
+      {Object.entries(groupedFields).map(([connection, fields], groupIndex) => {
+        if (connection === 'default' || (!advanced && (fields as FieldDescriptor[]).some(field => field.advanced))) return null;
 
-        if (!advanced && field.advanced) {
-          return null;
-        }
+        const connectionFields = fields as FieldDescriptor[];
+        const connectionDataId = `${connection}-${groupIndex}`;
+        const selectedConnectionName = data[connectionDataId] || '';
 
-        // if unique value
-        let value: any;
+        const selectConnection = (
+          <Select
+            placeholder="Select Connection"
+            style={{ minWidth: 200 }}
+            onClick={fetchConnections}
+            options={optionsConnections[connection] || []}
+            value={selectedConnectionName || undefined}
+            onChange={(value) => handleSelectConnection(value, connectionDataId)}
+            dropdownRender={(menu) => (
+              <>
+                {menu}
+                <Divider style={{ margin: '8px 0' }} />
+                <Space style={{ padding: '0 4px 4px' }}>
+                  <Button type="text" icon={<CloseOutlined />} onClick={() => handleRemoveConnection(connectionDataId)}>
+                    Remove Connection
+                  </Button>
+                </Space>
+              </>
+            )}
+          />
+        );
 
-        // if list
-        let values = []
-
-        const fieldParts = field.id.split('.');
-
-        if (Array.isArray(data[field.id])) {
-          // We're dealing with a list item
-          values = data[field.id];
-        }
-        else if (fieldParts.length === 1) {
-          // Top-level field
-          if (data[field.id] !== undefined) {
-            value = data[field.id];
-          }
-        } else {
-          // Nested field
-          const [outerField, innerField] = fieldParts;
-          if (data[outerField] && data[outerField][innerField] !== undefined) {
-            value = data[outerField][innerField];
-          }
-        }
-
-        const validateInput = (value: any) => {
-          if (field.validation) { // Check if field.validation exists
-            const pattern = new RegExp(field.validation, "i"); // Creates the regex
-            setIsInvalid(!pattern.test(value));
-          } else {
-            setIsInvalid(false); // If no field.validation, consider the input as valid
-          }
-        };
-
-        const [isInvalid, setIsInvalid] = useState(false);
-        // Use useEffect to call validateInput whenever 'value' changes
-        useEffect(() => {
-          validateInput(value);
-        }, [value]); // Dependency array ensures this effect runs whenever 'value' changes
-
-        switch (field.type) {
-          case "input":
-            return (
-              <Form.Item style={{ marginTop: "5px", padding: "0 0 2px" }} label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <InputRegular
-                  field={field} value={value} handleChange={handleChange} context={context} advanced={advanced}
-                />
-              </Form.Item>
-            );
-          case "radio":
-            return (
-              <Form.Item label={field.label} className="nodrag"  {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <Flex vertical gap="middle">
-                  <Radio.Group defaultValue={value} onChange={(e: any) => handleChange(e.target.value, field.id)} buttonStyle="solid">
-                    {field.options.map(option => (
-                      <Radio.Button value={option.value}>{option.label}</Radio.Button>
-                    ))}
-                  </Radio.Group>
-                </Flex>
-              </Form.Item>
-            );
-          case "file":
-            return (
-              <Form.Item style={{ marginTop: "5px", padding: "0 0 2px" }} label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <InputFile
-                  field={field} value={value} handleChange={handleChange} context={context} advanced={advanced} manager={manager}
-                />
-              </Form.Item>
-            );
-          case "columns":
-            return (
-              <Form.Item style={{ marginTop: "5px", padding: "0 0 2px" }} label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <SelectColumns field={field} handleChange={handleChange} defaultValues={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
-              </Form.Item>
-            );
-          case "column":
-            return (
-              <Form.Item style={{ marginTop: "5px", padding: "0 0 2px" }} label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <SelectColumn field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
-              </Form.Item>
-            );
-          case "selectCustomizable":
-            return (
-              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <SelectCustomizable field={field} handleChange={handleChange} defaultValue={value} inDialog={advanced} />
-              </Form.Item>
-            );
-          case "selectMultipleCustomizable":
-            return (
-              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <SelectMultipleCustomizable field={field} handleChange={handleChange} defaultValues={values} inDialog={advanced} />
-              </Form.Item>
-            );
-          case "selectTokenization":
-            return (
-              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <SelectTokenization field={field} handleChange={handleChange} defaultValue={value} inDialog={advanced} />
-              </Form.Item>
-            );
-          case "select":
-            return (
-              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <SelectRegular field={field} handleChange={handleChange} defaultValue={value} inDialog={advanced} />
-              </Form.Item>
-            );
-          case "textarea":
-            return (
-              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <TextareaRegular
-                  field={field} value={value} handleChange={handleChange} advanced={advanced} rows={field.rows}
-                />
-              </Form.Item>
-            );
-          case "codeTextarea":
-            return (
-              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <CodeTextarea
-                  field={field} value={value} handleChange={handleChange} advanced={advanced} rows={field.rows}
-                />
-              </Form.Item>
-            );
-          case "boolean":
-            return (
-              <Form.Item
-                style={{ marginTop: "5px", padding: "0 0 2px" }}
-                label={field.label}
-                {...(field.required ? { required: field.required } : {})}
-                {...(field.tooltip ? { tooltip: field.tooltip } : {})}
-              >
-                <Switch
-                  onChange={(checked) => handleChange(checked, field.id)}
-                  checkedChildren={<CheckOutlined />}
-                  unCheckedChildren={<CloseOutlined />}
-                  defaultChecked={value === true} // Set defaultChecked based on field.value
-                />
-              </Form.Item>
-            );
-          case "cascader":
-            return (
-              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <Cascader
-                  value={values}
-                  placeholder={field.placeholder}
-                  options={field.options}
-                  {...(field.onlyLastValue ? { displayRender: (labels: string[]) => labels[labels.length - 1] } : {})}
-                  onChange={(value: any) => handleChange(value, field.id)}
-                />
-              </Form.Item>
-            );
-          case "keyvalue":
-            return (
-              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <KeyValueForm field={field} handleChange={handleChange} initialValues={values} />
-              </Form.Item>
-            );
-          case "keyvalueColumns":
-            return (
-              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-
-                <KeyValueColumns field={field} handleChange={handleChange} initialValues={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
-              </Form.Item>
-            );
-          case "keyvalueColumnsSelect":
-            return (
-              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-
-                <KeyValueColumnsSelect field={field} handleChange={handleChange} initialValues={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
-              </Form.Item>
-            );
-          case "valuesList":
-            return (
-              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <ValuesListForm field={field} handleChange={handleChange} initialValues={values} />
-              </Form.Item>
-            );
-          case "inputNumber":
-            return (
-              <Form.Item label={field.label} className="nodrag" {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <InputQuantity field={field} value={value} handleChange={handleChange} context={context} advanced={advanced} />
-              </Form.Item>
-            );
-          case "transferData":
-            return (
-              <Form.Item label={field.label} {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <TransferData field={field} handleChange={handleChange} defaultValue={value} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
-              </Form.Item>
-            );
-          case "dataMapping":
-            return (
-              <Form.Item label={field.label} {...(field.required ? { required: field.required } : {})} {...(field.tooltip ? { tooltip: field.tooltip } : {})}>
-                <DataMapping data={data} field={field} handleChange={handleChange} defaultValue={values} context={context} componentService={componentService} commands={commands} nodeId={nodeId} inDialog={advanced} />
-              </Form.Item>
-            );
-          case "info":
-            const { Paragraph } = Typography;
-            return (
-              <Paragraph style={{ padding: '5px' }}>
-                {field.text}
-              </Paragraph>
-            );
-          default:
-            return null;
-        }
+        return (
+          <Card
+            size="small"
+            title={`${connection} Connection`}
+            key={`${connection}-${groupIndex}`}
+            style={{ marginTop: '10px', marginBottom: '10px' }}
+            extra={selectConnection}
+            type="inner"
+          >
+            {connectionFields.map(renderField)}
+          </Card>
+        );
       })}
+      {groupedFields.default && groupedFields.default.map(renderField)}
     </>
   );
 };
-
 
 export default function ConfigModal({
   name,
@@ -365,6 +380,14 @@ export default function ConfigModal({
     e.stopPropagation();
   };
 
+  const [formIdentifier] = Form.useForm();
+
+  const onFillConnection = () => {
+    formIdentifier.setFieldsValue({
+      url: 'https://taobao.com/',
+    });
+  };
+
   return (
     <>
       <Modal
@@ -382,6 +405,7 @@ export default function ConfigModal({
       >
         <div onDoubleClick={stopPropagation}>
           <Form
+            form={formIdentifier}
             layout="vertical" >
             {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: true })}
           </Form>

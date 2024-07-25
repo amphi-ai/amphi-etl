@@ -38,7 +38,7 @@ export class JsonFileOutput extends BaseCoreComponent {
       ],
     };
 
-    super("JSON File Output", "jsonFileOutput", "pandas_df_output", [], "output", filePlusIcon, defaultConfig, form);
+    super("JSON File Output", "jsonFileOutput", "pandas_df_output", [], "outputs", filePlusIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

@@ -9,11 +9,11 @@ interface SelectMultipleCustomizableProps {
     field: FieldDescriptor;
     handleChange: (values: any, fieldId: string) => void;
     defaultValues: Option[];
-    inDialog: boolean;
+    advanced: boolean;
   }
 
 export const SelectMultipleCustomizable: React.FC<SelectMultipleCustomizableProps> = ({
-  field, handleChange, defaultValues, inDialog
+  field, handleChange, defaultValues, advanced
 }) => {
     
   useEffect(() => {
@@ -50,7 +50,7 @@ export const SelectMultipleCustomizable: React.FC<SelectMultipleCustomizableProp
     <Select
     mode="multiple"
     labelInValue
-    size={inDialog ? "middle" : "small"}
+    size={advanced ? "middle" : "small"}
     style={{ width: '100%' }}
     className="nodrag"
     onChange={handleSelectChange}

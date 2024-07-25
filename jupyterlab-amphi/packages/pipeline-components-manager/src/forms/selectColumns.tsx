@@ -18,11 +18,11 @@ interface SelectColumnsProps {
     componentService: any;
     commands: any;
     nodeId: string;
-    inDialog: boolean;
+    advanced: boolean;
   }
 
 export const SelectColumns: React.FC<SelectColumnsProps> = ({
-  field, handleChange, defaultValues, context, componentService, commands, nodeId, inDialog
+  field, handleChange, defaultValues, context, componentService, commands, nodeId, advanced
 }) => {
       
   const [items, setItems] = useState(field.options || []);
@@ -79,7 +79,7 @@ export const SelectColumns: React.FC<SelectColumnsProps> = ({
       showSearch
       mode="multiple"
       labelInValue
-      size={inDialog ? "middle" : "small"}
+      size={advanced ? "middle" : "small"}
       style={{ width: '100%' }}
       className="nodrag"
       onChange={handleSelectChange}

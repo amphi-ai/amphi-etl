@@ -3,18 +3,16 @@ import { BaseCoreComponent } from '../../BaseCoreComponent'; // Adjust the impor
 
 export class PostgresOutput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { 
-      dbOptions: { 
-        host: "localhost", 
-        port: "5432", 
-        databaseName: "", 
-        schema: "public", 
-        tableName: "", 
-        username: "", 
-        password: "" 
-      }, 
-      ifTableExists: "fail", 
-      mode: "insert" 
+    const defaultConfig = {
+      host: "localhost",
+      port: "5432",
+      databaseName: "",
+      schema: "public",
+      tableName: "",
+      username: "",
+      password: "",
+      ifTableExists: "fail",
+      mode: "insert"
     };
     const form = {
       idPrefix: "component__form",
@@ -22,39 +20,43 @@ export class PostgresOutput extends BaseCoreComponent {
         {
           type: "input",
           label: "Host",
-          id: "dbOptions.host",
+          id: "host",
           placeholder: "Enter database host",
+          connection: "Postgres",
           advanced: true
         },
         {
           type: "input",
           label: "Port",
-          id: "dbOptions.port",
+          id: "port",
           placeholder: "Enter database port",
+          connection: "Postgres",
           advanced: true
         },
         {
           type: "input",
           label: "Database Name",
-          id: "dbOptions.databaseName",
+          id: "databaseName",
+          connection: "Postgres",
           placeholder: "Enter database name"
         },
         {
           type: "input",
           label: "Schema",
-          id: "dbOptions.schema",
+          id: "schema",
+          connection: "Postgres",
           placeholder: "Enter schema name",
         },
         {
           type: "input",
           label: "Table Name",
-          id: "dbOptions.tableName",
+          id: "tableName",
           placeholder: "Enter table name",
         },
         {
           type: "input",
           label: "Username",
-          id: "dbOptions.username",
+          id: "username",
           placeholder: "Enter username",
           advanced: true
         },
@@ -62,7 +64,7 @@ export class PostgresOutput extends BaseCoreComponent {
           type: "input",
           inputType: "password",
           label: "Password",
-          id: "dbOptions.password",
+          id: "password",
           placeholder: "Enter password",
           advanced: true
         },
@@ -147,7 +149,7 @@ WHERE
       ],
     };
 
-    super("Postgres Output", "postgresOutput", "pandas_df_output", [], "output", postgresIcon, defaultConfig, form);
+    super("Postgres Output", "postgresOutput", "pandas_df_output", [], "outputs.Databases", postgresIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {
@@ -161,7 +163,7 @@ WHERE
   }
 
   public generateComponentCode({ config, inputName }): string {
-    const connectionString = `postgresql://${config.dbOptions.username}:${config.dbOptions.password}@${config.dbOptions.host}:${config.dbOptions.port}/${config.dbOptions.databaseName}`;
+    const connectionString = `postgresql://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}`;
     const uniqueEngineName = `${inputName}Engine`;
     let mappingsCode = "";
     let columnsCode = "";
@@ -203,9 +205,9 @@ ${inputName} = ${inputName}[[${selectedColumns}]]
 
     const ifExistsAction = config.ifTableExists;
 
-    const schemaParam = (config.dbOptions.schema && config.dbOptions.schema.toLowerCase() !== 'public')
+    const schemaParam = (config.schema && config.schema.toLowerCase() !== 'public')
       ? `,
-  schema="${config.dbOptions.schema}"`
+  schema="${config.schema}"`
       : '';
 
     const code = `
@@ -213,7 +215,7 @@ ${inputName} = ${inputName}[[${selectedColumns}]]
 ${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
 ${mappingsCode}${columnsCode}
 ${inputName}.to_sql(
-  name="${config.dbOptions.tableName}",
+  name="${config.tableName}",
   con=${uniqueEngineName},
   if_exists="${ifExistsAction}",
   index=False${schemaParam}

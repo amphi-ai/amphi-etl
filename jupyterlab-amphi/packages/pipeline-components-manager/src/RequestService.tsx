@@ -135,7 +135,8 @@ formatted_output = ", ".join([f"{row['Field']} ({row['Type']})" for _, row in co
 print(formatted_output)
 `;
 
-code = CodeGenerator.convertToFString(code);
+    // Replace connections string 
+    code = CodeGenerator.formatVariables(code);
 
 console.log("code: " + code);
 
@@ -196,6 +197,83 @@ console.log("code: " + code);
         }
       };
 
+  };
+
+  static retrieveEnvVariables(
+    context: any,
+    setDataSource: any,
+    setLoadings: any,
+    nodeId: any,
+  ): any {
+    setLoadings(true);
+  
+    let code = `
+  !pip install --quiet python-dotenv --disable-pip-version-check
+  from dotenv import dotenv_values
+  
+  env_vars = dotenv_values(".env")
+  formatted_output = ", ".join([f"{k} ({v})" for k, v in env_vars.items()])
+  print(formatted_output)
+  `;
+  
+    // Replace connection string
+    code = CodeGenerator.formatVariables(code);
+  
+    console.log("code: " + code);
+  
+    const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
+  
+    future.onReply = reply => {
+      if (reply.content.status == "ok") {
+        console.log("OK")
+      } else if (reply.content.status == "error") {
+        console.log("error")
+        setLoadings(false)
+      } else if (reply.content.status == "abort") {
+        console.log("abort")
+        setLoadings(false)
+      } else {
+        console.log("Other")
+        setLoadings(false)
+      }
+    };
+  
+    future.onIOPub = msg => {
+      if (msg.header.msg_type === 'stream') {
+        const streamMsg = msg as KernelMessage.IStreamMsg;
+        const output = streamMsg.content.text;
+  
+        const regex = /([^\s,]+)\s+\(((?:[^()]+|\([^)]*\))*)\)/g;
+        const newItems = [];
+        
+        let match;
+        while ((match = regex.exec(output)) !== null) {
+          const [_, name, value] = match;
+          newItems.push({
+            input: {},
+            value: name,
+            key: name,
+            type: value
+          });
+        }
+  
+        setDataSource((items) => {
+          const existingKeys = new Set(items.map((item) => item.key));
+          const uniqueItems = newItems.filter(
+            (newItem) => !existingKeys.has(newItem.key)
+          );
+  
+          return [...items, ...uniqueItems];
+        });
+  
+        setLoadings(false)
+      } else if (msg.header.msg_type === 'error') {
+        setLoadings(false)
+        const errorMsg = msg as KernelMessage.IErrorMsg;
+        const errorOutput = errorMsg.content;
+        console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
+      }
+    };
   };
 
 }

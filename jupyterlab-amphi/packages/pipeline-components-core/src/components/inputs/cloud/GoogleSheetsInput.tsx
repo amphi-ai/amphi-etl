@@ -15,7 +15,8 @@ export class GoogleSheetsInput extends BaseCoreComponent {
           placeholder: "Type file name",
           validation: "\\.(json)$",
           validationMessage: "This field expects a file with a .json extension such as your-service-account-file.json.",
-          advanced: true
+          advanced: true,
+          connection: "Google Sheet"
         },
         {
           type: "input",

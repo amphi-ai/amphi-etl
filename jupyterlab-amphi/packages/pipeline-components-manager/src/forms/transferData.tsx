@@ -24,11 +24,11 @@ interface TransferDataProps {
   componentService: any;
   commands: any;
   nodeId: string;
-  inDialog: boolean;
+  advanced: boolean;
 }
 
 export const TransferData: React.FC<TransferDataProps> = ({
-  field, handleChange, defaultValue, context, componentService, commands, nodeId, inDialog
+  field, handleChange, defaultValue, context, componentService, commands, nodeId, advanced
 }) => {
 
   type TransferItem = GetProp<TransferProps, 'dataSource'>[number];

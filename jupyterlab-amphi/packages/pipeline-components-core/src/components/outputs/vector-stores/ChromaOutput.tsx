@@ -43,12 +43,13 @@ export class ChromaOutput extends BaseCoreComponent {
           inputType: "password",
           label: "OpenAI API Key",
           id: "openaiApiKey",
+          connection: "OpenAI",
           advanced: true
         }
       ],
     };
 
-    super("Chroma Output", "chromaOutput", "documents_output", [], "output.vector stores", chromaIcon, defaultConfig, form);
+    super("Chroma Output", "chromaOutput", "documents_output", [], "outputs.vector stores", chromaIcon, defaultConfig, form);
   }
 
 

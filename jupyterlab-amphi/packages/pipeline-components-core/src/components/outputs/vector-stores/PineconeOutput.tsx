@@ -25,6 +25,7 @@ export class PineconeOutput extends BaseCoreComponent {
           inputType: "password",
           label: "Pinecone API Key",
           id: "pineconeApiKey",
+          connection: "Pinecone",
           advanced: true
         },
         {
@@ -82,12 +83,13 @@ export class PineconeOutput extends BaseCoreComponent {
           inputType: "password",
           label: "OpenAI API Key",
           id: "openaiApiKey",
+          connection: "OpenAI",
           advanced: true
         }
       ],
     };
 
-    super("Pinecone Output", "PineconeOutput", "documents_output", [], "output.vector stores", pineconeIcon, defaultConfig, form);
+    super("Pinecone Output", "PineconeOutput", "documents_output", [], "outputs.vector stores", pineconeIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

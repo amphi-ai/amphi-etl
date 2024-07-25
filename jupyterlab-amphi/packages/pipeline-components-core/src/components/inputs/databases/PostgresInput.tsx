@@ -4,41 +4,47 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class PostgresInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { dbOptions: { host: "localhost", port: "5432", databaseName: "", username: "", password: "", schema: "public", tableName: "" } };
+    const defaultConfig = { host: "localhost", port: "5432", databaseName: "", username: "", password: "", schema: "public", tableName: "" };
     const form = {
       fields: [
         {
           type: "input",
           label: "Host",
-          id: "dbOptions.host",
+          id: "host",
           placeholder: "Enter database host",
+          connection: "Postgres",
           advanced: true
         },
         {
           type: "input",
           label: "Port",
-          id: "dbOptions.port",
+          id: "port",
           placeholder: "Enter database port",
+          connection: "Postgres",
           advanced: true
         },
         {
           type: "input",
           label: "Database Name",
-          id: "dbOptions.databaseName",
+          id: "databaseName",
           placeholder: "Enter database name",
+          connection: "Postgres",
+          advanced: true
         },
         {
           type: "input",
           label: "Username",
-          id: "dbOptions.username",
+          id: "username",
           placeholder: "Enter username",
+          connection: "Postgres",
           advanced: true
         },
         {
           type: "input",
           label: "Password",
-          id: "dbOptions.password",
+          id: "password",
           placeholder: "Enter password",
+          connection: "Postgres",
           inputType: "password",
           advanced: true
         },
@@ -51,7 +57,7 @@ export class PostgresInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Table Name",
-          id: "dbOptions.tableName",
+          id: "tableName",
           placeholder: "Enter table name",
         },
         {
@@ -60,7 +66,7 @@ export class PostgresInput extends BaseCoreComponent {
           height: '50px',
           mode: "sql",
           placeholder: 'SELECT * FROM table_name',
-          id: "dbOptions.sqlQuery",
+          id: "sqlQuery",
           tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
           advanced: true
         }
@@ -81,15 +87,15 @@ export class PostgresInput extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, outputName }): string {
-    let connectionString = `postgresql://${config.dbOptions.username}:${config.dbOptions.password}@${config.dbOptions.host}:${config.dbOptions.port}/${config.dbOptions.databaseName}`;
+    let connectionString = `postgresql://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}`;
     const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
 
-    const tableReference = (config.dbOptions.schema && config.dbOptions.schema.toLowerCase() !== 'public')
-      ? `${config.dbOptions.schema}.${config.dbOptions.tableName}`
-      : config.dbOptions.tableName;
+    const tableReference = (config.schema && config.schema.toLowerCase() !== 'public')
+      ? `${config.schema}.${config.tableName}`
+      : config.tableName;
 
-    const sqlQuery = config.dbOptions.sqlQuery && config.dbOptions.sqlQuery.trim()
-      ? config.dbOptions.sqlQuery
+    const sqlQuery = config.sqlQuery && config.sqlQuery.trim()
+      ? config.sqlQuery
       : `SELECT * FROM ${tableReference}`;
 
     const code = `

@@ -21,10 +21,10 @@ interface KeyValueFormProps {
   componentService: any;
   commands: any;
   nodeId: string;
-  inDialog: boolean;
+  advanced: boolean;
 }
 
-export const KeyValueColumns: React.FC<KeyValueFormProps> = ({ field, handleChange, initialValues,  context, componentService, commands, nodeId, inDialog }) => {
+export const KeyValueColumns: React.FC<KeyValueFormProps> = ({ field, handleChange, initialValues,  context, componentService, commands, nodeId, advanced }) => {
   const [keyValuePairs, setKeyValuePairs] = useState(initialValues || [{ key: { value: '', type: '', named: true}, value: ''}]);
   const [loadings, setLoadings] = useState<boolean>();
   const [items, setItems] = useState<Option[]>([]);
@@ -128,7 +128,7 @@ export const KeyValueColumns: React.FC<KeyValueFormProps> = ({ field, handleChan
                  <ConfigProvider renderEmpty={customizeRenderEmpty}>
                   <Select
                   labelInValue
-                  size={inDialog ? "middle" : "small"}
+                  size={advanced ? "middle" : "small"}
                   style={{ width: '100%', minWidth: '250px' }}
                   className="nodrag"
                   onChange={(value) => {handleSelectChange(value, index); }}
@@ -143,7 +143,7 @@ export const KeyValueColumns: React.FC<KeyValueFormProps> = ({ field, handleChan
                       <Divider style={{ margin: '8px 0' }} />
                       <Space style={{ padding: '0 8px 4px' }}>
                         <Input
-                          size={inDialog ? "middle" : "small"}
+                          size={advanced ? "middle" : "small"}
                           placeholder="Custom"
                           ref={inputRef}
                           value={name}
@@ -159,7 +159,7 @@ export const KeyValueColumns: React.FC<KeyValueFormProps> = ({ field, handleChan
                 />
               </ConfigProvider>
                 <Input
-                  size={inDialog ? "middle" : "small"}
+                  size={advanced ? "middle" : "small"}
                   name={`${field.id}_value_${index}`}
                   placeholder={field.placeholder?.value || 'value'}
                   id={`${field.id}_value_${index}`}

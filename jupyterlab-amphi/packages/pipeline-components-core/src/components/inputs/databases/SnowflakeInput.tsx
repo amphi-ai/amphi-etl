@@ -4,13 +4,13 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class SnowflakeInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { dbOptions: { schema: "public", tableName: "" } };
+    const defaultConfig = { schema: "public", tableName: "" };
     const form = {
       fields: [
         {
           type: "input",
           label: "Account",
-          id: "dbOptions.account",
+          id: "account",
           placeholder: "Enter Account",
           connection: "Snowflake",
           advanced: true
@@ -18,14 +18,15 @@ export class SnowflakeInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Database Name",
-          id: "dbOptions.databaseName",
+          id: "database",
           connection: "Snowflake",
           placeholder: "Enter database name",
+          advanced: true
         },
         {
           type: "input",
           label: "Username",
-          id: "dbOptions.username",
+          id: "username",
           placeholder: "Enter username",
           connection: "Snowflake",
           advanced: true
@@ -33,7 +34,7 @@ export class SnowflakeInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Password",
-          id: "dbOptions.password",
+          id: "password",
           placeholder: "Enter password",
           connection: "Snowflake",
           inputType: "password",
@@ -42,21 +43,21 @@ export class SnowflakeInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Warehouse",
-          id: "dbOptions.warehouse",
+          id: "warehouse",
           placeholder: "Enter warehouse name",
           advanced: true
         },
         {
           type: "input",
           label: "Schema",
-          id: "dbOptions.schema",
+          id: "schema",
           placeholder: "Enter schema name",
           advanced: true
         },
         {
           type: "input",
           label: "Table Name",
-          id: "dbOptions.tableName",
+          id: "tableName",
           placeholder: "Enter table name",
         },
         {
@@ -65,14 +66,14 @@ export class SnowflakeInput extends BaseCoreComponent {
           height: '50px',
           mode: "sql",
           placeholder: 'SELECT * FROM table_name',
-          id: "dbOptions.sqlQuery",
+          id: "sqlQuery",
           tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
           advanced: true
         }
       ],
     };
 
-    super("Snowflake Input", "snowflakeInput", "pandas_df_input", [], "inputs.Databases", snowflakeIcon, defaultConfig, form);
+    super("Snowflake Input", "snowflakeInput", "pandas_df_input", [], "inputs.Cloud Warehouses", snowflakeIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {
@@ -87,23 +88,23 @@ export class SnowflakeInput extends BaseCoreComponent {
 
   public generateComponentCode({ config, outputName }): string {
     const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
-    const tableReference = (config.dbOptions.schema && config.dbOptions.schema.toLowerCase() !== 'public')
-      ? `${config.dbOptions.schema}.${config.dbOptions.tableName}`
-      : config.dbOptions.tableName;
+    const tableReference = (config.schema && config.schema.toLowerCase() !== 'public')
+      ? `${config.schema}.${config.tableName}`
+      : config.tableName;
 
-    const sqlQuery = config.dbOptions.sqlQuery && config.dbOptions.sqlQuery.trim()
-      ? config.dbOptions.sqlQuery
+    const sqlQuery = config.sqlQuery && config.sqlQuery.trim()
+      ? config.sqlQuery
       : `SELECT * FROM ${tableReference}`;
 
     const code = `
 # Connect to the Snowflake database
 ${uniqueEngineName} = sqlalchemy.create_engine(URL(
-    account = '${config.dbOptions.account}',
-    user = '${config.dbOptions.username}',
-    password = urllib.parse.quote("${config.dbOptions.password}"),
-    database = '${config.dbOptions.database}',
-    schema = '${config.dbOptions.schema}',
-    warehouse = '${config.dbOptions.warehouse}'
+    account = '${config.account}',
+    user = '${config.username}',
+    password = urllib.parse.quote("${config.password}"),
+    database = '${config.database}',
+    schema = '${config.schema}',
+    warehouse = '${config.warehouse}'
 ))
 
 # Execute SQL statement

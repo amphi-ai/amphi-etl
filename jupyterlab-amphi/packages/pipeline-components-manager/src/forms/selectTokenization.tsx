@@ -8,11 +8,11 @@ import { FieldDescriptor, Option } from '../configUtils';
     field: FieldDescriptor;
     handleChange: (values: string[], fieldId: string) => void;
     defaultValue: Option[];
-    inDialog: boolean;
+    advanced: boolean;
   }
   
   export const SelectTokenization: React.FC<SelectTokenizationProps> = ({
-    field, handleChange, defaultValue, inDialog
+    field, handleChange, defaultValue, advanced
   }) => {
     // Assuming defaultValues are already in the correct format
     useEffect(() => {
@@ -37,7 +37,7 @@ import { FieldDescriptor, Option } from '../configUtils';
         <Select
           mode="tags"
           labelInValue
-          size={inDialog ? "middle" : "small"}
+          size={advanced ? "middle" : "small"}
           style={{ width: '100%' }}
           className="nodrag"
           onChange={handleSelectChange}

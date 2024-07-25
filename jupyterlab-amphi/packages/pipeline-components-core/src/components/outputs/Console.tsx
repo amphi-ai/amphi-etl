@@ -18,7 +18,7 @@ export class Console extends BaseCoreComponent {
       ],
     };
 
-    super("Console", "console", "pandas_df_output", [], "output", monitorIcon, defaultConfig, form);
+    super("Console", "console", "pandas_df_output", [], "outputs", monitorIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

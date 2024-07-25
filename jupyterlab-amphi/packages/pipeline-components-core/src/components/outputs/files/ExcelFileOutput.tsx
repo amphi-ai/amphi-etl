@@ -64,7 +64,7 @@ export class ExcelFileOutput extends BaseCoreComponent {
       ],
     };
 
-    super("Excel File Output", "excelFileOutput", "pandas_df_output", [], "output", filePlusIcon, defaultConfig, form);
+    super("Excel File Output", "excelFileOutput", "pandas_df_output", [], "outputs", filePlusIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

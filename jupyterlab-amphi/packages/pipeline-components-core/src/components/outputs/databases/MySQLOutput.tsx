@@ -4,14 +4,12 @@ import { BaseCoreComponent } from '../../BaseCoreComponent'; // Adjust the impor
 export class MySQLOutput extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-      dbOptions: {
-        host: "localhost",
-        port: "3306",
-        databaseName: "",
-        tableName: "",
-        username: "",
-        password: ""
-      },
+      host: "localhost",
+      port: "3306",
+      databaseName: "",
+      tableName: "",
+      username: "",
+      password: "",
       ifTableExists: "fail",
       mode: "insert"
     };
@@ -19,35 +17,39 @@ export class MySQLOutput extends BaseCoreComponent {
       idPrefix: "component__form",
       fields: [
         {
-          type: "input", 
+          type: "input",
           label: "Host",
-          id: "dbOptions.host",
+          id: "host",
           placeholder: "Enter database host",
+          connection: "Mysql",
           advanced: true
         },
         {
           type: "input",
           label: "Port",
-          id: "dbOptions.port",
+          id: "port",
           placeholder: "Enter database port",
+          connection: "Mysql",
           advanced: true
         },
         {
           type: "input",
           label: "Database Name",
-          id: "dbOptions.databaseName",
+          id: "databaseName",
+          connection: "Mysql",
           placeholder: "Enter database name"
         },
         {
           type: "input",
           label: "Table Name",
-          id: "dbOptions.tableName",
+          id: "tableName",
           placeholder: "Enter table name",
         },
         {
           type: "input",
           label: "Username",
-          id: "dbOptions.username",
+          id: "username",
+          connection: "Mysql",
           placeholder: "Enter username",
           advanced: true
         },
@@ -55,7 +57,8 @@ export class MySQLOutput extends BaseCoreComponent {
           type: "input",
           inputType: "password",
           label: "Password",
-          id: "dbOptions.password",
+          id: "password",
+          connection: "Mysql",
           placeholder: "Enter password",
           advanced: true
         },
@@ -112,7 +115,7 @@ export class MySQLOutput extends BaseCoreComponent {
       ],
     };
 
-    super("MySQL Output", "mySQLOutput", "pandas_df_output", [], "output", mySQLIcon, defaultConfig, form);
+    super("MySQL Output", "mySQLOutput", "pandas_df_output", [], "outputs.Databases", mySQLIcon, defaultConfig, form);
   }
 
   // https://stackoverflow.com/questions/63881687/how-to-upsert-pandas-dataframe-to-mysql-with-sqlalchemy
@@ -122,7 +125,7 @@ export class MySQLOutput extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName }): string {
-    const connectionString = `mysql+pymysql://${config.dbOptions.username}:${config.dbOptions.password}@${config.dbOptions.host}:${config.dbOptions.port}/${config.dbOptions.databaseName}`;
+    const connectionString = `mysql+pymysql://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}`;
     const uniqueEngineName = `${inputName}Engine`;
     let mappingsCode = "";
     let columnsCode = "";
@@ -170,7 +173,7 @@ ${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
 ${mappingsCode}
 ${columnsCode}
 ${inputName}.to_sql(
-  name="${config.dbOptions.tableName}",
+  name="${config.tableName}",
   con=${uniqueEngineName},
   if_exists="${ifExistsAction}",
   index=False

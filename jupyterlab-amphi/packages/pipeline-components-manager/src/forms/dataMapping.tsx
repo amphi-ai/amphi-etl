@@ -17,11 +17,11 @@ interface DataMappingProps {
   componentService: any;
   commands: any;
   nodeId: string;
-  inDialog: boolean;
+  advanced: boolean;
 }
 
 export const DataMapping: React.FC<DataMappingProps> = ({
-  data, field, handleChange, defaultValue, context, componentService, commands, nodeId, inDialog
+  data, field, handleChange, defaultValue, context, componentService, commands, nodeId, advanced
 }) => {
 
   type FormInstance<T> = GetRef<typeof Form<T>>;
@@ -98,7 +98,7 @@ export const DataMapping: React.FC<DataMappingProps> = ({
             <Select              
               showSearch 
               labelInValue
-              size={inDialog ? "middle" : "small"}
+              size={advanced ? "middle" : "small"}
               style={{ width: '100%' }}
               className="nodrag"
               onChange={(value) => {handleSelectChange(value, record); }}
@@ -272,9 +272,9 @@ export const DataMapping: React.FC<DataMappingProps> = ({
               RequestService.retrieveTableColumns(
                 event,
                 field.imports,
-                `${field.drivers}://${data.dbOptions.username}:${data.dbOptions.password}@${data.dbOptions.host}:${data.dbOptions.port}/${data.dbOptions.databaseName}`,
-                `${data.dbOptions.schema ?? 'public'}`,
-                `${data.dbOptions.tableName}`,
+                `${field.drivers}://${data.username}:${data.password}@${data.host}:${data.port}/${data.databaseName}`,
+                `${data.schema ?? 'public'}`,
+                `${data.tableName}`,
                 `${field.query}`,
                 context,
                 commands,

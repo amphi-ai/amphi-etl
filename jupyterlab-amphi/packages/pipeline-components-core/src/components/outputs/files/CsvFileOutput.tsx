@@ -61,7 +61,7 @@ export class CsvFileOutput extends BaseCoreComponent {
       ],
     };
 
-    super("CSV File Output", "csvFileOutput", "pandas_df_output", [], "output", filePlusIcon, defaultConfig, form);
+    super("CSV File Output", "csvFileOutput", "pandas_df_output", [], "outputs", filePlusIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

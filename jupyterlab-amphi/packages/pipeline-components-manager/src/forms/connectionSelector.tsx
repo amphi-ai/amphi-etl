@@ -19,11 +19,11 @@ interface ConnectionSelectorProps {
   componentService: any;
   commands: any;
   nodeId: string;
-  inDialog: boolean;
+  advanced: boolean;
 }
 
 export const ConnectionSelector: React.FC<ConnectionSelectorProps> = ({
-  field, handleChange, defaultValue, context, componentService, commands, nodeId, inDialog
+  field, handleChange, defaultValue, context, componentService, commands, nodeId, advanced
 }) => {
 
   const [options, setOptions] = useState<Option[]>();

@@ -253,3 +253,4 @@ export const snowflakeIcon = new LabIcon({
   name: 'amphi:snowflake-icon',
   svgstr: snowflakeIconSvgStr
 });
+

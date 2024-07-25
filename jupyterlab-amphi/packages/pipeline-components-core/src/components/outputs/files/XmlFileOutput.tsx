@@ -25,7 +25,7 @@ export class XmlFileOutput extends BaseCoreComponent {
       ],
     };
 
-    super("XML File Output", "xmlFileOutput", "pandas_df_output", [], "output", filePlusIcon, defaultConfig, form);
+    super("XML File Output", "xmlFileOutput", "pandas_df_output", [], "outputs", filePlusIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

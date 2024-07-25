@@ -745,6 +745,10 @@
   font-weight: 600 !important;
 }
 
+.uppercase {
+  text-transform: uppercase !important;
+}
+
 .leading-6 {
   line-height: 1.5rem !important;
 }

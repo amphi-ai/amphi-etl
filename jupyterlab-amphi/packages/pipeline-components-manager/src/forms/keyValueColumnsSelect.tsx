@@ -21,10 +21,10 @@ interface KeyValueFormProps {
   componentService: any;
   commands: any;
   nodeId: string;
-  inDialog: boolean;
+  advanced: boolean;
 }
 
-export const KeyValueColumnsSelect: React.FC<KeyValueFormProps> = ({ field, handleChange, initialValues,  context, componentService, commands, nodeId, inDialog }) => {
+export const KeyValueColumnsSelect: React.FC<KeyValueFormProps> = ({ field, handleChange, initialValues,  context, componentService, commands, nodeId, advanced }) => {
   const [keyValuePairs, setKeyValuePairs] = useState(initialValues || [{ key: { value: '', type: '', named: true}, value: ''}]);
   const [loadings, setLoadings] = useState<boolean>();
   const [items, setItems] = useState<Option[]>([]);
@@ -132,7 +132,7 @@ export const KeyValueColumnsSelect: React.FC<KeyValueFormProps> = ({ field, hand
                  <ConfigProvider renderEmpty={customizeRenderEmpty}>
                   <Select
                   labelInValue
-                  size={inDialog ? "middle" : "small"}
+                  size={advanced ? "middle" : "small"}
                   className="nodrag"
                   onChange={(value) => {handleSelectColumnChange(value, index);}}
                   value={pair.key}
@@ -146,7 +146,7 @@ export const KeyValueColumnsSelect: React.FC<KeyValueFormProps> = ({ field, hand
                       <Divider style={{ margin: '8px 0' }} />
                       <Space style={{ padding: '0 8px 4px' }}>
                         <Input
-                          size={inDialog ? "middle" : "small"}
+                          size={advanced ? "middle" : "small"}
                           placeholder="Custom"
                           ref={inputRef}
                           value={name}
@@ -163,7 +163,7 @@ export const KeyValueColumnsSelect: React.FC<KeyValueFormProps> = ({ field, hand
               </ConfigProvider>
               <Select
                 labelInValue
-                size={inDialog ? "middle" : "small"}
+                size={advanced ? "middle" : "small"}
                 id={`${field.id}_value_${index}`}
                 className="nodrag"
                 onChange={(value) => handleChangeKV(value, index, 'value')}

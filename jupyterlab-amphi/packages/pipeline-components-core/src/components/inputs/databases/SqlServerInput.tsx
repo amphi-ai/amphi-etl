@@ -3,48 +3,54 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class SqlServerInput extends BaseCoreComponent {
     constructor() {
-        const defaultConfig = { dbOptions: { host: "localhost", port: "1433", databaseName: "", username: "", password: "", tableName: "" } };
+        const defaultConfig = { host: "localhost", port: "1433", databaseName: "", username: "", password: "", tableName: ""};
         const form = {
             fields: [
                 {
                     type: "input",
                     label: "Host",
-                    id: "dbOptions.host",
+                    id: "host",
                     placeholder: "Enter database host",
+                    connection: "SQL Server",
                     advanced: true
                 },
                 {
                     type: "input",
                     label: "Port",
-                    id: "dbOptions.port",
+                    id: "port",
                     placeholder: "Enter database port",
+                    connection: "SQL Server",
                     advanced: true
                 },
                 {
                     type: "input",
                     label: "Database Name",
-                    id: "dbOptions.databaseName",
+                    id: "databaseName",
                     placeholder: "Enter database name",
+                    connection: "SQL Server",
+                    advanced: true
                 },
                 {
                     type: "input",
                     label: "Username",
-                    id: "dbOptions.username",
+                    id: "username",
                     placeholder: "Enter username",
+                    connection: "SQL Server",
                     advanced: true
                 },
                 {
                     type: "input",
                     label: "Password",
-                    id: "dbOptions.password",
+                    id: "password",
                     placeholder: "Enter password",
+                    connection: "SQL Server",
                     inputType: "password",
                     advanced: true
                 },
                 {
                     type: "input",
                     label: "Table Name",
-                    id: "dbOptions.tableName",
+                    id: "tableName",
                     placeholder: "Enter table name",
                 },
                 {
@@ -53,7 +59,7 @@ export class SqlServerInput extends BaseCoreComponent {
                     height: '50px',
                     mode: "sql",
                     placeholder: 'SELECT * FROM table_name',
-                    id: "dbOptions.sqlQuery",
+                    id: "sqlQuery",
                     tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
                     advanced: true
                 },
@@ -75,9 +81,9 @@ export class SqlServerInput extends BaseCoreComponent {
     }
 
     public generateComponentCode({ config, outputName }): string {
-        let connectionString = `mssql+pyodbc://${config.dbOptions.username}:${config.dbOptions.password}@${config.dbOptions.host}:${config.dbOptions.port}/${config.dbOptions.databaseName}?driver=ODBC+Driver+17+for+SQL+Server`;
+        let connectionString = `mssql+pyodbc://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}?driver=ODBC+Driver+17+for+SQL+Server`;
         const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
-        const sqlQuery = config.dbOptions.sqlQuery && config.dbOptions.sqlQuery.trim() ? config.dbOptions.sqlQuery : `SELECT * FROM ${config.dbOptions.tableName}`;
+        const sqlQuery = config.sqlQuery && config.sqlQuery.trim() ? config.sqlQuery : `SELECT * FROM ${config.tableName}`;
         const code = `
 # Connect to the SQL Server database
 ${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")

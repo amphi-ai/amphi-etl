@@ -1,6 +1,6 @@
+import { ComponentItem, PipelineComponent, createZoomSelector, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig } from '@amphi/pipeline-components-manager';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Handle, Position, useReactFlow, useStore, useStoreApi, NodeToolbar } from 'reactflow';
-import { ComponentItem, PipelineComponent, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
+import { Handle, NodeToolbar, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
 import { playCircleIcon, settingsIcon } from '../icons';
 
 export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
@@ -40,8 +40,6 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
     useEffect(() => {
       handleSetDefaultConfig();
     }, [handleSetDefaultConfig]);
-
-
 
     return (
       <>
@@ -138,12 +136,14 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
           handleChange,
           isSelected
         })}
-        <NodeToolbar isVisible position={Position.Bottom}>
-          <button onClick={() => setModalOpen(true)}><settingsIcon.react/></button>
-          {(this._type.includes('input') || this._type.includes('processor') || this._type.includes('output')) && (
-            <button onClick={() => executeUntilComponent()}><playCircleIcon.react/></button>
-          )}
-        </NodeToolbar>
+        {showContent && (
+          <NodeToolbar isVisible position={Position.Bottom}>
+            <button onClick={() => setModalOpen(true)}><settingsIcon.react /></button>
+            {(this._type.includes('input') || this._type.includes('processor') || this._type.includes('output')) && (
+              <button onClick={() => executeUntilComponent()}><playCircleIcon.react /></button>
+            )}
+          </NodeToolbar>
+        )}
       </>
     );
   }

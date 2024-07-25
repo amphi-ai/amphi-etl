@@ -9,11 +9,11 @@ interface SelectCustomizableProps {
     field: FieldDescriptor;
     handleChange: (values: any, fieldId: string) => void;
     defaultValue: Option | Option[];
-    inDialog: boolean;
+    advanced: boolean;
   }
 
 export const SelectCustomizable: React.FC<SelectCustomizableProps> = ({
-  field, handleChange, defaultValue, inDialog
+  field, handleChange, defaultValue, advanced
 }) => {
     
   const findOptionByValue = (value: any) => {
@@ -53,7 +53,7 @@ export const SelectCustomizable: React.FC<SelectCustomizableProps> = ({
   return (
     <Select
     labelInValue
-    size={inDialog ? "middle" : "small"}
+    size={advanced ? "middle" : "small"}
     style={{ width: '100%' }}
     className="nodrag"
     onChange={handleSelectChange}

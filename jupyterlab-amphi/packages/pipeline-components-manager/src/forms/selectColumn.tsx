@@ -15,11 +15,11 @@ interface SelectColumnsProps {
   componentService: any;
   commands: any;
   nodeId: string;
-  inDialog: boolean;
+  advanced: boolean;
 }
 
 export const SelectColumn: React.FC<SelectColumnsProps> = ({
-  field, handleChange, defaultValue, context, componentService, commands, nodeId, inDialog
+  field, handleChange, defaultValue, context, componentService, commands, nodeId, advanced
 }) => {
 
   const findOptionByValue = (value: any) => {
@@ -84,7 +84,7 @@ export const SelectColumn: React.FC<SelectColumnsProps> = ({
       <Select
         showSearch  
         labelInValue
-        size={inDialog ? "middle" : "small"}
+        size={advanced ? "middle" : "small"}
         style={{ width: '100%' }}
         className="nodrag"
         onChange={(value, option) => handleSelectChange(value, option)}

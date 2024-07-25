@@ -233,18 +233,31 @@ export class PipelineService {
     return relativePath;
 }
 
-  static getEnvironmentVariables(pipelineJson: string): any[] {
+static getEnvironmentVariables(pipelineJson: string): string[] {
+  const flow = PipelineService.filterPipeline(pipelineJson);
+  const envNodes = flow.nodes.filter(node => node.type === 'envVariables' || node.type === 'envFile');
+
+  const variablesList = envNodes.reduce((acc, node) => {
+    const variables = node.data.variables || [];
+    return acc.concat(variables.map(variable => variable.name));
+  }, []);
+
+  console.log("variablesList %o", variablesList);
+
+  return variablesList;
+}
+
+
+  static getConnections(pipelineJson: string): any[] {
     const flow = PipelineService.filterPipeline(pipelineJson);
-    const envVariablesNodes = flow.nodes.filter(node => node.type === 'envVariables' );
+    const connectionsNodes = flow.nodes.filter(node => node.type === 'connection' );
 
-    const variablesList = envVariablesNodes.reduce((acc, node) => {
-      return acc.concat(node.data.variables || []);
+    const connectionsList = connectionsNodes.reduce((acc, node) => {
+      return acc.concat(node.data || []);
     }, []);
-
-
+    console.log("connectionsList %o", connectionsList);
     // const envFileNodes = flow.nodes.filter(node => node.type === 'envFile' );
-  
-    return variablesList;
+    return connectionsList;
   }
 
   static extractConnections(componentService: any): Connection[] {
@@ -272,6 +285,13 @@ export class PipelineService {
       fields: connectionMap[connection]
     }));
   }
+
+  static formatVarName = (input: string): string => {
+    return input.replace(/([a-z])([A-Z])/g, '$1_$2') // Add underscore before capital letters
+                .toUpperCase() // Convert to uppercase
+                .replace(/\s+/g, '_') // Replace spaces with underscore
+                .replace(/\./g, '_'); // Replace dots with underscore
+  };
 
 }
 

@@ -7,11 +7,11 @@ interface SelectMultipleProps {
   field: FieldDescriptor;
   handleChange: (values: string[], fieldId: string) => void;
   defaultValues: Option[];
-  inDialog: boolean;
+  advanced: boolean;
 }
 
 export const SelectMultiple: React.FC<SelectMultipleProps> = ({
-  field, handleChange, defaultValues, inDialog
+  field, handleChange, defaultValues, advanced
 }) => {
   // Assuming defaultValues are already in the correct format
   useEffect(() => {
@@ -30,7 +30,7 @@ export const SelectMultiple: React.FC<SelectMultipleProps> = ({
     <Select
       mode="multiple"
       labelInValue
-      size={inDialog ? "middle" : "small"}
+      size={advanced ? "middle" : "small"}
       style={{ width: '100%' }}
       className="nodrag"
       onChange={handleSelectChange}

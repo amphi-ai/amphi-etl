@@ -14,7 +14,8 @@ export class GoogleSheetsOutput extends BaseCoreComponent {
           id: "filePath",
           placeholder: "Type file name",
           validation: "\\.(json)$",
-          validationMessage: "This field expects a file with a .json extension such as your-service-account-file.json."
+          validationMessage: "This field expects a file with a .json extension such as your-service-account-file.json.",
+          connection: "Google Sheet"
         },
         {
           type: "input",
@@ -35,7 +36,7 @@ export class GoogleSheetsOutput extends BaseCoreComponent {
       ],
     };
 
-    super("G. Sheets Output", "googleSheetsOutput", "pandas_df_output", [], "output", googleSheetsIcon, defaultConfig, form);
+    super("G. Sheets Output", "googleSheetsOutput", "pandas_df_output", [], "outputs", googleSheetsIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {
