@@ -10,7 +10,7 @@ import { Form, Table, ConfigProvider, Divider, Input, Select, Space, Button, Typ
 import type { GetRef, InputRef } from 'antd';
 
 export class EnvFile extends PipelineComponent<ComponentItem>() {
-  public _name = "Dotenv File (.env)";
+  public _name = "Env. Variables File";
   public _id = "envFile";
   public _type = "env_variables";
   public _category = "settings";

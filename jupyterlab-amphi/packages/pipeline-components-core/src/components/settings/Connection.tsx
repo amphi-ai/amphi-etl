@@ -1,9 +1,9 @@
-import { ComponentItem, PipelineComponent, InputFile, InputRegular, SelectRegular, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector, PipelineService, Option } from '@amphi/pipeline-components-manager';
-import React, { useContext, useEffect, useCallback, useState, useRef } from 'react';
-import type { GetRef, InputRef } from 'antd';
-import { Form, Table, ConfigProvider, Tooltip, Input, Select, Space, Button, Typography, Modal, Popconfirm, Tag } from 'antd';
+import { ComponentItem, InputFile, InputRegular, Option, PipelineComponent, PipelineService, SelectRegular, createZoomSelector, onChange, renderComponentUI, renderHandle } from '@amphi/pipeline-components-manager';
 import { CopyOutlined } from '@ant-design/icons';
-import { Handle, Position, useReactFlow, useStore, useStoreApi, NodeToolbar } from 'reactflow';
+import type { GetRef, InputRef } from 'antd';
+import { ConfigProvider, Form, Input, Modal, Select, Space, Table, Tooltip } from 'antd';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { Handle, NodeToolbar, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
 import { keyIcon, settingsIcon } from '../../icons';
 
 export class Connection extends PipelineComponent<ComponentItem>() {
