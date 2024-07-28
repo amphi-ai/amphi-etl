@@ -20,6 +20,8 @@ export { SnowflakeInput } from './inputs/databases/SnowflakeInput';
 
 export { RedditInput } from './inputs/cloud/RedditInput';
 
+export { IcebergInput } from './inputs/lakehouse/IcebergInput';
+
 // Transforms
 export { Filter } from './transforms/Filter';
 export { Aggregate } from './transforms/Aggregate';

@@ -254,3 +254,7 @@ export const snowflakeIcon = new LabIcon({
   svgstr: snowflakeIconSvgStr
 });
 
+export const icebergIcon = new LabIcon({
+  name: 'amphi:mySQLIcon',
+  svgstr: mySQLIconSvgStr
+});
