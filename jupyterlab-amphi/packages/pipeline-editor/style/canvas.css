@@ -37,14 +37,16 @@ Editor components styles
   border: 1px solid #eee;
   background: white;
   cursor: pointer;
+  padding: 4px;
 }
+
 
 .react-flow__node-toolbar button:hover {
   background: #f5f5f6;
 }
 
 .react-flow__node-toolbar svg {
-  margin-top: 4px;
+  margin-bottom: -4px;
   color: #404040;
 }
 

@@ -29,8 +29,8 @@ setup(
     author_email='tgourdel@amphi.ai',
     license='ELv2',
     install_requires=[
-        'jupyterlab>=4.1.5',
-        'jupyterlab-amphi>=0.3.1',
+        'jupyterlab>=4.2.2',
+        'jupyterlab-amphi>=0.5.0',
         'jupyterlab-git'
     ],
     keywords=[],  # Added an empty list for keywords to resolve the dynamic 'keywords' issue.
