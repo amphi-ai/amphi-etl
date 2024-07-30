@@ -1,0 +1,17 @@
+# Tạo môi trường ảo
+# win
+python -m venv amphi_venv
+
+# Kích hoạt môi trường ảo (trên Windows)
+amphi_venv\Scripts\activate
+
+cd jupyterlab-amphi
+# tạo file requirements.txt
+jupyterlab==4.2.2
+.
+
+python -m pip install -r requirements.txt
+
+pwd #Sử dụng để lấy đường dẫn đến jupyterlab-amphi
+
+jupyter-lab --notebook-dir=D:\data-repo\amphi-etl\jupyterlab-amphi --ContentManager.allow_hidden=True

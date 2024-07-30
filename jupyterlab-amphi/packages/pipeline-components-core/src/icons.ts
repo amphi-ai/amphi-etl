@@ -43,6 +43,7 @@ import settingsIconSvgStr from '../style/icons/settings-16.svg';
 import keyIconSvgStr from '../style/icons/key-24.svg'
 import snowflakeIconSvgStr from '../style/icons/snowflake.svg'
 
+import icebergIconSvgStr from '../style/icons/iceberg.svg'
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -255,6 +256,6 @@ export const snowflakeIcon = new LabIcon({
 });
 
 export const icebergIcon = new LabIcon({
-  name: 'amphi:mySQLIcon',
-  svgstr: mySQLIconSvgStr
+  name: 'amphi:icebergIcon',
+  svgstr: icebergIconSvgStr
 });
