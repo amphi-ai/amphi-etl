@@ -15,3 +15,11 @@ python -m pip install -r requirements.txt
 pwd #Sử dụng để lấy đường dẫn đến jupyterlab-amphi
 
 jupyter-lab --notebook-dir=D:\data-repo\amphi-etl\jupyterlab-amphi --ContentManager.allow_hidden=True
+
+
+
+./build.sh clean deep
+python -m venv amphi_venv 
+amphi_venv\Scripts\activate
+python -m pip install -r requirements.txt
+jupyter lab --notebook-dir=/Users/thibaut/Documents/myfolder --ContentManager.allow_hidden=True

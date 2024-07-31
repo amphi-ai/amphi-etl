@@ -21,7 +21,7 @@ export { SnowflakeInput } from './inputs/databases/SnowflakeInput';
 export { RedditInput } from './inputs/cloud/RedditInput';
 
 export { IcebergInput } from './inputs/lakehouse/IcebergInput';
-
+export { TrinoInput } from './inputs/lakehouse/TrinoInput';
 // Transforms
 export { Filter } from './transforms/Filter';
 export { Aggregate } from './transforms/Aggregate';

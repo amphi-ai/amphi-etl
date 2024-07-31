@@ -12,7 +12,9 @@ import {
   RecursiveChunking, HtmlToMarkdown, ParseHTML, ChromaOutput, CustomCodeDocuments, Unite,
   FillMissingValues, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput
 } from './components';
+
 import { IcebergInput } from './components/inputs/lakehouse/IcebergInput';
+import { TrinoInput } from './components/inputs/lakehouse/TrinoInput';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-components-core',
@@ -48,7 +50,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(SnowflakeInput.getInstance())
     
     componentService.addComponent(IcebergInput.getInstance())
-
+    componentService.addComponent(TrinoInput.getInstance())
     // Processors
     componentService.addComponent(FilterColumns.getInstance())
     componentService.addComponent(RenameColumns.getInstance())

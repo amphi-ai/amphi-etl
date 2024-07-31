@@ -259,3 +259,8 @@ export const icebergIcon = new LabIcon({
   name: 'amphi:icebergIcon',
   svgstr: icebergIconSvgStr
 });
+
+export const trinoIcon = new LabIcon({
+  name: 'amphi:icebergIcon',
+  svgstr: icebergIconSvgStr
+});
