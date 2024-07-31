@@ -899,7 +899,9 @@ Editor components styles
   transition: 0.2s box-shadow;
 }
 
-.react-flow__node.selected .handle-right, .react-flow__node.selected .handle-left, .react-flow__node.selected .handle-bottom {
+.react-flow__node.selected .handle-right,
+.react-flow__node.selected .handle-left,
+.react-flow__node.selected .handle-bottom {
   visibility: visible;
 }
 
@@ -911,6 +913,12 @@ Editor components styles
   border-radius: 5px;
   box-shadow: var(--jp-elevation-z1);
   transition: 0.2s box-shadow;
+}
+
+.react-flow__node-toolbar div {
+  margin: 0px;
+  padding: 0px;
+  height:16px;
 }
 
 .react-flow__node-toolbar button {
@@ -925,7 +933,6 @@ Editor components styles
 }
 
 .react-flow__node-toolbar svg {
-  margin-bottom: -4px;
   color: #404040;
 }
 
@@ -1175,7 +1182,7 @@ Edges
 Form inputs
 */
 
-input:checked + label {
+input:checked+label {
   border-color: black;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }

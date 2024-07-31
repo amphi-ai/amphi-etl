@@ -164,7 +164,7 @@ const PipelineWrapper: React.FC<IProps> = ({
 
   const nodeTypes = componentService.getComponents().reduce((acc, component: any) => {
     const id = component._id;
-    const ComponentUI = (props) => <component.UIComponent context={context} componentService={componentService} manager={manager} commands={commands} {...props} />;
+    const ComponentUI = (props) => <component.UIComponent context={context} componentService={componentService} manager={manager} commands={commands} settings={settings} {...props} />;
 
     acc[id] = (props) => <ComponentUI context={context} componentService={componentService} manager={manager} commands={commands} {...props} />;
     return acc;

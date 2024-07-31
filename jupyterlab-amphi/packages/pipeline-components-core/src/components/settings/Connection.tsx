@@ -7,7 +7,7 @@ import { Handle, NodeToolbar, Position, useReactFlow, useStore, useStoreApi } fr
 import { keyIcon, settingsIcon } from '../../icons';
 
 export class Connection extends PipelineComponent<ComponentItem>() {
-  public _name = "Connection 3";
+  public _name = "Connection";
   public _id = "connection";
   public _type = "connection";
   public _category = "settings";

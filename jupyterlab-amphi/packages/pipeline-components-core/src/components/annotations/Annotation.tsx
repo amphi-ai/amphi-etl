@@ -50,7 +50,7 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  public UIComponent({ id, data, context, manager }) {
+  public UIComponent({ id, data, context, manager, commands, settings }) {
 
   const zoomSelector = createZoomSelector();
   const showContent = useStore(zoomSelector);

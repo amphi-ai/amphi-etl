@@ -98,9 +98,10 @@ amphi start -w /your/workspace/path -p 8888
 
 **Features In Progress**
 
-- [ ] **Custom components** - Add the ability to develop your own component and wrap configured ones.
-- [ ] **Implement connections** - Add the ability to securely create connections to reuse in components
+- [ ] **Custom components** - Add the ability to develop your own component and wrap configured ones
+- [x] **Implement connections** - ~Add the ability to securely create connections to reuse in components~
 - [ ] **Developer documentation** - Write comprehensive documentation to allow extensions
+- [x] **Save Components** - ~Save components and reuse them in other pipelines~
 
 <br/>
 

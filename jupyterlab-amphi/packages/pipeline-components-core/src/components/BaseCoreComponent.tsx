@@ -61,7 +61,7 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  public UIComponent = ({ id, data, context, componentService, manager, commands }) => {
+  public UIComponent = ({ id, data, context, componentService, manager, commands, settings }) => {
     const { setNodes, deleteElements, setViewport } = useReactFlow();
     const store = useStoreApi();
 
@@ -102,6 +102,8 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
 
     const [modalOpen, setModalOpen] = useState(false);
 
+    let enableExecution = settings.get('enableExecution').composite as boolean;
+
     return (
       <>
         {renderComponentUI({
@@ -140,7 +142,9 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
           <NodeToolbar isVisible position={Position.Bottom}>
             <button onClick={() => setModalOpen(true)}><settingsIcon.react /></button>
             {(this._type.includes('input') || this._type.includes('processor') || this._type.includes('output')) && (
-              <button onClick={() => executeUntilComponent()}><playCircleIcon.react /></button>
+              <button onClick={() => executeUntilComponent()} disabled={!enableExecution}
+                style={{ opacity: enableExecution ? 1 : 0.5, cursor: enableExecution ? 'pointer' : 'not-allowed' }}>
+                <playCircleIcon.react /></button>
             )}
           </NodeToolbar>
         )}
