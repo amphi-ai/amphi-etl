@@ -44,7 +44,7 @@ import keyIconSvgStr from '../style/icons/key-24.svg'
 import snowflakeIconSvgStr from '../style/icons/snowflake.svg'
 
 import icebergIconSvgStr from '../style/icons/iceberg.svg'
-import trinoIconSvgStr from '../style/icons/trino-icon.svg'
+import trinoIconSvgStr from '../style/icons/Trino.svg'
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',

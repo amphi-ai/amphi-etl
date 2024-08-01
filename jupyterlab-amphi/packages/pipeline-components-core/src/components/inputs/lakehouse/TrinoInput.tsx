@@ -67,7 +67,7 @@ export class TrinoInput extends BaseCoreComponent {
       ],
     };
 
-    super("Trino Input - draft", "trinoInput", "pandas_df_input", [], "inputs.Lakehouse", trinoIcon, defaultConfig, form);
+    super("Trino Input-Test", "trinoInput", "pandas_df_input", [], "inputs.Lakehouse", trinoIcon, defaultConfig, form);
   }
   
     public provideImports({config}): string[] {
