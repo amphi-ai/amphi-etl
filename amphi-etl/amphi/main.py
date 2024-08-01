@@ -23,7 +23,7 @@ def main():
     if args.command == 'start':
         jupyter_command = [
             sys.executable, '-m', 'jupyter', 'lab', 
-            f'--notebook-dir={args.workspace}', f'--port={args.port}', f'--ip={args.ip}, --ContentManager.allow_hidden=true'
+            f'--notebook-dir={args.workspace}', f'--port={args.port}', f'--ip={args.ip}', '--ContentManager.allow_hidden=true'
         ]
         print(f"Running JupyterLab command: {' '.join(jupyter_command)}")
         try:
