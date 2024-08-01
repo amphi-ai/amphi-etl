@@ -161,8 +161,6 @@ export class Connection extends PipelineComponent<ComponentItem>() {
 
     const [envVarFile, setEnvVarFile] = useState<Option>(data.envVarFile || "");
 
-
-
     useEffect(() => {
       handleChange(dataSource, "variables");
     }, [dataSource]);
@@ -328,7 +326,8 @@ export class Connection extends PipelineComponent<ComponentItem>() {
       }));
     };
 
-
+    const connectionNameTooltip = "Provide a name to the connection to describe and differentiate it with other connections."
+    
     return (
       <>
         <ConfigProvider
@@ -341,7 +340,7 @@ export class Connection extends PipelineComponent<ComponentItem>() {
           <div className="flex justify-center mt-1 pt-1.5 space-x-4">
             <Space direction="vertical" size="middle">
               <Space.Compact>
-                <Form.Item label="Connection Name">
+                <Form.Item label="Connection Name" tooltip={connectionNameTooltip}>
                   <InputRegular field={{
                     type: "input", label: "Submission", id: "connectionName", placeholder: "Optional name",
                   }} handleChange={(value) => {
@@ -377,10 +376,12 @@ export class Connection extends PipelineComponent<ComponentItem>() {
                   value={selectedConnection}
                   placeholder='Select connection'
                   options={connections.map(conn => ({ label: conn.label, value: conn.value }))}
+                  size="middle"
                 />
               </Form.Item>
               <br />
-              <Form.Item label="Connection Name">
+              <Form.Item label="Connection Name"
+              tooltip={connectionNameTooltip} >
                 <InputRegular field={{
                   type: "input", id: "connectionName", placeholder: "Optional name", label: ""
                 }} handleChange={(value) => {
@@ -389,7 +390,7 @@ export class Connection extends PipelineComponent<ComponentItem>() {
                 }} context={context} advanced={true} value={connectionName} />
               </Form.Item>
               <br />
-              <Form.Item label="Values to fetch from">
+              <Form.Item label="Values to fetch from" tooltip="Select the method used to retrieve the connection information. When choosing from an environment variables file, please specify the file in the file input below.">
                 <SelectRegular
                   field={{
                     type: "select",
@@ -426,7 +427,7 @@ export class Connection extends PipelineComponent<ComponentItem>() {
                 />
               </Form.Item>
               <br />
-              <Form.Item label="Environment Variables File (.env)">
+              <Form.Item label="Environment Variables File (.env)" tooltip="If the environment file is the selected method, specify the file from which to extract the connection information. The file is a dot env (.env) file which consists of VARIABLE='value', one per line. You can use the helper to copy-paste the list of variable names below next to the Name column title.">
                 <InputFile field={{
                   type: "input", id: "environmentVariableFile", placeholder: "config.env", label: ""
                 }} handleChange={handleChange} context={context} advanced={true} value={envVarFile} manager={manager} />

@@ -569,7 +569,7 @@ const PipelineWrapper: React.FC<IProps> = ({
 
 
 return (
-  <div className="palette" id="pipeline-panel">
+  <div className="canvas" id="pipeline-panel">
     <ConfigProvider
       theme={{
         token: {

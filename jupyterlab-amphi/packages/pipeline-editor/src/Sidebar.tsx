@@ -72,7 +72,7 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
                         ),
                         key: `category-${index}-item-${childIndex}`,
                         isLeaf: true,
-                        icon: <component._icon.react height="14px" width="14px;" />
+                        icon: <span className="anticon"><component._icon.react height="14px" width="14px;" /></span>
                     })));
                 } else {
                     children.push({
@@ -91,7 +91,7 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
                             ),
                             key: `category-${index}-sub-${subIndex}-item-${childIndex}`,
                             isLeaf: true,
-                            icon: <component._icon.react height="14px" width="14px;" />
+                            icon: <span className="anticon"><component._icon.react height="14px" width="14px;" /></span>
                         }))
                     });
                 }
@@ -155,7 +155,7 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
     };
 
     return (
-        <aside title={'Components'} >
+        <aside className="sidebar" title={'Components'} >
             <Space direction="vertical" style={{ marginTop: '10px', marginLeft: '10px', width: '90%', textAlign: 'center' }}>
                 <Input
                     placeholder="Search components"

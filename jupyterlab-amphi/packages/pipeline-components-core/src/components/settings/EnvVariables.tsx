@@ -246,7 +246,7 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
     const { Paragraph, Text } = Typography;
     const info = (
       <span>
-        <Text>Use Env. Variables in components' by clicking on the braces icon in inputs fields.</Text>
+        <Text>Use Env. Variables in components by clicking on the braces icon in inputs fields.</Text>
       </span>
     );
     return (
