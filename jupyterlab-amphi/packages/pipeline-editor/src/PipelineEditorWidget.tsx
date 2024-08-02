@@ -661,7 +661,6 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
         console.log("before doc")
         const doc = await commands.execute('docmanager:open', { path: file.path });
         doc.context.model.fromString(code);
-
       };
 
       const result = await showDialog({

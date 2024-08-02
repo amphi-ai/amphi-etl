@@ -221,7 +221,7 @@ export class Launcher extends JupyterlabLauncher {
                     <shieldCheckedIcon.react/>
                   </span>
                   <div className="flex-1">
-                    <h2 className="block font-bold text-black-900">Open-source and private</h2>
+                    <h2 className="block font-bold text-black-900">Open and private</h2>
                     <p className="mt-1 text-sm text-gray-700">
                       Amphi ETL is open-source and is self-hosted. All data is stored locally, and isn't sent to or stored on Amphi's servers. 
                       <a href="https://docs.amphi.ai/getting-started/core-concepts#file-browser" target="_blank" rel="noopener noreferrer">Learn more</a>
@@ -237,7 +237,7 @@ export class Launcher extends JupyterlabLauncher {
                   </span>
                   <div className="flex-1">
                     <h2 className="block font-bold text-black-900">Community-driven & extensible</h2>
-                    <p className="mt-1 text-sm text-gray-700">Pipelines can be shared as files with anyone. Coming soon the platform will be extensible with shareable connectors and components.</p>
+                    <p className="mt-1 text-sm text-gray-700">Pipelines and component configuration can be shared as files with anyone.</p>
                   </div>
                 </div>
               </div>

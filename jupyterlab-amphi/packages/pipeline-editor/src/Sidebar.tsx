@@ -145,8 +145,23 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
     }, [searchValue, treeData]);
 
     useEffect(() => {
-        const keys = searchValue ? filteredTreeData.map((item: any) => item.key) : Object.keys(categorizedComponents).map((category, index) => `category-${index}`);
-        setExpandedKeys(keys);
+        const collectKeys = (data: any[]): React.Key[] => {
+            return data.reduce((acc: React.Key[], item: any) => {
+                // Add the current item's key to the accumulator array
+                acc.push(item.key);
+                
+                // If the current item has children, recursively collect their keys
+                if (item.children) {
+                    acc.push(...collectKeys(item.children));
+                }
+                
+                return acc; // Return the accumulated keys
+            }, []);
+        };
+    
+        // Collect keys based on the presence of a search value
+        const keys = searchValue ? collectKeys(filteredTreeData) : Object.keys(categorizedComponents).map((category, index) => `category-${index}`);
+        setExpandedKeys(keys); // Update the expanded keys state
     }, [searchValue, filteredTreeData, categorizedComponents]);
 
     const onExpand = (keys: React.Key[]) => {
