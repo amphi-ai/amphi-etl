@@ -28,34 +28,35 @@ const dagreGraph = new dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
 
 const dagreLayout: LayoutAlgorithm = async (nodes, edges, options) => {
     dagreGraph.setGraph({
-      rankdir: options.direction,
-      nodesep: options.spacing[0],
-      ranksep: options.spacing[1],
+        rankdir: options.direction,
+        nodesep: options.spacing[0],
+        ranksep: options.spacing[1],
     });
-  
+
     for (const node of nodes) {
-      dagreGraph.setNode(node.id, {
-        width: node.width ?? 0,
-        height: node.height ?? 0,
-      });
+        dagreGraph.setNode(node.id, {
+            width: node.width ?? 0,
+            height: node.height ?? 0,
+        });
     }
-  
+
     for (const edge of edges) {
-      dagreGraph.setEdge(edge.source, edge.target);
+        dagreGraph.setEdge(edge.source, edge.target);
     }
-  
+
     dagre.layout(dagreGraph);
-  
+
     const nextNodes = nodes.map((node) => {
-      const { x, y } = dagreGraph.node(node.id);
-      const position = {
-        x: x - (node.width ?? 0) / 2,
-        y: y - (node.height ?? 0) / 2,
-      };
-  
-      return { ...node, position };
+        const { x, y } = dagreGraph.node(node.id);
+        const position = {
+            x: x - (node.width ?? 0) / 2,
+            // y: y - (node.height ?? 0) / 2, // align vertically (middle)
+            y: y
+        };
+
+        return { ...node, position };
     });
-  
+
     return { nodes: nextNodes, edges };
 };
 
@@ -70,7 +71,7 @@ export type LayoutOptions = {
 } & LayoutAlgorithmOptions;
 
 function useAutoLayout(options: LayoutOptions) {
-    const { setNodes, setEdges } = useReactFlow();
+    const { fitView, setViewport, setNodes, setEdges } = useReactFlow();
     const nodesInitialized = useNodesInitialized();
     const elements = useStore(
         (state) => ({
@@ -110,6 +111,10 @@ function useAutoLayout(options: LayoutOptions) {
 
         setNodes(nextNodes);
         setEdges(nextEdges);
+        setViewport({ x: 0, y: 0, zoom: 1 });
+        setTimeout(() => {
+            fitView({ padding: 0.4 });
+        }, 25);
     }, [nodesInitialized, elements, options, setNodes, setEdges]);
 
     return runLayout;

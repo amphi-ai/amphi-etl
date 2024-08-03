@@ -79,50 +79,53 @@ export class CsvFileInput extends BaseCoreComponent {
   }
 
 
-  public generatePandasComponentCode({ config, outputName }): string {
-    // Initialize an object to modify without affecting the original config
-    let csvOptions = { ...config.csvOptions };
+public generatePandasComponentCode({ config, outputName }): string {
+  // Initialize an object to modify without affecting the original config
+  let csvOptions = { ...config.csvOptions };
+  console.log("csvOptions.names %o", csvOptions.names);
 
-    // Handle 'infer' option
-    if (csvOptions.sep === 'infer') {
-      csvOptions.sep = 'None'; // Set sep to Python's None for code generation
-      csvOptions.engine = 'python'; // Ensure engine is set to 'python'
-    }
+  // Handle 'infer' option
+  if (csvOptions.sep === 'infer') {
+    csvOptions.sep = 'None'; // Set sep to Python's None for code generation
+    csvOptions.engine = 'python'; // Ensure engine is set to 'python'
+  }
 
-    // Adjust handling for 'header' and 'names'
-    if (typeof config.header === 'number' || config.header === 'None') {
-      csvOptions.header = config.header; // Use the header value directly if it's a number or 'None'
-    }
+  // Adjust handling for 'header' and 'names'
+  if (config.header === '0' || config.header === '1' || config.header === 'None') {
+    csvOptions.header = config.header;
+  }
 
-    if (config.names && Array.isArray(config.names) && config.names.length > 0) {
-      csvOptions.names = `['${config.names.join("', '")}']`; // Format names as a Python list
-      csvOptions.header = 0; // Set header to 0 if names are provided
-    }
+  if (config.names.length > 0) {
+    csvOptions.names = `['${config.names.join("', '")}']`;
+    console.log("csvOptions.names %o", csvOptions.names);
+    csvOptions.header = 0;
+  }
 
-    // Prepare options string for pd.read_csv
-    let optionsString = Object.entries(csvOptions)
-      .filter(([key, value]) => value !== null && value !== '' && !(key === 'sep' && value === 'infer'))
-      .map(([key, value]) => {
-        if (key === 'header' && (typeof value === 'number' || value === 'None' || value === 'string ')) {
-          return `${key}=${value}`; // Handle header as number or None without quotes
-        } else if (key === 'names') {
-          return `${key}=${value}`; // Directly use the formatted names list
-        } else if (typeof value === 'string' && value !== 'None') {
-          return `${key}="${value}"`; // Handle strings with quotes, except for 'None'
-        } else {
-          return `${key}=${value}`; // Handle numbers and Python's None without quotes
-        }
-      })
-      .join(', ');
+  // Prepare options string for pd.read_csv
+  let optionsString = Object.entries(csvOptions)
+    .filter(([key, value]) => value !== null && value !== '' && !(key === 'sep' && value === 'infer'))
+    .map(([key, value]) => {
+      if (key === 'header' && (value === '0' || value === '1' || value === 'None')) {
+        return `${key}=${value}`; // Handle header as string without quotes
+      } else if (key === 'names') {
+        return `${key}=${value}`; // Directly use the formatted names list
+      } else if (typeof value === 'string' && value !== 'None') {
+        return `${key}="${value}"`; // Handle strings with quotes, except for 'None'
+      } else {
+        return `${key}=${value}`; // Handle numbers and Python's None without quotes
+      }
+    })
+    .join(', ');
 
-    // Generate the Python code
-    const code = `
+  // Generate the Python code
+  const code = `
 # Reading data from ${config.filePath}
 ${outputName} = pd.read_csv("${config.filePath}"${optionsString ? `, ${optionsString}` : ''}).convert_dtypes()
 `;
-    return code;
-  }
+  return code;
+}
 
+  /*
   public generateComponentIbisCode({ config, outputName }): string {
     // Initialize an object to modify without affecting the original config
     let csvOptions = { ...config.csvOptions };
@@ -164,6 +167,6 @@ ${outputName} = pd.read_csv("${config.filePath}"${optionsString ? `, ${optionsSt
   `;
     return code;
   }
-
+  */
 
 }

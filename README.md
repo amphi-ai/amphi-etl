@@ -74,6 +74,12 @@ amphi start -w /your/workspace/path -p 8888
 
 <br/>
 
+To update Amphi ETL run the following:
+
+```bash
+pip install --upgrade amphi-etl
+```
+
 ## ✨ Features
 
 > \[!NOTE]

@@ -163,7 +163,7 @@ Components palette sidebar
   }
 
   .sidebar {
-    @apply fixed top-0 right-0 h-full w-[220px] z-10;
+    @apply top-0 right-0 h-full w-[220px] z-10;
     overflow-x: hidden;
     overflow-y: auto;
 

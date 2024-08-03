@@ -526,6 +526,8 @@ const PipelineWrapper: React.FC<IProps> = ({
       [pipeline, context]
     );
 
+    const proOptions = { hideAttribution: true };
+
     return (
       <div className="reactflow-wrapper" data-id={pipelineId} ref={reactFlowWrapper}>
         <Dropzone onDrop={handleFileDrop}>
@@ -550,11 +552,12 @@ const PipelineWrapper: React.FC<IProps> = ({
             nodeTypes={nodeTypes}
             snapToGrid={true}
             snapGrid={[15, 15]}
-            fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0 }}
+            fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0, padding: 0.4  }}
             defaultViewport={initialViewport}
             // viewport={initialViewport}
             // onViewportChange={onViewportChange}
             deleteKeyCode={[]}
+            proOptions={proOptions}
             >
             <Panel position="top-right">
             </Panel>
