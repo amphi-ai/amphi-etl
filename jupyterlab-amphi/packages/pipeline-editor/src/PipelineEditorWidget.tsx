@@ -12,6 +12,7 @@ import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { Drag } from '@lumino/dragdrop';
 import { Widget } from '@lumino/widgets';
 import DownloadImageButton from './ExportToImage';
+import AutoLayoutButton from './AutoLayout';
 import { useCopyPaste, useUndoRedo } from './Commands';
 import { ContentsManager } from '@jupyterlab/services';
 import Sidebar from './Sidebar'; 
@@ -35,7 +36,8 @@ import ReactFlow, {
   SelectionDragHandler,
   OnEdgesDelete,
   ControlButton,
-  useOnViewportChange
+  useOnViewportChange,
+  useStore
 } from 'reactflow';
 
 
@@ -558,9 +560,9 @@ const PipelineWrapper: React.FC<IProps> = ({
             </Panel>
             <Controls>
               <DownloadImageButton pipelineName={context.context.sessionContext.path} pipelineId={pipelineId} />
+              <AutoLayoutButton/>
             </Controls>
             <Background color="#aaa" gap={15} />
-
           </ReactFlow>
         </Dropzone>
       </div >

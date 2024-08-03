@@ -52,6 +52,7 @@
   },
   "dependencies": {
     "@amphi/pipeline-components-manager": "file:./../pipeline-components-manager",
+    "@dagrejs/dagre": "^1.0.4",
     "@jupyterlab/application": "^4.1.5",
     "@jupyterlab/apputils": "^4.1.9",
     "@jupyterlab/docmanager-extension": "^4.1.5",
