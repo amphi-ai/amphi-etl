@@ -19,7 +19,9 @@ Editor components styles
   transition: 0.2s box-shadow;
 }
 
-.react-flow__node.selected .handle-right, .react-flow__node.selected .handle-left, .react-flow__node.selected .handle-bottom {
+.react-flow__node.selected .handle-right,
+.react-flow__node.selected .handle-left,
+.react-flow__node.selected .handle-bottom {
   @apply visible;
 }
 
@@ -33,23 +35,32 @@ Editor components styles
   transition: 0.2s box-shadow;
 }
 
+.react-flow__node-toolbar div {
+  margin: 0px;
+  padding: 0px;
+  height:16px;
+}
+
+
 .react-flow__node-toolbar button {
   border: 1px solid #eee;
   background: white;
   cursor: pointer;
+  padding: 4px;
 }
+
 
 .react-flow__node-toolbar button:hover {
   background: #f5f5f6;
 }
 
 .react-flow__node-toolbar svg {
-  margin-top: 4px;
   color: #404040;
 }
 
 .react-flow__node-toolbar button:hover svg {
-  color: #5F9B97; /* Change icon color on hover */
+  color: #5F9B97;
+  /* Change icon color on hover */
 }
 
 .react-flow__node-toolbar button:first-child {
@@ -81,7 +92,7 @@ Editor components styles
 .component_label {
   @apply block mt-1 text-xs font-medium text-black;
 }
-    
+
 .component__header {
   @apply p-[2px_0px] border-b border-[#e2e8f0] font-bold flex justify-between items-center text-[12px];
 }
@@ -120,48 +131,51 @@ Editor components styles
 Components palette sidebar
 */
 
-.palette {
+.canvas {
   @apply flex flex-col flex-grow h-full;
 }
 
-.palette aside {
+.sidebar {
   @apply border-r border-l border-[#eee] border-l-[#E0E0E0] text-[12px] bg-white;
 }
 
 
-.palette aside .description {
+.sidebar .description {
   @apply mr-[8px] mb-[10px] mt-[10px];
 }
 
-.palette .draggable_component {
+.sidebar .draggable_component {
   @apply h-[30px] p-[4px] bg-[#F2F4F7] border border-[var(--jp-border-color2)] mb-[10px] flex items-center justify-start cursor-grab leading-[16px] rounded-[3px];
 }
 
-.palette .reactflow-wrapper {
+.canvas .reactflow-wrapper {
   @apply flex-grow h-full;
 }
 
-.palette .selectall {
+.canvas .selectall {
   @apply mt-[10px];
 }
 
 @media screen and (min-width: 768px) {
-  .palette {
-    @apply flex flex-row; /* Sets the flex direction to row */
+  .canvas {
+    @apply flex flex-row;
+    /* Sets the flex direction to row */
   }
 
-  .palette aside {
-   @apply fixed top-0 right-0 h-full w-[220px] z-10;
-   overflow-x: hidden;
-   overflow-y: auto;
+  .sidebar {
+    @apply top-0 right-0 h-full w-[220px] z-10;
+    overflow-x: hidden;
+    overflow-y: auto;
 
   }
 }
 
 .palette-component {
   position: relative;
-  z-index: 1000; /* Ensure the draggable elements are always on top */
-  cursor: move; /* fallback if grab cursor is unsupported */
+  z-index: 1000;
+  /* Ensure the draggable elements are always on top */
+  cursor: move;
+  /* fallback if grab cursor is unsupported */
   cursor: grab;
   cursor: -moz-grab;
   cursor: -webkit-grab;
@@ -169,14 +183,15 @@ Components palette sidebar
 
 .palette-component-category {
   position: relative;
-  z-index: 500; /* Ensure categories are on top but below components */
+  z-index: 500;
+  /* Ensure categories are on top but below components */
 }
 
-.palette .palette-component-category {
+.sidebar .palette-component-category {
   font-weight: bold;
 }
 
-.palette .ant-tree-indent-unit {
+.sidebar .ant-tree-indent-unit {
   width: 8px;
 }
 
@@ -197,17 +212,17 @@ Edges
 .edgebutton:hover {
   @apply shadow-lg;
 }
-  
+
 /*
 Form inputs
 */
 
-input:checked + label {
+input:checked+label {
   border-color: black;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
-.component_select__input  {
+.component_select__input {
   @apply focus:outline-none focus:[box-shadow:none] focus:border-none;
 }
 
@@ -223,7 +238,7 @@ input:checked + label {
 }
 
 .component_select__option {
-  @apply text-base leading-normal; 
+  @apply text-base leading-normal;
 }
 
 .component_select__indicator-separator {

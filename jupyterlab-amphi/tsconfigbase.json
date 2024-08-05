@@ -17,6 +17,13 @@
     "skipLibCheck": true,
     "strictNullChecks": true,
     "target": "es2019",
-    "types": []
+    "types": [],
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "node_modules/*",
+        "packages/*/src"
+      ]
+    }
   }
 }

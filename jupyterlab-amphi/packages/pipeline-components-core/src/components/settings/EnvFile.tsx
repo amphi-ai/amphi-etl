@@ -316,7 +316,7 @@ export class EnvFile extends PipelineComponent<ComponentItem>() {
               <Form
                 layout="vertical" >
                 <div>
-                  <Form.Item label="Environment Variables File (.env)">
+                  <Form.Item label="Environment Variables File (.env)" tooltip="Specify the file from which to extract the connection information. The file is a dot env (.env) file which consists of VARIABLE='value', one per line. You can use the helper to copy-paste the list of variable names below next to the Name column title.">
 
                     <InputFile field={{
                       type: "input", id: "environmentVariableFile", placeholder: "config.env", label: ""
@@ -345,7 +345,7 @@ export class EnvFile extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  public UIComponent({ id, data, context, componentService, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands, settings }) {
 
     const { setNodes, deleteElements, setViewport } = useReactFlow();
     const store = useStoreApi();

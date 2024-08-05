@@ -899,7 +899,9 @@ Editor components styles
   transition: 0.2s box-shadow;
 }
 
-.react-flow__node.selected .handle-right, .react-flow__node.selected .handle-left, .react-flow__node.selected .handle-bottom {
+.react-flow__node.selected .handle-right,
+.react-flow__node.selected .handle-left,
+.react-flow__node.selected .handle-bottom {
   visibility: visible;
 }
 
@@ -913,10 +915,17 @@ Editor components styles
   transition: 0.2s box-shadow;
 }
 
+.react-flow__node-toolbar div {
+  margin: 0px;
+  padding: 0px;
+  height:16px;
+}
+
 .react-flow__node-toolbar button {
   border: 1px solid #eee;
   background: white;
   cursor: pointer;
+  padding: 4px;
 }
 
 .react-flow__node-toolbar button:hover {
@@ -924,7 +933,6 @@ Editor components styles
 }
 
 .react-flow__node-toolbar svg {
-  margin-top: 4px;
   color: #404040;
 }
 
@@ -1048,14 +1056,14 @@ Editor components styles
 Components palette sidebar
 */
 
-.palette {
+.canvas {
   display: flex;
   height: 100%;
   flex-grow: 1;
   flex-direction: column;
 }
 
-.palette aside {
+.sidebar {
   border-right-width: 1px;
   border-left-width: 1px;
   border-color: rgb(238 238 238 / var(--tw-border-opacity));
@@ -1066,13 +1074,13 @@ Components palette sidebar
   font-size: 12px;
 }
 
-.palette aside .description {
+.sidebar .description {
   margin-right: 8px;
   margin-bottom: 10px;
   margin-top: 10px;
 }
 
-.palette .draggable_component {
+.sidebar .draggable_component {
   margin-bottom: 10px;
   display: flex;
   height: 30px;
@@ -1088,24 +1096,23 @@ Components palette sidebar
   line-height: 16px;
 }
 
-.palette .reactflow-wrapper {
+.canvas .reactflow-wrapper {
   height: 100%;
   flex-grow: 1;
 }
 
-.palette .selectall {
+.canvas .selectall {
   margin-top: 10px;
 }
 
 @media screen and (min-width: 768px) {
-  .palette {
+  .canvas {
     display: flex;
     flex-direction: row;
     /* Sets the flex direction to row */
   }
 
-  .palette aside {
-    position: fixed;
+  .sidebar {
     top: 0px;
     right: 0px;
     z-index: 10;
@@ -1132,11 +1139,11 @@ Components palette sidebar
   /* Ensure categories are on top but below components */
 }
 
-.palette .palette-component-category {
+.sidebar .palette-component-category {
   font-weight: bold;
 }
 
-.palette .ant-tree-indent-unit {
+.sidebar .ant-tree-indent-unit {
   width: 8px;
 }
 
@@ -1174,7 +1181,7 @@ Edges
 Form inputs
 */
 
-input:checked + label {
+input:checked+label {
   border-color: black;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }

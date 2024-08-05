@@ -69,7 +69,7 @@ export class RestInput extends BaseCoreComponent {
 
     let jsonPathParam = '';
     if (config.jsonPath && config.jsonPath.trim() !== '') {
-      jsonPathParam = `jsonpath_expr = parse('${config.jsonPath}')\nselected_data = [match.value for match in jsonpath_expr.find(data)] if jsonpath_expr.find(data) else []\n${outputName} = pd.DataFrame(selected_data).convert_dtypes() if selected_data else pd.DataFrame()\n`;
+      jsonPathParam = `${outputName}_jsonpath_expr = parse('${config.jsonPath}')\nselected_data = [match.value for match in ${outputName}_jsonpath_expr.find(data)] if ${outputName}_jsonpath_expr.find(data) else []\n${outputName} = pd.DataFrame(selected_data).convert_dtypes() if selected_data else pd.DataFrame()\n`;
     } else {
       jsonPathParam = `${outputName} = pd.DataFrame([data]).convert_dtypes() if isinstance(data, dict) else pd.DataFrame(data).convert_dtypes()\n`;
     }
@@ -78,13 +78,11 @@ export class RestInput extends BaseCoreComponent {
     const trimmedParams = params.endsWith(', ') ? params.slice(0, -2) : params; // Remove trailing comma and space if present
 
     const code = `
-import requests
-from jsonpath_ng import parse
-response = requests.request(
+${outputName}_response = requests.request(
   method="${config.method}",
   url="${config.url}"${trimmedParams ? ', ' + trimmedParams : ''}
 )
-data = response.json()
+${outputName}_data = ${outputName}_response.json()
 ${jsonPathParam}
 `;
     return code;

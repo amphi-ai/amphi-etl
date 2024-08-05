@@ -956,21 +956,4 @@ input.jp-mod-styled:focus {
   background: #F2F4F7;
 }
 
-/*
 
-.jp-LauncherCard {
-  display: flex;
-  flex-direction: column;
-  cursor: pointer;
-  width: var(--jp-private-launcher-card-size);
-  height: var(--jp-private-launcher-card-size);
-  margin: 8px;
-  padding: 0px;
-  border: 1px solid var(--jp-border-color2);
-  background: var(--jp-layout-color0);
-  box-shadow: var(--jp-elevation-z1);
-  transition: 0.2s box-shadow;
-  border-radius: var(--jp-border-radius);
-}
-
-*/

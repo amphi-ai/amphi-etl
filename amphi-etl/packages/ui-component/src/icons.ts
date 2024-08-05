@@ -1,6 +1,6 @@
 import { LabIcon } from '@jupyterlab/ui-components';
 
-import squareIconSvgStr from '../style/icons/amphi-square-logo.svg';
+import squareIconSvgStr from '../style/icons/amphi_logo_paths.svg';
 import amphiLogoSvgStr from '../style/icons/amphi.svg';
 import pipelineIconSvgStr from '../style/icons/pipeline-16.svg';
 import pipelineNegativeIconSvgStr from '../style/icons/pipeline-16.svg';

@@ -76,6 +76,8 @@ export class SnowflakeInput extends BaseCoreComponent {
     super("Snowflake Input", "snowflakeInput", "pandas_df_input", [], "inputs.Cloud Warehouses", snowflakeIcon, defaultConfig, form);
   }
 
+
+
   public provideDependencies({ config }): string[] {
     let deps: string[] = [];
     deps.push('snowflake-sqlalchemy');

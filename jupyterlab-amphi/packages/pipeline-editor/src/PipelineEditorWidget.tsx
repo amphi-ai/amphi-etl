@@ -12,6 +12,7 @@ import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { Drag } from '@lumino/dragdrop';
 import { Widget } from '@lumino/widgets';
 import DownloadImageButton from './ExportToImage';
+import AutoLayoutButton from './AutoLayout';
 import { useCopyPaste, useUndoRedo } from './Commands';
 import { ContentsManager } from '@jupyterlab/services';
 import Sidebar from './Sidebar'; 
@@ -35,7 +36,8 @@ import ReactFlow, {
   SelectionDragHandler,
   OnEdgesDelete,
   ControlButton,
-  useOnViewportChange
+  useOnViewportChange,
+  useStore
 } from 'reactflow';
 
 
@@ -164,7 +166,7 @@ const PipelineWrapper: React.FC<IProps> = ({
 
   const nodeTypes = componentService.getComponents().reduce((acc, component: any) => {
     const id = component._id;
-    const ComponentUI = (props) => <component.UIComponent context={context} componentService={componentService} manager={manager} commands={commands} {...props} />;
+    const ComponentUI = (props) => <component.UIComponent context={context} componentService={componentService} manager={manager} commands={commands} settings={settings} {...props} />;
 
     acc[id] = (props) => <ComponentUI context={context} componentService={componentService} manager={manager} commands={commands} {...props} />;
     return acc;
@@ -524,6 +526,8 @@ const PipelineWrapper: React.FC<IProps> = ({
       [pipeline, context]
     );
 
+    const proOptions = { hideAttribution: true };
+
     return (
       <div className="reactflow-wrapper" data-id={pipelineId} ref={reactFlowWrapper}>
         <Dropzone onDrop={handleFileDrop}>
@@ -548,19 +552,20 @@ const PipelineWrapper: React.FC<IProps> = ({
             nodeTypes={nodeTypes}
             snapToGrid={true}
             snapGrid={[15, 15]}
-            fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0 }}
+            fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0, padding: 0.4  }}
             defaultViewport={initialViewport}
             // viewport={initialViewport}
             // onViewportChange={onViewportChange}
             deleteKeyCode={[]}
+            proOptions={proOptions}
             >
             <Panel position="top-right">
             </Panel>
             <Controls>
               <DownloadImageButton pipelineName={context.context.sessionContext.path} pipelineId={pipelineId} />
+              <AutoLayoutButton/>
             </Controls>
             <Background color="#aaa" gap={15} />
-
           </ReactFlow>
         </Dropzone>
       </div >
@@ -569,7 +574,7 @@ const PipelineWrapper: React.FC<IProps> = ({
 
 
 return (
-  <div className="palette" id="pipeline-panel">
+  <div className="canvas" id="pipeline-panel">
     <ConfigProvider
       theme={{
         token: {
@@ -661,7 +666,6 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
         console.log("before doc")
         const doc = await commands.execute('docmanager:open', { path: file.path });
         doc.context.model.fromString(code);
-
       };
 
       const result = await showDialog({

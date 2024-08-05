@@ -10,7 +10,7 @@ import {
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, RedditInput, OpenAILookUp,
   EnvVariables, EnvFile, ConvertToDocuments, PineconeOutput, FixedSizeChunking, SemanticChunking, WordFileInput, PdfTablesInput, Transpose,
   RecursiveChunking, HtmlToMarkdown, ParseHTML, ChromaOutput, CustomCodeDocuments, Unite,
-  FillMissingValues, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput
+  FillMissingValues, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, RestOutput
 } from './components';
 
 import { IcebergInput } from './components/inputs/lakehouse/IcebergInput';
@@ -86,6 +86,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(ParquetFileOutput.getInstance())
     componentService.addComponent(XmlFileOutput.getInstance())
     componentService.addComponent(GoogleSheetsOutput.getInstance())
+    // componentService.addComponent(RestOutput.getInstance())
+
     componentService.addComponent(MySQLOutput.getInstance())
     componentService.addComponent(PostgresOutput.getInstance())
     componentService.addComponent(Console.getInstance())

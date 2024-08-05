@@ -415,9 +415,10 @@ ${code}`;
       if (/f(['"])/.test(line) || /f("""|''')/.test(line)) {
         return line; // Return the line as-is if it's already an f-string
       }
-      return line.replace(/(['"])\{(\w+)\}\1/g, '$2')  // Remove quotes for standalone variables
+      return line
+        .replace(/(['"])\{(\w+)\}\1/g, '$2')  // Remove quotes for standalone variables
         .replace(/(['"])(.*\{.*\}.*)\1/g, 'f$1$2$1')  // Convert to f-string for multiple variables
-        .replace(/("""|''')(.*\{.*\}.*)\1/g, 'f$1$2$1');  // Convert triple quotes to f-strings
+        .replace(/(f?"""\s*)(.*\{.*\}.*)(\s*""")/g, 'f"""$2"""');  // Convert triple quotes to f-strings, avoid double f
     });
     return transformedLines.join('\n');
   }

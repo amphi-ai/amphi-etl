@@ -51,7 +51,7 @@ export class PostgresInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Schema",
-          id: "dbOptions.schema",
+          id: "schema",
           placeholder: "Enter schema name",
         },
         {
@@ -91,8 +91,8 @@ export class PostgresInput extends BaseCoreComponent {
     const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
 
     const tableReference = (config.schema && config.schema.toLowerCase() !== 'public')
-      ? `${config.schema}.${config.tableName}`
-      : config.tableName;
+    ? `${config.schema}.${config.tableName}`
+    : config.tableName;
 
     const sqlQuery = config.sqlQuery && config.sqlQuery.trim()
       ? config.sqlQuery

@@ -19,16 +19,13 @@ import json
 import sys
 import types
 import re
-import warnings
 
 from importlib import __import__
 from IPython import get_ipython
 from IPython.core.magics.namespace import NamespaceMagics
 from IPython.display import display, HTML
 
-warnings.filterwarnings('ignore')
-
-!pip install --quiet pandas --disable-pip-version-check
+!pip install --quiet pandas==2.2.2 --disable-pip-version-check
 !pip install --quiet tqdm --disable-pip-version-check
 !pip install --quiet sqlalchemy==2.0.4 --disable-pip-version-check
 !pip install --quiet python-dotenv --disable-pip-version-check

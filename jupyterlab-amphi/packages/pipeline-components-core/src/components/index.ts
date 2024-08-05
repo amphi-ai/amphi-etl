@@ -62,6 +62,7 @@ export { XmlFileOutput } from './outputs/files/XmlFileOutput';
 export { PostgresOutput } from './outputs/databases/PostgresOutput';
 export { PineconeOutput } from './outputs/vector-stores/PineconeOutput';
 export { ChromaOutput } from './outputs/vector-stores/ChromaOutput';
+export { RestOutput } from './outputs/cloud/RestOutput';
 
 // Settings
 export { EnvFile } from './settings/EnvFile';
