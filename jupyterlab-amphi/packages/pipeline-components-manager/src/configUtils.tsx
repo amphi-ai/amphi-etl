@@ -26,6 +26,8 @@ const shouldDisplayField = (field, values) => {
   console.log("shouldDisplay field %o", field)
   console.log("shouldDisplay values %o", values)
 
+  console.log("field.condition %o", field.condition)
+
   if (!field.condition) return true;
   const conditionKeys = Object.keys(field.condition);
   return conditionKeys.every(key => values[key] === field.condition[key]);
@@ -155,7 +157,7 @@ export const generateUIInputs = ({
     const allConnections = PipelineService.getConnections(context.model.toString());
     setConnections(allConnections);
     console.log("allConnections %o", allConnections);
-    
+
     const connectionsByType = allConnections.reduce((acc, connection) => {
       const connectionType = connection.connectionType; // Change to group by connectionType
       if (!acc[connectionType]) {
@@ -164,7 +166,7 @@ export const generateUIInputs = ({
       acc[connectionType].push(renderItem(connection.connectionName)); // Use connectionName for display
       return acc;
     }, {} as Record<string, any[]>);
-  
+
     setOptionsConnections(connectionsByType);
     console.log("optionsConnections %o", optionsConnections);
   };
@@ -230,12 +232,7 @@ export const generateUIInputs = ({
   const renderField = (field: FieldDescriptor, index: number) => {
     if (!advanced && field.advanced) {
       return null;
-    }
-
-    // Wheather to display the field or not
-    if (!shouldDisplayField(field, formValues)) {
-      return null;
-    }
+    } 
 
     let value: any;
     let values: any[] = [];
@@ -414,6 +411,7 @@ export default function ConfigModal({
   const [formValues, setFormValues] = useState(fieldsForm.getFieldsValue());
 
   useEffect(() => {
+    console.log("changed form")
     setFormValues(fieldsForm.getFieldsValue());
   }, [fieldsForm]);
 
@@ -435,12 +433,12 @@ export default function ConfigModal({
         <div onDoubleClick={stopPropagation}>
           <Form
             form={fieldsForm}
-            layout="vertical"   
+            layout="vertical"
             onValuesChange={(_, values) => {
               console.log("onValuesChange %o", values);
               setFormValues(values);
             }}
-            >
+          >
             {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: true, formValues })}
           </Form>
         </div>
