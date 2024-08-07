@@ -6,6 +6,7 @@ module.exports = {
       colors: {
         primary: '#5A8F7B', // Replace '#yourColorValue' with your desired color value
         pastel: '#c4eddd',
+        grey: '#F2F4F7'
       },
     },
   }

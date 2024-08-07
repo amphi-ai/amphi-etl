@@ -35,6 +35,7 @@
     "schema/*.json"
   ],
   "scripts": {
+    "preinstall": "node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
     "build": "npx tailwindcss -i ./style/canvas.css -o ./style/output.css && jlpm run build:lib && jlpm build:labextension:dev",
     "build:prod": "npx tailwindcss -i ./style/canvas.css -o ./style/output.css && jlpm run build:lib && jlpm build:labextension && jlpm install",
     "build:labextension": "jupyter labextension build .",

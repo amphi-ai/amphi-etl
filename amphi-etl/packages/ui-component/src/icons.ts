@@ -1,6 +1,6 @@
 import { LabIcon } from '@jupyterlab/ui-components';
 
-import squareIconSvgStr from '../style/icons/amphi_logo_paths.svg';
+import squareIconSvgStr from '../style/icons/amphi-square-logo.svg';
 import amphiLogoSvgStr from '../style/icons/amphi.svg';
 import pipelineIconSvgStr from '../style/icons/pipeline-16.svg';
 import pipelineNegativeIconSvgStr from '../style/icons/pipeline-16.svg';
@@ -11,7 +11,20 @@ import uploadIconSvgStr from '../style/icons/upload-16.svg';
 import networkIconSvgStr from '../style/icons/network-24.svg';
 import bugIconSvgStr from '../style/icons/bug-16.svg';
 
+import githubIconSvgStr from '../style/icons/github.svg';
+import slackIconSvgStr from '../style/icons/slack.svg';
+import alertCircleFillSvgStr from '../style/icons/alert-circle-fill-24.svg';
+import alertDiamondSvgStr from '../style/icons/alert-diamond-24.svg';
 
+export const alertDiamondIcon = new LabIcon({
+  name: 'amphi:alertDiamond-icon',
+  svgstr: alertDiamondSvgStr
+});
+
+export const alertCircleFillIcon = new LabIcon({
+  name: 'amphi:alertCircleFill-icon',
+  svgstr: alertCircleFillSvgStr
+});
 
 export const asteriskIcon = new LabIcon({
   name: 'amphi:asterisk-icon',
@@ -66,4 +79,14 @@ export const networkIcon = new LabIcon({
 export const bugIcon = new LabIcon({
   name: 'amphi:bug-icon',
   svgstr: bugIconSvgStr
+});
+
+export const githubIcon = new LabIcon({
+  name: 'amphi:github-icon',
+  svgstr: githubIconSvgStr
+});
+
+export const slackIcon = new LabIcon({
+  name: 'amphi:slack-icon',
+  svgstr: slackIconSvgStr
 });

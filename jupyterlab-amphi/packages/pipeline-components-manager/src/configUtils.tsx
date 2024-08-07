@@ -21,6 +21,16 @@ import TransferData from './forms/transferData';
 import ValuesListForm from './forms/valuesListForm';
 import { PipelineService } from './PipelineService';
 
+// Function to check if a field should be displayed based on its condition
+const shouldDisplayField = (field, values) => {
+  console.log("shouldDisplay field %o", field)
+  console.log("shouldDisplay values %o", values)
+
+  if (!field.condition) return true;
+  const conditionKeys = Object.keys(field.condition);
+  return conditionKeys.every(key => values[key] === field.condition[key]);
+};
+
 export const setDefaultConfig = ({
   nodeId,
   store,
@@ -99,12 +109,23 @@ export const generateUIFormComponent = ({
     e.stopPropagation();
   };
 
+  const [fieldsForm] = Form.useForm();
+  const [formValues, setFormValues] = useState(fieldsForm.getFieldsValue());
+
+  useEffect(() => {
+    setFormValues(fieldsForm.getFieldsValue());
+  }, [fieldsForm]);
+
   return (
     <div onDoubleClick={stopPropagation}>
       <Form
+        form={fieldsForm}
         layout="vertical"
-        size="small">
-        {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: false })}
+        size="small"
+        onValuesChange={(_, values) => {
+          setFormValues(values);
+        }}>
+        {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: false, formValues })}
 
         <ConfigModal modalOpen={modalOpen} setModalOpen={setModalOpen} name={name} nodeId={nodeId} form={form} data={data} context={context} componentService={componentService} manager={manager} commands={commands} handleChange={handleChange} advanced />
       </Form>
@@ -122,7 +143,8 @@ export const generateUIInputs = ({
   manager,
   commands,
   handleChange,
-  advanced
+  advanced,
+  formValues
 }: UIInputsProps) => {
 
   const [connections, setConnections] = useState([]);
@@ -202,8 +224,16 @@ export const generateUIInputs = ({
     return acc;
   }, {});
 
+
+
+  // Render field
   const renderField = (field: FieldDescriptor, index: number) => {
     if (!advanced && field.advanced) {
+      return null;
+    }
+
+    // Wheather to display the field or not
+    if (!shouldDisplayField(field, formValues)) {
       return null;
     }
 
@@ -380,13 +410,12 @@ export default function ConfigModal({
     e.stopPropagation();
   };
 
-  const [formIdentifier] = Form.useForm();
+  const [fieldsForm] = Form.useForm();
+  const [formValues, setFormValues] = useState(fieldsForm.getFieldsValue());
 
-  const onFillConnection = () => {
-    formIdentifier.setFieldsValue({
-      url: 'https://taobao.com/',
-    });
-  };
+  useEffect(() => {
+    setFormValues(fieldsForm.getFieldsValue());
+  }, [fieldsForm]);
 
   return (
     <>
@@ -405,9 +434,14 @@ export default function ConfigModal({
       >
         <div onDoubleClick={stopPropagation}>
           <Form
-            form={formIdentifier}
-            layout="vertical" >
-            {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: true })}
+            form={fieldsForm}
+            layout="vertical"   
+            onValuesChange={(_, values) => {
+              console.log("onValuesChange %o", values);
+              setFormValues(values);
+            }}
+            >
+            {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: true, formValues })}
           </Form>
         </div>
 
@@ -468,6 +502,7 @@ interface UIInputsProps {
   // handleChange: (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement | HTMLDataListElement>, fieldId: string) => void;
   handleChange: any;
   advanced: boolean;
+  formValues: any;
 }
 
 export interface Option {
@@ -509,6 +544,7 @@ export interface FieldDescriptor {
   onlyLastValue?: boolean;
   noneOption?: boolean;
   connection?: string;
+  displayCondition?: Record<string, any>;
 }
 
 interface ConfigModalProps {

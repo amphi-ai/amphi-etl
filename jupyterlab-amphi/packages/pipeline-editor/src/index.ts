@@ -24,6 +24,9 @@ import { PromiseDelegate, ReadonlyJSONValue, ReadonlyPartialJSONObject, Token } 
 import { JSONObject } from '@lumino/coreutils';
 import { useCopyPaste } from './Commands';
 import { IDocumentManager } from '@jupyterlab/docmanager';
+import { LIB_VERSION } from './version';
+import { Dialog, showDialog } from '@jupyterlab/apputils';
+import { createAboutDialog } from './AboutDialog';
 
 
 import { ComponentManager, CodeGenerator, PipelineService } from '@amphi/pipeline-components-manager';
@@ -523,6 +526,24 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           }
         });
 
+        commands.addCommand('pipeline-editor:version', {
+          label: 'About Amphi',
+          execute: () => {
+            const { title, body } = createAboutDialog(LIB_VERSION);
+        
+            return showDialog({
+              title,
+              body,
+              buttons: [
+                Dialog.createButton({
+                  label: 'Close',
+                  className: 'jp-About-button jp-mod-reject jp-mod-styled',
+                }),
+              ],
+            });
+          },
+        });
+
         // Add the command to the context menu
         app.contextMenu.addItem({
           command: CommandIDs.create,
@@ -534,6 +555,12 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
         palette.addItem({
           command: CommandIDs.create,
           category: 'Pipeline',
+          args: { isPalette: true }
+        });
+
+        palette.addItem({
+          command: 'pipeline-editor:version',
+          category: 'Help',
           args: { isPalette: true }
         });
 

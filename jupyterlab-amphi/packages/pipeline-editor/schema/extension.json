@@ -1,17 +1,29 @@
 {
-    "jupyter.lab.setting-icon": "amphi:pipeline-icon",
-    "jupyter.lab.setting-icon-label": "Amphi Pipeline Editor",
-    "title": "Amphi Pipeline",
-    "description": "Amphi Pipeline Editor Configuration.",
-    "properties": {
-      "enableExecution": {
-        "type": "boolean",
-        "title": "Enable Execution",
-        "description": "Enable pipeline execution and kernel usage.",
-        "default": true
+  "jupyter.lab.setting-icon": "amphi:pipeline-icon",
+  "jupyter.lab.setting-icon-label": "Amphi Pipeline Editor",
+  "title": "Amphi Pipeline",
+  "description": "Amphi Pipeline Editor Configuration.",
+  "properties": {
+    "enableExecution": {
+      "type": "boolean",
+      "title": "Enable Execution",
+      "description": "Enable pipeline execution and kernel usage.",
+      "default": true
+    }
+  },
+  "additionalProperties": false,
+  "type": "object",
+  "jupyter.lab.menus": {
+    "main": [
+      {
+        "id": "jp-mainmenu-help",
+        "items": [
+          {
+            "command": "pipeline-editor:version",
+            "rank": 1
+          }
+        ]
       }
-    },
-    "additionalProperties": false,
-    "type": "object"
+    ]
   }
-  
+}

@@ -1,17 +1,15 @@
 import {
+  ILauncher,
   Launcher as JupyterlabLauncher,
-  LauncherModel as JupyterLauncherModel,
-  ILauncher
+  LauncherModel as JupyterLauncherModel
 } from '@jupyterlab/launcher';
 import { LabIcon } from '@jupyterlab/ui-components';
-import amphiSvg from '../style/icons/amphi-square-logo.svg';
-import { homeIcon, fileUploadIcon  } from '@jupyterlab/ui-components';
-import { pipelineIcon, shieldCheckedIcon, codeIcon, docsIcon, uploadIcon, networkIcon, bugIcon } from './icons';
 import { CommandRegistry } from '@lumino/commands';
+import { githubIcon, pipelineIcon, slackIcon, alertDiamondIcon } from './icons';
 
 import { each } from '@lumino/algorithm';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // Largely inspired by Elyra launcher https://github.com/elyra-ai/elyra
 
@@ -159,91 +157,145 @@ export class Launcher extends JupyterlabLauncher {
       this.myCommands.execute('ui-components:file-upload');
     };
 
+    const AlertBox = () => {
+      const [isVisible, setIsVisible] = useState(false);
+
+      useEffect(() => {
+        // Check if the alert was previously closed
+        const alertClosed = localStorage.getItem('alertClosed') === 'true';
+        setIsVisible(!alertClosed);
+      }, []);
+
+      const closeAlert = () => {
+        setIsVisible(false);
+        // Save the state to prevent the alert from showing again
+        localStorage.setItem('alertClosed', 'true');
+      };
+
+      if (!isVisible) return null;
+
+      return (
+        <div role="alert" className="mt-5 rounded-xl border border-gray-100 bg-white p-4">
+          <div className="flex items-start gap-4">
+            <span className="text-primary">
+            <alertDiamondIcon.react />
+            </span>
+
+            <div className="flex-1">
+              <h2 className="block font-bold text-black-900">About</h2>
+              <p className="mt-1 text-sm text-gray-700">
+                Welcome to Amphi's demo playground! Explore Amphi ETL's capabilities and user experience here. <br/>Note that <b>executing pipelines is not supported in this environment. </b>
+                For full functionality, install Amphi — it's free and open source. <a href="https://github.com/amphi-ai/amphi-etl" target="_blank" className="text-primary underline">Learn more.</a></p>
+            </div>
+
+            <button onClick={closeAlert} className="text-gray-500 transition hover:text-gray-600">
+              <span className="sr-only">Dismiss popup</span>
+
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="h-6 w-6"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      );
+    };
+
     // Wrap the sections in body and content divs.
     return (
-    <div className="jp-Launcher-body">
-      <div className="jp-Launcher-content">
+      <div className="jp-Launcher-body">
+        <div className="jp-Launcher-content">
 
-      <h1 className="mt-8 text-2xl font-bold text-gray-900 sm:text-3xl flex items-center">
-        Amphi ETL 
-      </h1>
-        <div className="mt-12 grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-8">
-            <div className="rounded-lg">
-              <h1 className="text-xl font-bold text-gray-900 sm:text-3xl">Start</h1>
-              <ul className="mt-4">
-              <li>
-                <span
-                  onClick={handleNewPipelineClick}
-                  className="flex items-center gap-2 border-s-[3px] border-transparent px-4 py-3 text-primary hover:border-gray-100 hover:bg-gray-50 hover:text-grey-700 cursor-pointer">
-                  <pipelineIcon.react />
-                  <span className="text-sm font-medium">New pipeline</span>
-                </span>
-              </li>
+          <h1 className="mt-8 text-2xl font-bold sm:text-3xl flex items-center text-gray-900">
+            Amphi ETL
+          </h1>
+
+          <div className="mt-12 grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-8">
+
+            <div className="rounded-sm bg-white p-4">
+              <div className="flex items-center gap-4">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 sm:text-3xl">Start</h3>
+
+                  <div className="flow-root">
+                    <ul className="-m-1 flex flex-wrap">
+                      <li className="p-1 leading-none">
+                        <a href="https://docs.amphi.ai/category/getting-started" target="_blank" className="text-xs font-medium text-primary">Getting Started</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <ul className="mt-4 space-y-2">
                 <li>
-                  <a 
-                    href="https://docs.amphi.ai/category/getting-started"
-                    className="flex items-center gap-2 border-s-[3px] border-transparent px-4 py-3 text-grey-500 hover:border-gray-100 hover:bg-gray-50 hover:text-grey-700 cursor-pointer">
-                    <docsIcon.react />
-                    <span className="text-sm font-medium">Getting started
-                    </span>
-                  </a>
-                </li>
-                <li>
-                  <a 
-                    href="https://join.slack.com/t/amphi-ai/shared_invite/zt-2ci2ptvoy-FENw8AW4ISDXUmz8wcd3bw"
-                    className="flex items-center gap-2 border-s-[3px] border-transparent px-4 py-3 text-grey-500 hover:border-gray-100 hover:bg-gray-50 hover:text-grey-700 cursor-pointer">
-                    <bugIcon.react />
-                    <span className="text-sm font-medium">Join the community
-                    </span>
+                  <a href="#" onClick={handleNewPipelineClick} className="block h-full rounded-sm border border-gray-100 p-4 hover:border-pastel hover:bg-grey flex items-center gap-4">
+                    <div className="flex items-center justify-center w-16 h-16 rounded-full">
+                    <pipelineIcon.react fill="#5A8F7B" />
+                    </div>
+                    <div>
+                      <strong className="font-bold text-primary">New pipeline</strong>
+                      <p className="mt-1 text-xs font-medium">
+                        Open a new untitled pipeline and drag and drop components to design and develop your data flow.
+                      </p>
+                    </div>
                   </a>
                 </li>
               </ul>
             </div>
 
-            <div className="rounded-sm lg:col-span-2">
-              <h1 className="text-xl font-bold text-gray-900 sm:text-3xl">Fundamentals</h1>
+            <div className="rounded-sm bg-white p-4">
+              <div className="flex items-center gap-4">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 sm:text-3xl">Resources</h3>
 
-              <div role="alert" className="mt-4 rounded-sm mt-3 border border-gray-100 bg-white p-4">
-                <div className="flex items-start gap-4">
-                  <span className="text-grey-600">
-                    <codeIcon.react/>
-                  </span>
-                  <div className="flex-1">
-                    <h2 className="block font-bold text-black-900">Python generation</h2>
-                    <p className="mt-1 text-sm text-gray-700">Develop data pipelines and generate native Python code you own. Run the pipelines anywhere you'd like.</p>
+                  <div className="flow-root">
+                    <ul className="-m-1 flex flex-wrap">
+                      <li className="p-1 leading-none">
+                        <a href="https://docs.amphi.ai/" target="_blank" className="text-xs font-medium text-primary">Documentation</a>
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </div>
 
-              <div role="alert" className="mt-4 rounded-xl mt-3 border border-gray-100 bg-white p-4">
-                <div className="flex items-start gap-4">
-                  <span className="text-grey-600">
-                    <shieldCheckedIcon.react/>
-                  </span>
-                  <div className="flex-1">
-                    <h2 className="block font-bold text-black-900">Open and private</h2>
-                    <p className="mt-1 text-sm text-gray-700">
-                      Amphi ETL is open-source and is self-hosted. All data is stored locally, and isn't sent to or stored on Amphi's servers. 
-                      <a href="https://docs.amphi.ai/getting-started/core-concepts#file-browser" target="_blank" rel="noopener noreferrer">Learn more</a>
-                    </p>                 
-                  </div>
-                </div>
-              </div>
+              <ul className="mt-4 space-y-2">
+                <li>
+                  <a href="https://github.com/amphi-ai/amphi-etl" target="_blank" className="block h-full rounded-sm border border-gray-100 p-4 hover:border-pastel hover:bg-grey flex items-center gap-4">
+                    <div className="flex items-center justify-center w-16 h-16 rounded-full">
+                      <githubIcon.react />
+                    </div>
+                    <div>
+                      <strong className="font-bold text-primary">Issues and feature requests</strong>
+                      <p className="mt-1 text-xs font-medium">
+                        Report issues and suggest features on GitHub. Don't hesitate to star the repository to watch the repository.
+                      </p>
+                    </div>
+                  </a>
+                </li>
+                <li>
+                  <a href="https://join.slack.com/t/amphi-ai/shared_invite/zt-2ci2ptvoy-FENw8AW4ISDXUmz8wcd3bw" target="_blank" className="block h-full rounded-sm border border-gray-100 p-4 hover:border-pastel hover:bg-grey flex items-center gap-4">
+                    <div className="flex items-center justify-center w-16 h-16 rounded-full">
+                      <slackIcon.react />
+                    </div>
+                    <div>
+                      <strong className="font-bold text-primary">Join the Community</strong>
+                      <p className="mt-1 text-xs font-medium">
+                        Join Amphi's community on Slack: seek help, ask questions and share your experience.
+                      </p>
+                    </div>
+                  </a>
+                </li>
 
-              <div role="alert" className="mt-4 rounded-sm mt-3 border border-gray-100 bg-white p-4">
-                <div className="flex items-start gap-4">
-                  <span className="text-grey-600">
-                    <networkIcon.react/>
-                  </span>
-                  <div className="flex-1">
-                    <h2 className="block font-bold text-black-900">Community-driven & extensible</h2>
-                    <p className="mt-1 text-sm text-gray-700">Pipelines and component configuration can be shared as files with anyone.</p>
-                  </div>
-                </div>
-              </div>
-
+              </ul>
             </div>
-            
+
           </div>
         </div>
       </div>

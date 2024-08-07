@@ -49,10 +49,21 @@ export class MySQLInput extends BaseCoreComponent {
           advanced: true
         },
         {
+          type: "radio",
+          label: "Method",
+          id: "queryMethod",
+          options: [
+            { value: "table", label: "Table Name" },
+            { value: "query", label: "SQL Query" }
+          ],
+          advanced: true
+        },
+        {
           type: "input",
           label: "Table Name",
           id: "tableName",
           placeholder: "Enter table name",
+          // condition: { queryMethod: "table" }
         },
         {
           type: "codeTextarea",
@@ -62,7 +73,8 @@ export class MySQLInput extends BaseCoreComponent {
           placeholder: 'SELECT * FROM table_name',
           id: "sqlQuery",
           tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
-          advanced: true
+          advanced: true,
+          // condition: { queryMethod: "query" }
         }
       ],
     };
