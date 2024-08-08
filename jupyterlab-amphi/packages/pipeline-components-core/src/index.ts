@@ -13,6 +13,9 @@ import {
   FillMissingValues, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, RestOutput
 } from './components';
 
+import { IcebergInput } from './components/inputs/lakehouse/IcebergInput';
+import { TrinoInput } from './components/inputs/lakehouse/TrinoInput';
+
 const plugin: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-components-core',
   description: 'Adds a step counter/button (1 of 3 related examples). This extension holds the UI/interface',
@@ -45,8 +48,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(OracleInput.getInstance())
     componentService.addComponent(SqlServerInput.getInstance())
     componentService.addComponent(SnowflakeInput.getInstance())
-
-
+    
+    componentService.addComponent(IcebergInput.getInstance())
+    componentService.addComponent(TrinoInput.getInstance())
     // Processors
     componentService.addComponent(FilterColumns.getInstance())
     componentService.addComponent(RenameColumns.getInstance())
