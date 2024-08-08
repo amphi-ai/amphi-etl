@@ -89,7 +89,6 @@ export class TrinoInput extends BaseCoreComponent {
                                       user='${config.username}',
                                       catalog='${config.catalogs}',
                                       schema='${config.schemaName}')`;
-      const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
       const sqlQuery = config.sqlQuery && config.sqlQuery.trim() ? config.sqlQuery : `SELECT * FROM ${config.tableName}`;
       const code = `
 
@@ -99,8 +98,7 @@ conn = ${connectionString}
 try:
     cursor = conn.cursor() # Connect to the Trino database
     cursor.execute('${sqlQuery}')
-    ${uniqueEngineName} = pd.DataFrame(cursor.fetchall(), columns=[desc[0] for desc in cursor.description])
-    
+    ${outputName} = pd.DataFrame(cursor.fetchall(), columns=[desc[0] for desc in cursor.description])
 finally:
     cursor.close()
 `;
