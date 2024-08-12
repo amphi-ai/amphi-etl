@@ -326,7 +326,6 @@ const PipelineWrapper: React.FC<IProps> = ({
 
     const getCategory = (nodeId: string): string | undefined => {
       const node = nodes.find(node => node.id === nodeId);
-      console.log("node %o", node)
       if (node) {
         return componentService.getComponent(node.type)._type;
       }

@@ -7,6 +7,9 @@ import apiIconSvgStr from '../style/icons/api-24.svg';
 import pipelineCategoryIconSvgStr from '../style/icons/pipeline-brand-24.svg';
 import pipelineBrandIconSvgStr from '../style/icons/pipeline-brand-16.svg';
 import componentIconSvgStr from '../style/icons/node-24.svg';
+import alignIconSvgStr from '../style/icons/align.svg';
+import exportIconSvgStr from '../style/icons/export-svg.svg';
+
 
 
 export const fileTextIcon = new LabIcon({
@@ -48,6 +51,17 @@ export const pipelineCategoryIcon = new LabIcon({
   name: 'amphi:pipelineCategory-icon',
   svgstr: pipelineCategoryIconSvgStr
 });
+
+export const alignIcon = new LabIcon({
+  name: 'amphi:align-icon',
+  svgstr: alignIconSvgStr
+});
+
+export const exportIcon = new LabIcon({
+  name: 'amphi:export-svg-icon',
+  svgstr: exportIconSvgStr
+});
+
 
 
 

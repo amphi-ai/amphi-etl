@@ -3,22 +3,24 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class Join extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { condition: "==" };
+    const defaultConfig = { how: "left" };
     const form = {
       idPrefix: "component__form",
       fields: [
         {
-          type: "column",
-          label: "First Input Column",
+          type: "columns",
+          label: "Left Input Column",
           id: "leftKeyColumn",
           placeholder: "Column name",
+          tooltip: "If you're joining by multiple columns, make sure the column lists are ordered to match the corresponding columns in the right dataset.",
           inputNb: 1
         },
         {
-          type: "column",
-          label: "Second Input Column",
+          type: "columns",
+          label: "Right Input Column",
           id: "rightKeyColumn",
           placeholder: "Column name",
+          tooltip: "If you're joining by multiple columns, make sure the column lists are ordered to match the corresponding columns in the left dataset.",
           inputNb: 2
         },
         {
@@ -27,10 +29,13 @@ export class Join extends BaseCoreComponent {
           id: "how",
           placeholder: "Default: Inner",
           options: [
-            { value: "inner", label: "Inner: return only the rows with matching keys in both data frames (intersection)." },
-            { value: "left", label: "Left: return all rows from the left data frame and matched rows from the right data frame (including NaN for no match)." },
-            { value: "right", label: "Right: return all rows from the right data frame and matched rows from the left data frame (including NaN for no match)." },
-            { value: "outer", label: "Outer: return all rows from both data frames, with matches where available and NaN for no match (union)." }
+            { value: "inner", label: "Inner: return only the rows with matching keys in both datasets (intersection)." },
+            { value: "left", label: "Left: return all rows from the left dataset and matched rows from the right dataset (including NaN for no match)." },
+            { value: "right", label: "Right: return all rows from the right dataset and matched rows from the left dataset (including NaN for no match)." },
+            { value: "outer", label: "Outer: return all rows from both datasets, with matches where available and NaN for no match (union)." },
+            { value: "cross", label: "Outer: creates the cartesian product from both datasets, preserves the order of the left keys." },
+            { value: "anti-left", label: "Anti Left: return rows from the left dataset that do not have matching rows in the right dataset." },
+            { value: "anti-right", label: "Anti Right: return rows from the right dataset that do not have matching rows in the left dataset." }
           ],
           advanced: true
         }
@@ -46,19 +51,26 @@ export class Join extends BaseCoreComponent {
 
   public generateComponentCode({ config, inputName1, inputName2, outputName }): string {
 
-    // column.value = name, column.type = type, column.name = boolean if column is named or false if numeric index
-    const { value: leftKeyColumnValue, type: leftKeyColumnType, named: leftKeyColumnNamed } = config.leftKeyColumn;
-    const { value: rightKeyColumnValue, type: rightKeyColumnType, named: rightKeyColumnNamed } = config.rightKeyColumn;
+    // Extract and map leftKeyColumn and rightKeyColumn arrays
+    const leftKeys = config.leftKeyColumn.map(column => column.named ? `"${column.value}"` : column.value);
+    const rightKeys = config.rightKeyColumn.map(column => column.named ? `"${column.value}"` : column.value);
 
-    // Modify to handle non-named (numeric index) columns by removing quotes
-    const leftKey = leftKeyColumnNamed ? `"${leftKeyColumnValue}"` : leftKeyColumnValue;
-    const rightKey = rightKeyColumnNamed ? `"${rightKeyColumnValue}"` : rightKeyColumnValue;
+    // Join the keys into a string for the Python code
+    const leftKeysStr = `[${leftKeys.join(', ')}]`;
+    const rightKeysStr = `[${rightKeys.join(', ')}]`;
 
-    const joinType = config.how ? `, how="${config.how}"` : '';
-    const code = `
-# Join ${inputName1} and ${inputName2}
-${outputName} = pd.merge(${inputName1}, ${inputName2}, left_on=${leftKey}, right_on=${rightKey}${joinType})
-`;
+    let code = `# Join ${inputName1} and ${inputName2}\n`;
+
+    if (config.how === "anti-left") {
+      code += `${outputName} = pd.merge(${inputName1}, ${inputName2}, left_on=${leftKeysStr}, right_on=${rightKeysStr}, how="left", indicator=True)\n`;
+      code += `${outputName} = ${outputName}[${outputName}["_merge"] == "left_only"].drop(columns=["_merge"])\n`;
+    } else if (config.how === "anti-right") {
+      code += `${outputName} = pd.merge(${inputName1}, ${inputName2}, left_on=${leftKeysStr}, right_on=${rightKeysStr}, how="right", indicator=True)\n`;
+      code += `${outputName} = ${outputName}[${outputName}["_merge"] == "right_only"].drop(columns=["_merge"])\n`;
+    } else {
+      const joinType = config.how ? `, how="${config.how}"` : '';
+      code += `${outputName} = pd.merge(${inputName1}, ${inputName2}, left_on=${leftKeysStr}, right_on=${rightKeysStr}${joinType})\n`;
+    }
 
     return code;
   }

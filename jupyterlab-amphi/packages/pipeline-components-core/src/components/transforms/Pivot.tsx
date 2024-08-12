@@ -11,24 +11,28 @@ export class Pivot extends BaseCoreComponent {
           type: "columns",
           label: "Index Columns",
           id: "indexColumns",
+          tooltip: "List of columns used as index for the pivot.",
           placeholder: "Select columns"
         },
         {
           type: "columns",
           label: "Columns to pivot",
           id: "columnsToPivot",
+          tooltip: "List of columns that are pivoted.",
           placeholder: "Select columns"
         },
         {
           type: "columns",
           label: "Values",
           id: "values",
+          tooltip: "Values used to fill in the pivot table.",
           placeholder: "Select columns"
         },
         {
           type: "select",
           label: "Aggregation Function",
           id: "aggfunc",
+          tooltip: "Aggregation used on the values to fill in the pivot table.",
           options: [
             { value: "none", label: "None (use pivot without aggregation)" },
             { value: "sum", label: "Sum" },
@@ -36,6 +40,7 @@ export class Pivot extends BaseCoreComponent {
             { value: "min", label: "Min" },
             { value: "max", label: "Max" }
           ],
+          advanced: true
         },
         {
           type: "inputNumber",

@@ -9,6 +9,7 @@ import {
     ControlButton
 } from 'reactflow';
 import dagre from '@dagrejs/dagre';
+import { alignIcon } from './icons';
 
 type Direction = 'TB' | 'LR' | 'RL' | 'BT';
 
@@ -114,7 +115,7 @@ function useAutoLayout(options: LayoutOptions) {
         setViewport({ x: 0, y: 0, zoom: 1 });
         setTimeout(() => {
             fitView({ padding: 0.4 });
-        }, 25);
+        }, 1);
     }, [nodesInitialized, elements, options, setNodes, setEdges]);
 
     return runLayout;
@@ -202,7 +203,9 @@ function AutoLayoutButton() {
         runLayout();
     };
 
-    return <ControlButton onClick={onClick}>A</ControlButton>;
+    return <ControlButton onClick={onClick}>
+        <alignIcon.react />
+    </ControlButton>;
 }
 
 export default AutoLayoutButton;
