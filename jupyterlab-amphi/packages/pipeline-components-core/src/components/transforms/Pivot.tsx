@@ -1,0 +1,103 @@
+import { transposeIcon } from '../../icons';
+import { BaseCoreComponent } from '../BaseCoreComponent'; // Adjust the import path
+
+export class Pivot extends BaseCoreComponent {
+  constructor() {
+    const defaultConfig = { aggfunc: "none", fillValue: 0 };
+    const form = {
+      idPrefix: "component__form",
+      fields: [
+        {
+          type: "columns",
+          label: "Index Columns",
+          id: "indexColumns",
+          placeholder: "Select columns"
+        },
+        {
+          type: "columns",
+          label: "Columns to pivot",
+          id: "columnsToPivot",
+          placeholder: "Select columns"
+        },
+        {
+          type: "columns",
+          label: "Values",
+          id: "values",
+          placeholder: "Select columns"
+        },
+        {
+          type: "select",
+          label: "Aggregation Function",
+          id: "aggfunc",
+          options: [
+            { value: "none", label: "None (use pivot without aggregation)" },
+            { value: "sum", label: "Sum" },
+            { value: "mean", label: "Mean" },
+            { value: "min", label: "Min" },
+            { value: "max", label: "Max" }
+          ],
+        },
+        {
+          type: "inputNumber",
+          label: "Fill missing values",
+          id: "fillValue",
+          placeholder: "0",
+          min: 0,
+          advanced: true
+        },
+        {
+          type: "boolean",
+          label: "Drop rows with missing values",
+          id: "dropna",
+          advanced: true
+        }
+      ],
+    };
+
+    super("Pivot", "pivot", "pandas_df_processor", [], "transform", transposeIcon, defaultConfig, form);
+  }
+
+  public provideImports({ config }): string[] {
+    return ["import pandas as pd"];
+  }
+
+  public generateComponentCode({ config, inputName, outputName }) {
+    const formatColumns = (cols) => cols.length === 1 ? `"${cols[0].value}"` : `[${cols.map(col => `"${col.value}"`).join(', ')}]`;
+
+    const indexColumns = formatColumns(config.indexColumns);
+    const columnsToPivot = formatColumns(config.columnsToPivot);
+    const values = formatColumns(config.values);
+
+    if (config.aggfunc === "none") {
+      let code = `
+${outputName} = ${inputName}.pivot(
+    index=${indexColumns},
+    columns=${columnsToPivot},
+    values=${values}
+).reset_index()\n`;
+
+      if (config.fillValue !== null && config.fillValue !== undefined && config.fillValue !== '') {
+        code += `
+${outputName} = ${outputName}.fillna(${config.fillValue})\n`;
+      }
+
+      return code;
+    } else {
+      const aggfunc = `"${config.aggfunc}"`;
+      const fillValue = config.fillValue !== null && config.fillValue !== undefined && config.fillValue !== '' ? config.fillValue : 0;
+      const dropna = config.dropna ? 'True' : 'False';
+
+      let code = `
+${outputName} = ${inputName}.pivot_table(
+    index=${indexColumns},
+    columns=${columnsToPivot},
+    values=${values},
+    aggfunc=${aggfunc},
+    fill_value=${fillValue},
+    dropna=${dropna}
+).reset_index()\n`;
+
+      return code;
+    }
+  }
+}

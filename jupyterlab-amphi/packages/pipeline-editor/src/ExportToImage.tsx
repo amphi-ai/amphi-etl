@@ -19,7 +19,7 @@ function DownloadImageButton({ pipelineName, pipelineId }: { pipelineName: strin
     const { getNodes } = useReactFlow();
     const onClick = () => {
       const nodesBounds = getNodesBounds(getNodes());
-      const viewportElement = document.querySelector(`.reactflow-wrapper[data-id="${pipelineId}"] .react-flow__viewport`);
+      const viewportElement = document.querySelector(`.reactflow-wrapper[data-id="${pipelineId}"]`);
       if (viewportElement instanceof HTMLElement) {
         const { width, height } = viewportElement.getBoundingClientRect();
         // const transform = getTransformForBounds(nodesBounds, width, height, 0.5, 2);

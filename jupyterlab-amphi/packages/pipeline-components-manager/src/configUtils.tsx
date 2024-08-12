@@ -410,11 +410,13 @@ export default function ConfigModal({
   const [fieldsForm] = Form.useForm();
   const [formValues, setFormValues] = useState(fieldsForm.getFieldsValue());
 
+  /*
   useEffect(() => {
     console.log("changed form")
     setFormValues(fieldsForm.getFieldsValue());
   }, [fieldsForm]);
-
+  */
+ 
   return (
     <>
       <Modal

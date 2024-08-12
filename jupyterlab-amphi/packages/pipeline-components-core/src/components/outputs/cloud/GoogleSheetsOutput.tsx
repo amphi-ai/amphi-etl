@@ -15,7 +15,8 @@ export class GoogleSheetsOutput extends BaseCoreComponent {
           placeholder: "Type file name",
           validation: "\\.(json)$",
           validationMessage: "This field expects a file with a .json extension such as your-service-account-file.json.",
-          connection: "Google Sheet"
+          connection: "Google Sheet",
+          advanced: true
         },
         {
           type: "input",
@@ -31,7 +32,8 @@ export class GoogleSheetsOutput extends BaseCoreComponent {
           id: "sheetOptions.range",
           placeholder: "e.g., Sheet1 or Sheet1!A1:D5",
           validation: "^[a-zA-Z0-9-_!]+$",
-          validationMessage: "Invalid Range."
+          validationMessage: "Invalid Range.",
+          advanced: true
         }
       ],
     };

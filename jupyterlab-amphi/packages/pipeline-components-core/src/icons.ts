@@ -42,6 +42,7 @@ import playCircleIconSvgStr from '../style/icons/play-circle-16.svg';
 import settingsIconSvgStr from '../style/icons/settings-16.svg';
 import keyIconSvgStr from '../style/icons/key-24.svg'
 import snowflakeIconSvgStr from '../style/icons/snowflake.svg'
+import trinoIconSvgStr from '../style/icons/trino.svg'
 
 
 export const fileTextIcon = new LabIcon({
@@ -252,5 +253,10 @@ export const keyIcon = new LabIcon({
 export const snowflakeIcon = new LabIcon({
   name: 'amphi:snowflake-icon',
   svgstr: snowflakeIconSvgStr
+});
+
+export const trinoIcon = new LabIcon({
+  name: 'amphi:trino-icon',
+  svgstr: trinoIconSvgStr
 });
 

@@ -82,7 +82,7 @@ def word_length_function(text):
 
   public generateComponentCode({ config, inputName, outputName }): string {
     const lengthFunction = config.chunkLength === "word" ? ",\n  length_function=word_length_function" : "";
-    const separatorsList = config.separators.map(separator => `"${separator}"`).join(", ");
+    const separatorsList = config.separators.map(separator => `"${separator.replace(/\n/g, '\\n').replace(/\n\n/g, '\\n\\n')}"`).join(", ");
 
     const code = `
 # Recursive chunking (character split)

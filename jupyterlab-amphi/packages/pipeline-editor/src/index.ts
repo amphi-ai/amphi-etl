@@ -389,7 +389,6 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
                 console.log("pips_code: " + pips_code);
                 // Install packages
                 try {
-
                   const future = current.context.sessionContext.session.kernel!.requestExecute({ code: pips_code });
 
                   future.onIOPub = msg => {
@@ -456,7 +455,14 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
                   }
                 });
 
-                const future = current.context.sessionContext.session.kernel!.requestExecute({ code: args.code });
+                const pythonCodeWithSleep = `
+import time
+time.sleep(0.25)
+${args.code}
+`;
+
+                const future = current.context.sessionContext.session.kernel!.requestExecute({ code: pythonCodeWithSleep });
+
 
                 console.log("future %o", future)
 

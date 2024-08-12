@@ -120,8 +120,6 @@ export const KeyValueColumnsSelect: React.FC<KeyValueFormProps> = ({ field, hand
     }, 0);
   };
 
-  console.log("placeholder " + field.placeholder)
-
   return (
     <Form.List name="keyValue">
       {(fields, { add, remove }) => (

@@ -9,7 +9,7 @@ import {
   SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join,
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, RedditInput, OpenAILookUp,
   EnvVariables, EnvFile, ConvertToDocuments, PineconeOutput, FixedSizeChunking, SemanticChunking, WordFileInput, PdfTablesInput, Transpose,
-  RecursiveChunking, HtmlToMarkdown, ParseHTML, ChromaOutput, CustomCodeDocuments, Unite,
+  RecursiveChunking, HtmlToMarkdown, ParseHTML, ChromaOutput, CustomCodeDocuments, Unite, Pivot,
   FillMissingValues, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, RestOutput
 } from './components';
 
@@ -74,6 +74,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(ParseHTML.getInstance())
     componentService.addComponent(CustomCodeDocuments.getInstance())
     componentService.addComponent(GenerateIDColumn.getInstance())
+    componentService.addComponent(Pivot.getInstance())
 
     // Outputs
     componentService.addComponent(CsvFileOutput.getInstance())

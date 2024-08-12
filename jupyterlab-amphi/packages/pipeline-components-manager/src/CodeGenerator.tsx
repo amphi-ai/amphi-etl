@@ -51,7 +51,7 @@ export class CodeGenerator {
         return codeLines[codeLines.length - 1]; // Get the last line
       });
 
-      console.log("Dataframes: %o", dataframes);
+      frames: %o", dataframes);
   
       dataframes.forEach((df) => {
         const future = context.sessionContext.session.kernel!.requestExecute({ code: "print(_amphi_metadatapanel_getcontentof(" + df + "))" });
@@ -422,9 +422,6 @@ ${code}`;
     });
     return transformedLines.join('\n');
   }
-
-
-
 
 };
 

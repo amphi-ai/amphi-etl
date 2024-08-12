@@ -47,6 +47,7 @@ export { FillMissingValues } from './transforms/FillMissingValues';
 export { Unite } from './transforms/Unite';
 export { CustomCodeDocuments } from './custom/CustomCodeDocuments';
 export { GenerateIDColumn } from './transforms/GenerateIDColumn';
+export { Pivot } from './transforms/Pivot';
 
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';
