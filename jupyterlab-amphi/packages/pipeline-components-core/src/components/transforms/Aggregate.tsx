@@ -18,12 +18,21 @@ export class Aggregate extends BaseCoreComponent {
           label: "Operations",
           id: "columnsOperations",
           placeholder: "Select column",
+          
           options: [
             { value: "min", label: "Min" },
             { value: "max", label: "Max" },
             { value: "sum", label: "Sum" },
+            { value: "mean", label: "Mean" },
             { value: "count", label: "Count" },
-            { value: "mean", label: "Mean" }
+            { value: "nunique", label: "Distinct Count" },
+            { value: "first", label: "First" },
+            { value: "last", label: "Last" },
+            { value: "median", label: "Median" },
+            { value: "std", label: "Standard Deviation" },
+            { value: "var", label: "Variance" },
+            { value: "prod", label: "Product" },
+            { value: "mad", label: "Mean Absolute Deviation" },
           ],
         }
       ],

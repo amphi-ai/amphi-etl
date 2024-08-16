@@ -33,7 +33,7 @@ export class Join extends BaseCoreComponent {
             { value: "left", label: "Left: return all rows from the left dataset and matched rows from the right dataset (including NaN for no match)." },
             { value: "right", label: "Right: return all rows from the right dataset and matched rows from the left dataset (including NaN for no match)." },
             { value: "outer", label: "Outer: return all rows from both datasets, with matches where available and NaN for no match (union)." },
-            { value: "cross", label: "Outer: creates the cartesian product from both datasets, preserves the order of the left keys." },
+            { value: "cross", label: "Cross: creates the cartesian product from both datasets, preserves the order of the left keys." },
             { value: "anti-left", label: "Anti Left: return rows from the left dataset that do not have matching rows in the right dataset." },
             { value: "anti-right", label: "Anti Right: return rows from the right dataset that do not have matching rows in the left dataset." }
           ],

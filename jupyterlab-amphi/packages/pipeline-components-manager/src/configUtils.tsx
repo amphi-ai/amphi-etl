@@ -19,6 +19,7 @@ import SelectRegular from './forms/selectRegular';
 import SelectTokenization from './forms/selectTokenization';
 import TransferData from './forms/transferData';
 import ValuesListForm from './forms/valuesListForm';
+import FormulaColumns from './forms/FormulaColumns'
 import { PipelineService } from './PipelineService';
 
 // Function to check if a field should be displayed based on its condition
@@ -232,7 +233,7 @@ export const generateUIInputs = ({
   const renderField = (field: FieldDescriptor, index: number) => {
     if (!advanced && field.advanced) {
       return null;
-    } 
+    }
 
     let value: any;
     let values: any[] = [];
@@ -297,7 +298,7 @@ export const generateUIInputs = ({
       case "textarea":
         return renderFormItem(field, <TextareaRegular {...commonProps} value={value} rows={field.rows} />);
       case "codeTextarea":
-        return renderFormItem(field, <CodeTextarea {...commonProps} value={value} rows={field.rows} />);
+        return renderFormItem(field, <CodeTextarea {...commonProps} value={value} />);
       case "boolean":
         return renderFormItem(field, (
           <Switch
@@ -331,6 +332,8 @@ export const generateUIInputs = ({
         return renderFormItem(field, <TransferData {...commonProps} defaultValue={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "dataMapping":
         return renderFormItem(field, <DataMapping data={data} {...commonProps} defaultValue={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
+      case "formulaColumns":
+        return renderFormItem(field, <FormulaColumns {...commonProps} defaultValue={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "info":
         return <Typography.Paragraph style={{ padding: '5px' }}>{field.text}</Typography.Paragraph>;
       default:
@@ -416,7 +419,7 @@ export default function ConfigModal({
     setFormValues(fieldsForm.getFieldsValue());
   }, [fieldsForm]);
   */
- 
+
   return (
     <>
       <Modal
@@ -513,12 +516,13 @@ export interface Option {
   disabled?: boolean;
   type?: string;
   named?: boolean;
+  tooltip?: string;
 }
 
 export interface FieldDescriptor {
   type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio'
   | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect'
-  | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable';
+  | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable' | 'formulaColumns';
   label: string;
   id: string;
   placeholder?: any;

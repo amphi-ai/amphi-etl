@@ -11,7 +11,8 @@ export { PipelineComponent } from './PipelineComponent'
 export { CodeGenerator } from './CodeGenerator'
 export { PipelineService } from './PipelineService'
 export { RequestService } from './RequestService'
-export { InputFile, InputRegular, SelectRegular } from './forms'
+
+export { InputFile, InputRegular, SelectRegular, SelectColumns, CodeTextarea } from './forms'
 
 interface ComponentItem {
   _id: string;

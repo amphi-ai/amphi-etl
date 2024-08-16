@@ -26,19 +26,19 @@ export const InputFile = ({ field, value, handleChange, context, advanced, manag
 
   return (
     <Space.Compact style={{ width: '100%' }}>
-    <AutoComplete
-      ref={inputRef}
-      id={field.id}
-      options={optionsVariables}
-      filterOption={filterOptions}
-      size={advanced ? "middle" : "small"}
-      open={openValue}
-      onBlur={() => setOpenValue(false)}
-      defaultOpen={false}
-      value={inputValue}
-      onChange={handleInputChange}
-      onSelect={handleSelect}
-    >
+      <AutoComplete
+        ref={inputRef}
+        id={field.id}
+        options={optionsVariables}
+        filterOption={filterOptions}
+        size={advanced ? "middle" : "small"}
+        open={openValue}
+        onBlur={() => setOpenValue(false)}
+        defaultOpen={false}
+        value={inputValue}
+        onChange={handleInputChange}
+        onSelect={handleSelect}
+      >
 
         <Input
           // {...(field.connection && field.advanced && { addonBefore: selectBefore })}
@@ -50,31 +50,29 @@ export const InputFile = ({ field, value, handleChange, context, advanced, manag
           autoComplete="off"
           suffix={suffix}
         />
- 
-      
-    </AutoComplete>
-    <Button type="primary" size={advanced ? "middle" : "small"} onClick={async () => {
-          // TODO, there is something wrong here
 
-          console.log("context.path %o", context.path)
-          console.log("PathExt.dirname(context.path) %o", PathExt.dirname(context.path))
+      </AutoComplete>
+      <Button type="primary" size={advanced ? "middle" : "small"} onClick={async () => {
+        // TODO, there is something wrong here
 
-          const res = await showBrowseFileDialog(
-            manager,
-            {
-              multiselect: false,
-              includeDir: true,
-              filter: (model: any): boolean => {
-                return model.path !== context.path;
-              }
-            });
+        console.log("PathExt.dirname(context.path) %o", PathExt.dirname(context.path))
 
-          console.log("res %o", res)
+        const res = await showBrowseFileDialog(
+          manager,
+          {
+            multiselect: false,
+            includeDir: true,
+            filter: (model: any): boolean => {
+              return model.path !== context.path;
+            }
+          });
 
-          // Get relative path
-          handleInputChange(PipelineService.getRelativePath(context.path, res.value[0].path));
+        console.log("res %o", res)
 
-        }}><SearchOutlined /></Button>
+        // Get relative path
+        handleInputChange(PipelineService.getRelativePath(context.path, res.value[0].path));
+
+      }}><SearchOutlined /></Button>
     </Space.Compact>
   );
 

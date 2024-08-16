@@ -48,6 +48,11 @@ export { Unite } from './transforms/Unite';
 export { CustomCodeDocuments } from './custom/CustomCodeDocuments';
 export { GenerateIDColumn } from './transforms/GenerateIDColumn';
 export { Pivot } from './transforms/Pivot';
+export { FormulaRow } from './transforms/FormulaRow';
+
+// Custom
+export { PyGWalker } from './custom/PyGWalker';
+
 
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';

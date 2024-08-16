@@ -4,6 +4,7 @@ import { PlusOutlined } from '@ant-design/icons';
 import { ConfigProvider, Divider, Input, Select, Space, Button, Tag, Empty } from 'antd';
 import type { InputRef } from 'antd';
 import { FieldDescriptor, Option } from '../configUtils';
+import { AddNewColumn } from './AddNewColumn';
 import { RequestService } from '../RequestService';
 
 
@@ -23,11 +24,11 @@ export const SelectColumn: React.FC<SelectColumnsProps> = ({
 }) => {
 
   const findOptionByValue = (value: any) => {
-    if(value === undefined) {
+    if (value === undefined) {
       return {};
-    } 
+    }
     else {
-      return items.find(option => option.value === value.value)  || { value: value.value, label: value.value};
+      return items.find(option => option.value === value.value) || { value: value.value, label: value.value };
     }
   };
 
@@ -53,7 +54,7 @@ export const SelectColumn: React.FC<SelectColumnsProps> = ({
 
   const addItem = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
     e.preventDefault();
-    setItems([...items, { value: name, label: name , type: 'object', named: true}]);
+    setItems([...items, { value: name, label: name, type: 'object', named: true }]);
     setName('');
     setTimeout(() => {
       inputRef.current?.focus();
@@ -64,13 +65,9 @@ export const SelectColumn: React.FC<SelectColumnsProps> = ({
     const value = selection.value;
     const selectedOption = findOptionByValue(value);
     setSelectedOption(selectedOption);
-    const {type, named} = getTypeNamedByValue(items, value);
+    const { type, named } = getTypeNamedByValue(items, value);
     handleChange({ value, type, named }, field.id);
   }
-
-  const onNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
-  };
 
   const customizeRenderEmpty = () => (
     <div style={{ textAlign: 'center' }}>
@@ -82,7 +79,7 @@ export const SelectColumn: React.FC<SelectColumnsProps> = ({
   return (
     <ConfigProvider renderEmpty={customizeRenderEmpty}>
       <Select
-        showSearch  
+        showSearch
         labelInValue
         size={advanced ? "middle" : "small"}
         style={{ width: '100%' }}
@@ -96,36 +93,32 @@ export const SelectColumn: React.FC<SelectColumnsProps> = ({
           <>
             {menu}
             <Divider style={{ margin: '8px 0' }} />
-            <Space style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 2px 2px' }}>
-            <Button 
-            type="primary" 
-            onClick={(event) => RequestService.retrieveDataframeColumns(
-              event,
-              context,
-              commands,
-              componentService,
-              setItems,
-              setLoadings,
-              nodeId,
-              inputNb,
-              true
-            )}
-            loading={loadings}>
-              Retrieve columns
-          </Button>
-          </Space>
-            <Divider style={{ margin: '8px 0' }} />
-            <Space style={{ padding: '0 8px 4px' }}>
-              <Input
-                placeholder="Add colmun"
-                ref={inputRef}
-                value={name}
-                onChange={onNameChange}
-                onKeyDown={(e: any) => e.stopPropagation()}
-              />
-              <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
+            <Space style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '0 2px 4px' }}>
+              <Button
+                type="primary"
+                onClick={(event) => RequestService.retrieveDataframeColumns(
+                  event,
+                  context,
+                  commands,
+                  componentService,
+                  setItems,
+                  setLoadings,
+                  nodeId,
+                  inputNb,
+                  true
+                )}
+                loading={loadings}>
+                Retrieve columns
               </Button>
             </Space>
+            {advanced && (
+              <>
+                <Divider style={{ margin: '8px 0' }} />
+                <Space style={{ padding: '0 8px 4px' }}>
+                  <AddNewColumn items={items} setItems={setItems} setSelectedOption={setSelectedOption} />
+                </Space>
+              </>
+            )}
           </>
         )}
         options={items.map((item: Option) => ({ label: item.label, value: item.value, type: item.type, named: item.named }))}

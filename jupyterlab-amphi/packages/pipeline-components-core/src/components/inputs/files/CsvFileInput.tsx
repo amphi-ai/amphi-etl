@@ -58,9 +58,9 @@ export class CsvFileInput extends BaseCoreComponent {
           id: "csvOptions.on_bad_lines",
           placeholder: "Error: raise an Exception when a bad line is encountered",
           options: [
-            { value: "error", label: "Error: raise an Exception when a bad line is encountered" },
-            { value: "warn", label: "Warn: raise a warning when a bad line is encountered and skip that line." },
-            { value: "skip", label: "Skip: skip bad lines without raising or warning when they are encountered." }
+            { value: "error", label: "Error", tooltip: "Raise an Exception when a bad line is encountered" },
+            { value: "warn", label: "Warn", tooltip: "Raise a warning when a bad line is encountered and skip that line." },
+            { value: "skip", label: "Skip", tooltip: "Skip bad lines without raising or warning when they are encountered." }
           ],
           advanced: true
         }

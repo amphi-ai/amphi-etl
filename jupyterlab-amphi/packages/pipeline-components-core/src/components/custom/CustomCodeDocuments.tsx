@@ -33,7 +33,7 @@ export class CustomCodeDocuments extends BaseCoreComponent {
       ],
     };
 
-    super("Custom Code", "customCodeDocuments", "documents_processor", [], "transform", codeIcon, defaultConfig, form);
+    super("Custom Code", "customCodeDocuments", "documents_processor", [], "transform.Documents", codeIcon, defaultConfig, form);
   }
 
   public provideImports(config): string[] {

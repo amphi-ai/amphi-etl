@@ -59,7 +59,7 @@ export class Pivot extends BaseCoreComponent {
       ],
     };
 
-    super("Pivot", "pivot", "pandas_df_processor", [], "transform", transposeIcon, defaultConfig, form);
+    super("Pivot Dataset", "pivot", "pandas_df_processor", [], "transform", transposeIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

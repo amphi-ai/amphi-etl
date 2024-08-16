@@ -10,7 +10,7 @@ import {
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, RedditInput, OpenAILookUp,
   EnvVariables, EnvFile, ConvertToDocuments, PineconeOutput, FixedSizeChunking, SemanticChunking, WordFileInput, PdfTablesInput, Transpose,
   RecursiveChunking, HtmlToMarkdown, ParseHTML, ChromaOutput, CustomCodeDocuments, Unite, Pivot,
-  FillMissingValues, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, RestOutput
+  FillMissingValues, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, RestOutput, FormulaRow, PyGWalker
 } from './components';
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -48,33 +48,35 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
 
     // Processors
-    componentService.addComponent(FilterColumns.getInstance())
-    componentService.addComponent(RenameColumns.getInstance())
-    componentService.addComponent(Filter.getInstance())
-    componentService.addComponent(Aggregate.getInstance())
-    componentService.addComponent(Join.getInstance())
-    componentService.addComponent(TypeConverter.getInstance())
-    componentService.addComponent(FillMissingValues.getInstance())
-    componentService.addComponent(SplitColumn.getInstance())
-    componentService.addComponent(Extract.getInstance())
-    componentService.addComponent(Sort.getInstance())
-    componentService.addComponent(Transpose.getInstance())
-    componentService.addComponent(Deduplicate.getInstance())
-    componentService.addComponent(ExpandList.getInstance())
-    componentService.addComponent(Sample.getInstance())
-    componentService.addComponent(SQLQuery.getInstance())
-    componentService.addComponent(Unite.getInstance())
-    componentService.addComponent(CustomTransformations.getInstance())
-    componentService.addComponent(OpenAILookUp.getInstance())
-    componentService.addComponent(ConvertToDocuments.getInstance())
-    componentService.addComponent(FixedSizeChunking.getInstance())
-    componentService.addComponent(SemanticChunking.getInstance())
-    componentService.addComponent(RecursiveChunking.getInstance())
-    componentService.addComponent(HtmlToMarkdown.getInstance())
-    componentService.addComponent(ParseHTML.getInstance())
-    componentService.addComponent(CustomCodeDocuments.getInstance())
-    componentService.addComponent(GenerateIDColumn.getInstance())
-    componentService.addComponent(Pivot.getInstance())
+    componentService.addComponent(GenerateIDColumn.getInstance());
+    componentService.addComponent(RenameColumns.getInstance());
+    componentService.addComponent(FilterColumns.getInstance());
+    componentService.addComponent(Filter.getInstance());
+    componentService.addComponent(Sort.getInstance());
+    componentService.addComponent(SplitColumn.getInstance());
+    componentService.addComponent(Extract.getInstance());
+    componentService.addComponent(ExpandList.getInstance());
+    componentService.addComponent(FormulaRow.getInstance());
+    componentService.addComponent(Join.getInstance());
+    componentService.addComponent(Unite.getInstance());
+    componentService.addComponent(Aggregate.getInstance());
+    componentService.addComponent(Pivot.getInstance());
+    componentService.addComponent(Transpose.getInstance());
+    componentService.addComponent(Deduplicate.getInstance());
+    componentService.addComponent(TypeConverter.getInstance());
+    componentService.addComponent(FillMissingValues.getInstance());
+    componentService.addComponent(Sample.getInstance());
+    componentService.addComponent(CustomTransformations.getInstance());
+    componentService.addComponent(SQLQuery.getInstance());
+    componentService.addComponent(OpenAILookUp.getInstance());
+    componentService.addComponent(ParseHTML.getInstance());
+    componentService.addComponent(HtmlToMarkdown.getInstance());
+
+    componentService.addComponent(ConvertToDocuments.getInstance());
+    componentService.addComponent(FixedSizeChunking.getInstance());
+    componentService.addComponent(SemanticChunking.getInstance());
+    componentService.addComponent(RecursiveChunking.getInstance());
+    componentService.addComponent(CustomCodeDocuments.getInstance());
 
     // Outputs
     componentService.addComponent(CsvFileOutput.getInstance())
