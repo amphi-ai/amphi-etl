@@ -1,6 +1,6 @@
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { Card, Cascader, Flex, Form, Modal, Radio, Switch, Typography, Select, Divider, Space, Button } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { renderFormItem } from './formUtils'
 import CodeTextarea from './forms/CodeTextarea';
 import InputFile from './forms/InputFile';
@@ -93,7 +93,7 @@ export const onChange = ({ evtTargetValue, field, nodeId, store, setNodes }: OnC
   );
 };
 
-export const generateUIFormComponent = ({
+export const GenerateUIFormComponent = React.memo(({
   nodeId,
   type,
   name,
@@ -108,9 +108,11 @@ export const generateUIFormComponent = ({
   setModalOpen
 }: FormComponentProps) => {
 
-  const stopPropagation = (e: React.MouseEvent) => {
+  // console.log("GenerateUIFormComponent");
+
+  const stopPropagation = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
-  };
+  }, []);
 
   const [fieldsForm] = Form.useForm();
   const [formValues, setFormValues] = useState(fieldsForm.getFieldsValue());
@@ -128,15 +130,40 @@ export const generateUIFormComponent = ({
         onValuesChange={(_, values) => {
           setFormValues(values);
         }}>
-        {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: false, formValues })}
+        <GenerateUIInputs 
+          name={name}
+          nodeId={nodeId}
+          form={form}
+          data={data}
+          context={context}
+          componentService={componentService}
+          manager={manager}
+          commands={commands}
+          handleChange={handleChange}
+          advanced={false}
+          formValues={formValues}
+        />
 
-        <ConfigModal modalOpen={modalOpen} setModalOpen={setModalOpen} name={name} nodeId={nodeId} form={form} data={data} context={context} componentService={componentService} manager={manager} commands={commands} handleChange={handleChange} advanced />
+        <ConfigModal 
+          modalOpen={modalOpen} 
+          setModalOpen={setModalOpen} 
+          name={name} 
+          nodeId={nodeId} 
+          form={form} 
+          data={data} 
+          context={context} 
+          componentService={componentService} 
+          manager={manager} 
+          commands={commands} 
+          handleChange={handleChange} 
+          advanced 
+        />
       </Form>
     </div>
   );
-};
+});
 
-export const generateUIInputs = ({
+export const GenerateUIInputs = React.memo(({
   name,
   nodeId,
   form,
@@ -150,27 +177,26 @@ export const generateUIInputs = ({
   formValues
 }: UIInputsProps) => {
 
+  // console.log("GenerateUIInputs")
+  
   const [connections, setConnections] = useState([]);
   const [optionsConnections, setOptionsConnections] = useState<Record<string, any[]>>({});
 
-
-  const fetchConnections = () => {
+  const fetchConnections = useCallback(() => {
     const allConnections = PipelineService.getConnections(context.model.toString());
     setConnections(allConnections);
-    console.log("allConnections %o", allConnections);
 
     const connectionsByType = allConnections.reduce((acc, connection) => {
-      const connectionType = connection.connectionType; // Change to group by connectionType
+      const connectionType = connection.connectionType;
       if (!acc[connectionType]) {
         acc[connectionType] = [];
       }
-      acc[connectionType].push(renderItem(connection.connectionName)); // Use connectionName for display
+      acc[connectionType].push(renderItem(connection.connectionName));
       return acc;
     }, {} as Record<string, any[]>);
 
     setOptionsConnections(connectionsByType);
-    console.log("optionsConnections %o", optionsConnections);
-  };
+  }, [context]);
 
   const renderItem = (title: string) => ({
     value: title,
@@ -186,25 +212,20 @@ export const generateUIInputs = ({
     ),
   });
 
-  const handleSelectConnection = (connectionName: string, attributeId: string) => {
-    console.log("connections: %o", connections)
-    console.log("connectionName: %o", connectionName)
+  const handleSelectConnection = useCallback((connectionName: string, attributeId: string) => {
     const selectedConnection = connections.find(conn => conn.connectionName === connectionName);
-    console.log("selectedConnection %o", selectedConnection)
     if (selectedConnection) {
       selectedConnection.variables.forEach(variable => {
         const { key, name } = variable;
-        console.log("key %o", key);
         const VarName = name;
         const fieldId = `${key}`;
         handleChange('{' + `${VarName}` + '}', fieldId);
       });
       handleChange(connectionName, attributeId);
     }
-  };
+  }, [connections, handleChange]);
 
-  const handleRemoveConnection = (attributeId: string) => {
-    console.log("Removing connection for attributeId: %o", attributeId);
+  const handleRemoveConnection = useCallback((attributeId: string) => {
     const connectionName = data[attributeId];
     const selectedConnection = connections.find(conn => conn.connectionName === connectionName);
     if (selectedConnection) {
@@ -215,22 +236,18 @@ export const generateUIInputs = ({
       });
       handleChange('', attributeId);
     }
-  };
+  }, [connections, data, handleChange]);
 
-  // Group fields by connection
-  const groupedFields = form.fields.reduce((acc: Record<string, FieldDescriptor[]>, field: FieldDescriptor) => {
+  const groupedFields = useMemo(() => form.fields.reduce((acc: Record<string, FieldDescriptor[]>, field: FieldDescriptor) => {
     const connection = field.connection || 'default';
     if (!acc[connection]) {
       acc[connection] = [];
     }
     acc[connection].push(field);
     return acc;
-  }, {});
+  }, {}), [form.fields]);
 
-
-
-  // Render field
-  const renderField = (field: FieldDescriptor, index: number) => {
+  const renderField = useCallback((field: FieldDescriptor, index: number) => {
     if (!advanced && field.advanced) {
       return null;
     }
@@ -339,7 +356,7 @@ export const generateUIInputs = ({
       default:
         return null;
     }
-  };
+  }, [data, handleChange, componentService, commands, manager]);
 
   return (
     <>
@@ -388,7 +405,7 @@ export const generateUIInputs = ({
       {groupedFields.default && groupedFields.default.map(renderField)}
     </>
   );
-};
+});
 
 export default function ConfigModal({
   name,
@@ -444,7 +461,19 @@ export default function ConfigModal({
               setFormValues(values);
             }}
           >
-            {generateUIInputs({ name, nodeId, form, data, context, componentService, manager, commands, handleChange, advanced: true, formValues })}
+            <GenerateUIInputs
+              name={name}
+              nodeId={nodeId}
+              form={form}
+              data={data}
+              context={context}
+              componentService={componentService}
+              manager={manager}
+              commands={commands}
+              handleChange={handleChange}
+              advanced={true}
+              formValues={formValues}
+            />          
           </Form>
         </div>
 

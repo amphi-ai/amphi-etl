@@ -1,4 +1,4 @@
-import { ComponentItem, PipelineComponent, createZoomSelector, generateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig } from '@amphi/pipeline-components-manager';
+import { ComponentItem, PipelineComponent, createZoomSelector, GenerateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig } from '@amphi/pipeline-components-manager';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Handle, NodeToolbar, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
 import { playCircleIcon, settingsIcon } from '../icons';
@@ -43,20 +43,20 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
 
     return (
       <>
-        {generateUIFormComponent({
-          nodeId: nodeId,
-          type: type,
-          name: name,
-          form: form,
-          data: data,
-          context: context,
-          componentService: componentService,
-          manager: manager,
-          commands: commands,
-          handleChange: handleChange,
-          modalOpen,
-          setModalOpen
-        })}
+        <GenerateUIFormComponent
+          nodeId={nodeId}
+          type={type}
+          name={name}
+          form={form}
+          data={data}
+          context={context}
+          componentService={componentService}
+          manager={manager}
+          commands={commands}
+          handleChange={handleChange}
+          modalOpen={modalOpen}
+          setModalOpen={setModalOpen}
+        />
       </>
     );
   }
