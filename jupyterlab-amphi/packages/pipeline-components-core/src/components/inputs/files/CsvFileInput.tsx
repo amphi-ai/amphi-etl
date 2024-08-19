@@ -63,6 +63,18 @@ export class CsvFileInput extends BaseCoreComponent {
             { value: "skip", label: "Skip", tooltip: "Skip bad lines without raising or warning when they are encountered." }
           ],
           advanced: true
+        },
+        {
+          type: "select",
+          label: "Engine",
+          id: "csvOptions.engine",
+          placeholder: "Select engine",
+          options: [
+            { value: "python", label: "python", tooltip: "Python is more feature complete." },
+            { value: "c", label: "c", tooltip: "C is faster." },
+            { value: "pyarrow", label: "pyarrow", tooltip: "The pyarrow engine was added as an experimental engine, and some features are unsupported, or may not work correctly, with this engine." }
+          ],
+          advanced: true
         }
       ],
     };

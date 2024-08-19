@@ -42,7 +42,7 @@ export const useVariableAutoComplete = ({ field, value, handleChange, context, a
     };
 
     const handleSelect = (value, option) => {
-        const newValue = `{os.getenv['${value}']}`;
+        const newValue = `{os.getenv('${value}')}`;
         handleInputChange(newValue);
     };
 
