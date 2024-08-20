@@ -14,11 +14,11 @@ export class Console extends BaseCoreComponent {
           placeholder: "Select type",
           options: [
             { value: "Info", label: "Info", tooltip: "Display a regular message in console." },
-            { value: "Warning", label: "Warning", tooltip: "Display a warning message in the console." },
+            // { value: "Warning", label: "Warning", tooltip: "Display a warning message in the console." },
             { value: "Error", label: "Error", tooltip: "Raise an error and display error message in console." },
-            { value: "Data", label: "Data", tooltip: "Display data from input component." },
-            { value: "Markdown", label: "Markdown", tooltip: "Display Markdown in the console. The markdown might not be rendered outside Amphi console." },
-            { value: "HTML", label: "HTML", tooltip: "Display HTML in the console. The markdown might not be rendered outside HTML console." }
+            // { value: "Data", label: "Data", tooltip: "Display data from input component." },
+            // { value: "Markdown", label: "Markdown", tooltip: "Display Markdown in the console. The markdown might not be rendered outside Amphi console." },
+            // { value: "HTML", label: "HTML", tooltip: "Display HTML in the console. The markdown might not be rendered outside HTML console." }
           ],
         },
         {
@@ -39,7 +39,7 @@ export class Console extends BaseCoreComponent {
       ],
     };
 
-    super("Console", "console", "pandas_df_output", [], "outputs", monitorIcon, defaultConfig, form);
+    super("Console Message", "console", "pandas_df_output", [], "outputs", monitorIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

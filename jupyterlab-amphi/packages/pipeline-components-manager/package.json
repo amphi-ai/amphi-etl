@@ -1,6 +1,6 @@
 {
   "name": "@amphi/pipeline-components-manager",
-  "version": "0.5.71",
+  "version": "0.5.72",
   "description": "Amphi Pipeline Components Manager",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {
@@ -52,8 +52,8 @@
     "@codemirror/basic-setup": "^0.20.0",
     "@codemirror/lang-python": "^6.0.0",
     "@jupyterlab/application": "^4.1.5",
-    "@jupyterlab/apputils": "^4.1.5",
     "@jupyterlab/completer": "^4.1.5",
+    "@jupyterlab/apputils": "^4.1.5",
     "@lumino/widgets": "^2.0.0",
     "@uiw/react-codemirror": "^4.22.0",
     "ace-builds": "^1.33.1",

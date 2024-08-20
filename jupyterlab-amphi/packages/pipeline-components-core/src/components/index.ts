@@ -17,6 +17,7 @@ export { PostgresInput } from './inputs/databases/PostgresInput';
 export { OracleInput } from './inputs/databases/OracleInput';
 export { SqlServerInput } from './inputs/databases/SqlServerInput';
 export { SnowflakeInput } from './inputs/databases/SnowflakeInput';
+export { InlineInput } from './inputs/InlineInput';
 
 export { RedditInput } from './inputs/cloud/RedditInput';
 
