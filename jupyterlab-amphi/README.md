@@ -1,4 +1,4 @@
-# Micro ETL for Jupyterlab
+# Amphi for Jupyterlab
 
 ![jupyter-lab-amph-screenshot](https://github.com/amphi-ai/jupyterlab-amphi/assets/15718239/31ce75b5-745e-4642-be4e-29e306e97b0b)
 

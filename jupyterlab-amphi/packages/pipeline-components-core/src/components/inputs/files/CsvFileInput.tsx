@@ -82,6 +82,14 @@ export class CsvFileInput extends BaseCoreComponent {
     super("CSV File Input", "csvFileInput", "pandas_df_input", ["csv", "tsv"], "inputs", fileTextIcon, defaultConfig, form);
   }
 
+  public provideDependencies({ config }): string[] {
+    let deps: string[] = [];
+    if (config.csvOptions.engine == "pyarrow") {
+      deps.push('pyarrow');
+    }
+    return deps;
+  }
+
   public provideImports({ config }): string[] {
     return ["import pandas as pd"];
   }
@@ -118,8 +126,8 @@ export class CsvFileInput extends BaseCoreComponent {
 
     // Prepare options string for pd.read_csv
     let optionsString = Object.entries(csvOptions)
-    .filter(([key, value]) => value !== null && value !== '' && !(key === 'sep' && value === 'infer') && (Array.isArray(value) ? value.length > 0 : true))
-    .map(([key, value]) => {
+      .filter(([key, value]) => value !== null && value !== '' && !(key === 'sep' && value === 'infer') && (Array.isArray(value) ? value.length > 0 : true))
+      .map(([key, value]) => {
         if (key === 'header' && (value === '0' || value === '1' || value === 'None')) {
           return `${key}=${value}`; // Handle header as string without quotes
         } else if (key === 'names') {

@@ -6,7 +6,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import { Form, Table, ConfigProvider, Card, Input, Select, Row, Button, Typography, Modal, Col } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Handle, Position, useReactFlow, useStore, useStoreApi, NodeToolbar } from 'reactflow';
-import { bracesIcon, settingsIcon, playCircleIcon } from '../../icons';
+import { sumIcon, settingsIcon, playCircleIcon } from '../../icons';
 
 
 export class FormulaRow extends PipelineComponent<ComponentItem>() {
@@ -15,7 +15,7 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
     public _id = "formulaRow";
     public _type = "pandas_df_processor";
     public _category = "transform";
-    public _icon = bracesIcon;
+    public _icon = sumIcon;
     public _default = {};
     public _form = {};
 
@@ -32,8 +32,11 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
         modalOpen,
         setModalOpen
     }) => {
-        const [form] = Form.useForm();
         const [formulas, setFormulas] = useState(data.formulas || [{ columns: [], formula: '', type: 'expr' }]);
+
+        useEffect(() => {
+            console.log("formulas :%o", formulas)
+        }, [formulas]);
 
         const handleAddFormula = () => {
             setFormulas([...formulas, { columns: [], formula: '', type: 'expr' }]);
@@ -41,8 +44,10 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
         };
 
         const handleRemoveFormula = (index: number) => {
-            const updatedFormulas = [...formulas];
-            updatedFormulas.splice(index, 1);
+            console.log("index :%o", index)
+            const updatedFormulas = formulas.filter((_, i) => i !== index);
+            console.log("updatedFormulas :%o", updatedFormulas)
+
             setFormulas(updatedFormulas);
             handleChange(updatedFormulas, 'formulas');
         };
@@ -81,7 +86,6 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
                     <Form
                         labelCol={{ span: 6 }}
                         wrapperCol={{ span: 18 }}
-                        form={form}
                         name="dynamic_form_complex"
                         autoComplete="off"
                         initialValues={{ items: formulas }}
@@ -90,17 +94,22 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
                             {(fields, { add, remove }) => (
                                 <div style={{ display: 'flex', rowGap: 16, flexDirection: 'column' }}>
                                     {formulas.map((formula, index) => (
+
                                         <Card
                                             size="small"
                                             title={`Formula ${index + 1}`}
-                                            key={index}
+                                            key={`formula-${index}`}
                                             extra={
                                                 <CloseOutlined
                                                     onClick={() => handleRemoveFormula(index)}
                                                 />
                                             }
                                         >
-                                            <Form.Item label="Columns" name={[index, 'columns']}>
+                                            <Form.Item
+                                                label="Columns"
+                                                name={[index, 'columns']}
+                                                key={`formula-columns-${index}`}
+                                            >
                                                 <SelectColumns
                                                     field={{
                                                         type: 'columns',
@@ -118,7 +127,11 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
                                                 />
                                             </Form.Item>
 
-                                            <Form.Item label="Formula Type" name={[index, 'type']}>
+                                            <Form.Item
+                                                label="Formula Type"
+                                                name={[index, 'type']}
+                                                key={`formula-type-${index}`}
+                                            >
                                                 <SelectRegular
                                                     field={{
                                                         type: 'select',
@@ -138,13 +151,18 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
 
                                             </Form.Item>
 
-                                            <Form.Item label="Python Code" name={[index, 'formula']}>
+                                            <Form.Item
+                                                label="Python Code"
+                                                name={[index, 'formula']}
+                                                key={`formula-code-${index}`}
+                                            >
                                                 <CodeTextarea
                                                     field={{
                                                         type: "codeTextarea",
                                                         id: 'formula',
                                                         label: "Python Formula",
-                                                        placeholder: "row['column1'] + row['column2']"
+                                                        placeholder: "row['column1'] + row['column2']",
+                                                        height: "80px"
                                                     }}
                                                     handleChange={(value) => handleFormulaChange(value, index, 'formula')}
                                                     value={formula.formula}
@@ -152,6 +170,8 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
                                                 />
                                             </Form.Item>
                                         </Card>
+
+
                                     ))}
                                     <Button type="dashed" onClick={handleAddFormula} block>
                                         + Add formula

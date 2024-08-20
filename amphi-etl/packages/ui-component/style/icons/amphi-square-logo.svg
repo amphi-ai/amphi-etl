@@ -2,13 +2,16 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="4.000505mm"
-   height="4.0710607mm"
-   viewBox="0 0 4.000505 4.0710607"
+   width="16"
+   height="16"
+   viewBox="0 0 4.2333334 4.2333334"
    version="1.1"
    id="svg1"
    inkscape:version="1.3 (0e150ed, 2023-07-21)"
    sodipodi:docname="amphi-square-logo.svg"
+   inkscape:export-filename="../../../../../../../Desktop/ProductHunt/amphi-square-logo.png"
+   inkscape:export-xdpi="1462.0128"
+   inkscape:export-ydpi="1462.0128"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -24,13 +27,13 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#505050"
      inkscape:document-units="mm"
-     inkscape:zoom="9.893204"
-     inkscape:cx="38.612365"
-     inkscape:cy="58.979882"
-     inkscape:window-width="2560"
-     inkscape:window-height="1412"
-     inkscape:window-x="1512"
-     inkscape:window-y="149"
+     inkscape:zoom="23.064727"
+     inkscape:cx="20.312401"
+     inkscape:cy="13.700574"
+     inkscape:window-width="1512"
+     inkscape:window-height="875"
+     inkscape:window-x="0"
+     inkscape:window-y="639"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1" />
   <defs
@@ -77,10 +80,9 @@
      id="layer1"
      transform="translate(-43.459922,-57.723277)">
     <path
-       d="m 139.98799,286.27021 h -2.16 v -2.13333 q -2.37334,2.61333 -5.46668,2.61333 -3.09333,0 -5.30667,-2.26667 -2.18667,-2.29333 -2.18667,-5.44 0,-3.17334 2.21334,-5.41334 2.21333,-2.26667 5.38667,-2.26667 3.2,0 5.36001,2.58667 v -2.21334 h 2.16 z m -7.46668,-1.57333 q 2.21334,0 3.81334,-1.6 1.6,-1.60001 1.6,-3.97334 0,-2.40001 -1.57333,-4.00001 -1.57334,-1.62667 -3.86667,-1.62667 -2.26667,0 -3.84001,1.68001 -1.57333,1.65333 -1.57333,3.92 0,2.26667 1.6,3.94667 1.6,1.65334 3.84,1.65334 z"
+       d="M 47.661386,61.82914 H 47.06573 v -0.5883 q -0.654488,0.720669 -1.507527,0.720669 -0.853036,0 -1.4634,-0.625072 -0.603011,-0.632423 -0.603011,-1.500169 0,-0.8751 0.610365,-1.492817 0.610362,-0.625072 1.485463,-0.625072 0.882452,0 1.47811,0.713317 v -0.610364 h 0.595656 z m -2.05906,-0.43387 q 0.610365,0 1.051591,-0.441227 0.441227,-0.441229 0.441227,-1.095714 0,-0.661842 -0.433872,-1.103068 -0.433874,-0.448581 -1.066297,-0.448581 -0.625072,0 -1.058947,0.463291 -0.433871,0.455933 -0.433871,1.081003 0,0.625072 0.441226,1.08836 0.441226,0.455936 1.058943,0.455936 z"
        id="text1"
-       style="font-size:26.6667px;font-family:'Heiti SC';-inkscape-font-specification:'Heiti SC, Normal';white-space:pre;fill:#5a8f7b"
-       transform="matrix(0.26458333,0,0,0.26458333,10.421939,-14.074989)"
+       style="font-size:26.6667px;font-family:'Heiti SC';-inkscape-font-specification:'Heiti SC, Normal';white-space:pre;fill:#5a8f7b;stroke-width:0.275766"
        aria-label="a" />
   </g>
 </svg>

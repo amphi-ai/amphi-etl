@@ -2,7 +2,7 @@
 
 <img height="60" src="https://amphi.ai/icons/amphi_logo_paths.svg">
 <p align="center">
-    <em>Low-code Python-Based ETL for structured and unstructured data.</em>
+    <em>Low-code Python-Based ETL for data manipulation and transformation.</em>
 </p>
 <hr>
 
