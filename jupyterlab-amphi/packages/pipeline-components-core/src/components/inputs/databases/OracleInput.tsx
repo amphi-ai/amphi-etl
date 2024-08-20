@@ -1,9 +1,9 @@
 import { oracleIcon } from '../../../icons';
-import { BaseCoreComponent } from '../../BaseCoreComponent'; 
+import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class OracleInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { host: "localhost", port: "1521", databaseName: "", username: "", password: "", tableName: ""};
+    const defaultConfig = { host: "localhost", port: "1521", databaseName: "", username: "", password: "", tableName: "" };
     const form = {
       fields: [
         {
@@ -62,6 +62,14 @@ export class OracleInput extends BaseCoreComponent {
           id: "sqlQuery",
           tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
           advanced: true
+        },
+        {
+          type: "input",
+          label: "Oracle Client Path (Optional)",
+          tooltip: "You might need to specify a different Oracle client path than the default one. To do this, use the option to point to the directory of the desired Oracle client.",
+          id: "oracleClient",
+          placeholder: "Specify oracle client path",
+          advanced: true
         }
       ],
     };
@@ -77,9 +85,17 @@ export class OracleInput extends BaseCoreComponent {
     let connectionString = `oracle+cx_oracle://${config.username}:${config.password}@${config.host}:${config.port}/?service_name=${config.databaseName}`;
     const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
     const sqlQuery = config.sqlQuery && config.sqlQuery.trim() ? config.sqlQuery : `SELECT * FROM ${config.tableName}`;
+
+
+    // Initialize the Oracle client if oracleClient is provided
+    const oracleClientInitialization = config.oracleClient && config.oracleClient.trim()
+      ? `cx_Oracle.init_oracle_client(lib_dir="${config.oracleClient}")\n`
+      : "";
+
     const code = `
 # Connect to the Oracle database
-${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
+
+${oracleClientInitialization}${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
 
 # Execute SQL statement
 try:
