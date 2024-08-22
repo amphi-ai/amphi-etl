@@ -4,7 +4,7 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class SnowflakeInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { schema: "public", tableName: "" };
+    const defaultConfig = { schema: "public", tableName: "", queryMethod: "table" };
     const form = {
       fields: [
         {
@@ -55,10 +55,22 @@ export class SnowflakeInput extends BaseCoreComponent {
           advanced: true
         },
         {
+          type: "radio",
+          label: "Query Method",
+          id: "queryMethod",
+          tooltip: "Select whether you want to specify the table name to retrieve data or use a custom SQL query for greater flexibility.",
+          options: [
+            { value: "table", label: "Table Name" },
+            { value: "query", label: "SQL Query" }
+          ],
+          advanced: true
+        },
+        {
           type: "input",
           label: "Table Name",
           id: "tableName",
           placeholder: "Enter table name",
+          condition: { queryMethod: "table" }
         },
         {
           type: "codeTextarea",
@@ -68,6 +80,7 @@ export class SnowflakeInput extends BaseCoreComponent {
           placeholder: 'SELECT * FROM table_name',
           id: "sqlQuery",
           tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
+          condition: { queryMethod: "query" },
           advanced: true
         }
       ],
@@ -94,8 +107,8 @@ export class SnowflakeInput extends BaseCoreComponent {
       ? `${config.schema}.${config.tableName}`
       : config.tableName;
 
-    const sqlQuery = config.sqlQuery && config.sqlQuery.trim()
-      ? config.sqlQuery
+      const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim() 
+      ? config.sqlQuery 
       : `SELECT * FROM ${tableReference}`;
 
     const code = `

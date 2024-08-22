@@ -3,7 +3,7 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class SqlServerInput extends BaseCoreComponent {
     constructor() {
-        const defaultConfig = { host: "localhost", port: "1433", databaseName: "", username: "", password: "", tableName: ""};
+        const defaultConfig = { host: "localhost", port: "1433", databaseName: "", username: "", password: "", tableName: "", queryMethod: "table" };
         const form = {
             fields: [
                 {
@@ -48,9 +48,21 @@ export class SqlServerInput extends BaseCoreComponent {
                     advanced: true
                 },
                 {
+                    type: "radio",
+                    label: "Query Method",
+                    id: "queryMethod",
+                    tooltip: "Select whether you want to specify the table name to retrieve data or use a custom SQL query for greater flexibility.",
+                    options: [
+                        { value: "table", label: "Table Name" },
+                        { value: "query", label: "SQL Query" }
+                    ],
+                    advanced: true
+                },
+                {
                     type: "input",
                     label: "Table Name",
                     id: "tableName",
+                    condition: { queryMethod: "table" },
                     placeholder: "Enter table name",
                 },
                 {
@@ -61,6 +73,7 @@ export class SqlServerInput extends BaseCoreComponent {
                     placeholder: 'SELECT * FROM table_name',
                     id: "sqlQuery",
                     tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
+                    condition: { queryMethod: "query" },
                     advanced: true
                 },
                 {
@@ -83,7 +96,11 @@ export class SqlServerInput extends BaseCoreComponent {
     public generateComponentCode({ config, outputName }): string {
         let connectionString = `mssql+pyodbc://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}?driver=ODBC+Driver+17+for+SQL+Server`;
         const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
-        const sqlQuery = config.sqlQuery && config.sqlQuery.trim() ? config.sqlQuery : `SELECT * FROM ${config.tableName}`;
+
+        const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim()
+            ? config.sqlQuery
+            : `SELECT * FROM ${config.tableName}`;
+
         const code = `
 # Connect to the SQL Server database
 ${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")

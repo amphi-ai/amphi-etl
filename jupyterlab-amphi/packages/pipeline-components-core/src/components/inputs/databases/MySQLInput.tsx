@@ -1,10 +1,10 @@
 
 import { mySQLIcon } from '../../../icons';
-import { BaseCoreComponent } from '../../BaseCoreComponent'; 
+import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class MySQLInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { host: "localhost", port: "3306", databaseName: "", username: "", password: "", tableName: "" };
+    const defaultConfig = { host: "localhost", port: "3306", databaseName: "", username: "", password: "", tableName: "", queryMethod: "table" };
     const form = {
       fields: [
         {
@@ -50,8 +50,9 @@ export class MySQLInput extends BaseCoreComponent {
         },
         {
           type: "radio",
-          label: "Method",
+          label: "Query Method",
           id: "queryMethod",
+          tooltip: "Select whether you want to specify the table name to retrieve data or use a custom SQL query for greater flexibility.",
           options: [
             { value: "table", label: "Table Name" },
             { value: "query", label: "SQL Query" }
@@ -63,7 +64,7 @@ export class MySQLInput extends BaseCoreComponent {
           label: "Table Name",
           id: "tableName",
           placeholder: "Enter table name",
-          // condition: { queryMethod: "table" }
+          condition: { queryMethod: "table" }
         },
         {
           type: "codeTextarea",
@@ -74,23 +75,25 @@ export class MySQLInput extends BaseCoreComponent {
           id: "sqlQuery",
           tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
           advanced: true,
-          // condition: { queryMethod: "query" }
+          condition: { queryMethod: "query" }
         }
       ],
     };
 
     super("MySQL Input", "mySQLInput", "pandas_df_input", [], "inputs.Databases", mySQLIcon, defaultConfig, form);
   }
-  
-    public provideImports({config}): string[] {
-      return ["import pandas as pd", "import sqlalchemy", "import pymysql"];
-    }  
 
-    public generateComponentCode({ config, outputName }): string {
-      let connectionString = `mysql+pymysql://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}`;
-      const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
-      const sqlQuery = config.sqlQuery && config.sqlQuery.trim() ? config.sqlQuery : `SELECT * FROM ${config.tableName}`;
-      const code = `
+  public provideImports({ config }): string[] {
+    return ["import pandas as pd", "import sqlalchemy", "import pymysql"];
+  }
+
+  public generateComponentCode({ config, outputName }): string {
+    let connectionString = `mysql+pymysql://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}`;
+    const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
+    const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim()
+      ? config.sqlQuery
+      : `SELECT * FROM ${config.tableName}`;
+    const code = `
 # Connect to the MySQL database
 ${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
 
@@ -104,6 +107,6 @@ try:
 finally:
     ${uniqueEngineName}.dispose()
 `;
-      return code;
-    }
+    return code;
   }
+}

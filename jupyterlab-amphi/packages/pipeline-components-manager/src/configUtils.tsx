@@ -24,14 +24,33 @@ import { PipelineService } from './PipelineService';
 
 // Function to check if a field should be displayed based on its condition
 const shouldDisplayField = (field, values) => {
-  console.log("shouldDisplay field %o", field)
-  console.log("shouldDisplay values %o", values)
+  console.log("shouldDisplayField field:", field);
+  console.log("shouldDisplayField values:", values);
 
-  console.log("field.condition %o", field.condition)
+  if (!field.condition) {
+    console.log("No condition for field, displaying:", field.id);
+    return true;
+  }
+  console.log("Condition exists for field:", field.id);
 
-  if (!field.condition) return true;
   const conditionKeys = Object.keys(field.condition);
-  return conditionKeys.every(key => values[key] === field.condition[key]);
+  console.log("Condition keys:", conditionKeys);
+
+  const result = conditionKeys.every(key => {
+    const fieldConditionValue = field.condition[key];
+    const formValue = values[key];
+
+    console.log(`Checking condition for key '${key}':`, {
+      fieldConditionValue,
+      formValue,
+      matches: formValue === fieldConditionValue
+    });
+
+    return formValue === fieldConditionValue;
+  });
+
+  console.log(`Final result for field ${field.id}:`, result);
+  return result;
 };
 
 // Set default options to component if specified
@@ -131,7 +150,7 @@ export const GenerateUIFormComponent = React.memo(({
         onValuesChange={(_, values) => {
           setFormValues(values);
         }}>
-        <GenerateUIInputs 
+        <GenerateUIInputs
           name={name}
           nodeId={nodeId}
           form={form}
@@ -145,19 +164,19 @@ export const GenerateUIFormComponent = React.memo(({
           formValues={formValues}
         />
 
-        <ConfigModal 
-          modalOpen={modalOpen} 
-          setModalOpen={setModalOpen} 
-          name={name} 
-          nodeId={nodeId} 
-          form={form} 
-          data={data} 
-          context={context} 
-          componentService={componentService} 
-          manager={manager} 
-          commands={commands} 
-          handleChange={handleChange} 
-          advanced 
+        <ConfigModal
+          modalOpen={modalOpen}
+          setModalOpen={setModalOpen}
+          name={name}
+          nodeId={nodeId}
+          form={form}
+          data={data}
+          context={context}
+          componentService={componentService}
+          manager={manager}
+          commands={commands}
+          handleChange={handleChange}
+          advanced
         />
       </Form>
     </div>
@@ -253,6 +272,14 @@ export const GenerateUIInputs = React.memo(({
       return null;
     }
 
+    // Check to determine if the field should be displayed
+    if (data) {
+      if (!shouldDisplayField(field, data)) {
+        return null;
+      }
+    }
+
+
     let value: any;
     let values: any[] = [];
     const fieldParts = field.id.split('.');
@@ -270,6 +297,7 @@ export const GenerateUIInputs = React.memo(({
       }
     }
 
+    /*
     const validateInput = (value: any) => {
       if (field.validation) {
         const pattern = new RegExp(field.validation, "i");
@@ -283,6 +311,7 @@ export const GenerateUIInputs = React.memo(({
     useEffect(() => {
       validateInput(value);
     }, [value]);
+    */
 
     const commonProps = { field, handleChange, context, advanced };
 
@@ -357,7 +386,7 @@ export const GenerateUIInputs = React.memo(({
       default:
         return null;
     }
-  }, [data, handleChange, componentService, commands, manager]);
+  }, [data, handleChange, componentService, commands, manager, advanced]);
 
   return (
     <>
@@ -474,7 +503,7 @@ export default function ConfigModal({
               handleChange={handleChange}
               advanced={true}
               formValues={formValues}
-            />          
+            />
           </Form>
         </div>
 
@@ -578,7 +607,7 @@ export interface FieldDescriptor {
   onlyLastValue?: boolean;
   noneOption?: boolean;
   connection?: string;
-  displayCondition?: Record<string, any>;
+  condition?: Record<string, any>;
 }
 
 interface ConfigModalProps {

@@ -3,7 +3,7 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class OracleInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { host: "localhost", port: "1521", databaseName: "", username: "", password: "", tableName: "" };
+    const defaultConfig = { host: "localhost", port: "1521", databaseName: "", username: "", password: "", tableName: "", queryMethod: "table" };
     const form = {
       fields: [
         {
@@ -48,9 +48,22 @@ export class OracleInput extends BaseCoreComponent {
           advanced: true
         },
         {
+          type: "radio",
+          label: "Query Method",
+          id: "queryMethod",
+          tooltip: "Select whether you want to specify the table name to retrieve data or use a custom SQL query for greater flexibility.",
+          options: [
+            { value: "table", label: "Table Name" },
+            { value: "query", label: "SQL Query" }
+          ],
+          advanced: true
+        },
+        {
           type: "input",
           label: "Table Name",
           id: "tableName",
+          condition: { queryMethod: "table" },
+
           placeholder: "Enter table name",
         },
         {
@@ -61,6 +74,7 @@ export class OracleInput extends BaseCoreComponent {
           placeholder: 'SELECT * FROM table_name',
           id: "sqlQuery",
           tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
+          condition: { queryMethod: "query" },
           advanced: true
         },
         {
@@ -84,8 +98,10 @@ export class OracleInput extends BaseCoreComponent {
   public generateComponentCode({ config, outputName }): string {
     let connectionString = `oracle+cx_oracle://${config.username}:${config.password}@${config.host}:${config.port}/?service_name=${config.databaseName}`;
     const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
-    const sqlQuery = config.sqlQuery && config.sqlQuery.trim() ? config.sqlQuery : `SELECT * FROM ${config.tableName}`;
-
+    
+    const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim() 
+    ? config.sqlQuery 
+    : `SELECT * FROM ${config.tableName}`;
 
     // Initialize the Oracle client if oracleClient is provided
     const oracleClientInitialization = config.oracleClient && config.oracleClient.trim()

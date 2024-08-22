@@ -153,7 +153,9 @@ export class Connection extends PipelineComponent<ComponentItem>() {
       value: data.connectionType
     });
     const [connectionName, setConnectionName] = useState<string>(data.connectionName || "");
-    const [fetchMethod, setFetchMethod] = useState<Option>(data.fetchMethod || "clear");
+    const [fetchMethod, setFetchMethod] = useState<Option>(data.fetchMethod || "clear" );
+
+    console.log("fetchMethod obj %o", fetchMethod)
 
     if (!data.fetchMethod) {
       handleChange(fetchMethod, "fetchMethod")
@@ -404,6 +406,8 @@ export class Connection extends PipelineComponent<ComponentItem>() {
                     ]
                   }}
                   handleChange={(value) => {
+                    console.log('Selected value: %o', value);
+
                     handleChange(value, 'fetchMethod');
 
                     setFetchMethod(value);
@@ -430,11 +434,13 @@ export class Connection extends PipelineComponent<ComponentItem>() {
                 />
               </Form.Item>
               <br />
+              {data.fetchMethod === "envFile" && (
                 <Form.Item label="Environment Variables File (.env)" tooltip="If the environment file is the selected method, specify the file from which to extract the connection information. The file is a dot env (.env) file which consists of VARIABLE='value', one per line. You can use the helper to copy-paste the list of variable names below next to the Name column title.">
                   <InputFile field={{
                     type: "input", id: "environmentVariableFile", placeholder: "config.env", label: ""
                   }} handleChange={handleChange} context={context} advanced={true} value={envVarFile} manager={manager} />
                 </Form.Item>
+              )}
               <br />
               <Form.Item label="Variables">
                 <Table
