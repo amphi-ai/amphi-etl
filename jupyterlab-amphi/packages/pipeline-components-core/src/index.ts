@@ -10,7 +10,7 @@ import {
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, RedditInput, OpenAILookUp,
   EnvVariables, EnvFile, ConvertToDocuments, PineconeOutput, FixedSizeChunking, SemanticChunking, WordFileInput, PdfTablesInput, Transpose,
   RecursiveChunking, HtmlToMarkdown, ParseHTML, ChromaOutput, CustomCodeDocuments, Unite, Pivot,
-  FillMissingValues, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, RestOutput, FormulaRow, PyGWalker, InlineInput
+  FillMissingValues, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, RestOutput, FormulaRow, InlineInput
 } from './components';
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -78,6 +78,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(SemanticChunking.getInstance());
     componentService.addComponent(RecursiveChunking.getInstance());
     componentService.addComponent(CustomCodeDocuments.getInstance());
+
+    // componentService.addComponent(PyGWalker.getInstance())
+
 
     // Outputs
     componentService.addComponent(CsvFileOutput.getInstance())

@@ -155,7 +155,7 @@ export class Connection extends PipelineComponent<ComponentItem>() {
     const [connectionName, setConnectionName] = useState<string>(data.connectionName || "");
     const [fetchMethod, setFetchMethod] = useState<Option>(data.fetchMethod || "clear");
 
-    if(!data.fetchMethod) {
+    if (!data.fetchMethod) {
       handleChange(fetchMethod, "fetchMethod")
     }
 
@@ -327,7 +327,7 @@ export class Connection extends PipelineComponent<ComponentItem>() {
     };
 
     const connectionNameTooltip = "Provide a name to the connection to describe and differentiate it with other connections."
-    
+
     return (
       <>
         <ConfigProvider
@@ -381,7 +381,7 @@ export class Connection extends PipelineComponent<ComponentItem>() {
               </Form.Item>
               <br />
               <Form.Item label="Connection Name"
-              tooltip={connectionNameTooltip} >
+                tooltip={connectionNameTooltip} >
                 <InputRegular field={{
                   type: "input", id: "connectionName", placeholder: "Optional name", label: ""
                 }} handleChange={(value) => {
@@ -405,7 +405,10 @@ export class Connection extends PipelineComponent<ComponentItem>() {
                   }}
                   handleChange={(value) => {
                     handleChange(value, 'fetchMethod');
+
                     setFetchMethod(value);
+                    console.log('Selected fetchMethod: %o', fetchMethod);
+
                     if (value === "envVars" || value === "envFile") {
                       setDataSource(prevDataSource =>
                         prevDataSource.map(item => ({
@@ -427,11 +430,11 @@ export class Connection extends PipelineComponent<ComponentItem>() {
                 />
               </Form.Item>
               <br />
-              <Form.Item label="Environment Variables File (.env)" tooltip="If the environment file is the selected method, specify the file from which to extract the connection information. The file is a dot env (.env) file which consists of VARIABLE='value', one per line. You can use the helper to copy-paste the list of variable names below next to the Name column title.">
-                <InputFile field={{
-                  type: "input", id: "environmentVariableFile", placeholder: "config.env", label: ""
-                }} handleChange={handleChange} context={context} advanced={true} value={envVarFile} manager={manager} />
-              </Form.Item>
+                <Form.Item label="Environment Variables File (.env)" tooltip="If the environment file is the selected method, specify the file from which to extract the connection information. The file is a dot env (.env) file which consists of VARIABLE='value', one per line. You can use the helper to copy-paste the list of variable names below next to the Name column title.">
+                  <InputFile field={{
+                    type: "input", id: "environmentVariableFile", placeholder: "config.env", label: ""
+                  }} handleChange={handleChange} context={context} advanced={true} value={envVarFile} manager={manager} />
+                </Form.Item>
               <br />
               <Form.Item label="Variables">
                 <Table
@@ -527,12 +530,12 @@ export class Connection extends PipelineComponent<ComponentItem>() {
 
   public generateComponentCode({ config }): string {
     let code = `# Connection constants for ${config.connectionType}\n`;
-  
+
     // If the fetch method is "envFile", load the environment variables from the specified file
     if (config.fetchMethod === "envFile") {
       code += `load_dotenv(dotenv_path="${config.environmentVariableFile}")\n\n`;
     }
-  
+
     // Define the variables based on the fetch method
     config.variables.forEach(variable => {
       let varName = variable.name;
@@ -552,9 +555,9 @@ export class Connection extends PipelineComponent<ComponentItem>() {
         }
       }
     });
-  
+
     code += "\n";
-  
+
     return code;
   }
 }

@@ -33,85 +33,75 @@ export class PyGWalker extends PipelineComponent<ComponentItem>() {
         modalOpen,
         setModalOpen
     }) => {
-        const [widgetHtml, setWidgetHtml] = useState<string | null>(null);
         const widgetContainerRef = useRef<HTMLDivElement>(null);
-
-        console.log("context %o", context)
-
+        const [widgetView, setWidgetView] = useState(null);
+    
         useEffect(() => {
-            if (modalOpen) {
-
-                console.log("code")
-                // Create and initialize the PyGWalker widget
+            if (modalOpen && context.sessionContext.session.kernel) {
                 const code = `
-                !pip install pygwalker --disable-pip-version-check
-                import pygwalker as pyg
-                import pandas as pd
-                from IPython.display import display
-                
-                # Assuming 'df' is the input dataframe
-                df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})  # Replace with actual input data
-                w = pyg.walk(df, return_widget=True)
-                display(w)
+!pip install pygwalker
+import pygwalker as pyg
+import pandas as pd
+    
+df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
+w = pyg.walk(df, return_widget=True)
+display(w)
                 `;
-
-                console.log("try")
-
+    
                 try {
-                    const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
-
-                    console.log("future %o", future)
-
-                    future.onReply = reply => {
-
-                        if (reply.content.status === "ok") {
-                            context.log("Response is OK")
-                            const output = reply.content.data['text/html'];
-                            if (output) {
-                                setWidgetHtml(output);
+                    const future = context.sessionContext.session.kernel.requestExecute({ code: code });
+    
+                    future.onIOPub = (msg) => {
+                        if (msg.header.msg_type === 'display_data') {
+                            const content = msg.content;
+                            if (content.data['application/vnd.jupyter.widget-view+json']) {
+                                const widgetData = content.data['application/vnd.jupyter.widget-view+json'];
+                                const modelId = widgetData.model_id;
+                                renderWidget(modelId);
                             }
-                        } else {
-                            context.log("Response is NOK")
-                        }
-                    };
-
-                    future.onIOPub = msg => {
-                        if (msg.header.msg_type === 'stream') {
-                            // Handle stream messages if necessary
                         } else if (msg.header.msg_type === 'error') {
-                            // Handle error messages
-                            const errorMsg = msg as KernelMessage.IErrorMsg;
-                            const errorOutput = errorMsg.content;
-
-                            console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
+                            console.error(`Kernel Error: ${msg.content.ename}: ${msg.content.evalue}`);
                         }
                     };
-
-                    future.onDone = () => {
-
-                        context.log("Response is DONE")
-                    };
-
+    
                 } catch (error) {
-                    console.error(error);
+                    console.error("Error executing code:", error);
                 }
             }
-        }, [modalOpen, context.kernel]);
-
-        useEffect(() => {
-            if (widgetHtml && widgetContainerRef.current) {
-                widgetContainerRef.current.innerHTML = widgetHtml;
-                // You might need to run any scripts that came with the widget HTML
-                const scripts = widgetContainerRef.current.getElementsByTagName('script');
-                Array.from(scripts).forEach(script => {
-                    const newScript = document.createElement('script');
-                    Array.from(script.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                    newScript.appendChild(document.createTextNode(script.innerHTML));
-                    script.parentNode.replaceChild(newScript, script);
-                });
+        }, [modalOpen, context.sessionContext.session.kernel]);
+    
+        const renderWidget = async (modelId) => {
+            if (!context.rendermime) {
+                console.error('Rendermime not available');
+                return;
             }
-        }, [widgetHtml]);
-
+    
+            try {
+                const model = await context.sessionContext.sessionManager.widgetManager.get_model(modelId);
+                if (!model) {
+                    console.error('Model not found');
+                    return;
+                }
+    
+                const renderer = context.rendermime.createRenderer('application/vnd.jupyter.widget-view+json');
+                const widgetView = await renderer.renderModel({
+                    data: {'application/vnd.jupyter.widget-view+json': {model_id: modelId}},
+                    metadata: {}
+                });
+    
+                setWidgetView(widgetView);
+            } catch (error) {
+                console.error('Error rendering widget:', error);
+            }
+        };
+    
+        useEffect(() => {
+            if (widgetView && widgetContainerRef.current) {
+                widgetContainerRef.current.innerHTML = '';
+                widgetContainerRef.current.appendChild(widgetView.node);
+            }
+        }, [widgetView]);
+    
         return (
             <ConfigProvider
                 theme={{

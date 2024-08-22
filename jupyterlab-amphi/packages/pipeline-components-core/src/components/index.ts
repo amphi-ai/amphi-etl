@@ -52,7 +52,7 @@ export { Pivot } from './transforms/Pivot';
 export { FormulaRow } from './transforms/FormulaRow';
 
 // Custom
-export { PyGWalker } from './custom/PyGWalker';
+// export { PyGWalker } from './custom/PyGWalker';
 
 
 // Outputs

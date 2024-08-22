@@ -68,8 +68,7 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
                     token: {
                         colorPrimary: '#5F9B97',
                     },
-                }}
-            >
+                }}>
                 <Modal
                     title="Formula Row"
                     open={modalOpen}
@@ -80,16 +79,13 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
                         <>
                             <OkBtn />
                         </>
-                    )}
-                >
-
+                    )}>
                     <Form
                         labelCol={{ span: 6 }}
                         wrapperCol={{ span: 18 }}
                         name="dynamic_form_complex"
                         autoComplete="off"
-                        initialValues={{ items: formulas }}
-                    >
+                        initialValues={{ items: formulas }}>
                         <Form.List name="items">
                             {(fields, { add, remove }) => (
                                 <div style={{ display: 'flex', rowGap: 16, flexDirection: 'column' }}>
@@ -103,8 +99,7 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
                                                 <CloseOutlined
                                                     onClick={() => handleRemoveFormula(index)}
                                                 />
-                                            }
-                                        >
+                                            }>
                                             <Form.Item
                                                 label="Columns"
                                                 name={[index, 'columns']}
@@ -180,9 +175,7 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
                             )}
                         </Form.List>
                     </Form>
-
                 </Modal>
-
             </ConfigProvider>
         );
     };

@@ -34,6 +34,7 @@ const shouldDisplayField = (field, values) => {
   return conditionKeys.every(key => values[key] === field.condition[key]);
 };
 
+// Set default options to component if specified
 export const setDefaultConfig = ({
   nodeId,
   store,
@@ -178,7 +179,7 @@ export const GenerateUIInputs = React.memo(({
 }: UIInputsProps) => {
 
   // console.log("GenerateUIInputs")
-  
+
   const [connections, setConnections] = useState([]);
   const [optionsConnections, setOptionsConnections] = useState<Record<string, any[]>>({});
 

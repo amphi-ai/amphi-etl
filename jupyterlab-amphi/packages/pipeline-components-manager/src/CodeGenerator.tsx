@@ -412,7 +412,7 @@ ${code}`;
   static formatVariables(code: string): string {
     const lines = code.split('\n');
     const transformedLines = lines.map(line => {
-      if (/f(['"])/.test(line) || /f("""|''')/.test(line)) {
+      if (/f(['"])/.test(line) || /f("""|''')/.test(line) || /r(['"])/.test(line)) {
         return line; // Return the line as-is if it's already an f-string
       }
       return line
