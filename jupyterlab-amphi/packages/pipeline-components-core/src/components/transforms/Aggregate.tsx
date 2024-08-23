@@ -36,7 +36,7 @@ export class Aggregate extends BaseCoreComponent {
       ],
     };
 
-    super("Aggregate", "aggregate", "pandas_df_processor", [], "transform", aggregateIcon, defaultConfig, form);
+    super("Aggregate Rows", "aggregate", "pandas_df_processor", [], "transforms", aggregateIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

@@ -17,7 +17,7 @@ export class ExpandList extends BaseCoreComponent {
       ]
     };
 
-    super("Expand JSON List", "expandList", "pandas_df_processor", [], "transform", expandIcon, defaultConfig, form);
+    super("Expand JSON List", "expandList", "pandas_df_processor", [], "transforms", expandIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

@@ -55,7 +55,7 @@ export class RecursiveChunking extends BaseCoreComponent {
       ],
     };
 
-    super("Recursive chunking", "recursiveChunking", "documents_processor", [], "transform.documents", splitIcon, defaultConfig, form);
+    super("Recursive chunking", "recursiveChunking", "documents_processor", [], "transforms.documents", splitIcon, defaultConfig, form);
   }
 
   public provideFunctions({ config }): string[] {

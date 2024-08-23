@@ -1,10 +1,11 @@
 // Inputs
 export { CsvFileInput } from './inputs/files/CsvFileInput';
-
 export { ExcelFileInput } from './inputs/files/ExcelFileInput';
-export { JsonFileInput } from './inputs/files/JsonFileInput';
 export { ParquetFileInput } from './inputs/files/ParquetFileInput';
+export { JsonFileInput } from './inputs/files/JsonFileInput';
 export { XmlFileInput } from './inputs/files/XmlFileInput';
+export { InlineInput } from './inputs/InlineInput';
+
 export { WordFileInput } from './inputs/files/WordFileInput';
 export { PdfTablesInput } from './inputs/files/PdfTablesInput';
 export { HtmlFileInput } from './inputs/files/HtmlFileInput';
@@ -17,7 +18,6 @@ export { PostgresInput } from './inputs/databases/PostgresInput';
 export { OracleInput } from './inputs/databases/OracleInput';
 export { SqlServerInput } from './inputs/databases/SqlServerInput';
 export { SnowflakeInput } from './inputs/databases/SnowflakeInput';
-export { InlineInput } from './inputs/InlineInput';
 
 export { RedditInput } from './inputs/cloud/RedditInput';
 

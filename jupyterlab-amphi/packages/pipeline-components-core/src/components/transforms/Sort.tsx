@@ -32,7 +32,7 @@ export class Sort extends BaseCoreComponent {
       ],
     };
 
-    super("Sort Rows", "sort", "pandas_df_processor", [], "transform", sortIcon, defaultConfig, form);
+    super("Sort Rows", "sort", "pandas_df_processor", [], "transforms", sortIcon, defaultConfig, form);
   }
 
   public provideImports({config}): string[] {

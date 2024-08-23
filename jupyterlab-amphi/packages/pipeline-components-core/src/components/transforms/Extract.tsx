@@ -49,7 +49,7 @@ export class Extract extends BaseCoreComponent {
       ],
     };
 
-    super("Extract", "extract", "pandas_df_processor", [], "transform", extractIcon, defaultConfig, form);
+    super("Parse & Extract", "extract", "pandas_df_processor", [], "transforms", extractIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

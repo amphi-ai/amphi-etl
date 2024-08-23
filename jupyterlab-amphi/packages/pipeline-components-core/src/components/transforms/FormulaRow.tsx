@@ -14,7 +14,7 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
     public _name = "Formula Row";
     public _id = "formulaRow";
     public _type = "pandas_df_processor";
-    public _category = "transform";
+    public _category = "transforms";
     public _icon = sumIcon;
     public _default = {};
     public _form = {};

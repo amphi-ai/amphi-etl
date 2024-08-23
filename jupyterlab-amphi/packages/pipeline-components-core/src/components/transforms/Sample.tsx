@@ -29,7 +29,7 @@ export class Sample extends BaseCoreComponent {
       ],
     };
 
-    super("Sample Datasets", "sample", "pandas_df_processor", [], "transform", randomIcon, defaultConfig, form);
+    super("Sample Datasets", "sample", "pandas_df_processor", [], "transforms", randomIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

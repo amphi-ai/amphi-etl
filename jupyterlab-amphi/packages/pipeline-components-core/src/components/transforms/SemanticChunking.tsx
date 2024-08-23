@@ -30,7 +30,7 @@ export class SemanticChunking extends BaseCoreComponent {
       ],
     };
 
-    super("Semantic chunking", "semanticChunking", "documents_processor", [], "transform.documents", splitIcon, defaultConfig, form);
+    super("Semantic chunking", "semanticChunking", "documents_processor", [], "transforms.documents", splitIcon, defaultConfig, form);
   }
 
   public provideDependencies({config}): string[] {

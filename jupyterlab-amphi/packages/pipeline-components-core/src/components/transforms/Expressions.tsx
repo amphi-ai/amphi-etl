@@ -6,7 +6,7 @@ export class Expressions extends BaseCoreComponent {
     const defaultConfig = {};
     const form = {};
 
-    super("Expressions", "expressions", "pandas_df_processor", [], "transform", bracesIcon, defaultConfig, form);
+    super("Expressions", "expressions", "pandas_df_processor", [], "transforms", bracesIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

@@ -112,7 +112,7 @@ export class ParseHTML extends BaseCoreComponent {
       ],
     };
 
-    super("Parse HTML", "parseHtml", "documents_processor", [], "transform.documents", htmlLineIcon, defaultConfig, form);
+    super("Parse HTML", "parseHtml", "documents_processor", [], "transforms.documents", htmlLineIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

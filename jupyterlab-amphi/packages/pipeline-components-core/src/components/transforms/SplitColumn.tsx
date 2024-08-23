@@ -35,7 +35,7 @@ export class SplitColumn extends BaseCoreComponent {
       ],
     };
 
-    super("Split Column", "splitColumn", "pandas_df_processor", [], "transform", splitIcon, defaultConfig, form);
+    super("Split Column", "splitColumn", "pandas_df_processor", [], "transforms", splitIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

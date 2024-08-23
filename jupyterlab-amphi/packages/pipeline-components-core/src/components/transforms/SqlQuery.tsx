@@ -18,7 +18,7 @@ export class SQLQuery extends BaseCoreComponent {
       ],
     };
 
-    super("SQL Query", "sqlQuery", "pandas_df_processor", [], "Custom", boxIcon, defaultConfig, form);
+    super("SQL Query", "sqlQuery", "pandas_df_processor", [], "transforms", boxIcon, defaultConfig, form);
   }
 
   public provideImports({config}): string[] {

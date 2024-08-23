@@ -82,7 +82,7 @@ export class TypeConverter extends BaseCoreComponent {
       ],
     };
 
-    super("Type Converter", "typeConverter", "pandas_df_processor", [], "transform", typeIcon, defaultConfig, form);
+    super("Type Converter", "typeConverter", "pandas_df_processor", [], "transforms", typeIcon, defaultConfig, form);
   }
 
   public provideImports({config}): string[] {

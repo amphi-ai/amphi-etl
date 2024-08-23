@@ -1,4 +1,4 @@
-import { fileTextIcon } from '../../icons';
+import { editIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class InlineInput extends BaseCoreComponent {
@@ -26,7 +26,7 @@ Sarah,Wilson,30`;
             ],
         };
 
-        super("Inline Input", "inlineInput", "pandas_df_input", [], "inputs", fileTextIcon, defaultConfig, form);
+        super("Inline Input", "inlineInput", "pandas_df_input", [], "inputs", editIcon, defaultConfig, form);
     }
 
     public provideImports({ config }): string[] {

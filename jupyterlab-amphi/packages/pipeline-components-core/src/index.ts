@@ -28,12 +28,13 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(Connection.getInstance())
 
     // Input
+    componentService.addComponent(InlineInput.getInstance())
     componentService.addComponent(CsvFileInput.getInstance())
-    componentService.addComponent(JsonFileInput.getInstance())
     componentService.addComponent(ExcelFileInput.getInstance())
-    componentService.addComponent(RestInput.getInstance())
     componentService.addComponent(ParquetFileInput.getInstance())
+    componentService.addComponent(JsonFileInput.getInstance())
     componentService.addComponent(XmlFileInput.getInstance())
+    componentService.addComponent(RestInput.getInstance())
     componentService.addComponent(GoogleSheetsInput.getInstance())
     componentService.addComponent(MySQLInput.getInstance())
     componentService.addComponent(PostgresInput.getInstance())
@@ -45,7 +46,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(OracleInput.getInstance())
     componentService.addComponent(SqlServerInput.getInstance())
     componentService.addComponent(SnowflakeInput.getInstance())
-    componentService.addComponent(InlineInput.getInstance())
 
 
     // Processors

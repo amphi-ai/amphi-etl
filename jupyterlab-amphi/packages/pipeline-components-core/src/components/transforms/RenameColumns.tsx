@@ -17,7 +17,7 @@ export class RenameColumns extends BaseCoreComponent {
       ],
     };
 
-    super("Rename Columns", "rename", "pandas_df_processor", [], "transform", editIcon, defaultConfig, form);
+    super("Rename Columns", "rename", "pandas_df_processor", [], "transforms", editIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

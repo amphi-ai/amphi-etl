@@ -72,7 +72,7 @@ export class OpenAILookUp extends BaseCoreComponent {
       ],
     };
 
-    super("OpenAI Prompt", "openAiLookup", "pandas_df_processor", [], "transform", openAiIcon, defaultConfig, form);
+    super("OpenAI Prompt", "openAiLookup", "pandas_df_processor", [], "transforms", openAiIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

@@ -50,7 +50,7 @@ export class Filter extends BaseCoreComponent {
       ],
     };
 
-    super("Filter Rows", "filter", "pandas_df_processor", [], "transform", filterIcon, defaultConfig, form);
+    super("Filter Rows", "filter", "pandas_df_processor", [], "transforms", filterIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

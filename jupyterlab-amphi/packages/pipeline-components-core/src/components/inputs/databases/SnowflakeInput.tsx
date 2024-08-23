@@ -86,10 +86,8 @@ export class SnowflakeInput extends BaseCoreComponent {
       ],
     };
 
-    super("Snowflake Input", "snowflakeInput", "pandas_df_input", [], "inputs.Cloud Warehouses", snowflakeIcon, defaultConfig, form);
+    super("Snowflake Input", "snowflakeInput", "pandas_df_input", [], "inputs.Databases", snowflakeIcon, defaultConfig, form);
   }
-
-
 
   public provideDependencies({ config }): string[] {
     let deps: string[] = [];

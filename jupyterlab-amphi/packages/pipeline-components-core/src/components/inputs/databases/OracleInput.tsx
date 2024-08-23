@@ -3,7 +3,7 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class OracleInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { host: "localhost", port: "1521", databaseName: "", username: "", password: "", tableName: "", queryMethod: "table" };
+    const defaultConfig = { host: "localhost", port: "1521", databaseName: "", username: "", password: "", tableName: "", queryMethod: "table", dbapi: "oracledb" };
     const form = {
       fields: [
         {
@@ -84,6 +84,17 @@ export class OracleInput extends BaseCoreComponent {
           id: "oracleClient",
           placeholder: "Specify oracle client path",
           advanced: true
+        },
+        {
+          type: "select",
+          label: "Database API (DBAPI)",
+          tooltip: "",
+          id: "dbapi",
+          options: [
+            { value: "cx_oracle", label: "cx-Oracle" },
+            { value: "oracledb", label: "python-oracledb" }
+          ],
+          advanced: true
         }
       ],
     };
@@ -92,13 +103,24 @@ export class OracleInput extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "import sqlalchemy", "import cx_Oracle"];
+    const imports = ["import pandas as pd", "import sqlalchemy"];
+  
+    if (config.dbapi === 'cx_oracle') {
+      imports.push("import cx_Oracle");
+    } else if (config.dbapi === 'oracledb') {
+      imports.push("import oracledb");
+    }
+  
+    return imports;
   }
 
   public generateComponentCode({ config, outputName }): string {
-    let connectionString = `oracle+cx_oracle://${config.username}:${config.password}@${config.host}:${config.port}/?service_name=${config.databaseName}`;
+
+    const dbapi = config.dbapi;
+
+    let connectionString = `oracle+${dbapi}://${config.username}:${config.password}@${config.host}:${config.port}/?service_name=${config.databaseName}`;
     const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
-    
+
     const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim() 
     ? config.sqlQuery 
     : `SELECT * FROM ${config.tableName}`;
@@ -110,7 +132,6 @@ export class OracleInput extends BaseCoreComponent {
 
     const code = `
 # Connect to the Oracle database
-
 ${oracleClientInitialization}${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
 
 # Execute SQL statement

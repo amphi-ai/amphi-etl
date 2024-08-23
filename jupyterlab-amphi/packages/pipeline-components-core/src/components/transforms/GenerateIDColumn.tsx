@@ -36,7 +36,7 @@ export class GenerateIDColumn extends BaseCoreComponent {
       ],
     };
 
-    super("Generate ID Column", "generate_id_column", "pandas_df_processor", [], "transform", hashIcon, defaultConfig, form);
+    super("Generate ID Column", "generate_id_column", "pandas_df_processor", [], "transforms", hashIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

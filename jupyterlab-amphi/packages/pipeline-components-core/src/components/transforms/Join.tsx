@@ -42,7 +42,7 @@ export class Join extends BaseCoreComponent {
       ],
     };
 
-    super("Join Datasets", "join", "pandas_df_double_processor", [], "transform", mergeIcon, defaultConfig, form);
+    super("Join Datasets", "join", "pandas_df_double_processor", [], "transforms", mergeIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

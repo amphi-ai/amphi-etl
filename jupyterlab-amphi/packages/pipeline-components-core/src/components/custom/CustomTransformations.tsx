@@ -33,7 +33,7 @@ export class CustomTransformations extends BaseCoreComponent {
       ],
     };
 
-    super("Custom Code", "customTransformations", "pandas_df_processor", [], "Custom", codeIcon, defaultConfig, form);
+    super("Custom Code", "customTransformations", "pandas_df_processor", [], "transforms", codeIcon, defaultConfig, form);
   }
 
   public provideImports(config): string[] {

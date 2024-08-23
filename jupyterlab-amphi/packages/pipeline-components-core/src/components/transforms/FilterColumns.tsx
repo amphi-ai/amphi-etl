@@ -16,7 +16,7 @@ export class FilterColumns extends BaseCoreComponent {
       ],
     };
 
-    super("Drop Columns", "filterColumn", "pandas_df_processor", [], "transform", crosshairIcon, defaultConfig, form);
+    super("Drop Columns", "filterColumn", "pandas_df_processor", [], "transforms", crosshairIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

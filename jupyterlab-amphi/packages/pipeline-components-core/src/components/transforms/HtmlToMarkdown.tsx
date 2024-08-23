@@ -67,7 +67,7 @@ export class HtmlToMarkdown extends BaseCoreComponent {
       ],
     };
 
-    super("HTML to Markdown", "htmlToMarkdown", "documents_processor", [], "transform.documents", markdownIcon, defaultConfig, form);
+    super("HTML to Markdown", "htmlToMarkdown", "documents_processor", [], "transforms.documents", markdownIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

@@ -17,7 +17,7 @@ export class Transpose extends BaseCoreComponent {
       ],
     };
 
-    super("Transpose Dataset", "transpose", "pandas_df_processor", [], "transform", transposeIcon, defaultConfig, form);
+    super("Transpose Dataset", "transpose", "pandas_df_processor", [], "transforms", transposeIcon, defaultConfig, form);
   }
 
   public provideImports({config}): string[] {

@@ -27,7 +27,7 @@ export class Deduplicate extends BaseCoreComponent {
       ],
     };
 
-    super("Deduplicate", "deduplicateData", "pandas_df_processor", [], "transform", dedupIcon, defaultConfig, form);
+    super("Deduplicate Rows", "deduplicateData", "pandas_df_processor", [], "transforms", dedupIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {
