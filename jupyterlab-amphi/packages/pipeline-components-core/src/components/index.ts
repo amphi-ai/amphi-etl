@@ -22,6 +22,9 @@ export { RedditInput } from './inputs/cloud/RedditInput';
 
 export { IcebergInput } from './inputs/lakehouse/IcebergInput';
 export { TrinoInput } from './inputs/lakehouse/TrinoInput';
+export { SparkSession } from './inputs/lakehouse/SparkSession';
+export { SparkLoadTable} from './inputs/lakehouse/SparkLoadTable';
+
 // Transforms
 export { Filter } from './transforms/Filter';
 export { Aggregate } from './transforms/Aggregate';
