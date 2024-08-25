@@ -23,14 +23,14 @@ export class PipelineService {
   static findStartNode = (flow: Flow, componentService: any): string | null => {
     const targetMap = new Set<string>();
     flow.edges.forEach(edge => targetMap.add(edge.target));
-  
+
     for (const node of flow.nodes) {
       const nodeType = componentService.getComponent(node.type)._type;
       if (!targetMap.has(node.id) && nodeType === "pandas_df_input") {
         return node.id;
       }
     }
-  
+
     return null;
   }
 
@@ -38,38 +38,38 @@ export class PipelineService {
     const pipeline = JSON.parse(pipelineJson);
     const pipelineFlow = pipeline.pipelines[0].flow;
     const node = pipelineFlow.nodes.find((n) => n.id === nodeId);
-  
+
     if (!node) {
       return null; // Return null if the node is not found
     }
-    
+
     return node;
   }
 
   static findStartNodes = (flow: Flow, componentService: any): string[] => {
     const targetMap = new Set<string>();
     flow.edges.forEach(edge => targetMap.add(edge.target));
-  
+
     const startNodes: string[] = [];
-  
+
     for (const node of flow.nodes) {
       const nodeType = componentService.getComponent(node.type)._type;
-  
+
       if (!targetMap.has(node.id) && nodeType === "pandas_df_input") {
         startNodes.push(node.id);
-  
+
         if (startNodes.length === 2) {
           // If we've found two start nodes, assume it's the double processor case
           return startNodes;
         }
       }
     }
-  
+
     if (startNodes.length === 1) {
       // If there's only one start node, return it as an array
       return startNodes;
     }
-  
+
     // If no start nodes are found, return an empty array
     return [];
   };
@@ -87,7 +87,7 @@ export class PipelineService {
 
   static findMultiplePreviousNodeIds = (flow, nodeId) => {
     const previousNodesMap = new Map();
-  
+
     // Group incoming edges by targetHandle
     flow.edges.forEach(edge => {
       if (edge.target === nodeId) {
@@ -98,7 +98,7 @@ export class PipelineService {
         previousNodesMap.get(handle).push(edge.source);
       }
     });
-  
+
     // Sort the map by targetHandle and flatten the result
     const sortedPreviousNodeIds = Array.from(previousNodesMap.entries())
       .sort((a, b) => a[0].localeCompare(b[0]))
@@ -180,12 +180,12 @@ export class PipelineService {
 
   static getComponentIdForFileExtension(fileExtension: string, componentService: any): { id: string | null, default: any | null } {
     // Extract file extension from item.name
-  
+
     if (!fileExtension) return { id: null, default: null }; // Return nulls if there is no file extension
-  
+
     // Retrieve all components
     const components = componentService.getComponents();
-  
+
     // Iterate through all components
     for (const component of components) {
       // Check if the component has the _fileDrop attribute and it contains the file extension
@@ -194,36 +194,36 @@ export class PipelineService {
         return { id: component._id, default: component._default || null };
       }
     }
-  
+
     return { id: null, default: null }; // Return nulls if no matching component is found
   }
 
   static getLastUpdatedInPath(flow: Flow, targetId: string): string[] {
     const visited = new Set<string>();
     const lastUpdatedList: string[] = [];
-  
+
     const findNodesInPath = (nodeId: string) => {
       if (visited.has(nodeId)) {
         return;
       }
       visited.add(nodeId);
-  
+
       const node = flow.nodes.find(n => n.id === nodeId);
       if (node && node.data && node.data.lastUpdated) {
         lastUpdatedList.push(node.data.lastUpdated);
       }
-  
+
       const dependencies = flow.edges
         .filter(edge => edge.target === nodeId)
         .map(edge => edge.source);
-  
+
       dependencies.forEach(dependency => {
         findNodesInPath(dependency);
       });
     };
-  
+
     findNodesInPath(targetId);
-  
+
     return lastUpdatedList;
   }
 
@@ -231,26 +231,25 @@ export class PipelineService {
     const pipelineDir = PathExt.dirname(pipelinePath);
     const relativePath = PathExt.relative(pipelineDir, selectedFilePath);
     return relativePath;
-}
+  }
 
-static getEnvironmentVariables(pipelineJson: string): string[] {
-  const flow = PipelineService.filterPipeline(pipelineJson);
-  const envNodes = flow.nodes.filter(node => node.type === 'envVariables' || node.type === 'envFile');
+  static getEnvironmentVariables(pipelineJson: string): string[] {
+    const flow = PipelineService.filterPipeline(pipelineJson);
+    const envNodes = flow.nodes.filter(node => node.type === 'envVariables' || node.type === 'envFile');
 
-  const variablesList = envNodes.reduce((acc, node) => {
-    const variables = node.data.variables || [];
-    return acc.concat(variables.map(variable => variable.name));
-  }, []);
+    const variablesList = envNodes.reduce((acc, node) => {
+      const variables = node.data.variables || [];
+      return acc.concat(variables.map(variable => variable.name));
+    }, []);
 
-  console.log("variablesList %o", variablesList);
+    console.log("variablesList %o", variablesList);
 
-  return variablesList;
-}
-
+    return variablesList;
+  }
 
   static getConnections(pipelineJson: string): any[] {
     const flow = PipelineService.filterPipeline(pipelineJson);
-    const connectionsNodes = flow.nodes.filter(node => node.type === 'connection' );
+    const connectionsNodes = flow.nodes.filter(node => node.type === 'connection');
 
     const connectionsList = connectionsNodes.reduce((acc, node) => {
       return acc.concat(node.data || []);
@@ -267,7 +266,8 @@ static getEnvironmentVariables(pipelineJson: string): string[] {
     components.forEach(component => {
       if (component._form && component._form.fields) {
         component._form.fields.forEach(field => {
-          if (field.connection) {
+          console.log("field checking %o", field)
+          if (field.connection && !field.ignoreConnection) {
             if (!connectionMap[field.connection]) {
               connectionMap[field.connection] = [];
             }
@@ -288,9 +288,9 @@ static getEnvironmentVariables(pipelineJson: string): string[] {
 
   static formatVarName = (input: string): string => {
     return input.replace(/([a-z])([A-Z])/g, '$1_$2') // Add underscore before capital letters
-                .toUpperCase() // Convert to uppercase
-                .replace(/\s+/g, '_') // Replace spaces with underscore
-                .replace(/\./g, '_'); // Replace dots with underscore
+      .toUpperCase() // Convert to uppercase
+      .replace(/\s+/g, '_') // Replace spaces with underscore
+      .replace(/\./g, '_'); // Replace dots with underscore
   };
 
 }

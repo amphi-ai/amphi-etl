@@ -23,14 +23,14 @@ data_files = (
 
 setup(
     name='amphi-etl',
-    version='0.5.80',
+    version='0.5.81',
     description='Open-source and Python-based ETL',
     author='Thibaut Gourdel',
     author_email='tgourdel@amphi.ai',
     license='ELv2',
     install_requires=[
         'jupyterlab==4.2.2',
-        'jupyterlab-amphi==0.5.80'
+        'jupyterlab-amphi==0.5.81'
     ],
     keywords=[],  # Added an empty list for keywords to resolve the dynamic 'keywords' issue.
     packages=find_packages(include=['amphi', 'amphi.theme-light', 'amphi.ui-component', 'config', 'packages']),  # Custom package discovery.

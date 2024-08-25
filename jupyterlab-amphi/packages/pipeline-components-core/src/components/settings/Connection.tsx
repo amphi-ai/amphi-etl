@@ -2,7 +2,7 @@ import { ComponentItem, InputFile, InputRegular, Option, PipelineComponent, Pipe
 import { CopyOutlined } from '@ant-design/icons';
 import type { GetRef, InputRef } from 'antd';
 import { ConfigProvider, Form, Input, Modal, Select, Space, Table, Tooltip } from 'antd';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState , useMemo} from 'react';
 import { Handle, NodeToolbar, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
 import { keyIcon, settingsIcon } from '../../icons';
 
@@ -153,7 +153,8 @@ export class Connection extends PipelineComponent<ComponentItem>() {
       value: data.connectionType
     });
     const [connectionName, setConnectionName] = useState<string>(data.connectionName || "");
-    const [fetchMethod, setFetchMethod] = useState<Option>(data.fetchMethod || "clear" );
+    // const [fetchMethod, setFetchMethod] = useState<Option>(data.fetchMethod || "clear" );
+    const fetchMethod = useMemo(() => data.fetchMethod || "clear", [data.fetchMethod]);
 
     console.log("fetchMethod obj %o", fetchMethod)
 
@@ -172,7 +173,7 @@ export class Connection extends PipelineComponent<ComponentItem>() {
       setDataSource(newData);
     };
 
-    const defaultColumns: (ColumnTypes[number] & { editable?: boolean; dataIndex: string, required?: boolean })[] = [
+    const defaultColumns = useMemo(() => ([
       {
         title: (
           <>
@@ -236,25 +237,22 @@ export class Connection extends PipelineComponent<ComponentItem>() {
           ) : null,
       }
       */
-    ];
+    ]), [dataSource]);
 
-    const handleSave = (row: DataType) => {
+    const handleSave = useCallback((row: DataType) => {
       const newData = [...dataSource];
       const index = newData.findIndex((item) => row.key === item.key);
       const item = newData[index];
-      newData.splice(index, 1, {
-        ...item,
-        ...row,
-      });
+      newData.splice(index, 1, { ...item, ...row });
       setDataSource(newData);
-    };
+    }, [dataSource]);
 
-    const components = {
+    const components = useMemo(() => ({
       body: {
         row: EditableRow,
         cell: EditableCell,
       },
-    };
+    }), []);
 
     const columns = defaultColumns.map((col) => {
 
@@ -274,24 +272,23 @@ export class Connection extends PipelineComponent<ComponentItem>() {
       };
     });
 
-    const handleSelectChange = (value: { value: string; label: string }) => {
+    const handleSelectChange = useCallback((value: { value: string; label: string }) => {
       setSelectedConnection(value);
       const selectedConnectionFields = connections.find(conn => conn.value === value.value)?.fields || [];
-      handleChange(value.value, "connectionType"); // Update connection type
+      handleChange(value.value, "connectionType");
       if (!data.customTitle) {
-        // Update title if not already changed
         handleChange(value.value + " Connection", "customTitle");
       }
       handleChange(value.value, "connectionName");
-      setConnectionName(value.value); // Add this line to update the state
-
+      setConnectionName(value.value);
+  
       setDataSource(selectedConnectionFields.map(field => ({
         key: field.id,
         name: PipelineService.formatVarName(value.value + '_' + field.label),
         value: '',
         default: '',
       })));
-    };
+    }, [connections, data.customTitle, handleChange]);
 
     useEffect(() => {
       const extractedConnections = extractConnections(componentService);
@@ -410,7 +407,7 @@ export class Connection extends PipelineComponent<ComponentItem>() {
 
                     handleChange(value, 'fetchMethod');
 
-                    setFetchMethod(value);
+                    // setFetchMethod(value);
                     console.log('Selected fetchMethod: %o', fetchMethod);
 
                     if (value === "envVars" || value === "envFile") {

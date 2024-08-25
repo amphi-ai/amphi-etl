@@ -1,1 +1,1 @@
-export const LIB_VERSION = "0.5.80";
+export const LIB_VERSION = "0.5.81";

@@ -19,12 +19,16 @@ export const SelectRegular: React.FC<SelectCustomizableProps> = ({
     return field.options.find(option => option.value === value) || { value: value, label: value };
   };
 
+  const [items, setItems] = useState(field.options);
+  const [selectedOption, setSelectedOption] = useState(
+    defaultValue ? findOptionByValue(defaultValue) : undefined
+  );
+
   useEffect(() => {
     setSelectedOption(findOptionByValue(defaultValue));
   }, [defaultValue, field.options]);
 
-  const [items, setItems] = useState(field.options);
-  const [selectedOption, setSelectedOption] = useState(findOptionByValue(defaultValue));
+
 
   const handleSelectChange = (option: { value: string; label: React.ReactNode }) => {
     setSelectedOption(option);
@@ -49,7 +53,7 @@ export const SelectRegular: React.FC<SelectCustomizableProps> = ({
       style={{ width: '100%' }}
       className="nodrag"
       onChange={handleSelectChange}
-      value={selectedOption}
+      value={selectedOption || null}
       placeholder={field.placeholder || 'Select ...'}
       {...(field.required ? { required: field.required } : {})}
       {...(field.tooltip ? { tooltip: field.tooltip } : {})}
@@ -59,7 +63,7 @@ export const SelectRegular: React.FC<SelectCustomizableProps> = ({
         tooltip: item.tooltip
       }))}
       optionRender={optionRenderItems}
-     />
+    />
   );
 };
 

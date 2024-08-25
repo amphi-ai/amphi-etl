@@ -57,7 +57,7 @@ export const SelectCustomizable: React.FC<SelectCustomizableProps> = ({
     style={{ width: '100%' }}
     className="nodrag"
     onChange={handleSelectChange}
-    value={selectedOption}
+    value={selectedOption || undefined} 
     placeholder={field.placeholder || 'Select ...'}
     {...(field.required ? { required: field.required } : {})} 
     {...(field.tooltip ? { tooltip: field.tooltip } : {})}

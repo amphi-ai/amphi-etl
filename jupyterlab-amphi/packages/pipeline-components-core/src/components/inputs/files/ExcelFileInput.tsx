@@ -1,12 +1,25 @@
-import { BaseCoreComponent } from '../../BaseCoreComponent'; 
+import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { fileTextIcon } from '../../../icons';
+import { S3OptionsHandler } from './common/S3OptionsHandler';
 
 export class ExcelFileInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { excelOptions: { sheet_name: 0 }, engine: "None" };
+    const defaultConfig = { fileLocation: "local", excelOptions: { sheet_name: 0 }, engine: "None" };
     const form = {
       idPrefix: "component__form",
       fields: [
+        {
+          type: "radio",
+          label: "File Location",
+          id: "fileLocation",
+          options: [
+            { value: "local", label: "Local" },
+            { value: "http", label: "HTTP" },
+            { value: "s3", label: "S3" }
+          ],
+          advanced: true
+        },
+        ...S3OptionsHandler.getAWSFields(),
         {
           type: "file",
           label: "File path",
@@ -61,6 +74,13 @@ export class ExcelFileInput extends BaseCoreComponent {
           placeholder: "false",
           advanced: true
         },
+        {
+          type: "keyvalue",
+          label: "Storage Options",
+          id: "excelOptions.storage_options",
+          condition: { fileLocation: ["http", "s3"] },
+          advanced: true
+        }
       ],
     };
 
@@ -98,8 +118,19 @@ export class ExcelFileInput extends BaseCoreComponent {
 
     let listOfDataframes = false;
     let code = ''
+    let excelOptions = { ...config.excelOptions };
 
-    let optionsString = Object.entries(config.excelOptions)
+    // Initialize storage_options if not already present
+    let storageOptions = excelOptions.storage_options || {};
+
+    storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
+
+    // Only add storage_options to csvOptions if it's not empty
+    if (Object.keys(storageOptions).length > 0) {
+      excelOptions.storage_options = storageOptions;
+    }
+
+    let optionsString = Object.entries(excelOptions)
       .filter(([key, value]) => value !== null && value !== '')
       .map(([key, value]) => {
         if (typeof value === 'boolean') {
@@ -107,6 +138,8 @@ export class ExcelFileInput extends BaseCoreComponent {
         } else if (value === "None") { // Handle None values
           listOfDataframes = true;
           return `${key}=None`;
+        } else if (key === 'storage_options') {
+          return `${key}=${JSON.stringify(value)}`; 
         } else if (/^\d+$/.test(value as string)) {
           return `${key}=${value}`;
         } else if (typeof value === 'string' && value.startsWith('[') && value.endsWith(']')) { // Check if value is an array-like string

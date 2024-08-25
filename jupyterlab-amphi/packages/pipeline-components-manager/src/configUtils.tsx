@@ -40,13 +40,17 @@ const shouldDisplayField = (field, values) => {
     const fieldConditionValue = field.condition[key];
     const formValue = values[key];
 
+    const matches = Array.isArray(fieldConditionValue)
+      ? fieldConditionValue.includes(formValue)
+      : formValue === fieldConditionValue;
+
     console.log(`Checking condition for key '${key}':`, {
       fieldConditionValue,
       formValue,
-      matches: formValue === fieldConditionValue
+      matches
     });
 
-    return formValue === fieldConditionValue;
+    return matches;
   });
 
   console.log(`Final result for field ${field.id}:`, result);
@@ -233,6 +237,7 @@ export const GenerateUIInputs = React.memo(({
   });
 
   const handleSelectConnection = useCallback((connectionName: string, attributeId: string) => {
+
     const selectedConnection = connections.find(conn => conn.connectionName === connectionName);
     if (selectedConnection) {
       selectedConnection.variables.forEach(variable => {
@@ -272,11 +277,10 @@ export const GenerateUIInputs = React.memo(({
       return null;
     }
 
-    // Check to determine if the field should be displayed
-    if (data) {
-      if (!shouldDisplayField(field, data)) {
-        return null;
-      }
+
+    // Directly check if the field should be displayed
+    if (!shouldDisplayField(field, data)) {
+      return null;
     }
 
 
@@ -388,12 +392,22 @@ export const GenerateUIInputs = React.memo(({
     }
   }, [data, handleChange, componentService, commands, manager, advanced]);
 
+  // Helper function to check if any field in a connection should be displayed
+  const shouldDisplayConnection = (fields: FieldDescriptor[]) => {
+    return fields.some(field => shouldDisplayField(field, data));
+  };
+
   return (
     <>
       {Object.entries(groupedFields).map(([connection, fields], groupIndex) => {
         if (connection === 'default' || (!advanced && (fields as FieldDescriptor[]).some(field => field.advanced))) return null;
-
         const connectionFields = fields as FieldDescriptor[];
+
+        // Check if the connection card should be displayed
+        if (!shouldDisplayConnection(connectionFields)) {
+          return null;
+        }
+
         const connectionDataId = `${connection}-${groupIndex}`;
         const selectedConnectionName = data[connectionDataId] || '';
 

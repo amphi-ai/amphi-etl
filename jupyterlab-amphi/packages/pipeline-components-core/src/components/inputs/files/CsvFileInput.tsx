@@ -1,12 +1,25 @@
 import { fileTextIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
+import { S3OptionsHandler } from './common/S3OptionsHandler';
 
 export class CsvFileInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { csvOptions: { sep: "," } };
+    const defaultConfig = { fileLocation: "local", csvOptions: { sep: "," } };
     const form = {
       idPrefix: "component__form",
       fields: [
+        {
+          type: "radio",
+          label: "File Location",
+          id: "fileLocation",
+          options: [
+            { value: "local", label: "Local" },
+            { value: "http", label: "HTTP" },
+            { value: "s3", label: "S3" }
+          ],
+          advanced: true
+        },
+        ...S3OptionsHandler.getAWSFields(),
         {
           type: "file",
           label: "File path",
@@ -75,6 +88,13 @@ export class CsvFileInput extends BaseCoreComponent {
             { value: "pyarrow", label: "pyarrow", tooltip: "The pyarrow engine was added as an experimental engine, and some features are unsupported, or may not work correctly, with this engine." }
           ],
           advanced: true
+        },
+        {
+          type: "keyvalue",
+          label: "Storage Options",
+          id: "csvOptions.storage_options",
+          condition: { fileLocation: ["http", "s3"] },
+          advanced: true
         }
       ],
     };
@@ -86,6 +106,9 @@ export class CsvFileInput extends BaseCoreComponent {
     let deps: string[] = [];
     if (config.csvOptions.engine == "pyarrow") {
       deps.push('pyarrow');
+    }
+    if (config.fileLocation == "s3") {
+      deps.push('s3fs');
     }
     return deps;
   }
@@ -124,6 +147,16 @@ export class CsvFileInput extends BaseCoreComponent {
       }
     }
 
+    // Initialize storage_options if not already present
+    let storageOptions = csvOptions.storage_options || {};
+
+    storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
+
+    // Only add storage_options to csvOptions if it's not empty
+    if (Object.keys(storageOptions).length > 0) {
+      csvOptions.storage_options = storageOptions;
+    }
+
     // Prepare options string for pd.read_csv
     let optionsString = Object.entries(csvOptions)
       .filter(([key, value]) => value !== null && value !== '' && !(key === 'sep' && value === 'infer') && (Array.isArray(value) ? value.length > 0 : true))
@@ -132,6 +165,8 @@ export class CsvFileInput extends BaseCoreComponent {
           return `${key}=${value}`; // Handle header as string without quotes
         } else if (key === 'names') {
           return `${key}=${value}`; // Directly use the formatted names list
+        } else if (key === 'storage_options') {
+          return `${key}=${JSON.stringify(value)}`; 
         } else if (typeof value === 'string' && value !== 'None') {
           return `${key}="${value}"`; // Handle strings with quotes, except for 'None'
         } else {
@@ -148,48 +183,5 @@ ${outputName} = pd.read_csv("${config.filePath}"${optionsString ? `, ${optionsSt
     return code;
   }
 
-  /*
-  public generateComponentIbisCode({ config, outputName }): string {
-    // Initialize an object to modify without affecting the original config
-    let csvOptions = { ...config.csvOptions };
-  
-    // Handle 'infer' option
-    if (csvOptions.sep === 'infer') {
-      csvOptions.sep = ','; // Default to comma for Ibis
-    }
-  
-    // Adjust handling for 'header' and 'names'
-    if (typeof config.header === 'number' || config.header === 'None') {
-      csvOptions.header = config.header; // Use the header value directly if it's a number or 'None'
-    }
-  
-    if (config.names && Array.isArray(config.names) && config.names.length > 0) {
-      csvOptions.names = `['${config.names.join("', '")}']`; // Format names as a Python list
-    }
-  
-    // Prepare options string for Ibis CSV reader
-    let optionsString = Object.entries(csvOptions)
-      .filter(([key, value]) => value !== null && value !== '' && !(key === 'sep' && value === 'infer'))
-      .map(([key, value]) => {
-        if (key === 'header' && (typeof value === 'number' || value === 'None')) {
-          return `${key}=${value}`; // Handle header as number or None without quotes
-        } else if (key === 'names') {
-          return `${key}=${value}`; // Directly use the formatted names list
-        } else if (typeof value === 'string' && value !== 'None') {
-          return `${key}="${value}"`; // Handle strings with quotes, except for 'None'
-        } else {
-          return `${key}=${value}`; // Handle numbers and Python's None without quotes
-        }
-      })
-      .join(', ');
-  
-    // Generate the Python code for Ibis
-    const code = `
-  # Reading data from ${config.filePath}
-  ${outputName} = ibis.read_csv("${config.filePath}"${optionsString ? `, ${optionsString}` : ''})
-  `;
-    return code;
-  }
-  */
 
 }
