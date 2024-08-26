@@ -1,6 +1,6 @@
 import { BaseCoreComponent } from '../../BaseCoreComponent'; 
 import { fileTextIcon } from '../../../icons';
-import { S3OptionsHandler } from './common/S3OptionsHandler';
+import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class JsonFileInput extends BaseCoreComponent {
   constructor() {
@@ -41,6 +41,7 @@ export class JsonFileInput extends BaseCoreComponent {
             { value: 'table', label: 'Table - Dict with "schema" and "data" keys, following the Table Schema' }
           ],
         },
+        /*
         {
           type: "input",
           label: "JSON Path (Optional)",
@@ -48,6 +49,7 @@ export class JsonFileInput extends BaseCoreComponent {
           placeholder: "Enter JSON path to extract specific data",
           advanced: true
         },
+        */
         {
           type: "boolean",
           label: "Infer Data Types",
@@ -104,12 +106,11 @@ export class JsonFileInput extends BaseCoreComponent {
       .join(', ');
 
     const optionsCode = optionsString ? `, ${optionsString}` : ''; // Only add optionsString if it exists
-    const jsonPathCode = config.jsonPath ? `${outputName} = ${outputName}["${config.jsonPath}"]\n` : '';
+    // const jsonPathCode = config.jsonPath ? `${outputName} = ${outputName}["${config.jsonPath}"]\n` : '';
 
 
     const code = `
 ${outputName} = pd.read_json("${config.filePath}"${optionsCode}).convert_dtypes()
-${jsonPathCode}
 `;
     return code;
   }

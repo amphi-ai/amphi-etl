@@ -1,6 +1,7 @@
 
 import { filePlusIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent'; // Adjust the import path
+import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class XmlFileOutput extends BaseCoreComponent {
   constructor() {
@@ -8,6 +9,17 @@ export class XmlFileOutput extends BaseCoreComponent {
     const form = {
       idPrefix: "component__form",
       fields: [
+        {
+          type: "radio",
+          label: "File Location",
+          id: "fileLocation",
+          options: [
+            { value: "local", label: "Local" },
+            { value: "s3", label: "S3" }
+          ],
+          advanced: true
+        },
+        ...S3OptionsHandler.getAWSFields(),
         {
           type: "file",
           label: "File path",
@@ -19,7 +31,15 @@ export class XmlFileOutput extends BaseCoreComponent {
         {
           type: "boolean",
           label: "Create folders if don't exist",
+          condition: { fileLocation: ["local"] },
           id: "createFoldersIfNotExist",
+          advanced: true
+        },
+        {
+          type: "keyvalue",
+          label: "Storage Options",
+          id: "csvOptions.storage_options",
+          condition: { fileLocation: [ "s3"] },
           advanced: true
         }
       ],

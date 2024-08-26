@@ -1,6 +1,6 @@
 import { fileTextIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
-import { S3OptionsHandler } from './common/S3OptionsHandler';
+import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class CsvFileInput extends BaseCoreComponent {
   constructor() {

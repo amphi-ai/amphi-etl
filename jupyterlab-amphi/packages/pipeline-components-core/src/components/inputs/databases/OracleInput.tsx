@@ -127,7 +127,7 @@ export class OracleInput extends BaseCoreComponent {
 
     // Initialize the Oracle client if oracleClient is provided
     const oracleClientInitialization = config.oracleClient && config.oracleClient.trim()
-      ? `cx_Oracle.init_oracle_client(lib_dir="${config.oracleClient}")\n`
+      ? `${dbapi}.init_oracle_client(lib_dir="${config.oracleClient}")\n`
       : "";
 
     const code = `

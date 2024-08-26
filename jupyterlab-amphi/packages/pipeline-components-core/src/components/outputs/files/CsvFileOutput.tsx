@@ -1,5 +1,6 @@
 import { filePlusIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent'; // Adjust the import path
+import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class CsvFileOutput extends BaseCoreComponent {
   constructor() {
@@ -7,6 +8,17 @@ export class CsvFileOutput extends BaseCoreComponent {
     const form = {
       idPrefix: "component__form",
       fields: [
+        {
+          type: "radio",
+          label: "File Location",
+          id: "fileLocation",
+          options: [
+            { value: "local", label: "Local" },
+            { value: "s3", label: "S3" }
+          ],
+          advanced: true
+        },
+        ...S3OptionsHandler.getAWSFields(),
         {
           type: "file",
           label: "File path",
@@ -32,6 +44,7 @@ export class CsvFileOutput extends BaseCoreComponent {
           type: "boolean",
           label: "Create folders if don't exist",
           id: "createFoldersIfNotExist",
+          condition: { fileLocation: ["local"] },
           advanced: true
         },
         {
@@ -57,6 +70,13 @@ export class CsvFileOutput extends BaseCoreComponent {
           tooltip: "Write row names (index).",
           id: "csvOptions.index",
           advanced: true
+        },
+        {
+          type: "keyvalue",
+          label: "Storage Options",
+          id: "csvOptions.storage_options",
+          condition: { fileLocation: ["s3"] },
+          advanced: true
         }
       ],
     };
@@ -74,11 +94,25 @@ export class CsvFileOutput extends BaseCoreComponent {
 
   public generateComponentCode({ config, inputName }): string {
 
-    let optionsString = Object.entries(config.csvOptions)
+    let csvOptions = { ...config.csvOptions };
+
+    // Initialize storage_options if not already present
+    let storageOptions = csvOptions.storage_options || {};
+
+    storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
+
+    // Only add storage_options to csvOptions if it's not empty
+    if (Object.keys(storageOptions).length > 0) {
+      csvOptions.storage_options = storageOptions;
+    }
+
+    let optionsString = Object.entries(csvOptions)
     .filter(([key, value]) => value !== null && value !== '')
     .map(([key, value]) => {
       if (typeof value === 'boolean') {
         return `${key}=${value ? 'True' : 'False'}`;
+      } else if (key === 'storage_options') {
+        return `${key}=${JSON.stringify(value)}`; 
       }
       return `${key}='${value}'`;
     })

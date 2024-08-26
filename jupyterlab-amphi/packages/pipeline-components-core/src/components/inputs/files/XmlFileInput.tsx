@@ -1,7 +1,7 @@
 
 import { fileTextIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
-import { S3OptionsHandler } from './common/S3OptionsHandler';
+import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class XmlFileInput extends BaseCoreComponent {
   constructor() {
@@ -59,6 +59,17 @@ export class XmlFileInput extends BaseCoreComponent {
     super("XML File Input", "xmlFileInput", "pandas_df_input", ["xml"], "inputs", fileTextIcon, defaultConfig, form);
   }
 
+  public provideDependencies({ config }): string[] {
+    let deps: string[] = [];
+    switch (config.parser) {
+      case 'lxml':
+        deps.push('lxml');
+        break;
+      default:
+    }
+
+    return deps;
+  }
   public provideImports({config}): string[] {
     return ["import pandas as pd"]; // Adjust import based on XML parsing library
   }

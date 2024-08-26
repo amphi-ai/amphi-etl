@@ -1,6 +1,7 @@
 
 import { filePlusIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent'; // Adjust the import path
+import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class JsonFileOutput extends BaseCoreComponent {
   constructor() {
@@ -8,6 +9,17 @@ export class JsonFileOutput extends BaseCoreComponent {
     const form = {
       idPrefix: "component__form",
       fields: [
+        {
+          type: "radio",
+          label: "File Location",
+          id: "fileLocation",
+          options: [
+            { value: "local", label: "Local" },
+            { value: "s3", label: "S3" }
+          ],
+          advanced: true
+        },
+        ...S3OptionsHandler.getAWSFields(),
         {
           type: "file",
           label: "File path",
@@ -32,9 +44,17 @@ export class JsonFileOutput extends BaseCoreComponent {
         {
           type: "boolean",
           label: "Create folders if don't exist",
+          condition: { fileLocation: ["local"] },
           id: "createFoldersIfNotExist",
           advanced: true
         },
+        {
+          type: "keyvalue",
+          label: "Storage Options",
+          id: "csvOptions.storage_options",
+          condition: { fileLocation: ["s3"] },
+          advanced: true
+        }
       ],
     };
 
@@ -51,10 +71,28 @@ export class JsonFileOutput extends BaseCoreComponent {
 
   public generateComponentCode({config, inputName}): string {
 
-    let optionsString = Object.entries(config.jsonOptions || {})
-        .filter(([key, value]) => value !== null && value !== '')
-        .map(([key, value]) => `${key}="${value}"`)
-        .join(', ');
+    let jsonOptions = { ...config.jsonOptions };
+
+    // Initialize storage_options if not already present
+    let storageOptions = jsonOptions.storage_options || {};
+
+    storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
+
+    // Only add storage_options to csvOptions if it's not empty
+    if (Object.keys(storageOptions).length > 0) {
+      jsonOptions.storage_options = storageOptions;
+    }
+
+    let optionsString = Object.entries(jsonOptions || {})
+      .filter(([key, value]) => value !== null && value !== '')
+      .map(([key, value]) => {
+        if (key === 'storage_options') {
+          return `${key}=${JSON.stringify(value)}`; 
+        } else {
+          return `${key}="${value}"`; // Handle numbers and Python's None without quotes
+        }
+      })      
+      .join(', ');
 
     const optionsCode = optionsString ? `, ${optionsString}` : ''; // Only add optionsString if it exists
 
