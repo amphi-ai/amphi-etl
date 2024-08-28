@@ -109,7 +109,7 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
                                                     field={{
                                                         type: 'columns',
                                                         id: 'columns',
-                                                        label: "Columns",
+                                                        label: "Columns (Existing or new)",
                                                         placeholder: "Select columns",
                                                     }}
                                                     handleChange={(value) => handleFormulaChange(value, index, 'columns')}

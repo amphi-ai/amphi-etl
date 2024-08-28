@@ -5,7 +5,7 @@ import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class ParquetFileInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { fileLocation: "local" };
+    const defaultConfig = { fileLocation: "local", connectionMethod: "env"  };
     const form = {
       idPrefix: "component__form",
       fields: [

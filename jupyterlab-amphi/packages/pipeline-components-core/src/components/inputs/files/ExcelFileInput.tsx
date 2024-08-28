@@ -4,7 +4,7 @@ import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class ExcelFileInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { fileLocation: "local", excelOptions: { sheet_name: 0 }, engine: "None" };
+    const defaultConfig = { fileLocation: "local", connectionMethod: "env", excelOptions: { sheet_name: 0 }, engine: "None" };
     const form = {
       idPrefix: "component__form",
       fields: [

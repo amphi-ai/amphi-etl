@@ -1,7 +1,7 @@
 import { ComponentItem, PipelineComponent, createZoomSelector, GenerateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig } from '@amphi/pipeline-components-manager';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Handle, NodeToolbar, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
-import { playCircleIcon, settingsIcon } from '../icons';
+import { playCircleIcon, settingsIcon, engineIcon } from '../icons';
 
 export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
   constructor(name, id, type, fileDrop, category, icon, defaultConfig, form) {

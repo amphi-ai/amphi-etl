@@ -5,7 +5,7 @@ import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class XmlFileOutput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = {};
+    const defaultConfig = { fileLocation: "local", connectionMethod: "env" };
     const form = {
       idPrefix: "component__form",
       fields: [

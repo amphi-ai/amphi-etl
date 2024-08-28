@@ -4,6 +4,21 @@
 |----------------------------------------------------------------------------*/
 @import './variables.css';
 
+/* Filter Box */
+.jp-FilterBox {
+  background-color: white!important;
+  border-radius: none;
+  width: 100%;
+}
+
+.jp-FilterBox .root {
+  background: white;
+}
+
+.jp-FilterBox .root:hover {
+  border: none; /* Change to your desired hover border color */
+}
+
 #jp-main-dock-panel {
   padding: 0
 }
@@ -24,7 +39,7 @@
   border-top: 1px solid var(--amphi-border-subtle)
 }
 
-button.jp-mod-styled.jp-mod-accept{
+button.jp-mod-styled.jp-mod-accept {
   background: var(--amphi-interactive-01);
 }
 
@@ -78,13 +93,13 @@ button.jp-mod-styled.jp-mod-warn:active {
 
 @media (min-width: 42rem) {
   :root {
-      --footer-height: 43px
+    --footer-height: 43px
   }
 }
 
 #jp-header-panel {
-  min-height: var(--header-panel-height)!important;
-  height: var(--header-panel-height)!important
+  min-height: var(--header-panel-height) !important;
+  height: var(--header-panel-height) !important
 }
 
 
@@ -147,7 +162,8 @@ body {
 
 body {
   scrollbar-color: var(--jp-scrollbar-color) var(--jp-scrollbar-bg);
-  scrollbar-face-color:var(--jp-scrollbar-color);scrollbar-track-color: var(--jp-scrollbar-bg)
+  scrollbar-face-color: var(--jp-scrollbar-color);
+  scrollbar-track-color: var(--jp-scrollbar-bg)
 }
 
 body ::-webkit-scrollbar {
@@ -164,7 +180,7 @@ body ::-webkit-scrollbar-thumb {
   background-color: var(--jp-scrollbar-color);
   border-radius: 8px;
   background-clip: padding-box;
-  border: 3px solid rgba(0,0,0,0)
+  border: 3px solid rgba(0, 0, 0, 0)
 }
 
 :root {
@@ -180,9 +196,12 @@ body ::-webkit-scrollbar-thumb {
 .jp-SideBar .lm-TabBar-tab {
   min-height: var(--jp-private-sidebar-tab-height);
   padding: 0 14px;
-  align-items: center; /* Centers items vertically */
-  display: flex; /* Add this to make the tab a flex container */
-  justify-content: center; /* Centers items horizontally */
+  align-items: center;
+  /* Centers items vertically */
+  display: flex;
+  /* Add this to make the tab a flex container */
+  justify-content: center;
+  /* Centers items horizontally */
 }
 
 .jp-SideBar .lm-TabBar-tab.lm-mod-current {
@@ -205,8 +224,10 @@ body ::-webkit-scrollbar-thumb {
 
 .jp-SideBar .lm-TabBar-tab .lm-TabBar-tabIcon {
   display: flex;
-  align-items: center; /* Centers items vertically */
-  justify-content: center; /* Centers items horizontally */
+  align-items: center;
+  /* Centers items vertically */
+  justify-content: center;
+  /* Centers items horizontally */
   width: 20px;
 }
 
@@ -214,14 +235,15 @@ body ::-webkit-scrollbar-thumb {
   display: none;
 }
 
-.p-SplitPanel-handle,.lm-SplitPanel-handle {
-  z-index: 0!important
+.p-SplitPanel-handle,
+.lm-SplitPanel-handle {
+  z-index: 0 !important
 }
 
 #kernelusage-panel-id {
   background-color: var(--amphi-ui-02);
   color: var(--amphi-text-02);
-  overflow: auto!important
+  overflow: auto !important
 }
 
 #kernelusage-panel-id hr.jp-KernelUsage-section-separator {
@@ -242,12 +264,14 @@ body ::-webkit-scrollbar-thumb {
   letter-spacing: 0
 }
 
+
+/* TABAR */
 :root {
   --jp-private-horizontal-tab-height: 32px
 }
 
 .lm-DockPanel-tabBar {
-  z-index: 0!important
+  z-index: 0 !important
 }
 
 .lm-DockPanel-tabBar .lm-TabBar-tab.lm-mod-current {
@@ -370,27 +394,29 @@ input.jp-mod-styled {
   font-size: var(--jp-ui-font-size1);
   height: 3rem;
   line-height: 1.25rem;
-  outline: 2px solid rgba(0,0,0,0);
+  outline: 2px solid rgba(0, 0, 0, 0);
   outline-offset: -2px;
   padding: 0 1rem;
   color: var(--amphi-text-01);
   max-height: 3rem;
   min-height: 3rem
 }
-
+ /*
 .jp-DirListing-item.jp-mod-selected .jp-DirListing-itemText:focus {
   outline: none;
 }
 
 .jp-DirListing-itemText:focus {
   outline: none;
-  /*
+ 
   outline-width: 2px;
   outline-color: var(--jp-inverse-layout-color1);
   outline-style: solid;
   outline-offset: 1px;
-  */
+  
 }
+  */
+
 /*
 input.jp-mod-styled:focus {
   outline-color: var(--amphi-focus)
@@ -408,7 +434,7 @@ input.jp-mod-styled:focus {
 .jp-select-wrapper select.jp-mod-styled {
   border: unset;
   border-bottom: 1px solid var(--amphi-ui-4);
-  outline: 2px solid rgba(0,0,0,0);
+  outline: 2px solid rgba(0, 0, 0, 0);
   outline-offset: -2px;
   padding: 0 25px 0 16px;
   min-height: 3rem
@@ -433,15 +459,16 @@ input.jp-mod-styled:focus {
   background: var(--amphi-ui-01);
   padding-right: .625rem;
   border-bottom: 1px solid var(--amphi-border-subtle);
-  min-height: 0px; /*var(--jp-toolbar-micro-height); */
-  padding: 0px;  
-  padding-right:5px;
-  padding-left:5px;
+  min-height: 0px;
+  /*var(--jp-toolbar-micro-height); */
+  padding: 0px;
+  padding-right: 5px;
+  padding-left: 5px;
 }
 
 .jp-ToolbarButtonComponent-label {
-  margin-left:3px;
-  
+  margin-left: 3px;
+
 }
 
 .jp-Toolbar .jp-Toolbar-item {
@@ -461,7 +488,7 @@ input.jp-mod-styled:focus {
 
 .jp-Toolbar .jp-Notebook-ExecutionIndicator-tooltip {
   border-radius: 0;
-  transform: unset!important;
+  transform: unset !important;
   top: var(--jp-private-toolbar-height);
   right: 10px
 }
@@ -494,16 +521,19 @@ input.jp-mod-styled:focus {
 }
 
 .bp3-input::-moz-placeholder {
-  color: var(--amphi-text-03)!important;
+  color: var(--amphi-text-03) !important;
   opacity: 1
 }
 
 .bp3-input::placeholder {
-  color: var(--amphi-text-03)!important;
+  color: var(--amphi-text-03) !important;
   opacity: 1
 }
 
-.bp3-input-group .bp3-input-action,.bp3-input-group>.bp3-input-left-container,.bp3-input-group>.bp3-button,.bp3-input-group>.bp3-icon {
+.bp3-input-group .bp3-input-action,
+.bp3-input-group>.bp3-input-left-container,
+.bp3-input-group>.bp3-button,
+.bp3-input-group>.bp3-icon {
   top: unset
 }
 
@@ -538,7 +568,10 @@ input.jp-mod-styled:focus {
   font-size: var(--jp-ui-font-color1)
 }
 
-.jp-RenderedHTMLCommon .alert-info,.jp-RenderedHTMLCommon .alert-warning,.jp-RenderedHTMLCommon .alert-success,.jp-RenderedHTMLCommon .alert-danger {
+.jp-RenderedHTMLCommon .alert-info,
+.jp-RenderedHTMLCommon .alert-warning,
+.jp-RenderedHTMLCommon .alert-success,
+.jp-RenderedHTMLCommon .alert-danger {
   color: #161616;
   border-radius: 0;
   border: 0
@@ -546,14 +579,14 @@ input.jp-mod-styled:focus {
 
 
 .jp-cell-toolbar {
-  min-height: auto!important;
+  min-height: auto !important;
   padding: 1px;
   top: 16px;
   right: 16px
 }
 
 .jp-DocumentSearch-overlay {
-  box-shadow: -2px 2px 4px -1px var(--jp-shadow-umbra-color),0 4px 5px 0 var(--jp-shadow-penumbra-color)
+  box-shadow: -2px 2px 4px -1px var(--jp-shadow-umbra-color), 0 4px 5px 0 var(--jp-shadow-penumbra-color)
 }
 
 .jp-DocumentSearch-overlay .jp-DocumentSearch-input-wrapper * {
@@ -562,7 +595,7 @@ input.jp-mod-styled:focus {
 
 .jp-DocumentSearch-overlay .jp-DocumentSearch-input-wrapper {
   background-color: var(--amphi-field-02);
-  outline: 2px solid rgba(0,0,0,0)
+  outline: 2px solid rgba(0, 0, 0, 0)
 }
 
 .jp-DocumentSearch-overlay .jp-DocumentSearch-input-wrapper.jp-DocumentSearch-focused-input {
@@ -578,7 +611,7 @@ input.jp-mod-styled:focus {
 }
 
 .jp-extensionmanager-entry.jp-extensionmanager-entry-should-be-uninstalled {
-  display: none!important
+  display: none !important
 }
 
 .jp-extensionmanager-content header:first-of-type {
@@ -683,7 +716,7 @@ input.jp-mod-styled:focus {
 
 .jp-FileBrowser .jp-DirListing-header {
   background-color: var(--amphi-ui-03);
-  min-height: 3rem;
+  min-height: 2rem;
   align-items: center
 }
 
@@ -699,18 +732,18 @@ input.jp-mod-styled:focus {
 
 
 .jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem.jp-id-modified {
-  flex: 0 0 8.5rem; 
+  flex: 0 0 8.5rem;
   font-weight: 600
 }
 
-
+/*
 .jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem:hover {
   background-color: var(--amphi-hover-ui);
   cursor: pointer
 }
 
 .jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem .jp-DirListing-headerItemText {
-  color: var(--amphi-text-01) 
+  color: var(--amphi-text-01)
 }
 
 .jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem .jp-DirListing-headerItemIcon {
@@ -720,10 +753,11 @@ input.jp-mod-styled:focus {
 .jp-FileBrowser .jp-DirListing-content mark {
   color: var(--amphi-interactive-04)
 }
+*/
 
 .jp-FileBrowser .jp-DirListing-content .jp-DirListing-item {
   position: relative;
-  color: var(--amphi-text-02);
+  /*color: var(--amphi-text-02);*/
   min-height: 2rem;
   align-items: center;
   padding: 0 12px;
@@ -744,13 +778,15 @@ input.jp-mod-styled:focus {
 }
 
 .jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs svg {
-  display:none;
+  display: none;
 }
 
-
-.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item .jp-DirListing-itemIcon [class*=jp-icon],.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-selected [class*=jp-icon] {
-  fill: var(--amphi-icon-01)!important
+/*
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item .jp-DirListing-itemIcon [class*=jp-icon],
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-selected [class*=jp-icon] {
+  fill: var(--amphi-icon-01) !important
 }
+  */
 
 
 .jp-FileBrowser .jp-DirListing-content .jp-DirListing-item .jp-DirListing-itemText {
@@ -782,7 +818,8 @@ input.jp-mod-styled:focus {
   color: var(--amphi-text-02)
 }
 
-.jp-DirListing-item.lm-mod-drag-image,.jp-DirListing-item.jp-mod-selected.lm-mod-drag-image {
+.jp-DirListing-item.lm-mod-drag-image,
+.jp-DirListing-item.jp-mod-selected.lm-mod-drag-image {
   z-index: 2
 }
 
@@ -795,7 +832,7 @@ input.jp-mod-styled:focus {
 }
 
 .lm-SplitPanel-handle {
-  width: 2px!important;
+  width: 2px !important;
   background-color: var(--jp-private-split-panel-color)
 }
 
@@ -861,7 +898,8 @@ input.jp-mod-styled:focus {
 }
 
 
-#jp-main-statusbar svg[data-icon="ui-components:terminal"],#jp-main-statusbar svg[data-icon="ui-components:kernel"] {
+#jp-main-statusbar svg[data-icon="ui-components:terminal"],
+#jp-main-statusbar svg[data-icon="ui-components:kernel"] {
   top: 1px
 }
 
@@ -875,7 +913,7 @@ input.jp-mod-styled:focus {
 }
 
 .jp-SpinnerContent {
-  background: linear-gradient(to right,var(--amphi-brand-01) 10%,rgba(255,255,255,0) 42%)
+  background: linear-gradient(to right, var(--amphi-brand-01) 10%, rgba(255, 255, 255, 0) 42%)
 }
 
 .jp-SpinnerContent:before {
@@ -909,13 +947,17 @@ input.jp-mod-styled:focus {
   --shell-header-mobile-nav-width: 256px
 }
 
-.clear-search-decoration::-ms-clear,.clear-search-decoration::-ms-reveal {
+.clear-search-decoration::-ms-clear,
+.clear-search-decoration::-ms-reveal {
   display: none;
   height: 0rem;
   width: 0rem
 }
 
-.clear-search-decoration::-webkit-search-decoration,.clear-search-decoration::-webkit-search-cancel-button,.clear-search-decoration::-webkit-search-results-button,.clear-search-decoration::-webkit-search-results-decoration {
+.clear-search-decoration::-webkit-search-decoration,
+.clear-search-decoration::-webkit-search-cancel-button,
+.clear-search-decoration::-webkit-search-results-button,
+.clear-search-decoration::-webkit-search-results-decoration {
   display: none
 }
 
@@ -923,7 +965,8 @@ input.jp-mod-styled:focus {
   --scrollbar-bg: transparent;
   --scrollbar-color: var(--amphi-skeleton-01);
   scrollbar-color: var(--scrollbar-color) var(--scrollbar-bg);
-  scrollbar-face-color:var(--scrollbar-color);scrollbar-track-color: var(--scrollbar-bg)
+  scrollbar-face-color: var(--scrollbar-color);
+  scrollbar-track-color: var(--scrollbar-bg)
 }
 
 .scrollbar-variant {
@@ -931,17 +974,20 @@ input.jp-mod-styled:focus {
   --scrollbar-color: var(--amphi-text-03)
 }
 
-.scrollbar ::-webkit-scrollbar,.scrollbar::-webkit-scrollbar {
+.scrollbar ::-webkit-scrollbar,
+.scrollbar::-webkit-scrollbar {
   width: 14px;
   height: 14px
 }
 
-.scrollbar ::-webkit-scrollbar-track,.scrollbar::-webkit-scrollbar-track {
+.scrollbar ::-webkit-scrollbar-track,
+.scrollbar::-webkit-scrollbar-track {
   background: var(--scrollbar-bg);
   border-radius: 0
 }
 
-.scrollbar ::-webkit-scrollbar-thumb,.scrollbar::-webkit-scrollbar-thumb {
+.scrollbar ::-webkit-scrollbar-thumb,
+.scrollbar::-webkit-scrollbar-thumb {
   background-color: var(--scrollbar-color);
   border-radius: 8px;
   background-clip: padding-box;
@@ -951,9 +997,4 @@ input.jp-mod-styled:focus {
 .scrollbar ::-webkit-scrollbar-corner {
   background: var(--scrollbar-bg)
 }
-
-.jp-DirListing-item.jp-mod-selected {
-  background: #F2F4F7;
-}
-
 

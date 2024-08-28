@@ -45,7 +45,7 @@
   --jp-console-padding: 10px;
   --jp-toolbar-micro-height: 8px;
   --jp-toolbar-header-margin: 4px 4px 0px 4px;
-  --jp-sidebar-min-width: 300px;
+  --jp-sidebar-min-width: 280px;
   --jp-shadow-base-lightness: 0;
   --jp-shadow-umbra-color: rgba( var(--jp-shadow-base-lightness), var(--jp-shadow-base-lightness), var(--jp-shadow-base-lightness), .2 );
   --jp-shadow-penumbra-color: rgba( var(--jp-shadow-base-lightness), var(--jp-shadow-base-lightness), var(--jp-shadow-base-lightness), .14 );
@@ -90,7 +90,7 @@
   --amphi-ui-03: #F2F4F7;
   --amphi-ui-04: #fff;
   --amphi-ui-05: #161616;
-  --amphi-text-01: #161616;
+  --amphi-text-01: #000000;
   --amphi-text-02: #525252;
   --amphi-text-03: #a8a8a8;
   --amphi-text-04: #ffffff;
@@ -158,7 +158,7 @@
   --amphi-border-subtle: #e0e0e0;
   --amphi-border-strong: #8d8d8d;
   --amphi-border-inverse: #161616;
-  --amphi-border-interactive: #5A8F7B;
+  --amphi-border-interactive: #ffffff;
   --amphi-text-primary: #161616;
   --amphi-text-secondary: #525252;
   --amphi-text-placeholder: #a8a8a8;
@@ -322,8 +322,8 @@
   --jp-private-sidebar-tab-width: 48px;
   --jp-private-sidebar-tab-height: 48px;
 
-
-  --accent-fill-rest: var(--jp-info-color1);
-
+  --neutral-fill-input-rest: var(--amphi-ui-03)
+  /*  --accent-fill-rest: var(--jp-info-color1);   */
+/* search bar */
 
 }

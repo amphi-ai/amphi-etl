@@ -4,7 +4,7 @@ import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class CsvFileOutput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { csvOptions: { sep: ",", header: true, index: false } };
+    const defaultConfig = { fileLocation: "local", connectionMethod: "env", csvOptions: { sep: ",", header: true, index: false } };
     const form = {
       idPrefix: "component__form",
       fields: [

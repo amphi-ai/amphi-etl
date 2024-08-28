@@ -5,7 +5,7 @@ import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class XmlFileInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { fileLocation: "local", xmlOptions: { xpath: '', parser: 'lxml' } };
+    const defaultConfig = { fileLocation: "local", connectionMethod: "env",  xmlOptions: { xpath: '', parser: 'lxml' } };
     const form = {
       idPrefix: "component__form",
       fields: [

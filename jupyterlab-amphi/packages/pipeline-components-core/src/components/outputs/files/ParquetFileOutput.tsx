@@ -5,7 +5,7 @@ import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class ParquetFileOutput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { parquetOptions: { compression: "snappy" } };
+    const defaultConfig = { fileLocation: "local", connectionMethod: "env", parquetOptions: { compression: "snappy" } };
     const form = {
       idPrefix: "component__form",
       fields: [

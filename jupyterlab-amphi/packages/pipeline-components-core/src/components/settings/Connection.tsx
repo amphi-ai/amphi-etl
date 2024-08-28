@@ -274,6 +274,9 @@ export class Connection extends PipelineComponent<ComponentItem>() {
 
     const handleSelectChange = useCallback((value: { value: string; label: string }) => {
       setSelectedConnection(value);
+      console.log("connections %o", connections)
+
+
       const selectedConnectionFields = connections.find(conn => conn.value === value.value)?.fields || [];
       handleChange(value.value, "connectionType");
       if (!data.customTitle) {
@@ -282,6 +285,8 @@ export class Connection extends PipelineComponent<ComponentItem>() {
       handleChange(value.value, "connectionName");
       setConnectionName(value.value);
   
+      console.log("selectedConnectionFields %o", selectedConnectionFields)
+
       setDataSource(selectedConnectionFields.map(field => ({
         key: field.id,
         name: PipelineService.formatVarName(value.value + '_' + field.label),
@@ -306,7 +311,8 @@ export class Connection extends PipelineComponent<ComponentItem>() {
       components.forEach(component => {
         if (component._form && component._form.fields) {
           component._form.fields.forEach(field => {
-            if (field.connection) {
+            console.log("THIS field %o", field)
+            if (field.connection && !field.ignoreConnection) {
               if (!connectionMap[field.connection]) {
                 connectionMap[field.connection] = [];
               }

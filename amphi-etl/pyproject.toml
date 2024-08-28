@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "amphi-etl"
-description="Amphi is a python-based ETL"
+description="Amphi is a low-code and python-based data manipulation tool"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.8"

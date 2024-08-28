@@ -34,9 +34,9 @@
     "style/index.js"
   ],
   "scripts": {
-    "build": "npx tailwindcss -i ./style/base.css -o ./style/output.css && jlpm run build:lib && jlpm run build:labextension:dev",
+    "build": "jlpm run build:lib && jlpm run build:labextension:dev",
     "build:labextension": "jupyter labextension build .",
-    "build:labextension:dev": "jupyter labextension build --development True .",
+    "build:labextension:dev": "npx tailwindcss -i ./style/base.css -o ./style/output.css && jupyter labextension build --development True .",
     "build:lib": "tsc --build --verbose",
     "build:prod": "npx tailwindcss -i ./style/base.css -o ./style/output.css && jlpm run build:lib && jlpm run build:labextension && jlpm install",
     "clean": "jlpm run clean:lib && jlpm run clean:labextension",
@@ -53,7 +53,8 @@
     "@jupyterlab/filebrowser": "^4.0.9",
     "@jupyterlab/launcher": "^4.0.9",
     "@jupyterlab/mainmenu": "^4.0.9",
-    "@jupyterlab/ui-components": "^4.0.9"
+    "@jupyterlab/ui-components": "^4.0.9",
+    "antd": "5.16.4"
   },
   "resolutions": {
     "@jupyterlab/rendermime-interfaces": "^4.0.9",

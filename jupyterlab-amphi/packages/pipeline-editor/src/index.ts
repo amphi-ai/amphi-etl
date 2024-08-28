@@ -615,7 +615,7 @@ ${args.code}
               // await commands.execute('docmanager:save', { path: file.path });
             }
           },
-          label: 'Save as file'
+          label: 'Save component'
         });
 
 

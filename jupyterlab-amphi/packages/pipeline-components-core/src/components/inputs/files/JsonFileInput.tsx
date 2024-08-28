@@ -4,7 +4,7 @@ import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class JsonFileInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { fileLocation: "local", jsonOptions: {} };
+    const defaultConfig = { fileLocation: "local", connectionMethod: "env",  jsonOptions: {} };
     const form = {
       idPrefix: "component__form",
       fields: [

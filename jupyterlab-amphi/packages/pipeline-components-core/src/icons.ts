@@ -44,6 +44,7 @@ import keyIconSvgStr from '../style/icons/key-24.svg'
 import snowflakeIconSvgStr from '../style/icons/snowflake.svg'
 import trinoIconSvgStr from '../style/icons/trino.svg'
 import sumIconSvgStr from '../style/icons/sum.svg'
+import engineIconSvgStr from '../style/icons/service-16.svg'
 
 
 export const fileTextIcon = new LabIcon({
@@ -266,3 +267,7 @@ export const sumIcon = new LabIcon({
   svgstr: sumIconSvgStr
 });
 
+export const engineIcon = new LabIcon({
+  name: 'amphi:engine-icon',
+  svgstr: engineIconSvgStr
+});

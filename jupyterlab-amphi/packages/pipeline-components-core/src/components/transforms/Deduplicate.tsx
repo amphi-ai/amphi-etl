@@ -12,9 +12,9 @@ export class Deduplicate extends BaseCoreComponent {
           label: "Keep (survivorship)",
           id: "keep",
           options: [
-            { value: "first", label: "Drop duplicates except for the first occurrence" },
-            { value: "last", label: "Drop duplicates except for the last occurrence" },
-            { value: false, label: "Drop all duplicates" }
+            { value: "first", label: "First occurrence", tooltip: "Drop duplicates except for the first occurrence" },
+            { value: "last", label: "Last occurrence", tooltip: "Drop duplicates except for the last occurrence" },
+            { value: false, label:"Drop all", tooltip: "Drop all duplicates" }
           ],
         },
         {

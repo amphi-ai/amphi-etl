@@ -4,7 +4,7 @@ import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class ExcelFileOutput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { excelOptions: { header: true }, engine: 'xlsxwriter' };
+    const defaultConfig = { fileLocation: "local", connectionMethod: "env", excelOptions: { header: true }, engine: 'xlsxwriter' };
     const form = {
       idPrefix: "component__form",
       fields: [
