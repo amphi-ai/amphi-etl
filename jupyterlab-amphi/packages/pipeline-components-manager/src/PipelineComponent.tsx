@@ -14,6 +14,7 @@ export function PipelineComponent<T extends ComponentItem>() {
     public _icon: any;
     public _default: object;
     public _form: object;
+    public _description: string;
 
     public constructor() { }
 

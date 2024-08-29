@@ -35,8 +35,9 @@ export class GenerateIDColumn extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use Row ID to assign a unique identifier to each row in a dataset.";
 
-    super("Generate ID Column", "generate_id_column", "pandas_df_processor", [], "transforms", hashIcon, defaultConfig, form);
+    super("Row ID", "generate_id_column", description, "pandas_df_processor", [], "transforms", hashIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

@@ -17,8 +17,9 @@ export class SQLQuery extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Run a SQL query to select and update the dataset."
 
-    super("SQL Query", "sqlQuery", "pandas_df_processor", [], "transforms", boxIcon, defaultConfig, form);
+    super("SQL Query", "sqlQuery", description, "pandas_df_processor", [], "transforms", boxIcon, defaultConfig, form);
   }
 
   public provideImports({config}): string[] {

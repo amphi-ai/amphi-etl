@@ -44,8 +44,9 @@ export class XmlFileOutput extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use XML File Output to write or append data to a XML file locally or remotely (S3)."
 
-    super("XML File Output", "xmlFileOutput", "pandas_df_output", [], "outputs", filePlusIcon, defaultConfig, form);
+    super("XML File Output", "xmlFileOutput", "no desc", "pandas_df_output", [], "outputs", filePlusIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

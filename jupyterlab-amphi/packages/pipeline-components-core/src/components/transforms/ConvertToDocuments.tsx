@@ -17,7 +17,7 @@ export class ConvertToDocuments extends BaseCoreComponent {
       ],
     };
 
-    super("Convert to docs", "convertToDocuments", "pandas_df_to_documents_processor", [], "transforms.documents", changeCircleIcon, defaultConfig, form);
+    super("Convert to docs", "convertToDocuments", "no desc", "pandas_df_to_documents_processor", [], "transforms.documents", changeCircleIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

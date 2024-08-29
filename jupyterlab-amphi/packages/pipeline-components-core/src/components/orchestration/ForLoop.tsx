@@ -16,7 +16,7 @@ export class ForLoop extends BaseCoreComponent {
       ],
     };
 
-    super("For (Loop)", "forLoop", "orchestrator", [], "Orchestration", codeIcon, defaultConfig, form);
+    super("For (Loop)", "forLoop", "no desc", "orchestrator", [], "Orchestration", codeIcon, defaultConfig, form);
   }
 
   public provideImports(config): string[] {

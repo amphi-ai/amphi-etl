@@ -49,8 +49,9 @@ export class ParquetFileInput extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use Parquet File Input to access data from a Parquet file locally or remotely (via HTTP or S3)."
 
-    super("Parquet File Input", "parquetFileInput", "pandas_df_input", ["parquet"], "inputs", fileTextIcon, defaultConfig, form);
+    super("Parquet File Input", "parquetFileInput", description, "pandas_df_input", ["parquet"], "inputs", fileTextIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

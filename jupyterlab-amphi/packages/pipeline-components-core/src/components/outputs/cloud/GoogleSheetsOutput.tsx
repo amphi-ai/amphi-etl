@@ -38,7 +38,7 @@ export class GoogleSheetsOutput extends BaseCoreComponent {
       ],
     };
 
-    super("G. Sheets Output", "googleSheetsOutput", "pandas_df_output", [], "outputs", googleSheetsIcon, defaultConfig, form);
+    super("G. Sheets Output", "googleSheetsOutput", "no desc", "pandas_df_output", [], "outputs", googleSheetsIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

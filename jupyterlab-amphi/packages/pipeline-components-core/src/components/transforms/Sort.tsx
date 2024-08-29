@@ -31,8 +31,9 @@ export class Sort extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use Sort Rows to sort based on the values in columns. Values will be sorted by lexicographical order.";
 
-    super("Sort Rows", "sort", "pandas_df_processor", [], "transforms", sortIcon, defaultConfig, form);
+    super("Sort Rows", "sort", description, "pandas_df_processor", [], "transforms", sortIcon, defaultConfig, form);
   }
 
   public provideImports({config}): string[] {

@@ -26,7 +26,7 @@ export class Embed extends BaseCoreComponent {
       ],
     };
 
-    super("Embed", "embed", "documents_processor", [], "transforms.documents", sortIcon, defaultConfig, form);
+    super("Embed", "embed", "no desc", "documents_processor", [], "transforms.documents", sortIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

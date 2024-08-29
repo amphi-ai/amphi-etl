@@ -9,7 +9,7 @@ export class Join extends BaseCoreComponent {
       fields: [
         {
           type: "columns",
-          label: "Left Input Column",
+          label: "Left Input Column(s)",
           id: "leftKeyColumn",
           placeholder: "Column name",
           tooltip: "If you're joining by multiple columns, make sure the column lists are ordered to match the corresponding columns in the right dataset.",
@@ -17,7 +17,7 @@ export class Join extends BaseCoreComponent {
         },
         {
           type: "columns",
-          label: "Right Input Column",
+          label: "Right Input Column(s)",
           id: "rightKeyColumn",
           placeholder: "Column name",
           tooltip: "If you're joining by multiple columns, make sure the column lists are ordered to match the corresponding columns in the left dataset.",
@@ -29,20 +29,21 @@ export class Join extends BaseCoreComponent {
           id: "how",
           placeholder: "Default: Inner",
           options: [
-            { value: "inner", label: "Inner: return only the rows with matching keys in both datasets (intersection)." },
-            { value: "left", label: "Left: return all rows from the left dataset and matched rows from the right dataset (including NaN for no match)." },
-            { value: "right", label: "Right: return all rows from the right dataset and matched rows from the left dataset (including NaN for no match)." },
-            { value: "outer", label: "Outer: return all rows from both datasets, with matches where available and NaN for no match (union)." },
-            { value: "cross", label: "Cross: creates the cartesian product from both datasets, preserves the order of the left keys." },
-            { value: "anti-left", label: "Anti Left: return rows from the left dataset that do not have matching rows in the right dataset." },
-            { value: "anti-right", label: "Anti Right: return rows from the right dataset that do not have matching rows in the left dataset." }
+            { value: "inner", label: "Inner", tooltip: "Return only the rows with matching keys in both datasets (intersection)." },
+            { value: "left", label: "Left", tooltip: "Return all rows from the left dataset and matched rows from the right dataset (including NaN for no match)." },
+            { value: "right", label: "Right", tooltip: "Return all rows from the right dataset and matched rows from the left dataset (including NaN for no match)." },
+            { value: "outer", label: "Outer", tooltip: "Return all rows from both datasets, with matches where available and NaN for no match (union)." },
+            { value: "cross", label: "Cross", tooltip: "Creates the cartesian product from both datasets, preserves the order of the left keys." },
+            { value: "anti-left", label: "Anti Left", tooltip: "Return rows from the left dataset that do not have matching rows in the right dataset." },
+            { value: "anti-right", label: "Anti Right", tooltip: "Return rows from the right dataset that do not have matching rows in the left dataset." }
           ],
           advanced: true
         }
       ],
     };
+    const description = "Use Join Datasets to combine two datasets by one or more columns."
 
-    super("Join Datasets", "join", "pandas_df_double_processor", [], "transforms", mergeIcon, defaultConfig, form);
+    super("Join Datasets", "join", description, "pandas_df_double_processor", [], "transforms", mergeIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

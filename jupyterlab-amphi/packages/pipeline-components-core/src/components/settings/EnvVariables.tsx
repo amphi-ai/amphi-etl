@@ -13,6 +13,7 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
   public _id = "envVariables";
   public _type = "env_variables";
   public _category = "settings";
+  public _description = "Use Env. Variables File to retrieve environment variables from configuration files. This is the recommended approach for handling credentials or sensitive data that should not be exposed in plain text within the pipeline."
   public _icon = bracesIcon;
   public _default = {};
   public _form = {};

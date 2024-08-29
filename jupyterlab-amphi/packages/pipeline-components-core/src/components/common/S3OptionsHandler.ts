@@ -35,6 +35,7 @@ export class S3OptionsHandler {
             placeholder: "Enter Access Key",
             inputType: "password",
             connection: "AWS",
+            connectionVariableName: "AWS_ACCESS_KEY_ID",
             condition: { fileLocation: "s3", connectionMethod: "storage_options" },
             advanced: true
           },
@@ -45,6 +46,7 @@ export class S3OptionsHandler {
             placeholder: "Enter Secret Key",
             inputType: "password",
             connection: "AWS",
+            connectionVariableName: "AWS_SECRET_ACCESS_KEY",
             condition: { fileLocation: "s3", connectionMethod: "storage_options" },
             advanced: true
           },

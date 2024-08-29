@@ -14,6 +14,7 @@ export class EnvFile extends PipelineComponent<ComponentItem>() {
   public _id = "envFile";
   public _type = "env_variables";
   public _category = "settings";
+  public _description = "Use Env. Variables to define environment variable names for use in the pipeline. You can also assign a value directly and set a default value. It is not recommended for credentials or sensitive data unless you fully understand the implications."
   public _icon = bracesIcon;
   public _default = {};
   public _form = {};

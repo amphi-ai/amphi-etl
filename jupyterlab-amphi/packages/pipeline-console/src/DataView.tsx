@@ -8,18 +8,39 @@ const DataView = ({ htmlData }: { htmlData: string }) => {
   const [columns, setColumns] = useState<ColumnsType<Record<string, string>>>([]);
 
   useEffect(() => {
-
     const { data, headers } = htmlToJson(htmlData);
     setDataSource(data);
     setColumns(headers.map((header, index) => ({
-      title: index === 0 ? '' : header,  // Set the index column title to empty string
+      title: index === 0 ? '' : header,
       dataIndex: header,
       key: header,
-      ...(index === 0 && { rowScope: 'row' })  // Add rowScope for the first column
+      ...(index === 0 && { rowScope: 'row' }),
+      ellipsis: true,
+      render: (text: string) => (
+        <div style={{
+          fontSize: '12px',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          maxWidth: '200px', 
+          minWidth: '25px'
+        }}>
+          {text}
+        </div>
+      ),
     })));
   }, [htmlData]);
 
-  return <Table dataSource={dataSource} columns={columns} pagination={false} size="small" />;
+  return (
+    <Table 
+      dataSource={dataSource} 
+      columns={columns} 
+      pagination={false} 
+      size="small"
+      scroll={{ x: 'max-content' }} // This enables horizontal scrolling
+      style={{ fontSize: '12px', tableLayout: 'fixed', minWidth: '100%' }}
+      />
+  );
 };
 
 function htmlToJson(htmlString: string): { data: Array<Record<string, string>>, headers: Array<string> } {

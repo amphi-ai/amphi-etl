@@ -26,8 +26,9 @@ export class Deduplicate extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use Deduplicate to remove duplicate rows based on values on one or more columns.";
 
-    super("Deduplicate Rows", "deduplicateData", "pandas_df_processor", [], "transforms", dedupIcon, defaultConfig, form);
+    super("Deduplicate Rows", "deduplicateData", description, "pandas_df_processor", [], "transforms", dedupIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

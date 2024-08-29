@@ -47,8 +47,9 @@ export class RestInput extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use REST Input to perform GET, PUT, POST, and DELETE requests on REST endpoints.";
 
-    super("REST Input", "restInput", "pandas_df_input", [], "inputs", apiIcon, defaultConfig, form);
+    super("REST Input", "restInput", description, "pandas_df_input", [], "inputs", apiIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

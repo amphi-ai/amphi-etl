@@ -35,8 +35,9 @@ export class Aggregate extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use Aggregate to perform various summary calculations such as sum, count, min/max, average, mean/median, count and more.";
 
-    super("Aggregate Rows", "aggregate", "pandas_df_processor", [], "transforms", aggregateIcon, defaultConfig, form);
+    super("Aggregate Rows", "aggregate", description, "pandas_df_processor", [], "transforms", aggregateIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

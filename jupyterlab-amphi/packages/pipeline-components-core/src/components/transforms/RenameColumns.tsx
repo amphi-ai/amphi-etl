@@ -16,8 +16,9 @@ export class RenameColumns extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use Rename Columns to rename one or more columns.";
 
-    super("Rename Columns", "rename", "pandas_df_processor", [], "transforms", editIcon, defaultConfig, form);
+    super("Rename Columns", "rename", description, "pandas_df_processor", [], "transforms", editIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

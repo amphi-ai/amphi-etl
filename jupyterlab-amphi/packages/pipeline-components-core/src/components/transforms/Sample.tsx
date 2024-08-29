@@ -28,8 +28,9 @@ export class Sample extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use the Sample to limit data by selecting a specified number of rows, either randomly, from the start or from the end of the dataset.";
 
-    super("Sample Datasets", "sample", "pandas_df_processor", [], "transforms", randomIcon, defaultConfig, form);
+    super("Sample Datasets", "sample", description, "pandas_df_processor", [], "transforms", randomIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

@@ -85,8 +85,9 @@ export class SnowflakeInput extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use Snowflake Input to retrieve data from Snowflake by specifying either a table name or a custom SQL query."
 
-    super("Snowflake Input", "snowflakeInput", "pandas_df_input", [], "inputs.Databases", snowflakeIcon, defaultConfig, form);
+    super("Snowflake Input", "snowflakeInput", description, "pandas_df_input", [], "inputs.Databases", snowflakeIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

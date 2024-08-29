@@ -38,10 +38,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(GoogleSheetsInput.getInstance())
     componentService.addComponent(MySQLInput.getInstance())
     componentService.addComponent(PostgresInput.getInstance())
-    componentService.addComponent(HtmlFileInput.getInstance())
-    componentService.addComponent(PdfFileInput.getInstance())
+
     // componentService.addComponent(PdfTablesInput.getInstance())
-    componentService.addComponent(WordFileInput.getInstance())
+    
     // componentService.addComponent(RedditInput.getInstance())
     componentService.addComponent(OracleInput.getInstance())
     componentService.addComponent(SqlServerInput.getInstance())
@@ -49,7 +48,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
 
     // Processors
-    componentService.addComponent(GenerateIDColumn.getInstance());
     componentService.addComponent(RenameColumns.getInstance());
     componentService.addComponent(FilterColumns.getInstance());
     componentService.addComponent(Filter.getInstance());
@@ -70,14 +68,10 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(CustomTransformations.getInstance());
     componentService.addComponent(SQLQuery.getInstance());
     componentService.addComponent(OpenAILookUp.getInstance());
-    componentService.addComponent(ParseHTML.getInstance());
-    componentService.addComponent(HtmlToMarkdown.getInstance());
+    componentService.addComponent(GenerateIDColumn.getInstance());
 
-    componentService.addComponent(ConvertToDocuments.getInstance());
-    componentService.addComponent(FixedSizeChunking.getInstance());
-    componentService.addComponent(SemanticChunking.getInstance());
-    componentService.addComponent(RecursiveChunking.getInstance());
-    componentService.addComponent(CustomCodeDocuments.getInstance());
+
+
 
     // componentService.addComponent(PyGWalker.getInstance())
 
@@ -94,26 +88,24 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(MySQLOutput.getInstance())
     componentService.addComponent(PostgresOutput.getInstance())
     componentService.addComponent(Console.getInstance())
+
+
+
+    // Others
+    /*
+    componentService.addComponent(ConvertToDocuments.getInstance());
+    componentService.addComponent(FixedSizeChunking.getInstance());
+    componentService.addComponent(SemanticChunking.getInstance());
+    componentService.addComponent(RecursiveChunking.getInstance());
+    componentService.addComponent(CustomCodeDocuments.getInstance());
     componentService.addComponent(PineconeOutput.getInstance())
     componentService.addComponent(ChromaOutput.getInstance())
-
-
-
-
-    //componentService.addComponent(Annotation.getInstance())
-    // componentService.addComponent(EmailLogger.getInstance())
-    // componentService.addComponent(FileLogger.getInstance())
-
-
-
-    // componentService.addComponent(RestInput.getInstance())
-    /*
- componentService.addComponent(FileOutput.getInstance())
- componentService.addComponent(Console.getInstance())
- componentService.addComponent(CustomTransformations.getInstance())
- componentService.addComponent(Filter.getInstance())
- componentService.addComponent(LookUp.getInstance())
- */
+    componentService.addComponent(ParseHTML.getInstance());
+    componentService.addComponent(HtmlToMarkdown.getInstance());
+    componentService.addComponent(HtmlFileInput.getInstance())
+    componentService.addComponent(PdfFileInput.getInstance())
+    componentService.addComponent(WordFileInput.getInstance())
+*/
   }
 };
 

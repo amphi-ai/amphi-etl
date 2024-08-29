@@ -72,7 +72,9 @@ export class JsonFileInput extends BaseCoreComponent {
       ],
     };
 
-    super("JSON File Input", "jsonFileInput", "pandas_df_input", ["json", "jsonl"], "inputs", fileTextIcon, defaultConfig, form);
+    const description = "Use JSON File Input to access data from a JSON file locally or remotely (via HTTP or S3)."
+
+    super("JSON File Input", "jsonFileInput", description, "pandas_df_input", ["json", "jsonl"], "inputs", fileTextIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

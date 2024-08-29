@@ -36,7 +36,7 @@ export class FillMissingValues extends BaseCoreComponent {
       ],
     };
 
-    super("Fill Missing Values", "fillMissingValues", "pandas_df_processor", [], "transforms", checkDiamondIcon, defaultConfig, form);
+    super("Fill Missing Values", "fillMissingValues", "no desc", "pandas_df_processor", [], "transforms", checkDiamondIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

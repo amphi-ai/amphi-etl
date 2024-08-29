@@ -621,6 +621,7 @@ export interface FieldDescriptor {
   onlyLastValue?: boolean;
   noneOption?: boolean;
   connection?: string;
+  connectionVariableName?: string;
   condition?: Record<string, any>;
 }
 

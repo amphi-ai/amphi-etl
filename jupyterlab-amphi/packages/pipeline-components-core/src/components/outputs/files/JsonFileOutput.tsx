@@ -57,8 +57,9 @@ export class JsonFileOutput extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use JSON File Output to write or append data to a JSON file locally or remotely (S3)."
 
-    super("JSON File Output", "jsonFileOutput", "pandas_df_output", [], "outputs", filePlusIcon, defaultConfig, form);
+    super("JSON File Output", "jsonFileOutput", "no desc", "pandas_df_output", [], "outputs", filePlusIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

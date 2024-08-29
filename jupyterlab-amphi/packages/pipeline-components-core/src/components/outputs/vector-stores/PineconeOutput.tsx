@@ -89,7 +89,7 @@ export class PineconeOutput extends BaseCoreComponent {
       ],
     };
 
-    super("Pinecone Output", "PineconeOutput", "documents_output", [], "outputs.Vector Stores", pineconeIcon, defaultConfig, form);
+    super("Pinecone Output", "PineconeOutput", "no desc", "documents_output", [], "outputs.Vector Stores", pineconeIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

@@ -16,8 +16,9 @@ export class Transpose extends BaseCoreComponent {
         },
       ],
     };
+    const description = "Use Transpose Dataset to swap the rows and the columns of a dataset. It simply repositions the data without aggregation. If you're looking for rearranging and aggregating the data, check out the Pivot Dataset component."
 
-    super("Transpose Dataset", "transpose", "pandas_df_processor", [], "transforms", transposeIcon, defaultConfig, form);
+    super("Transpose Dataset", "transpose", description, "pandas_df_processor", [], "transforms", transposeIcon, defaultConfig, form);
   }
 
   public provideImports({config}): string[] {

@@ -48,8 +48,9 @@ export class Extract extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use Parse & Extract to parse data from columns based on a pattern (pre-defined RegEx or custom).";
 
-    super("Parse & Extract", "extract", "pandas_df_processor", [], "transforms", extractIcon, defaultConfig, form);
+    super("Parse & Extract", "extract", description, "pandas_df_processor", [], "transforms", extractIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

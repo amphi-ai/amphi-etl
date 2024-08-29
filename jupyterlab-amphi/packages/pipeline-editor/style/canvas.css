@@ -148,6 +148,11 @@ Components palette sidebar
   @apply h-[30px] p-[4px] bg-[#F2F4F7] border border-[var(--jp-border-color2)] mb-[10px] flex items-center justify-start cursor-grab leading-[16px] rounded-[3px];
 }
 
+.sidebar .ant-tree {
+  font-size: 13px;
+  font-family: var(--jp-ui-font-family);
+}
+
 .canvas .reactflow-wrapper {
   @apply flex-grow h-full;
 }

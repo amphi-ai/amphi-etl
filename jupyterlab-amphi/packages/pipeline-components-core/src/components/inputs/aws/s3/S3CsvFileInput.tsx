@@ -67,7 +67,7 @@ export class S3CsvFileInput extends BaseCoreComponent {
       ],
     };
 
-    super("S3 CSV File Input", "s3CsvFileInput", "pandas_df_input", ["csv", "tsv"], "inputs", fileTextIcon, defaultConfig, form);
+    super("S3 CSV File Input", "s3CsvFileInput", "no desc", "pandas_df_input", ["csv", "tsv"], "inputs", fileTextIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

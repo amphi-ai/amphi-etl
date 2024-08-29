@@ -33,9 +33,10 @@ export class SplitColumn extends BaseCoreComponent {
           advanced: true
         }
       ],
-    };
+    }
+    const description = "Use Split Column to split the text from one column into multiple columns.";
 
-    super("Split Column", "splitColumn", "pandas_df_processor", [], "transforms", splitIcon, defaultConfig, form);
+    super("Split Column", "splitColumn", description, "pandas_df_processor", [], "transforms", splitIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

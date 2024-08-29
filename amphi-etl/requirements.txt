@@ -1,4 +1,4 @@
 jupyterlab==4.2.5
-jupyterlab-amphi==0.5.92
-# ../jupyterlab-amphi
+# jupyterlab-amphi==0.5.92
+../jupyterlab-amphi
 .

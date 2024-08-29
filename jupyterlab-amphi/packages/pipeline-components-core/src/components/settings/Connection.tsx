@@ -2,7 +2,7 @@ import { ComponentItem, InputFile, InputRegular, Option, PipelineComponent, Pipe
 import { CopyOutlined } from '@ant-design/icons';
 import type { GetRef, InputRef } from 'antd';
 import { ConfigProvider, Form, Input, Modal, Select, Space, Table, Tooltip } from 'antd';
-import React, { useCallback, useContext, useEffect, useRef, useState , useMemo} from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState, useMemo } from 'react';
 import { Handle, NodeToolbar, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
 import { keyIcon, settingsIcon } from '../../icons';
 
@@ -11,6 +11,9 @@ export class Connection extends PipelineComponent<ComponentItem>() {
   public _id = "connection";
   public _type = "connection";
   public _category = "settings";
+  public _description = `Use Connection to set up a connection (e.g., credentials, database parameters, configuration file)
+  once for the pipeline, and reuse it across different components. This approach ensures that no credentials are stored 
+  in the pipeline, as they can be retrieved from environment variables or a configuration files.`;
   public _icon = keyIcon;
   public _default = {};
   public _form = {};
@@ -284,12 +287,14 @@ export class Connection extends PipelineComponent<ComponentItem>() {
       }
       handleChange(value.value, "connectionName");
       setConnectionName(value.value);
-  
+
       console.log("selectedConnectionFields %o", selectedConnectionFields)
 
       setDataSource(selectedConnectionFields.map(field => ({
         key: field.id,
-        name: PipelineService.formatVarName(value.value + '_' + field.label),
+        name: field.label.includes('_')
+          ? field.label
+          : PipelineService.formatVarName(value.value + '_' + field.label), 
         value: '',
         default: '',
       })));
@@ -318,7 +323,11 @@ export class Connection extends PipelineComponent<ComponentItem>() {
               }
               const existingField = connectionMap[field.connection].find(f => f.id === field.id);
               if (!existingField) {
-                connectionMap[field.connection].push({ id: field.id, label: field.label });
+                const newField: any = {
+                  id: field.id,
+                  label: field.connectionVariableName || field.label
+                };
+                connectionMap[field.connection].push(newField);
               }
             }
           });

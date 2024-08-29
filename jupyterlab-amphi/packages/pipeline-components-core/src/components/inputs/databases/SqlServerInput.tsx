@@ -85,8 +85,9 @@ export class SqlServerInput extends BaseCoreComponent {
                 },
             ],
         };
+        const description = "Use SQL Server Input to retrieve data from SQL Server by specifying either a table name or a custom SQL query."
 
-        super("SQL Server Input", "sqlServerInput", "pandas_df_input", [], "inputs.Databases", sqlServerIcon, defaultConfig, form);
+        super("SQL Server Input", "sqlServerInput", description, "pandas_df_input", [], "inputs.Databases", sqlServerIcon, defaultConfig, form);
     }
 
     public provideImports({ config }): string[] {

@@ -16,8 +16,9 @@ export class ExpandList extends BaseCoreComponent {
         }
       ]
     };
+    const description = "Use Expand JSON List on columns containing JSON list into multiple columns.";
 
-    super("Expand JSON List", "expandList", "pandas_df_processor", [], "transforms", expandIcon, defaultConfig, form);
+    super("Expand JSON List", "expandList", description, "pandas_df_processor", [], "transforms", expandIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

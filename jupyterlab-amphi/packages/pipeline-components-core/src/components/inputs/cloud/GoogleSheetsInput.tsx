@@ -36,8 +36,9 @@ export class GoogleSheetsInput extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use Google Sheet Input to retrieve spreadsheet data from a Google Sheet using its ID.";
 
-    super("G. Sheets Input", "googleSheetsInput", "pandas_df_input", [], "inputs", googleSheetsIcon, defaultConfig, form);
+    super("G. Sheets Input", "googleSheetsInput", description, "pandas_df_input", [], "inputs", googleSheetsIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

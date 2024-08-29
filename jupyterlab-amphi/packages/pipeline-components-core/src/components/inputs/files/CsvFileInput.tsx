@@ -98,8 +98,9 @@ export class CsvFileInput extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use CSV File Input to access data from a CSV file locally or remotely (via HTTP or S3)."
 
-    super("CSV File Input", "csvFileInput", "pandas_df_input", ["csv", "tsv"], "inputs", fileTextIcon, defaultConfig, form);
+    super("CSV File Input", "csvFileInput", description, "pandas_df_input", ["csv", "tsv"], "inputs", fileTextIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

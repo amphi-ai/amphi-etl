@@ -37,7 +37,7 @@ export class FileLogger extends BaseCoreComponent {
       ],
     };
 
-    super("File Logger", "fileLogger", "logger", [], "settings", filterIcon, defaultConfig, form);
+    super("File Logger", "fileLogger", "no desc", "logger", [], "settings", filterIcon, defaultConfig, form);
   }
 
   public provideImports({config}): string[] {

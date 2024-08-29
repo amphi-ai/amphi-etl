@@ -4,10 +4,11 @@ import { Handle, NodeToolbar, Position, useReactFlow, useStore, useStoreApi } fr
 import { playCircleIcon, settingsIcon, engineIcon } from '../icons';
 
 export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
-  constructor(name, id, type, fileDrop, category, icon, defaultConfig, form) {
+  constructor(name, id, description, type, fileDrop, category, icon, defaultConfig, form) {
     super();
     this._name = name;
     this._id = id;
+    this._description = description;
     this._type = type;
     this._fileDrop = fileDrop;
     this._category = category;

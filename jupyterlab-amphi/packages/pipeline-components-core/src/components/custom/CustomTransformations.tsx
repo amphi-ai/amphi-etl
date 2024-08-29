@@ -32,8 +32,9 @@ export class CustomTransformations extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use custom Python code to apply Pandas operations on the input DataFrame, transforming it to produce the desired output DataFrame. You can also use this component as either an input or an output.";
 
-    super("Custom Code", "customTransformations", "pandas_df_processor", [], "transforms", codeIcon, defaultConfig, form);
+    super("Custom Python", "customTransformations", description, "pandas_df_processor", [], "transforms", codeIcon, defaultConfig, form);
   }
 
   public provideImports(config): string[] {

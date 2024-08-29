@@ -15,8 +15,9 @@ export class FilterColumns extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use Select Columns to select and reorder columns.";
 
-    super("Drop Columns", "filterColumn", "pandas_df_processor", [], "transforms", crosshairIcon, defaultConfig, form);
+    super("Select Columns", "filterColumn", description, "pandas_df_processor", [], "transforms", crosshairIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

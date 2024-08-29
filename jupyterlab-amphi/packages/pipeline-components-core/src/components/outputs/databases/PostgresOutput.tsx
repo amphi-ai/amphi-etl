@@ -148,8 +148,9 @@ WHERE
         }
       ],
     };
+    const description = "Use Postgres Output to insert data into a Postgres table by specifying a data mapping between the incoming data and the existing table schema."
 
-    super("Postgres Output", "postgresOutput", "pandas_df_output", [], "outputs.Databases", postgresIcon, defaultConfig, form);
+    super("Postgres Output", "postgresOutput", description, "pandas_df_output", [], "outputs.Databases", postgresIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

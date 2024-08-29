@@ -51,7 +51,7 @@ export class RestOutput extends BaseCoreComponent {
             ],
         };
 
-        super("REST Output", "restOutput", "pandas_df_output", [], "outputs", apiIcon, defaultConfig, form);
+        super("REST Output", "restOutput", "no desc", "pandas_df_output", [], "outputs", apiIcon, defaultConfig, form);
     }
 
     public provideImports({ config }): string[] {

@@ -15,6 +15,7 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
     public _id = "formulaRow";
     public _type = "pandas_df_processor";
     public _category = "transforms";
+    public _description = "Use Formula Row to update existing columns or create new columns using expressions and functions.";
     public _icon = sumIcon;
     public _default = {};
     public _form = {};

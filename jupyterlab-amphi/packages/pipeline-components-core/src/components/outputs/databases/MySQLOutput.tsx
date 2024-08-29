@@ -115,7 +115,9 @@ export class MySQLOutput extends BaseCoreComponent {
       ],
     };
 
-    super("MySQL Output", "mySQLOutput", "pandas_df_output", [], "outputs.Databases", mySQLIcon, defaultConfig, form);
+    const description = "Use MySQL Output to insert data into a MySQL table by specifying a data mapping between the incoming data and the existing table schema."
+
+    super("MySQL Output", "mySQLOutput", description, "pandas_df_output", [], "outputs.Databases", mySQLIcon, defaultConfig, form);
   }
 
   // https://stackoverflow.com/questions/63881687/how-to-upsert-pandas-dataframe-to-mysql-with-sqlalchemy

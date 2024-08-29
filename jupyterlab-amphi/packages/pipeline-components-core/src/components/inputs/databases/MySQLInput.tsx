@@ -79,8 +79,9 @@ export class MySQLInput extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use MySQL Input to retrieve data from MySQL by specifying either a table name or a custom SQL query."
 
-    super("MySQL Input", "mySQLInput", "pandas_df_input", [], "inputs.Databases", mySQLIcon, defaultConfig, form);
+    super("MySQL Input", "mySQLInput", description, "pandas_df_input", [], "inputs.Databases", mySQLIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

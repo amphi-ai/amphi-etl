@@ -1100,6 +1100,11 @@ Components palette sidebar
   line-height: 16px;
 }
 
+.sidebar .ant-tree {
+  font-size: 13px;
+  font-family: var(--jp-ui-font-family);
+}
+
 .canvas .reactflow-wrapper {
   height: 100%;
   flex-grow: 1;

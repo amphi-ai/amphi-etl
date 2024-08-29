@@ -85,8 +85,9 @@ export class PostgresInput extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use Postgres Input to retrieve data from Postgres by specifying either a table name or a custom SQL query."
 
-    super("Postgres Input", "postgresInput", "pandas_df_input", [], "inputs.Databases", postgresIcon, defaultConfig, form);
+    super("Postgres Input", "postgresInput", description, "pandas_df_input", [], "inputs.Databases", postgresIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

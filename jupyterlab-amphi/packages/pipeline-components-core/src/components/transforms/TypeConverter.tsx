@@ -81,8 +81,9 @@ export class TypeConverter extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use Type Converter to change the data type of a column to the specified type.";
 
-    super("Type Converter", "typeConverter", "pandas_df_processor", [], "transforms", typeIcon, defaultConfig, form);
+    super("Type Converter", "typeConverter", description, "pandas_df_processor", [], "transforms", typeIcon, defaultConfig, form);
   }
 
   public provideImports({config}): string[] {

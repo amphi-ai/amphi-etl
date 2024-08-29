@@ -40,7 +40,7 @@ export class CustomFunctions extends BaseCoreComponent {
       ],
     };
 
-    super("Custom Functions", "customFunctions", "python_standalone", [], "other", codeIcon, defaultConfig, form);
+    super("Custom Functions", "customFunctions", "no desc", "python_standalone", [], "other", codeIcon, defaultConfig, form);
   }
 
   public provideImports(config): string[] {

@@ -16,6 +16,7 @@ export class PyGWalker extends PipelineComponent<ComponentItem>() {
     public _id = "pygWalker";
     public _type = "pandas_df_processor";
     public _category = "transform";
+    public _description = "";
     public _icon = bracesIcon;
     public _default = {};
     public _form = {};

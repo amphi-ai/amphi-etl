@@ -44,7 +44,7 @@ export class RedditInput extends BaseCoreComponent {
       ],
     };
 
-    super("Reddit Input", "redditInput", "pandas_df_input", [], "inputs", redditIcon, defaultConfig, form);
+    super("Reddit Input", "redditInput", "no desc", "pandas_df_input", [], "inputs", redditIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

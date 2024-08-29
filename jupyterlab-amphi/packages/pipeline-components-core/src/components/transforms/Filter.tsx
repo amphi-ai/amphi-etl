@@ -49,8 +49,9 @@ export class Filter extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use Filter Rows to select and output data that meets a specified condition.";
 
-    super("Filter Rows", "filter", "pandas_df_processor", [], "transforms", filterIcon, defaultConfig, form);
+    super("Filter Rows", "filter", description, "pandas_df_processor", [], "transforms", filterIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {
@@ -106,7 +107,7 @@ export class Filter extends BaseCoreComponent {
       case "endswith":
         columnReference = columnIsNamed ? `'${columnName}'` : columnName;
         if (['string', 'Object', 'category'].includes(columnType)) {
-          queryExpression = `${inputName}[${inputName}[${columnReference}].str.${condition}("${conditionValue.slice(1, -1)}", na=False)]`;
+          queryExpression = `${inputName}[${inputName}[${columnReference}].str.${condition}("${conditionValue}", na=False)]`;
           code += `${outputName} = ${queryExpression}`;
         } else {
           throw new Error('Invalid operation for the data type');

@@ -71,8 +71,9 @@ export class OpenAILookUp extends BaseCoreComponent {
         }
       ],
     };
-
-    super("OpenAI Prompt", "openAiLookup", "pandas_df_processor", [], "transforms", openAiIcon, defaultConfig, form);
+    const description = "Use OpenAI Lookup to prompt OpenAI based on column values and create a new column with the response.";
+    
+    super("OpenAI Prompt", "openAiLookup", description, "pandas_df_processor", [], "transforms", openAiIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

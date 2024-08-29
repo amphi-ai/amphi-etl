@@ -11,6 +11,7 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
   public _type = "annotation";
   public _icon = annotationIcon;
   public _category = "other";
+  public _description = "No description";
 
   public static ConfigForm = ({ nodeId, data, context, manager }) => {
     const { setNodes } = useReactFlow();

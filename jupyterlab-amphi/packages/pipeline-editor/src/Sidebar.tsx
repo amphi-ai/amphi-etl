@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Tree, Input, Space } from 'antd';
+import { Tree, Input, Space, Tooltip } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
 const { DirectoryTree } = Tree;
@@ -16,6 +16,7 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
     const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
     const [autoExpandParent, setAutoExpandParent] = useState(true);
     const [components, setComponents] = useState<any[]>([]);
+    
 
     useEffect(() => {
         const fetchedComponents = componentService.getComponents();
@@ -61,14 +62,24 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
                 if (subCat === '_') {
                     children.push(...categorizedComponents[category][subCat].map((component, childIndex) => ({
                         title: (
-                            <span
-                                draggable
-                                className="palette-component"
-                                onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
-                                key={`category-${index}-item-${childIndex}`}
+                            <Tooltip
+                                placement="left"
+                                title={component._description ? component._description : ''}
+                                arrow={true}
+                                mouseEnterDelay={1}
+                                mouseLeaveDelay={0}
+                                align={{ offset: [-30, 0]  }}
+                                overlayInnerStyle={{ fontSize: '12px' }}      
                             >
-                                {component._name}
-                            </span>
+                                <span
+                                    draggable
+                                    className="palette-component"
+                                    onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
+                                    key={`category-${index}-item-${childIndex}`}
+                                >
+                                    {component._name}
+                                </span>
+                            </Tooltip>
                         ),
                         key: `category-${index}-item-${childIndex}`,
                         isLeaf: true,
@@ -80,14 +91,24 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
                         key: `category-${index}-sub-${subIndex}`,
                         children: categorizedComponents[category][subCat].map((component, childIndex) => ({
                             title: (
-                                <span
-                                    draggable
-                                    className="palette-component"
-                                    onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
-                                    key={`category-${index}-sub-${subIndex}-item-${childIndex}`}
-                                >
-                                    {component._name}
-                                </span>
+                                <Tooltip
+                                    placement="left"
+                                    title={component._description ? component._description : ''}
+                                    arrow={true}
+                                    mouseEnterDelay={1}
+                                    mouseLeaveDelay={0}
+                                    align={{ offset: [-30, 0]  }}
+                                    overlayInnerStyle={{ fontSize: '12px' }}             
+                                    >
+                                    <span
+                                        draggable
+                                        className="palette-component"
+                                        onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
+                                        key={`category-${index}-sub-${subIndex}-item-${childIndex}`}
+                                    >
+                                        {component._name}
+                                    </span>
+                                </Tooltip>
                             ),
                             key: `category-${index}-sub-${subIndex}-item-${childIndex}`,
                             isLeaf: true,
@@ -149,16 +170,16 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
             return data.reduce((acc: React.Key[], item: any) => {
                 // Add the current item's key to the accumulator array
                 acc.push(item.key);
-                
+
                 // If the current item has children, recursively collect their keys
                 if (item.children) {
                     acc.push(...collectKeys(item.children));
                 }
-                
+
                 return acc; // Return the accumulated keys
             }, []);
         };
-    
+
         // Collect keys based on the presence of a search value
         const keys = searchValue ? collectKeys(filteredTreeData) : Object.keys(categorizedComponents).map((category, index) => `category-${index}`);
         setExpandedKeys(keys); // Update the expanded keys state

@@ -31,7 +31,7 @@ export class PdfTablesInput extends BaseCoreComponent {
       ],
     };
 
-    super("PDF Tables Input", "pdfTablesInput", "pandas_df_input", ["pdf"], "inputs", fileTextIcon, defaultConfig, form);
+    super("PDF Tables Input", "pdfTablesInput", "no desc", "pandas_df_input", ["pdf"], "inputs", fileTextIcon, defaultConfig, form);
   }
 
 

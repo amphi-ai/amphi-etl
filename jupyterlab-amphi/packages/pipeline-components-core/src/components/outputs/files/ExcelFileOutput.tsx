@@ -83,8 +83,9 @@ export class ExcelFileOutput extends BaseCoreComponent {
         }
       ],
     };
+    const description = "Use Excel File Output to write or append data to an Excel file locally or remotely (S3)."
 
-    super("Excel File Output", "excelFileOutput", "pandas_df_output", [], "outputs", filePlusIcon, defaultConfig, form);
+    super("Excel File Output", "excelFileOutput", description, "pandas_df_output", [], "outputs", filePlusIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

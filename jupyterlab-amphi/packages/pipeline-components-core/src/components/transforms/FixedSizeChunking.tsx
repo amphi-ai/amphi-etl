@@ -53,7 +53,7 @@ export class FixedSizeChunking extends BaseCoreComponent {
       ],
     };
 
-    super("Fixed-size chunking", "fixedSizeChunking", "documents_processor", [], "transforms.documents", splitIcon, defaultConfig, form);
+    super("Fixed-size chunking", "fixedSizeChunking", "no desc", "documents_processor", [], "transforms.documents", splitIcon, defaultConfig, form);
   }
 
   public provideFunctions({ config }): string[] {

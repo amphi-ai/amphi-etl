@@ -58,7 +58,7 @@ export class EmailLogger extends BaseCoreComponent {
       ],
     };
 
-    super("Email Logger", "emailLogger", "logger", [], "settings", filterIcon, defaultConfig, form);
+    super("Email Logger", "emailLogger", "no desc", "logger", [], "settings", filterIcon, defaultConfig, form);
   }
   
   public provideImports({config}): string[] {
