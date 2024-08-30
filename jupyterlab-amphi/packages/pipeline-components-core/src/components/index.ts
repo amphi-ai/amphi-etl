@@ -5,11 +5,11 @@ export { ParquetFileInput } from './inputs/files/ParquetFileInput';
 export { JsonFileInput } from './inputs/files/JsonFileInput';
 export { XmlFileInput } from './inputs/files/XmlFileInput';
 export { InlineInput } from './inputs/InlineInput';
-
 export { WordFileInput } from './inputs/files/WordFileInput';
 export { PdfTablesInput } from './inputs/files/PdfTablesInput';
 export { HtmlFileInput } from './inputs/files/HtmlFileInput';
 export { PdfFileInput } from './inputs/files/PdfFileInput';
+export { S3FileInput } from './inputs/files/S3FileInput';
 
 export { RestInput } from './inputs/cloud/RestInput';
 export { GoogleSheetsInput } from './inputs/cloud/GoogleSheetsInput';
@@ -18,7 +18,6 @@ export { PostgresInput } from './inputs/databases/PostgresInput';
 export { OracleInput } from './inputs/databases/OracleInput';
 export { SqlServerInput } from './inputs/databases/SqlServerInput';
 export { SnowflakeInput } from './inputs/databases/SnowflakeInput';
-
 export { RedditInput } from './inputs/cloud/RedditInput';
 
 // Transforms
@@ -44,7 +43,7 @@ export { ConvertToDocuments } from './transforms/ConvertToDocuments';
 export { HtmlToMarkdown } from './transforms/HtmlToMarkdown';
 export { ParseHTML } from './transforms/ParseHTML';
 export { Transpose } from './transforms/Transpose';
-export { FillMissingValues } from './transforms/FillMissingValues';
+export { DataCleansing } from './transforms/DataCleansing';
 export { Unite } from './transforms/Unite';
 export { CustomCodeDocuments } from './custom/CustomCodeDocuments';
 export { GenerateIDColumn } from './transforms/GenerateIDColumn';
@@ -68,8 +67,10 @@ export { PostgresOutput } from './outputs/databases/PostgresOutput';
 export { PineconeOutput } from './outputs/vector-stores/PineconeOutput';
 export { ChromaOutput } from './outputs/vector-stores/ChromaOutput';
 export { RestOutput } from './outputs/cloud/RestOutput';
+export { S3FileOutput } from './outputs/files/S3FileOutput';
 
 // Settings
 export { EnvFile } from './settings/EnvFile';
 export { EnvVariables } from './settings/EnvVariables';
 export { Connection } from './settings/Connection';
+export { Annotation } from './annotations/Annotation';

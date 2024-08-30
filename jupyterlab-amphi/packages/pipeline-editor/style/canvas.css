@@ -9,12 +9,8 @@ Editor components styles
 */
 
 .component {
-  @apply w-[180px] min-h-[120px] p-[8px];
+  @apply bg-[#F2F4F7] w-[180px] min-h-[120px] p-[8px] border-[#F0F5F7] rounded-[3px];
   color: #161616;
-}
-
-.react-flow__node {
-  @apply bg-[#F2F4F7] border-[#F0F5F7] rounded-[3px];
   box-shadow: var(--jp-elevation-z1);
   transition: 0.2s box-shadow;
 }

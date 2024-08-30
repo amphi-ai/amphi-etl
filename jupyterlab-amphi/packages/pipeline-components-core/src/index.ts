@@ -9,8 +9,8 @@ import {
   SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join,
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, HtmlFileInput, PdfFileInput, SQLQuery, RedditInput, OpenAILookUp,
   EnvVariables, EnvFile, ConvertToDocuments, PineconeOutput, FixedSizeChunking, SemanticChunking, WordFileInput, PdfTablesInput, Transpose,
-  RecursiveChunking, HtmlToMarkdown, ParseHTML, ChromaOutput, CustomCodeDocuments, Unite, Pivot,
-  FillMissingValues, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, RestOutput, FormulaRow, InlineInput
+  RecursiveChunking, HtmlToMarkdown, ParseHTML, ChromaOutput, CustomCodeDocuments, Unite, Pivot, Annotation,
+  DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, RestOutput, FormulaRow, InlineInput, S3FileOutput, S3FileInput
 } from './components';
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -26,6 +26,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(EnvVariables.getInstance())
     componentService.addComponent(EnvFile.getInstance())
     componentService.addComponent(Connection.getInstance())
+    componentService.addComponent(Annotation.getInstance())
 
     // Input
     componentService.addComponent(InlineInput.getInstance())
@@ -34,6 +35,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(ParquetFileInput.getInstance())
     componentService.addComponent(JsonFileInput.getInstance())
     componentService.addComponent(XmlFileInput.getInstance())
+    componentService.addComponent(S3FileInput.getInstance())
+
     componentService.addComponent(RestInput.getInstance())
     componentService.addComponent(GoogleSheetsInput.getInstance())
     componentService.addComponent(MySQLInput.getInstance())
@@ -63,18 +66,13 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(Transpose.getInstance());
     componentService.addComponent(Deduplicate.getInstance());
     componentService.addComponent(TypeConverter.getInstance());
-    componentService.addComponent(FillMissingValues.getInstance());
+    componentService.addComponent(DataCleansing.getInstance());
     componentService.addComponent(Sample.getInstance());
     componentService.addComponent(CustomTransformations.getInstance());
     componentService.addComponent(SQLQuery.getInstance());
     componentService.addComponent(OpenAILookUp.getInstance());
     componentService.addComponent(GenerateIDColumn.getInstance());
-
-
-
-
     // componentService.addComponent(PyGWalker.getInstance())
-
 
     // Outputs
     componentService.addComponent(CsvFileOutput.getInstance())
@@ -84,6 +82,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(XmlFileOutput.getInstance())
     componentService.addComponent(GoogleSheetsOutput.getInstance())
     // componentService.addComponent(RestOutput.getInstance())
+    componentService.addComponent(S3FileOutput.getInstance())
 
     componentService.addComponent(MySQLOutput.getInstance())
     componentService.addComponent(PostgresOutput.getInstance())

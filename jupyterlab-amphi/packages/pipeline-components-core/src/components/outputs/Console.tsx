@@ -38,8 +38,9 @@ export class Console extends BaseCoreComponent {
         },
       ],
     };
+    const description = "Use Console Message to display a message (info, warning, error) or data into the Pipeline Console.";
 
-    super("Console Message", "console", "no desc", "pandas_df_output", [], "outputs", monitorIcon, defaultConfig, form);
+    super("Console Message", "console", description, "pandas_df_output", [], "outputs", monitorIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

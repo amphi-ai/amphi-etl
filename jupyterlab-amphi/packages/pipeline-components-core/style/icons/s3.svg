@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="396"
+   height="480"
+   viewBox="0 0 396 480"
+   version="1.1"
+   id="svg13"
+   sodipodi:docname="s3.svg"
+   inkscape:version="1.3 (0e150ed, 2023-07-21)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview13"
+     pagecolor="#505050"
+     bordercolor="#eeeeee"
+     borderopacity="1"
+     inkscape:showpageshadow="0"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#505050"
+     inkscape:zoom="0.4609375"
+     inkscape:cx="199.59322"
+     inkscape:cy="251.66102"
+     inkscape:window-width="1312"
+     inkscape:window-height="449"
+     inkscape:window-x="0"
+     inkscape:window-y="32"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg13" />
+  <defs
+     id="defs1">
+    <style
+       id="style1">&#10;      .cls-1 {&#10;        fill: #e25444;&#10;      }&#10;&#10;      .cls-1, .cls-2, .cls-3 {&#10;        fill-rule: evenodd;&#10;      }&#10;&#10;      .cls-2 {&#10;        fill: #7b1d13;&#10;      }&#10;&#10;      .cls-3 {&#10;        fill: #58150d;&#10;      }&#10;    </style>
+  </defs>
+  <g
+     id="g13"
+     transform="translate(-16,-16)">
+    <path
+       class="cls-1"
+       d="m 378,99 -83,158 83,158 34,-19 V 118 Z"
+       id="path1" />
+    <path
+       class="cls-2"
+       d="M 378,99 212,118 127.5,257 212,396 378,415 Z"
+       id="path2" />
+    <path
+       class="cls-3"
+       d="M 43,99 16,111 V 403 L 43,415 212,257 Z"
+       id="path3" />
+    <path
+       class="cls-1"
+       d="m 42.637,98.667 169.587,47.111 V 372.444 L 42.637,415.111 Z"
+       id="path4" />
+    <path
+       class="cls-3"
+       d="m 212.313,170.667 -72.008,-11.556 72.008,-81.778 71.83,81.778 z"
+       id="path5" />
+    <path
+       class="cls-3"
+       d="m 284.143,159.111 -71.919,11.733 -71.919,-11.733 V 77.333"
+       id="path6" />
+    <path
+       class="cls-3"
+       d="m 212.313,342.222 -72.008,13.334 72.008,70.222 71.83,-70.222 z"
+       id="path7" />
+    <path
+       class="cls-2"
+       d="m 212,16 -72,38 v 105 l 72.224,-20.333 z"
+       id="path8" />
+    <path
+       class="cls-2"
+       d="m 212.224,196.444 -71.919,7.823 v 104.838 l 71.919,8.228 z"
+       id="path9" />
+    <path
+       class="cls-2"
+       d="M 212.224,373.333 140.305,355.3 V 458.363 L 212.224,496 Z"
+       id="path10" />
+    <path
+       class="cls-1"
+       d="m 284.143,355.3 -71.919,18.038 V 496 l 71.919,-37.637 z"
+       id="path11" />
+    <path
+       class="cls-1"
+       d="m 212.224,196.444 71.919,7.823 v 104.838 l -71.919,8.228 z"
+       id="path12" />
+    <path
+       class="cls-1"
+       d="m 212,16 72,38 v 105 l -72,-20 z"
+       id="path13" />
+  </g>
+</svg>

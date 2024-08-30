@@ -889,16 +889,13 @@ Editor components styles
 .component {
   min-height: 120px;
   width: 180px;
-  padding: 8px;
-  color: #161616;
-}
-
-.react-flow__node {
   border-radius: 3px;
   --tw-border-opacity: 1;
   border-color: rgb(240 245 247 / var(--tw-border-opacity));
   --tw-bg-opacity: 1;
   background-color: rgb(242 244 247 / var(--tw-bg-opacity));
+  padding: 8px;
+  color: #161616;
   box-shadow: var(--jp-elevation-z1);
   transition: 0.2s box-shadow;
 }

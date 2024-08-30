@@ -91,13 +91,13 @@
   --amphi-ui-04: #fff;
   --amphi-ui-05: #161616;
   --amphi-text-01: #000000;
-  --amphi-text-02: #525252;
+  --amphi-text-02: #000000;
   --amphi-text-03: #a8a8a8;
   --amphi-text-04: #ffffff;
   --amphi-text-05: #6f6f6f;
   --amphi-text-error: #da1e28;
   --amphi-icon-01: #161616;
-  --amphi-icon-02: #525252;
+  --amphi-icon-02: #000000;
   --amphi-icon-03: #ffffff;
   --amphi-link-01: #5A8F7B;
   --amphi-link-02: #0043ce;
@@ -159,8 +159,8 @@
   --amphi-border-strong: #8d8d8d;
   --amphi-border-inverse: #161616;
   --amphi-border-interactive: #ffffff;
-  --amphi-text-primary: #161616;
-  --amphi-text-secondary: #525252;
+  --amphi-text-primary: #000000;
+  --amphi-text-secondary: #000000;
   --amphi-text-placeholder: #a8a8a8;
   --amphi-text-helper: #6f6f6f;
   --amphi-text-on-color: #ffffff;
