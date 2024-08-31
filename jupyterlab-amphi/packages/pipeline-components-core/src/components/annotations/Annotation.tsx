@@ -4,7 +4,7 @@ import { Remark } from "react-remark";
 import type { GetRef, InputRef, ColorPickerProps, GetProp } from 'antd';
 import { CodeTextarea } from '@amphi/pipeline-components-manager';
 
-import { Form, Table, ConfigProvider, ColorPicker, theme, Space, Button, Modal, Popconfirm } from 'antd';
+import { Form, ConfigProvider, ColorPicker, Row, Col, Slider, Modal, InputNumber } from 'antd';
 
 import { ComponentItem, PipelineComponent, InputFile, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
 import { annotationIcon } from '../../icons';
@@ -31,7 +31,7 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
   public _id = "annotation";
   public _type = "annotation";
   public _icon = annotationIcon;
-  public _category = "other";
+  public _category = "documentation";
   public _description = "Annotation";
   public _default = { content: "# Annotation" };
 
@@ -49,7 +49,23 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
     setModalOpen
   }) => {
 
-    const [content, setContent] = useState<Color>(data.content || '# Annotation');
+    const handleColorChange = useCallback((colorObj, setColor, field) => {
+      const colorValue = colorObj.toRgbString(); // Use the color object's built-in method
+      setColor(colorValue);
+      handleChange(colorValue, field);
+    }, [handleChange]);
+
+    const handleBorderRadiusChange = useCallback((newValue: number) => {
+      setBorderRadius(newValue);
+      handleChange(newValue, 'borderRadius');
+    }, [handleChange]);
+
+
+    const [content, setContent] = useState<string>(data.content || '# Annotation');
+    const [backgroundColor, setBackgroundColor] = useState<Color>(data.backgroundColor || '#fff');
+    const [textColor, setTextColor] = useState<Color>(data.textColor || '#000');
+    const [borderRadius, setBorderRadius] = useState<number>(data.borderRadius || 0);
+
 
     useEffect(() => {
       setContent(data.content || '# Annotation');
@@ -91,10 +107,9 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
                   defaultFormat={"hex"}
                   format={"hex"}
                   showText
-                  value={data.backgroundColor || "#fff"} // default or existing color
-                  onChange={(color) => {
-                    handleChange(color, 'backgroundColor'); // Save the color value
-                  }}
+                  value={backgroundColor} // default or existing color
+                  onChange={(color) => handleColorChange(color, setBackgroundColor, 'backgroundColor')} // Handle color change
+
                 />
               </Form.Item>
               <Form.Item label="Text Color">
@@ -103,11 +118,30 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
                   defaultFormat={"hex"}
                   format={"hex"}
                   showText
-                  value={data.textColor || "#000"} // default or existing color
-                  onChange={(color) => {
-                    handleChange(color, 'textColor'); // Save the color value
-                  }}
+                  value={textColor} // default or existing color
+                  onChange={(color) => handleColorChange(color, setTextColor, 'textColor')} // Handle color change
                 />
+              </Form.Item>
+              <Form.Item label="Border Radius">
+                <Row>
+                  <Col span={12}>
+                    <Slider
+                      min={0}
+                      max={50}
+                      onChange={handleBorderRadiusChange}
+                      value={typeof borderRadius === 'number' ? borderRadius : 0}
+                    />
+                  </Col>
+                  <Col span={4}>
+                    <InputNumber
+                      min={0}
+                      max={50}
+                      style={{ margin: '0 16px' }}
+                      value={borderRadius}
+                      onChange={handleBorderRadiusChange}
+                    />
+                  </Col>
+                </Row>
               </Form.Item>
               <Form.Item label="Markdown Content">
                 <CodeTextarea field={{
@@ -147,43 +181,49 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
 
     const [modalOpen, setModalOpen] = useState(false);
 
-    const backgroundColorStyle = data.backgroundColor?.cleared
-      ? 'transparent'
-      : data.backgroundColor
-        ? `rgba(${data.backgroundColor.metaColor?.r || 0}, ${data.backgroundColor.metaColor?.g || 0}, ${data.backgroundColor.metaColor?.b || 0}, ${data.backgroundColor.metaColor?.roundA || 1})`
-        : 'transparent';
+    const backgroundColorStyle = data.backgroundColor || 'transparent';
+    const textColorStyle = data.textColor || 'rgba(0, 0, 0, 1)';
+    const borderRadiusStyle = data.borderRadius || 0; // Default to 0 if not provided
 
-    const textColorStyle = data.textColor?.cleared
-      ? 'transparent'
-      : data.textColor
-        ? `rgba(${data.textColor.metaColor?.r || 0}, ${data.textColor.metaColor?.g || 0}, ${data.textColor.metaColor?.b || 0}, ${data.textColor.metaColor?.roundA || 1})`
-        : '#000';
 
     return (
       <>
-        <NodeResizer
-          keepAspectRatio={shiftKeyPressed}
-          isVisible={isSelected}
-          color={"#000000"}
-          minWidth={50}
-          minHeight={50}
-        />
-        <div style={{ height: '100%', color: textColorStyle, backgroundColor: backgroundColorStyle, paddingRight: '20px', paddingLeft: '20px', zIndex: -1 }}>
-          <Remark
-            rehypePlugins={[
-              function noRefCheck() { },
-              function noRefCheck() { }
-            ]}
-            remarkToRehypeOptions={{
-              allowDangerousHtml: true
-            }}
-          >
-            {data.content}
-          </Remark>
+        <div style={{ 
+          height: '100%', 
+          backgroundColor: backgroundColorStyle, 
+          paddingLeft: '40px',
+          paddingRight: '40px', 
+          position: 'relative', 
+          zIndex: 0,
+          borderRadius: `${borderRadiusStyle}px`, // Apply the border radius
+        }}>
+          <NodeResizer
+            keepAspectRatio={shiftKeyPressed}
+            isVisible={isSelected}
+            color={"#000000"}
+            minWidth={50}
+            minHeight={50}
+          />
+          <div style={{ color: textColorStyle }}>
+
+            <Remark
+              rehypePlugins={[
+                function noRefCheck() { },
+                function noRefCheck() { }
+              ]}
+              remarkToRehypeOptions={{
+                allowDangerousHtml: true
+              }}
+            >
+              {data.content}
+            </Remark>
+          </div>
+
         </div>
         <NodeToolbar isVisible={isSelected} position={Position.Bottom}>
           <button onClick={() => setModalOpen(true)}><settingsIcon.react /></button>
         </NodeToolbar>
+
 
         {/* Render ConfigForm */}
         <Annotation.ConfigForm

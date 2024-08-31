@@ -562,9 +562,8 @@ const PipelineWrapper: React.FC<IProps> = ({
             </Panel>
             <Controls>
               <DownloadImageButton pipelineName={context.context.sessionContext.path} pipelineId={pipelineId} />
-              <AutoLayoutButton/>
             </Controls>
-            <Background color="#aaa" gap={15} />
+            <Background color="#aaa" gap={20} />
           </ReactFlow>
         </Dropzone>
       </div >

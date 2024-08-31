@@ -900,6 +900,18 @@ Editor components styles
   transition: 0.2s box-shadow;
 }
 
+.react-flow__node {
+  z-index: 1000 !important;
+}
+
+.react-flow__node-annotation {
+  z-index: 0 !important;
+}
+
+.react-flow__node-annotation.selected {
+  z-index: 0 !important;
+}
+
 .react-flow__node.selected .handle-right,
 .react-flow__node.selected .handle-left,
 .react-flow__node.selected .handle-bottom {
