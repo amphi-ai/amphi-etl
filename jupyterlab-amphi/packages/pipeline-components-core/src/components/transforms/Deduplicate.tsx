@@ -39,11 +39,13 @@ export class Deduplicate extends BaseCoreComponent {
     // Initializing code string
     let code = `
 # Deduplicate rows\n`;
-    const columns = config.subset.length > 0 ? `subset=[${config.subset.map(column => column.named ? `"${column.value.trim()}"` : column.value).join(', ')}]` : '';
+    const columns = config.subset.length > 0 ? 
+    `subset=[${config.subset.map(column => column.named ? `"${column.value.trim()}"` : column.value).join(', ')}]` 
+    : '';
     const keep = typeof config.keep === 'boolean' ? (config.keep ? `"first"` : '') : `"${config.keep}"`;
 
     // Generating the Python code for deduplication
-    code += `${outputName} = ${inputName}.drop_duplicates(${columns}${keep ? `, keep=${keep}` : ''})\n`;
+    code += `${outputName} = ${inputName}.drop_duplicates(${columns}${columns && keep ? `, keep=${keep}` : !columns && keep ? `keep=${keep}` : ''})\n`;
 
     return code;
   }
