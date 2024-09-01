@@ -43,7 +43,7 @@ export class Deduplicate extends BaseCoreComponent {
     const keep = typeof config.keep === 'boolean' ? (config.keep ? `"first"` : '') : `"${config.keep}"`;
 
     // Generating the Python code for deduplication
-    code += `${outputName} = ${inputName}.drop_duplicates(${columns}${keep ? `, keep=${keep}` : ''})\n`;
+    code += `${outputName} = ${inputName}.drop_duplicates(${columns}${columns && keep ? `, keep=${keep}` : !columns && keep ? `keep=${keep}` : ''})\n`;
 
     return code;
   }
