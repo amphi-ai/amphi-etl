@@ -14,7 +14,7 @@ export class Deduplicate extends BaseCoreComponent {
           options: [
             { value: "first", label: "First occurrence", tooltip: "Drop duplicates except for the first occurrence" },
             { value: "last", label: "Last occurrence", tooltip: "Drop duplicates except for the last occurrence" },
-            { value: false, label:"Drop all", tooltip: "Drop all duplicates" }
+            { value: false, label: "Drop all", tooltip: "Drop all duplicates" }
           ],
         },
         {
@@ -39,10 +39,13 @@ export class Deduplicate extends BaseCoreComponent {
     // Initializing code string
     let code = `
 # Deduplicate rows\n`;
-    const columns = config.subset.length > 0 ? `subset=[${config.subset.map(column => column.named ? `"${column.value.trim()}"` : column.value).join(', ')}]` : '';
+
+    // Ensuring config.subset is defined and has a length property
+    const subset = config.subset && Array.isArray(config.subset) ? config.subset : [];
+    const columns = subset.length > 0 ? `subset=[${subset.map(column => column.named ? `"${column.value.trim()}"` : column.value).join(', ')}]` : '';
     const keep = typeof config.keep === 'boolean' ? (config.keep ? `"first"` : '') : `"${config.keep}"`;
 
-    // Generating the Python code for deduplication
+    // Generating the code for deduplication
     code += `${outputName} = ${inputName}.drop_duplicates(${columns}${columns && keep ? `, keep=${keep}` : !columns && keep ? `keep=${keep}` : ''})\n`;
 
     return code;
