@@ -10,6 +10,7 @@ export { PdfTablesInput } from './inputs/files/PdfTablesInput';
 export { HtmlFileInput } from './inputs/files/HtmlFileInput';
 export { PdfFileInput } from './inputs/files/PdfFileInput';
 export { S3FileInput } from './inputs/files/S3FileInput';
+export { LocalFileInput } from './inputs/files/LocalFileInput';
 
 export { RestInput } from './inputs/cloud/RestInput';
 export { GoogleSheetsInput } from './inputs/cloud/GoogleSheetsInput';
@@ -18,6 +19,8 @@ export { PostgresInput } from './inputs/databases/PostgresInput';
 export { OracleInput } from './inputs/databases/OracleInput';
 export { SqlServerInput } from './inputs/databases/SqlServerInput';
 export { SnowflakeInput } from './inputs/databases/SnowflakeInput';
+export { BigQueryInput } from './inputs/databases/BigQueryInput';
+
 export { RedditInput } from './inputs/cloud/RedditInput';
 
 // Transforms

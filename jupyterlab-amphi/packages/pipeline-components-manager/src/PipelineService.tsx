@@ -143,7 +143,12 @@ export class PipelineService {
   static getInstallCommandsFromPackageNames(packageNames: string[]): string[] {
     return packageNames
       .filter(pkgName => pkgName.trim() !== '')
-      .map(pkgName => `!pip install ${pkgName} -q -q`);
+      .map(pkgName => `
+try:
+    __import__('${pkgName}')
+    print('${pkgName} is already installed')
+except ImportError:
+    !pip install ${pkgName} -q -q`);
   }
 
   static extractPythonImportPackages(code: string): string[] {

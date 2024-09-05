@@ -90,6 +90,12 @@ export class SqlServerInput extends BaseCoreComponent {
         super("SQL Server Input", "sqlServerInput", description, "pandas_df_input", [], "inputs.Databases", sqlServerIcon, defaultConfig, form);
     }
 
+    public provideDependencies({ config }): string[] {
+        let deps: string[] = [];
+        deps.push('pyodbc');
+        return deps;
+    }
+
     public provideImports({ config }): string[] {
         return ["import pandas as pd", "import sqlalchemy", "import pyodbc"];
     }

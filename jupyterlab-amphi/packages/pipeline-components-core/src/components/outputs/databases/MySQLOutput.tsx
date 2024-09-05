@@ -122,6 +122,12 @@ export class MySQLOutput extends BaseCoreComponent {
 
   // https://stackoverflow.com/questions/63881687/how-to-upsert-pandas-dataframe-to-mysql-with-sqlalchemy
 
+  public provideDependencies({ config }): string[] {
+    let deps: string[] = [];
+    deps.push('pymysql');
+    return deps;
+  }
+  
   public provideImports({ config }): string[] {
     return ["import pandas as pd", "import sqlalchemy", "import pymysql"];
   }

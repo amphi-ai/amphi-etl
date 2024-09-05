@@ -41,6 +41,12 @@ export class GoogleSheetsInput extends BaseCoreComponent {
     super("G. Sheets Input", "googleSheetsInput", description, "pandas_df_input", [], "inputs", googleSheetsIcon, defaultConfig, form);
   }
 
+  public provideDependencies({ config }): string[] {
+    let deps: string[] = [];
+    deps.push('gspread');
+    return deps;
+  }
+
   public provideImports({ config }): string[] {
     return ["import pandas as pd", "import gspread", "from oauth2client.service_account import ServiceAccountCredentials"];
   }

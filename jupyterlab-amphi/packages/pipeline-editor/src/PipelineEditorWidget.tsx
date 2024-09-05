@@ -47,7 +47,6 @@ import { Tree, TreeDataNode, TabsProps, Tabs, ConfigProvider, Input } from 'antd
 import { CodeGenerator, PipelineService } from '@amphi/pipeline-components-manager';
 import CustomEdge from './customEdge';
 import 'reactflow/dist/style.css';
-import '../style/output.css';
 import { pipelineIcon } from './icons';
 import { Dropzone } from './Dropzone';
 import ReactDOM from 'react-dom';
@@ -555,7 +554,7 @@ const PipelineWrapper: React.FC<IProps> = ({
             defaultViewport={initialViewport}
             // viewport={initialViewport}
             // onViewportChange={onViewportChange}
-            deleteKeyCode={[]}
+            deleteKeyCode={["Backspace"]}
             proOptions={proOptions}
             >
             <Panel position="top-right">
@@ -657,11 +656,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       ReactDOM.render(<CodeEditor code={code} />, editorDiv);
 
       const saveAsFile = async () => {
-        console.log("Before file")
-
-        console.log("context %o", context)
         const file = await commands.execute('docmanager:new-untitled', { path: '/', type: 'file', ext: '.py' });
-        console.log("before doc")
         const doc = await commands.execute('docmanager:open', { path: file.path });
         doc.context.model.fromString(code);
       };
@@ -680,10 +675,8 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       console.log("result %o", result)
 
       if (result.button.label === 'Open in new file') {
-        console.log("Before save as")
         await saveAsFile();
       }
-
       // Render the AceEditor inside the dialog
     }
 
@@ -789,6 +782,4 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.title.icon = pipelineIcon;
     return widget;
   }
-
-
 }

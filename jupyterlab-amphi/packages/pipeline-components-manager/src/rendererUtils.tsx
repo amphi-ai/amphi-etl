@@ -148,7 +148,7 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
               ConfigForm
             ) : (
               <div className="placeholder">
-                <Icon.react top="8px" height="32px" width="32px;" color="#5A8F7B" verticalAlign="middle" />
+                <Icon.react height="42px" width="42px;" color="#5A8F7B" verticalAlign="middle" />
               </div>
             )}
           </form>

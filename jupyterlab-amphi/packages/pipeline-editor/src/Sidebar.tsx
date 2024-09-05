@@ -16,7 +16,7 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
     const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
     const [autoExpandParent, setAutoExpandParent] = useState(true);
     const [components, setComponents] = useState<any[]>([]);
-    
+
 
     useEffect(() => {
         const fetchedComponents = componentService.getComponents();
@@ -68,8 +68,8 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
                                 arrow={true}
                                 mouseEnterDelay={1}
                                 mouseLeaveDelay={0}
-                                align={{ offset: [-30, 0]  }}
-                                overlayInnerStyle={{ fontSize: '12px' }}      
+                                align={{ offset: [-30, 0] }}
+                                overlayInnerStyle={{ fontSize: '12px' }}
                             >
                                 <span
                                     draggable
@@ -97,9 +97,9 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
                                     arrow={true}
                                     mouseEnterDelay={1}
                                     mouseLeaveDelay={0}
-                                    align={{ offset: [-30, 0]  }}
-                                    overlayInnerStyle={{ fontSize: '12px' }}             
-                                    >
+                                    align={{ offset: [-30, 0] }}
+                                    overlayInnerStyle={{ fontSize: '12px' }}
+                                >
                                     <span
                                         draggable
                                         className="palette-component"
@@ -131,11 +131,20 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
         const filteredData = data
             .map((item) => {
                 const newItem = { ...item };
+    
+                // Check if newItem.title.props.children is an object or a string
+                const childrenText = typeof newItem.title.props.children === 'object' 
+                    ? newItem.title.props.children.props.children 
+                    : newItem.title.props.children;
+    
+                console.log("childrenText %o", childrenText);
+    
                 if (newItem.children) {
                     newItem.children = filterTree(newItem.children, searchValue);
                 }
+                
                 if (
-                    newItem.title.props.children.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    childrenText.toLowerCase().includes(searchValue.toLowerCase()) ||
                     (newItem.children && newItem.children.length > 0)
                 ) {
                     return newItem;
@@ -146,6 +155,7 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
         console.log('Filtered data:', filteredData);
         return filteredData;
     };
+    
 
     const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;

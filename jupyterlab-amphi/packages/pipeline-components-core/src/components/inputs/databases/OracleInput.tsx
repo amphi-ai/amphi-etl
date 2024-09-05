@@ -103,6 +103,16 @@ export class OracleInput extends BaseCoreComponent {
     super("Oracle Input", "oracleInput", description, "pandas_df_input", [], "inputs.Databases", oracleIcon, defaultConfig, form);
   }
 
+  public provideDependencies({ config }): string[] {
+    let deps: string[] = [];
+    if (config.dbapi === 'cx_oracle') {
+      deps.push("cx_Oracle");
+    } else if (config.dbapi === 'oracledb') {
+      deps.push("oracledb");
+    }
+    return deps;
+  }
+
   public provideImports({ config }): string[] {
     const imports = ["import pandas as pd", "import sqlalchemy"];
   

@@ -1,6 +1,6 @@
 {
   "name": "@amphi/pipeline-editor",
-  "version": "0.5.94",
+  "version": "0.5.95",
   "description": "Amphi Pipeline Editor",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {
@@ -36,8 +36,8 @@
   ],
   "scripts": {
     "preinstall": "node -p \"'export const LIB_VERSION = ' + JSON.stringify(require('./package.json').version) + ';'\" > src/version.ts",
-    "build": "npx tailwindcss -i ./style/canvas.css -o ./style/output.css && jlpm run build:lib && jlpm build:labextension:dev",
-    "build:prod": "npx tailwindcss -i ./style/canvas.css -o ./style/output.css && jlpm run build:lib && jlpm build:labextension && jlpm install",
+    "build": "jlpm run build:lib && jlpm build:labextension:dev",
+    "build:prod": "jlpm run build:lib && jlpm build:labextension && jlpm install",
     "build:labextension": "jupyter labextension build .",
     "build:labextension:dev": "jupyter labextension build --development True .",
     "build:lib": "tsc --build --verbose",

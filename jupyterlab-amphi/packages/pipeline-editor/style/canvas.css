@@ -1,18 +1,17 @@
-@import url('tailwinds_preflight.css');
-@tailwind components;
-@tailwind utilities;
-
-
-
 /*
 Editor components styles
 */
 
 .component {
-  @apply bg-[#F2F4F7] w-[180px] min-h-[120px] p-[8px] border-[#F0F5F7] rounded-[3px];
+  background-color: #F2F4F7;
+  width: 180px;
+  min-height: 120px;
+  padding: 8px;
+  border-color: #F0F5F7;
+  border-radius: 3px;
   color: #161616;
   box-shadow: var(--jp-elevation-z1);
-  transition: 0.2s box-shadow;
+  transition: box-shadow 0.2s;
 }
 
 .react-flow__node {
@@ -26,12 +25,10 @@ Editor components styles
   z-index: 0 !important;
 }
 
-
-
 .react-flow__node.selected .handle-right,
 .react-flow__node.selected .handle-left,
 .react-flow__node.selected .handle-bottom {
-  @apply visible;
+  visibility: visible;
 }
 
 .react-flow__node.selected {
@@ -83,31 +80,65 @@ Editor components styles
 }
 
 .component .handle-right {
-  @apply absolute top-[54px] right-[-6px] w-[8px] h-[25px] rounded-[2px] bg-[#778899];
+  position: absolute;
+  top: 54px;
+  right: -6px;
+  width: 8px;
+  height: 25px;
+  border-radius: 2px;
+  background-color: #778899;
 }
 
 .component .handle-left {
-  @apply absolute top-[54px] left-[-6px] w-[8px] h-[25px] rounded-[2px] bg-[#778899];
+  position: absolute;
+  top: 54px;
+  left: -6px;
+  width: 8px;
+  height: 25px;
+  border-radius: 2px;
+  background-color: #778899;
 }
 
 .component .second-handle-left {
-  @apply absolute top-[114px] left-[-6px] w-[8px] h-[25px] rounded-[2px] bg-[#778899];
+  position: absolute;
+  top: 114px;
+  left: -6px;
+  width: 8px;
+  height: 25px;
+  border-radius: 2px;
+  background-color: #778899;
 }
 
 .component .handle-bottom {
-  @apply absolute bottom-[-6px] w-[25px] h-[6px] rounded-[2px] bg-[#c6cfd6];
+  position: absolute;
+  bottom: -6px;
+  width: 25px;
+  height: 6px;
+  border-radius: 2px;
+  background-color: #c6cfd6;
 }
 
 .component_label {
-  @apply block mt-1 text-xs font-medium text-black;
+  display: block;
+  margin-top: 0.25rem; /* equivalent to mt-1 */
+  font-size: 0.75rem; /* equivalent to text-xs */
+  font-weight: 500; /* equivalent to font-medium */
+  color: black;
 }
 
 .component__header {
-  @apply p-[2px_0px] border-b border-[#e2e8f0] font-bold flex justify-between items-center text-[12px];
+  padding: 2px 0;
+  border-bottom: 1px solid #e2e8f0;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
 }
 
 .component__body {
-  @apply pb-[3px] pt-[3px];
+  padding-bottom: 3px;
+  padding-top: 3px;
 }
 
 /* Components delete button */
@@ -116,11 +147,18 @@ Editor components styles
 }
 
 .placeholder {
-  @apply flex justify-center items-center align-middle h-[80px];
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80px;
+  vertical-align: middle;
 }
 
 .placeholder svg {
-  @apply align-middle;
+  position: relative;
+  top: 6px; /* Shift 10px below */
+  height: 42px;
+  width: 42px;
 }
 
 .ant-form-item {
@@ -141,20 +179,37 @@ Components palette sidebar
 */
 
 .canvas {
-  @apply flex flex-col flex-grow h-full;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
 }
 
 .sidebar {
-  @apply border-r border-l border-[#eee] border-l-[#E0E0E0] text-[12px] bg-white;
+  border-right: 1px solid #eee;
+  border-left: 1px solid #E0E0E0;
+  font-size: 12px;
+  background-color: white;
 }
 
-
 .sidebar .description {
-  @apply mr-[8px] mb-[10px] mt-[10px];
+  margin-right: 8px;
+  margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 .sidebar .draggable_component {
-  @apply h-[30px] p-[4px] bg-[#F2F4F7] border border-[var(--jp-border-color2)] mb-[10px] flex items-center justify-start cursor-grab leading-[16px] rounded-[3px];
+  height: 30px;
+  padding: 4px;
+  background-color: #F2F4F7;
+  border: 1px solid var(--jp-border-color2);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: grab;
+  line-height: 16px;
+  border-radius: 3px;
 }
 
 .sidebar .ant-tree {
@@ -163,26 +218,31 @@ Components palette sidebar
 }
 
 .canvas .reactflow-wrapper {
-  @apply flex-grow h-full;
+  flex-grow: 1;
+  height: 100%;
 }
 
 .canvas .selectall {
-  @apply mt-[10px];
+  margin-top: 10px;
 }
 
 @media screen and (min-width: 768px) {
   .canvas {
-    @apply flex flex-row;
-    /* Sets the flex direction to row */
+    display: flex;
+    flex-direction: row;
   }
 
   .sidebar {
-    @apply top-0 right-0 h-full w-[220px] z-10;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 220px;
+    z-index: 10;
     overflow-x: hidden;
     overflow-y: auto;
-
   }
 }
+
 
 .palette-component {
   position: relative;
@@ -220,12 +280,20 @@ Edges
 
 
 .edgebutton {
-  @apply w-[20px] h-[20px] bg-[#eee] border border-white bg-[#F2F4F7] cursor-pointer rounded-full text-[12px] leading-none;
+  width: 20px;
+  height: 20px;
+  background-color: #F2F4F7;
+  border: 1px solid white;
+  cursor: pointer;
+  border-radius: 50%;
+  font-size: 12px;
+  line-height: 1; /* equivalent to leading-none */
 }
 
 .edgebutton:hover {
-  @apply shadow-lg;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.1); /* equivalent to shadow-lg */
 }
+
 
 /*
 Form inputs
@@ -237,7 +305,12 @@ input:checked+label {
 }
 
 .component_select__input {
-  @apply focus:outline-none focus:[box-shadow:none] focus:border-none;
+  outline: none;
+}
+
+.component_select__input:focus {
+  box-shadow: none;
+  border: none;
 }
 
 .form-indicator svg {
@@ -248,13 +321,15 @@ input:checked+label {
 /* Single Input Selects */
 
 .component_select__single-value {
-  @apply text-base leading-normal;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .component_select__option {
-  @apply text-base leading-normal;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 .component_select__indicator-separator {
-  @apply h-5;
+  height: 1.25rem;
 }

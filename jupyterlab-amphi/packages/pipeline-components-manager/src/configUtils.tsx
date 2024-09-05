@@ -24,17 +24,13 @@ import { PipelineService } from './PipelineService';
 
 // Function to check if a field should be displayed based on its condition
 const shouldDisplayField = (field, values) => {
-  console.log("shouldDisplayField field:", field);
-  console.log("shouldDisplayField values:", values);
 
   if (!field.condition) {
-    console.log("No condition for field, displaying:", field.id);
+    // console.log("No condition for field, displaying:", field.id);
     return true;
   }
-  console.log("Condition exists for field:", field.id);
 
   const conditionKeys = Object.keys(field.condition);
-  console.log("Condition keys:", conditionKeys);
 
   const result = conditionKeys.every(key => {
     const fieldConditionValue = field.condition[key];
@@ -44,16 +40,17 @@ const shouldDisplayField = (field, values) => {
       ? fieldConditionValue.includes(formValue)
       : formValue === fieldConditionValue;
 
-    console.log(`Checking condition for key '${key}':`, {
-      fieldConditionValue,
-      formValue,
-      matches
-    });
+    /*
+  console.log(`Checking condition for key '${key}':`, {
+    fieldConditionValue,
+    formValue,
+    matches
+  });
+  */
 
     return matches;
   });
 
-  console.log(`Final result for field ${field.id}:`, result);
   return result;
 };
 
@@ -277,12 +274,10 @@ export const GenerateUIInputs = React.memo(({
       return null;
     }
 
-
     // Directly check if the field should be displayed
     if (!shouldDisplayField(field, data)) {
       return null;
     }
-
 
     let value: any;
     let values: any[] = [];

@@ -107,14 +107,18 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
     });
 
     let enableExecution: boolean;
+    let enableDebugMode: boolean;
 
     // Fetch the initial state of the settings.
     function loadSetting(setting: ISettingRegistry.ISettings): void {
       // Read the settings and convert to the correct type
       enableExecution = setting.get('enableExecution').composite as boolean;
-
       console.log(
         `Settings extension: enableExecution is set to '${enableExecution}'`
+      );
+      enableDebugMode = setting.get('enableDebugMode').composite as boolean;
+      console.log(
+        `Settings extension: enableDebugMode is set to '${enableDebugMode}'`
       );
     }
 
@@ -144,7 +148,6 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           componentService: componentService
         });
 
-
         // Add the widget to the tracker when it's created
         pipelineEditorFactory.widgetCreated.connect((sender, widget) => {
           pipelineEditortracker.add(widget);
@@ -169,7 +172,6 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           [PIPELINE_FACTORY, 'JSON']
         );
         app.docRegistry.addWidgetFactory(pipelineEditorFactory);
-
 
         app.docRegistry.addFileType(
           {
@@ -372,16 +374,19 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
             // Second, install dependencies packages if needed
             current.context.sessionContext.ready.then(async () => {
 
+              const delegate = new PromiseDelegate<ReadonlyJSONValue>();
+              const start = performance.now();
+
               const code = args.code.toString();
               let packages: string[];
-              const imports = PipelineService.extractPythonImportPackages(code);
-              packages = PipelineService.extractPackageNames(imports);
+              // const imports = PipelineService.extractPythonImportPackages(code);
+              // packages = PipelineService.extractPackageNames(imports);
               const lines = code.split(/\r?\n/); // Split the code into lines
               const dependencyLine = lines[2]; // Extract dependencies from the third line (index 2, as arrays are zero-indexed)
               const dependencies = dependencyLine.startsWith("# Additional dependencies: ") // Assuming the structure is "# Additional imports: package1, package2, ..."
                 ? dependencyLine.split(': ')[1].split(',').map(pkg => pkg.trim())
                 : [];
-              packages = [...packages, ...dependencies];
+              packages = [...dependencies];
 
               if (packages.length > 0 && packages[0] != null && packages[0] !== '') {
 
@@ -390,6 +395,11 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
                 // Install packages
                 try {
                   const future = current.context.sessionContext.session.kernel!.requestExecute({ code: pips_code });
+
+                  let enableDebugMode = settings.get('enableDebugMode').composite as boolean;
+                  if (enableDebugMode) {
+                    console.log("Dependencies to be installed: %o", pips_code)
+                  }
 
                   future.onIOPub = msg => {
                     if (msg.header.msg_type === 'stream') {
@@ -404,7 +414,10 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
                   };
 
                   future.onDone = () => {
-                    console.log("Dependencies installed.")
+                    const end = performance.now();
+                    const delay = end - start;
+                    const delayInSeconds = (delay / 1000).toFixed(1);
+                    console.log(`Dependencies installed. ${delayInSeconds}`)
                   };
 
                   await future.done;
@@ -536,7 +549,7 @@ ${args.code}
           label: 'About Amphi',
           execute: () => {
             const { title, body } = createAboutDialog(LIB_VERSION);
-        
+
             return showDialog({
               title,
               body,
@@ -599,9 +612,9 @@ ${args.code}
               const { data, type } = nodeJson;
               const { lastUpdated, lastExecuted, ...filteredData } = data;
               const componentJson = JSON.stringify({ component: { data: filteredData, type } });
-              const file = await commands.execute('docmanager:new-untitled', { path:  '/' , type: 'file', ext: '.amcpn' });
+              const file = await commands.execute('docmanager:new-untitled', { path: '/', type: 'file', ext: '.amcpn' });
               const doc = await commands.execute('docmanager:open', { path: file.path });
-            
+
               // Ensure the document context model is loaded
               await doc.context.ready;
 

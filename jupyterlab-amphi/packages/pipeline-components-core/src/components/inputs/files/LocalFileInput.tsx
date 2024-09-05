@@ -1,15 +1,14 @@
-import { s3Icon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
-import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 import { CsvFileInput } from './CsvFileInput';
 import { JsonFileInput } from './JsonFileInput';
 import { ExcelFileInput } from './ExcelFileInput';
 import { ParquetFileInput } from './ParquetFileInput';
 import { XmlFileInput } from './XmlFileInput';
+import { fileTextIcon } from '../../../icons';
 
-export class S3FileInput extends BaseCoreComponent {
+export class LocalFileInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { fileType: "csv", fileLocation: "s3", connectionMethod: "env" };
+    const defaultConfig = { fileType: "csv", fileLocation: "local" };
 
     const csvComponent = new CsvFileInput();
     const jsonComponent = new JsonFileInput();
@@ -64,22 +63,18 @@ export class S3FileInput extends BaseCoreComponent {
       ]
     };
 
-    const description = "Use File Input to read data from a file remotely (S3). Supports CSV, JSON, Excel, Parquet, and XML formats.";
+    const description = "Use File Input to read data from a local file. Supports CSV, JSON, Excel, Parquet, and XML formats.";
 
-    super("S3 File Input", "s3FileInput", description, "pandas_df_input", [], "inputs.AWS", s3Icon, defaultConfig, form);
+    super("File Input", "localFileInput", description, "pandas_df_input", [], "inputs", fileTextIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {
     let deps: string[] = [];
-    deps.push('s3fs');
     return deps;
   }
 
   public provideImports({ config }): string[] {
     let imports = ["import pandas as pd"];
-    if (config.createFoldersIfNotExist) {
-      imports.push("import os");
-    }
     return imports;
   }
 

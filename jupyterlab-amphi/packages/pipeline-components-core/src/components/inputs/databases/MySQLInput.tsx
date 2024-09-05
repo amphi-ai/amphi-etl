@@ -84,6 +84,12 @@ export class MySQLInput extends BaseCoreComponent {
     super("MySQL Input", "mySQLInput", description, "pandas_df_input", [], "inputs.Databases", mySQLIcon, defaultConfig, form);
   }
 
+  public provideDependencies({ config }): string[] {
+    let deps: string[] = [];
+    deps.push('pymysql');
+    return deps;
+  }
+
   public provideImports({ config }): string[] {
     return ["import pandas as pd", "import sqlalchemy", "import pymysql"];
   }
