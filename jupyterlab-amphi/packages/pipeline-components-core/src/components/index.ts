@@ -20,6 +20,8 @@ export { OracleInput } from './inputs/databases/OracleInput';
 export { SqlServerInput } from './inputs/databases/SqlServerInput';
 export { SnowflakeInput } from './inputs/databases/SnowflakeInput';
 export { BigQueryInput } from './inputs/databases/BigQueryInput';
+export { ODBCInput } from './inputs/databases/ODBCInput';
+
 
 export { RedditInput } from './inputs/cloud/RedditInput';
 

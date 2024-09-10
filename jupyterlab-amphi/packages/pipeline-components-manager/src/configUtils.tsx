@@ -10,6 +10,7 @@ import TextareaRegular from './forms/TextareaRegular';
 import DataMapping from './forms/dataMapping';
 import KeyValueColumns from './forms/keyValueColumns';
 import KeyValueColumnsSelect from './forms/keyValueColumnsSelect';
+import KeyValueColumnsRadio from './forms/keyValueColumnsRadio';
 import KeyValueForm from './forms/keyValueForm';
 import SelectColumn from './forms/selectColumn';
 import SelectColumns from './forms/selectColumns';
@@ -370,6 +371,8 @@ export const GenerateUIInputs = React.memo(({
         return renderFormItem(field, <KeyValueColumns {...commonProps} initialValues={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "keyvalueColumnsSelect":
         return renderFormItem(field, <KeyValueColumnsSelect {...commonProps} initialValues={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
+      case "keyvalueColumnsRadio":
+        return renderFormItem(field, <KeyValueColumnsRadio {...commonProps} initialValues={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "valuesList":
         return renderFormItem(field, <ValuesListForm {...commonProps} initialValues={values} />);
       case "inputNumber":
@@ -590,7 +593,7 @@ export interface Option {
 export interface FieldDescriptor {
   type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio'
   | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect'
-  | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable' | 'formulaColumns';
+  | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable' | 'formulaColumns' | 'keyvalueColumnsRadio';
   label: string;
   id: string;
   placeholder?: any;

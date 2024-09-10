@@ -47,6 +47,8 @@ import sumIconSvgStr from '../style/icons/sum.svg'
 import engineIconSvgStr from '../style/icons/service-16.svg'
 import s3IconSvgStr from '../style/icons/s3.svg'
 import bigQueryIconSvgStr from '../style/icons/bigquery.svg'
+import databaseIconSvgStr from '../style/icons/database-24.svg'
+
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -281,4 +283,9 @@ export const s3Icon = new LabIcon({
 export const bigQueryIcon = new LabIcon({
   name: 'amphi:bigQuery-icon',
   svgstr: bigQueryIconSvgStr
+});
+
+export const databaseIcon = new LabIcon({
+  name: 'amphi:database-icon',
+  svgstr: databaseIconSvgStr
 });

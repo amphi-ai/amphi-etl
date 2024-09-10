@@ -8,7 +8,7 @@ import {
   Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
   SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join,
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, SQLQuery, OpenAILookUp,
-  EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, BigQueryInput, 
+  EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, BigQueryInput, ODBCInput, PdfTablesInput,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput
 } from './components';
 
@@ -33,6 +33,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(ParquetFileInput.getInstance())
     componentService.addComponent(JsonFileInput.getInstance())
     componentService.addComponent(XmlFileInput.getInstance())
+    componentService.addComponent(PdfTablesInput.getInstance())
     componentService.addComponent(S3FileInput.getInstance())
 
     componentService.addComponent(RestInput.getInstance())
@@ -42,6 +43,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(OracleInput.getInstance())
     componentService.addComponent(SqlServerInput.getInstance())
     componentService.addComponent(SnowflakeInput.getInstance())
+    componentService.addComponent(ODBCInput.getInstance())
+
     // componentService.addComponent(BigQueryInput.getInstance())
 
     // Processors
