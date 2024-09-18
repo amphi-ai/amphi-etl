@@ -425,8 +425,8 @@ export class EnvFile extends PipelineComponent<ComponentItem>() {
   public generateComponentCode({ config }): string {
 
     let code = `
-# Load environment variables from ${config.filePath}
-load_dotenv(dotenv_path="${config.filePath}")
+# Load environment variables from ${config.envVarFile}
+load_dotenv(dotenv_path="${config.envVarFile}")
 `;
 
     code += "\n";

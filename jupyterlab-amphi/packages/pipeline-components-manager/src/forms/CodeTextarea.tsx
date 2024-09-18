@@ -7,7 +7,6 @@ import "ace-builds/src-noconflict/mode-sql";
 import "ace-builds/src-noconflict/theme-xcode";
 import "ace-builds/src-noconflict/ext-language_tools";  // Import for language tools
 
-
 export const CodeTextarea = ({ field, value, handleChange, advanced }) => {
   const [inputValue, setInputValue] = useState(value);
   const inputRef = useRef(null);

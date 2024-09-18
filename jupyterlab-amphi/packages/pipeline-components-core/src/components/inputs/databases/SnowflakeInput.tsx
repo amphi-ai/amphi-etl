@@ -66,8 +66,11 @@ export class SnowflakeInput extends BaseCoreComponent {
           advanced: true
         },
         {
-          type: "input",
+          type: "table",
+          drivers: "snowflake",
           label: "Table Name",
+          connectionString: "snowflake://{{username}}:{{password}}@{{account}}/{{database}}/{{schema}}?warehouse={{warehouse}}",
+          query: `SELECT table_name FROM information_schema.tables WHERE table_schema = '{{schema}}'`,
           id: "tableName",
           placeholder: "Enter table name",
           condition: { queryMethod: "table" }
@@ -81,6 +84,13 @@ export class SnowflakeInput extends BaseCoreComponent {
           id: "sqlQuery",
           tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
           condition: { queryMethod: "query" },
+          advanced: true
+        },
+        {
+          type: "input",
+          label: "Role (Optional)",
+          id: "role",
+          placeholder: "Role name",
           advanced: true
         }
       ],
@@ -100,19 +110,10 @@ export class SnowflakeInput extends BaseCoreComponent {
     return ["import pandas as pd", "import sqlalchemy", "import urllib.parse", "from snowflake.sqlalchemy import URL"];
   }
 
-  public generateComponentCode({ config, outputName }): string {
-    const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
-    const tableReference = (config.schema && config.schema.toLowerCase() !== 'public')
-      ? `${config.schema}.${config.tableName}`
-      : config.tableName;
-
-      const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim() 
-      ? config.sqlQuery 
-      : `SELECT * FROM ${tableReference}`;
-
-    const code = `
+  public generateDatabaseConnectionCode({ config, connectionName }): string {
+    const connectionCode = `
 # Connect to the Snowflake database
-${uniqueEngineName} = sqlalchemy.create_engine(URL(
+${connectionName} = sqlalchemy.create_engine(URL(
     account = '${config.account}',
     user = '${config.username}',
     password = urllib.parse.quote("${config.password}"),
@@ -120,6 +121,24 @@ ${uniqueEngineName} = sqlalchemy.create_engine(URL(
     schema = '${config.schema}',
     warehouse = '${config.warehouse}'
 ))
+`;
+    return connectionCode;
+  }
+
+  public generateComponentCode({ config, outputName }): string {
+    const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
+    const tableReference = (config.schema && config.schema.toLowerCase() !== 'public')
+      ? `${config.schema}.${config.tableName.value}`
+      : config.tableName.value;
+
+    const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim()
+      ? config.sqlQuery
+      : `SELECT * FROM ${tableReference}`;
+
+    const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName })
+
+    const code = `
+${connectionCode}
 
 # Execute SQL statement
 try:

@@ -14,6 +14,7 @@ import KeyValueColumnsRadio from './forms/keyValueColumnsRadio';
 import KeyValueForm from './forms/keyValueForm';
 import SelectColumn from './forms/selectColumn';
 import SelectColumns from './forms/selectColumns';
+import SelectFromSQLQuery from './forms/selectFromSQLQuery';
 import SelectCustomizable from './forms/selectCustomizable';
 import SelectMultipleCustomizable from './forms/selectMultipleCustomizable';
 import SelectRegular from './forms/selectRegular';
@@ -334,6 +335,8 @@ export const GenerateUIInputs = React.memo(({
         return renderFormItem(field, <SelectColumns {...commonProps} defaultValues={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "column":
         return renderFormItem(field, <SelectColumn {...commonProps} defaultValue={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
+      case "table":
+        return renderFormItem(field, <SelectFromSQLQuery {...commonProps} data={data} defaultValue={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "selectCustomizable":
         return renderFormItem(field, <SelectCustomizable {...commonProps} defaultValue={value} />);
       case "selectMultipleCustomizable":
@@ -591,7 +594,7 @@ export interface Option {
 }
 
 export interface FieldDescriptor {
-  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio'
+  type: 'file' | 'column' | 'columns' | 'table' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio'
   | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect'
   | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable' | 'formulaColumns' | 'keyvalueColumnsRadio';
   label: string;
@@ -621,6 +624,7 @@ export interface FieldDescriptor {
   connection?: string;
   connectionVariableName?: string;
   condition?: Record<string, any>;
+  connectionString?: string;
 }
 
 interface ConfigModalProps {

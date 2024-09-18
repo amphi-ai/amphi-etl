@@ -423,6 +423,100 @@ ${code}`;
     return transformedLines.join('\n');
   }
 
+  static getEnvironmentVariableCode(pipelineJson: string, componentService: any): string {
+    const flow = PipelineService.filterPipeline(pipelineJson);
+    const envVariablesMap = new Map<string, Node>();
+    const uniqueImports = new Set<string>();
+
+    // Collect environment variable nodes
+    flow.nodes.forEach(node => {
+      const type = componentService.getComponent(node.type)._type;
+      if (type === 'env_variables' || type === 'env_file') {
+        envVariablesMap.set(node.id, node);
+      }
+    });
+
+    let envVariablesCode = '';
+
+    if (envVariablesMap.size > 0) {
+      envVariablesMap.forEach((node, nodeId) => {
+        const component = componentService.getComponent(node.type);
+        let config: any = node.data;
+
+        console.log("config %o", config)
+        // Gather imports
+        const imports = component.provideImports({ config });
+        imports.forEach(importStatement => uniqueImports.add(importStatement));
+
+        // Generate code for this environment variable component
+        envVariablesCode += component.generateComponentCode({ config });
+      });
+
+      // Combine imports and environment variables code
+      const importsCode = Array.from(uniqueImports).join('\n');
+      return `${importsCode}\n\n${envVariablesCode}`;
+    } else {
+      return '# No environment variable components found.';
+    }
+  }
+
+  static getConnectionCode(pipelineJson: string, componentService: any): string {
+    const flow = PipelineService.filterPipeline(pipelineJson);
+    const connectionsMap = new Map<string, Node>();
+    const uniqueImports = new Set<string>();
+
+    // Collect connection nodes
+    flow.nodes.forEach(node => {
+      const type = componentService.getComponent(node.type)._type;
+      if (type === 'connection') {
+        connectionsMap.set(node.id, node);
+      }
+    });
+
+    let connectionsCode = '';
+
+    if (connectionsMap.size > 0) {
+      connectionsMap.forEach((node, nodeId) => {
+        const component = componentService.getComponent(node.type);
+        let config: any = node.data;
+
+        // Gather imports
+        const imports = component.provideImports({ config });
+        imports.forEach(importStatement => uniqueImports.add(importStatement));
+
+        // Generate code for this connection component
+        connectionsCode += component.generateComponentCode({ config });
+      });
+
+      // Combine imports and connections code
+      const importsCode = Array.from(uniqueImports).join('\n');
+      return `${importsCode}\n\n${connectionsCode}`;
+    } else {
+      return '# No connection components found.';
+    }
+  }
+
+  static getComponentAndDataForNode(nodeId: string, componentService: any, pipelineJson: string): { component: any, data: any } | null {
+    const flow = PipelineService.filterPipeline(pipelineJson);
+    
+    // Find the node by nodeId
+    const node = flow.nodes.find((n: Node) => n.id === nodeId);
+    if (!node) {
+        console.error(`Node with id ${nodeId} not found.`);
+        return null;
+    }
+
+    // Get the component type and the component instance
+    const component = componentService.getComponent(node.type);
+    if (!component || typeof component.generateDatabaseConnectionCode !== 'function') {
+        console.error(`Component for node type ${node.type} does not have a generateDatabaseConnectionCode method.`);
+        return null;
+    }
+
+    // Return the component and the node's data
+    return { component, data: node.data };
+}
+
 };
 
 

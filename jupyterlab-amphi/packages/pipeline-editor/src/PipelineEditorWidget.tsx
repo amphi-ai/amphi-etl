@@ -554,7 +554,7 @@ const PipelineWrapper: React.FC<IProps> = ({
             defaultViewport={initialViewport}
             // viewport={initialViewport}
             // onViewportChange={onViewportChange}
-            deleteKeyCode={["Backspace"]}
+            deleteKeyCode={["Delete", "Backspace"]}
             proOptions={proOptions}
             >
             <Panel position="top-right">
