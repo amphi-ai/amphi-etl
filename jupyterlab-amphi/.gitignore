@@ -19,6 +19,7 @@ __pycache__
 .DS_Store
 \#*#
 .#*
+.jupyter_ystore.db
 
 *.swp
 *.map

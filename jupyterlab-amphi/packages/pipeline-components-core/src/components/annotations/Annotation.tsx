@@ -3,13 +3,14 @@ import { type NodeProps, useReactFlow, useStore, useStoreApi, NodeResizer, NodeT
 import { Remark } from "react-remark";
 import type { GetRef, InputRef, ColorPickerProps, GetProp } from 'antd';
 import { CodeTextarea } from '@amphi/pipeline-components-manager';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 
-import { Form, ConfigProvider, ColorPicker, Row, Col, Slider, Modal, InputNumber } from 'antd';
+import { Form, ConfigProvider, ColorPicker, Row, Col, Slider, Modal, InputNumber, Popconfirm } from 'antd';
 
 import { ComponentItem, PipelineComponent, InputFile, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
 import { annotationIcon } from '../../icons';
 
-import { bracesIcon, settingsIcon } from '../../icons';
+import { bracesIcon, xIcon, settingsIcon } from '../../icons';
 import { generate, green, presetPalettes, red } from '@ant-design/colors';
 
 type Color = Extract<GetProp<ColorPickerProps, 'value'>, string | { cleared: any }>;
@@ -189,8 +190,13 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
   }
 
   public UIComponent({ id, data, context, componentService, manager, commands, settings }) {
-    const { setNodes } = useReactFlow();
+    const { setNodes, deleteElements, setViewport } = useReactFlow();
     const store = useStoreApi();
+
+    const deleteNode = useCallback(() => {
+      deleteElements({ nodes: [{ id }] });
+    }, [id, deleteElements]);
+
     const isSelected = useStore((state) => !!state.nodeInternals.get(id)?.selected);
 
     const handleChange = useCallback((evtTargetValue: any, field: string) => {
@@ -209,32 +215,56 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
 
     return (
       <>
-        <div style={{
-          height: '100%',
-          backgroundColor: backgroundColorStyle,
-          paddingLeft: '40px',
-          paddingRight: '40px',
-          paddingTop: '20px',
-          paddingBottom: '20px',
-          position: 'relative',
-          zIndex: 0,
-          borderRadius: `${borderRadiusStyle}px`,
-          border: `${borderWidthStyle}px solid ${borderColorStyle}`, // Apply the border style
-        }}>
-          <NodeResizer
-            keepAspectRatio={shiftKeyPressed}
-            isVisible={isSelected}
-            color={"#000000"}
-            minWidth={50}
-            minHeight={50}
-          />
-          <div style={{ color: textColorStyle }}>
-            <Remark>{data.content}</Remark>
+        <div style={{ position: 'relative' }}>
+          {isSelected && (
+            <Popconfirm
+              title="Sure to delete?"
+              placement="right"
+              onConfirm={deleteNode}
+              icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+            >
+              <div
+                className="deletebutton"
+                style={{
+                  position: 'absolute',
+                  top: '-20px',
+                  right: '-20px',
+                  cursor: 'pointer',
+                  zIndex: 10
+                }}
+              >
+                <xIcon.react className="group-hover:text-primary" />
+              </div>
+            </Popconfirm>
+          )}
+          <div style={{
+            height: '100%',
+            backgroundColor: backgroundColorStyle,
+            paddingLeft: '40px',
+            paddingRight: '40px',
+            paddingTop: '20px',
+            paddingBottom: '20px',
+            position: 'relative',
+            zIndex: 0,
+            borderRadius: `${borderRadiusStyle}px`,
+            border: `${borderWidthStyle}px solid ${borderColorStyle}`,
+          }}>
+            <NodeResizer
+              keepAspectRatio={shiftKeyPressed}
+              isVisible={isSelected}
+              color={"#000000"}
+              minWidth={50}
+              minHeight={50}
+            />
+            <div style={{ color: textColorStyle }}>
+              <Remark>{data.content}</Remark>
+            </div>
+
+            <NodeToolbar isVisible={isSelected} position={Position.Bottom}>
+              <button onClick={() => setModalOpen(true)}><settingsIcon.react /></button>
+            </NodeToolbar>
           </div>
-        
-        <NodeToolbar isVisible={isSelected} position={Position.Bottom}>
-          <button onClick={() => setModalOpen(true)}><settingsIcon.react /></button>
-        </NodeToolbar></div>
+        </div>
 
         <Annotation.ConfigForm
           nodeId={id}
