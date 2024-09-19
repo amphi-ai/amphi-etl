@@ -49,7 +49,7 @@ import s3IconSvgStr from '../style/icons/s3.svg'
 import bigQueryIconSvgStr from '../style/icons/bigquery.svg'
 import databaseIconSvgStr from '../style/icons/database-24.svg'
 import xIconSvgStr from '../style/icons/x-16.svg';
-
+import calendarSvgStr from '../style/icons/calendar-24.svg';
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -294,4 +294,9 @@ export const databaseIcon = new LabIcon({
 export const xIcon = new LabIcon({
   name: 'amphi:cog-icon',
   svgstr: xIconSvgStr
+});
+
+export const calendarIcon = new LabIcon({
+  name: 'amphi:calendar-icon',
+  svgstr: calendarSvgStr
 });

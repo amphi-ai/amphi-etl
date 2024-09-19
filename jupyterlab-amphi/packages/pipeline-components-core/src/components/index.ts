@@ -54,6 +54,7 @@ export { CustomCodeDocuments } from './custom/CustomCodeDocuments';
 export { GenerateIDColumn } from './transforms/GenerateIDColumn';
 export { Pivot } from './transforms/Pivot';
 export { FormulaRow } from './transforms/FormulaRow';
+export { DateTimeConverter } from './transforms/DateTimeConverter';
 
 // Custom
 // export { PyGWalker } from './custom/PyGWalker';

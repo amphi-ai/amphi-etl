@@ -208,13 +208,20 @@ export const TransferData: React.FC<TransferDataProps> = ({
   const [loadings, setLoadings] = useState<boolean>();
 
   useEffect(() => {
-    console.log("Transfer Data, items %o", items)
-
-    setSourceData(items.map(item => ({
+    console.log("Transfer Data, items %o", items);
+  
+    const newSourceData = items.map(item => ({
       ...item,
       key: item.value,
       title: item.value
-    })));
+    }));
+  
+    setSourceData(newSourceData);
+  
+    // Update targetKeys to only include keys that exist in the new source data
+    setTargetKeys(prevTargetKeys => 
+      prevTargetKeys.filter(key => newSourceData.some(item => item.key === key))
+    );
   }, [items]);
 
 
