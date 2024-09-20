@@ -108,89 +108,167 @@ export class DataCleansing extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    const codeLines: string[] = [];
-
-    codeLines.push("# Data Cleansing");
-    codeLines.push(`${outputName} = (${inputName}`);
-
-    // Drop rows with NULL values
-    if (config.removeNullRows) {
-      const dropHow = config.removeRowsHow || "any";
-      codeLines.push(`    .dropna(axis=0, how='${dropHow}')`);
-    }
-
-    // Drop columns with NULL values
-    if (config.removeNullColumns) {
-      const dropHow = config.removeColumnsHow || "any";
-      codeLines.push(`    .dropna(axis=1, how='${dropHow}')`);
-    }
+    const code = [];
 
     const columns = config.columns;
 
-      if (columns.length > 0) {
-        // Apply fillna for specific columns
-        switch (config.replaceMethod) {
-            case "blanks":
-                columns.forEach(col => {
-                    codeLines.push(`    .assign(${col}: lambda x: x[${col}].fillna(""))`);
-                });
-                break;
-            case "0":
-                columns.forEach(col => {
-                    codeLines.push(`    .assign(${col}: lambda x: x[${col}].fillna(0))`);
-                });
-                break;
-            case "custom":
-                const value = typeof config.value === 'string' ? `"${config.value}"` : config.value;
-                columns.forEach(col => {
-                    codeLines.push(`    .assign(${col}: lambda x: x[${col}].fillna(${value}))`);
-                });
-                break;
-            case "median":
-                columns.forEach(col => {
-                    codeLines.push(`    .assign(${col}: lambda x: x[${col}].fillna(${inputName}[${col}].median()))`);
-                });
-                break;
-            case "ffill":
-                columns.forEach(col => {
-                    codeLines.push(`    .assign(${col}: lambda x: x[${col}].fillna(method='ffill'))`);
-                });
-                break;
-            case "bfill":
-                columns.forEach(col => {
-                    codeLines.push(`    .assign(${col}: lambda x: x[${col}].fillna(method='bfill'))`);
-                });
-                break;
-        }
-    } else {
-        // Apply fillna for all columns based on data type
-        switch (config.replaceMethod) {
-            case "blanks":
-                codeLines.push(`    .assign(**{col: ${inputName}[col].fillna("") for col in ${inputName}.select_dtypes(include=['object', 'category']).columns})`);
-                break;
-            case "0":
-                codeLines.push(`    .assign(**{col: ${inputName}[col].fillna(0) for col in ${inputName}.select_dtypes(include=['number']).columns})`);
-                break;
-            case "custom":
-                const value = typeof config.value === 'string' ? `"${config.value}"` : config.value;
-                codeLines.push(`    .assign(**{col: ${inputName}[col].fillna(${value}) for col in ${inputName}.columns})`);
-                break;
-            case "median":
-                codeLines.push(`    .assign(**{col: ${inputName}[col].fillna(${inputName}[col].median()) for col in ${inputName}.select_dtypes(include=['number']).columns})`);
-                break;
-            case "ffill":
-                codeLines.push(`    .assign(**{col: ${inputName}[col].fillna(method='ffill') for col in ${inputName}.columns})`);
-                break;
-            case "bfill":
-                codeLines.push(`    .assign(**{col: ${inputName}[col].fillna(method='bfill') for col in ${inputName}.columns})`);
-                break;
-        }
+    function getColumnReference(column: { value: string, named: boolean, type: string }): string {
+      return column.named ? `'${column.value}'` : `${column.value}`;
     }
 
-    codeLines.push(`)`); // Close the parentheses
+    // Determine if specific columns are provided
+    const columnsList = columns && columns.length > 0 ? `[${columns.map(getColumnReference).join(', ')}]` : null;
 
-    return codeLines.join('\n');
+    code.push(`${outputName} = ${inputName}.copy()`);
+
+    // Handle missing value replacement
+    if (config.replaceMethod) {
+      let value;
+      if (config.replaceMethod === 'blanks') {
+        value = "''";
+      } else if (config.replaceMethod === '0') {
+        value = '0';
+      } else if (config.replaceMethod === 'custom') {
+        value = isNaN(Number(config.value)) ? `'${config.value}'` : config.value;
+      }
+
+      if (['blanks', '0', 'custom'].includes(config.replaceMethod)) {
+        if (columnsList) {
+          code.push(`${outputName}[${columnsList}] = ${outputName}[${columnsList}].fillna(${value})`);
+        } else {
+          code.push(`${outputName} = ${outputName}.fillna(${value})`);
+        }
+      } else if (config.replaceMethod === 'median') {
+        if (columnsList) {
+          code.push(`${outputName}[${columnsList}] = ${outputName}[${columnsList}].fillna(${outputName}[${columnsList}].median())`);
+        } else {
+          code.push(`${outputName} = ${outputName}.fillna(${outputName}.median())`);
+        }
+      } else if (['ffill', 'bfill'].includes(config.replaceMethod)) {
+        if (columnsList) {
+          code.push(`${outputName}[${columnsList}] = ${outputName}[${columnsList}].fillna(method='${config.replaceMethod}')`);
+        } else {
+          code.push(`${outputName} = ${outputName}.fillna(method='${config.replaceMethod}')`);
+        }
+      }
+    }
+
+    // Handle removal of unwanted characters and case modifications
+    const unwantedCharacterMapping = {
+      'whitespace': { '\\s': '' },
+      'tabs': { '\\t': '' },
+      'Line breaks': { '\\n': '', '\\r': '' },
+      'allwhitespace': { '\\s+': '' },
+      'letters': { '[A-Za-z]+': '' },
+      'numbers': { '\\d+': '' },
+      'punctuation': { '[^\\w\\s]+': '' }
+    };
+
+    const removeUnwantedChars = config.removeUnwantedCharacters || [];
+    let replaceDict = {};
+
+    removeUnwantedChars.forEach(char => {
+      const mappings = unwantedCharacterMapping[char];
+      if (mappings) {
+        replaceDict = { ...replaceDict, ...mappings };
+      }
+    });
+
+    const caseMapping = {
+      'lower': {
+        columns: '.str.lower()',
+        elements: 'x.lower() if isinstance(x, str) else x'
+      },
+      'upper': {
+        columns: '.str.upper()',
+        elements: 'x.upper() if isinstance(x, str) else x'
+      },
+      'capitalize': {
+        columns: '.str.capitalize()',
+        elements: 'x.capitalize() if isinstance(x, str) else x'
+      },
+      'swapcase': {
+        columns: '.str.swapcase()',
+        elements: 'x.swapcase() if isinstance(x, str) else x'
+      },
+      'camelcase': {
+        columns: ".str.title().str.replace(' ', '')",
+        elements: "x.title().replace(' ', '') if isinstance(x, str) else x"
+      },
+      'snakecase': {
+        columns: ".str.replace(' ', '_').str.lower()",
+        elements: "x.replace(' ', '_').lower() if isinstance(x, str) else x"
+      }
+    };
+
+    // Determine case transformation
+    const caseOption = config.case;
+    const caseTransform = caseOption ? caseMapping[caseOption] : null;
+
+    if (Object.keys(replaceDict).length > 0 || caseTransform) {
+      if (columnsList) {
+        code.push(`${outputName}[${columnsList}] = (`);
+        code.push(`    ${outputName}[${columnsList}]`);
+      } else {
+        code.push(`${outputName} = (`);
+        code.push(`    ${outputName}`);
+      }
+
+      if (Object.keys(replaceDict).length > 0) {
+        const regexFlag = 'regex=True';
+        const replaceStr = JSON.stringify(replaceDict).replace(/"/g, '\'');
+        code.push(`    .astype(str).replace(${replaceStr}, ${regexFlag})`);
+      } else {
+        code.push(`    .astype(str)`);
+      }
+
+      if (columnsList) {
+        if (caseTransform) {
+          code.push(`    .apply(lambda col: col${caseTransform.columns})`);
+        } else {
+          code.push(`    .apply(lambda col: col)`);
+        }
+      } else {
+        if (caseTransform) {
+          code.push(`    .applymap(lambda x: ${caseTransform.elements})`);
+        } else {
+          code.push(`    .applymap(lambda x: x)`);
+        }
+      }
+
+      code.push(`)`);
+    }
+
+    // Handle removal of null rows
+    if (config.removeNullRows) {
+      if (columnsList) {
+        code.push(`${outputName} = ${outputName}.dropna(axis=0, how='${config.removeRowsHow}', subset=${columnsList})`);
+      } else {
+        code.push(`${outputName} = ${outputName}.dropna(axis=0, how='${config.removeRowsHow}')`);
+      }
+    }
+
+    // Handle removal of null columns
+    if (config.removeNullColumns) {
+      if (columnsList) {
+        code.push(`${outputName} = ${outputName}.dropna(axis=1, how='${config.removeColumnsHow}', subset=${columnsList})`);
+      } else {
+        code.push(`${outputName} = ${outputName}.dropna(axis=1, how='${config.removeColumnsHow}')`);
+      }
+    }
+
+    if (code.some(line => line.includes('re.'))) {
+      code.unshift('import re');
+    }
+
+    return code.join('\n');
   }
+
+
+
+
+
+
 
 
 }

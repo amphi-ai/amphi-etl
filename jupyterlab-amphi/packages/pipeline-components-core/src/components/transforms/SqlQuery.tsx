@@ -22,6 +22,12 @@ export class SQLQuery extends BaseCoreComponent {
     super("SQL Query", "sqlQuery", description, "pandas_df_processor", [], "transforms", boxIcon, defaultConfig, form);
   }
 
+  public provideDependencies({ config }): string[] {
+    let deps: string[] = [];
+    deps.push('duckdb');
+    return deps;
+  }
+
   public provideImports({config}): string[] {
     return ["import pandas as pd", "import duckdb"];
   }

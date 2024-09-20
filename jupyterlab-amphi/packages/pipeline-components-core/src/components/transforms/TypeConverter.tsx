@@ -78,6 +78,17 @@ export class TypeConverter extends BaseCoreComponent {
               ]
             }
           ]
+        },
+        {
+          type: "select",
+          label: "If fails",
+          id: "errorManagement",
+          placeholder: "Select behavior",
+          options: [
+            { value: "stop", label: "Stop", tooltip: "Stops the conversion process immediately if a value can't be converted." },
+            { value: "warning", label: "Warning and Continue", tooltip: "Issues a warning, continues the conversion, and assigns null to unconverted values. The original value will be displayed in the console." },
+          ],
+          advanced: true
         }
       ],
     };
@@ -86,8 +97,9 @@ export class TypeConverter extends BaseCoreComponent {
     super("Type Converter", "typeConverter", description, "pandas_df_processor", [], "transforms", typeIcon, defaultConfig, form);
   }
 
-  public provideImports({config}): string[] {
-    return ["import pandas as pd"];
+  public provideImports({ config }): string[] {
+    const imports = ["import pandas as pd"];
+    return imports;
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
@@ -95,46 +107,64 @@ export class TypeConverter extends BaseCoreComponent {
     const columnType = config.column.type;
     const columnNamed = config.column.named;
     const dataType = config.dataType[config.dataType.length - 1];
+    const errorManagement = config.errorManagement ? config.errorManagement : 'stop';
 
     let code = `\n\n# Initialize the output DataFrame\n`;
     code += `${outputName} = ${inputName}.copy()\n`;
     code += `# Convert ${columnName} from ${columnType} to ${dataType}\n`;
 
-    code += this.generateConversionCode(inputName, outputName, columnName, columnType, dataType, columnNamed);
+    code += this.generateConversionCode(inputName, outputName, columnName, columnType, dataType, columnNamed, errorManagement);
 
     return code;
-}
-
-private generateConversionCode(inputName: string, outputName: string, columnName: string, columnType: string, dataType: string, columnNamed: boolean): string {
-  let conversionFunction: string;
-  let additionalParams = "";
-
-  if (dataType.startsWith("datetime")) {
-      if (dataType.includes("[")) {
-          const unit = dataType.split("[")[1].split("]")[0];
-          additionalParams = `, unit="${unit}"`;
-      }
-      conversionFunction = `pd.to_datetime(${inputName}["${columnName}"]${additionalParams})`;
-      if (columnNamed) {
-          return `${outputName}["${columnName}"] = ${conversionFunction}\n`;
-      } else {
-          return `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}\n`;
-      }
-  } else if (columnType.startsWith("float") && dataType.startsWith("int")) {
-      conversionFunction = `${inputName}["${columnName}"].astype("float").fillna(0).astype("${dataType}")`;
-      if (columnNamed) {
-          return `${outputName}["${columnName}"] = ${conversionFunction}\n`;
-      } else {
-          return `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}\n`;
-      }
-  } else {
-      conversionFunction = `astype("${dataType}")`;
-      if (columnNamed) {
-          return `${outputName}["${columnName}"] = ${inputName}["${columnName}"].${conversionFunction}\n`;
-      } else {
-          return `${outputName}.iloc[:, ${columnName}] = ${inputName}.iloc[:, ${columnName}].${conversionFunction}\n`;
-      }
   }
-}
+
+  private generateConversionCode(inputName: string, outputName: string, columnName: string, columnType: string, dataType: string, columnNamed: boolean, errorManagement: string): string {
+    let code = '';
+    let conversionFunction: string;
+    let additionalParams = "";
+
+    let errorsParam = 'raise';
+    if (errorManagement === 'warning') {
+      // Use 'coerce' where applicable, 'ignore' for astype
+      if (['int', 'float', 'uint'].some(type => dataType.startsWith(type)) || dataType.startsWith("datetime")) {
+        errorsParam = 'coerce';
+      } else {
+        errorsParam = 'ignore';
+      }
+    }
+
+    if (dataType.startsWith("datetime")) {
+      if (dataType.includes("[")) {
+        const unit = dataType.split("[")[1].split("]")[0];
+        additionalParams = `, unit="${unit}"`;
+      }
+      conversionFunction = `pd.to_datetime(${inputName}["${columnName}"]${additionalParams}, errors='${errorsParam}')`;
+      if (columnNamed) {
+        code += `${outputName}["${columnName}"] = ${conversionFunction}\n`;
+      } else {
+        code += `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}\n`;
+      }
+    } else if (dataType.startsWith('int') || dataType.startsWith('float') || dataType.startsWith('uint')) {
+      // Use pd.to_numeric for numeric types
+      conversionFunction = `pd.to_numeric(${inputName}["${columnName}"], errors='${errorsParam}')`;
+      if (columnNamed) {
+        code += `${outputName}["${columnName}"] = ${conversionFunction}\n`;
+      } else {
+        code += `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}\n`;
+      }
+      // Then convert to the specified data type
+      // code += `${outputName}["${columnName}"] = ${outputName}["${columnName}"].astype("${dataType}", errors='${errorsParam}')\n`;
+    } else {
+      // For other types, use astype with errors parameter
+      conversionFunction = `astype("${dataType}", errors='${errorsParam}')`;
+      if (columnNamed) {
+        code += `${outputName}["${columnName}"] = ${inputName}["${columnName}"].${conversionFunction}\n`;
+      } else {
+        code += `${outputName}.iloc[:, ${columnName}] = ${inputName}.iloc[:, ${columnName}].${conversionFunction}\n`;
+      }
+    }
+
+    return code;
+  }
   
 }
