@@ -1,6 +1,6 @@
 {
   "name": "@amphi/pipeline-metadata-panel",
-  "version": "0.6.1",
+  "version": "0.6.2-alpha.0",
   "description": "Amphi Metadata Panel",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {
