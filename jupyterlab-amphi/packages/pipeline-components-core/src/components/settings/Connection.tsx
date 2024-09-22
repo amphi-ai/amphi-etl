@@ -470,7 +470,7 @@ export class Connection extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  public UIComponent({ id, data, context, componentService, manager, commands }) {
+  public UIComponent({ id, data, context, componentService, manager, commands, rendermimeRegistry }) {
     const { setNodes, deleteElements, setViewport } = useReactFlow();
     const store = useStoreApi();
 

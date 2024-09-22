@@ -57,7 +57,9 @@ export { FormulaRow } from './transforms/FormulaRow';
 export { DateTimeConverter } from './transforms/DateTimeConverter';
 
 // Custom
-// export { PyGWalker } from './custom/PyGWalker';
+export { PyGWalker } from './custom/PyGWalker';
+export { Slider } from './custom/Slider';
+
 
 
 // Outputs

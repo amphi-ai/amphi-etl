@@ -11,11 +11,10 @@ import { bracesIcon, settingsIcon, playCircleIcon } from '../../icons';
 
 import { WidgetManager } from '@jupyter-widgets/jupyterlab-manager';
 
+export class Slider extends PipelineComponent<ComponentItem>() {
 
-export class PyGWalker extends PipelineComponent<ComponentItem>() {
-
-    public _name = "PyGWalker";
-    public _id = "pygWalker";
+    public _name = "Slider";
+    public _id = "slider";
     public _type = "pandas_df_processor";
     public _category = "transform";
     public _description = "";
@@ -30,6 +29,7 @@ export class PyGWalker extends PipelineComponent<ComponentItem>() {
         componentService,
         manager,
         commands,
+        rendermimeRegistry,
         store,
         setNodes,
         handleChange,
@@ -37,36 +37,56 @@ export class PyGWalker extends PipelineComponent<ComponentItem>() {
         setModalOpen
     }) => {
         const widgetContainerRef = useRef<HTMLDivElement>(null);
-        const [widgetView, setWidgetView] = useState(null);
+        const [widgetManagerReady, setWidgetManagerReady] = useState(false);
 
         const widgetManagerRef = useRef<WidgetManager | null>(null);
 
         useEffect(() => {
             const initializeWidgetManager = async () => {
                 await context.sessionContext.ready;
-                if (!widgetManagerRef.current && context.sessionContext && context.rendermime) {
-                    widgetManagerRef.current = new WidgetManager(context.rendermime, context.sessionContext, {saveState: false});
+                const kernel = context.sessionContext.session?.kernel;
+                if (!kernel) {
+                    console.log("No kernel available yet");
+                    return;
+                }
+                await kernel.ready;
+
+                if (!widgetManagerRef.current && context.sessionContext) {
+                    widgetManagerRef.current = new WidgetManager(
+                        rendermimeRegistry,
+                        context.sessionContext,
+                        { saveState: false }
+                    );
+                    setWidgetManagerReady(true);
                 }
             };
             initializeWidgetManager();
-        }, [context.sessionContext, context.rendermime]);
-
+        }, [context.sessionContext.session?.kernel, rendermimeRegistry]);
 
         useEffect(() => {
             const executeCode = async () => {
+                if (!widgetManagerReady) {
+                    console.log("WidgetManager not ready yet");
+                    return;
+                }
                 await context.sessionContext.ready;
-                if (modalOpen && context.sessionContext.session?.kernel) {
+                const kernel = context.sessionContext.session?.kernel;
+                if (!kernel) {
+                    console.log("No kernel available");
+                    return;
+                }
+                await kernel.ready;
+
+                if (modalOpen) {
                     const code = `
-import pygwalker as pyg
 import pandas as pd
-        
-df = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
-w = pyg.walk(df, return_widget=True)
-display(w)
+from ipywidgets import IntSlider
+slider = IntSlider()
+display(slider)
 `;
 
                     try {
-                        const future = context.sessionContext.session.kernel.requestExecute({ code: code });
+                        const future = kernel.requestExecute({ code: code });
 
                         future.onIOPub = async (msg) => {
                             if (msg.header.msg_type === 'display_data') {
@@ -80,7 +100,6 @@ display(w)
                                 console.error(`Kernel Error: ${msg.content.ename}: ${msg.content.evalue}`);
                             }
                         };
-
                     } catch (error) {
                         console.error("Error executing code:", error);
                     }
@@ -88,7 +107,7 @@ display(w)
             };
 
             executeCode();
-        }, [modalOpen, context.sessionContext.session?.kernel]);
+        }, [modalOpen, widgetManagerReady]);
 
         const renderWidget = async (modelId) => {
             if (!widgetManagerRef.current) {
@@ -110,7 +129,6 @@ display(w)
             }
         };
 
-
         return (
             <ConfigProvider
                 theme={{
@@ -120,7 +138,7 @@ display(w)
                 }}
             >
                 <Modal
-                    title="PyGWalker"
+                    title="Slider"
                     open={modalOpen}
                     onOk={() => setModalOpen(false)}
                     onCancel={() => setModalOpen(false)}
@@ -137,7 +155,7 @@ display(w)
         );
     };
 
-    public UIComponent({ id, data, context, componentService, manager, commands, settings }) {
+    public UIComponent({ id, data, context, componentService, manager, commands, rendermimeRegistry, settings }) {
 
         const { setNodes, deleteElements, setViewport } = useReactFlow();
         const store = useStoreApi();
@@ -160,14 +178,13 @@ display(w)
 
         // Create the handle element
         const handleElement = React.createElement(renderHandle, {
-            type: PyGWalker.Type,
-            Handle: Handle, // Make sure Handle is imported or defined
-            Position: Position, // Make sure Position is imported or defined
+            type: Slider.Type,
+            Handle: Handle,
+            Position: Position,
             internals: internals
         });
 
         const handleChange = useCallback((evtTargetValue: any, field: string) => {
-
             onChange({ evtTargetValue, field, nodeId, store, setNodes });
         }, [nodeId, store, setNodes]);
 
@@ -191,9 +208,22 @@ display(w)
                     context: context,
                     manager: manager,
                     commands: commands,
-                    name: PyGWalker.Name,
-                    ConfigForm: PyGWalker.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes, handleChange, modalOpen, setModalOpen }),
-                    Icon: PyGWalker.Icon,
+                    name: Slider.Name,
+                    ConfigForm: Slider.ConfigForm({
+                        nodeId: id,
+                        data,
+                        context,
+                        componentService,
+                        manager,
+                        commands,
+                        rendermimeRegistry,
+                        store,
+                        setNodes,
+                        handleChange,
+                        modalOpen,
+                        setModalOpen
+                    }),
+                    Icon: Slider.Icon,
                     showContent: showContent,
                     handle: handleElement,
                     deleteNode: deleteNode,
@@ -204,7 +234,7 @@ display(w)
                 {showContent && (
                     <NodeToolbar isVisible position={Position.Bottom}>
                         <button onClick={() => setModalOpen(true)}><settingsIcon.react /></button>
-                        {(PyGWalker.Type.includes('input') || PyGWalker.Type.includes('processor') || PyGWalker.Type.includes('output')) && (
+                        {(Slider.Type.includes('input') || Slider.Type.includes('processor') || Slider.Type.includes('output')) && (
                             <button onClick={() => executeUntilComponent()} disabled={!enableExecution}
                                 style={{ opacity: enableExecution ? 1 : 0.5, cursor: enableExecution ? 'pointer' : 'not-allowed' }}>
                                 <playCircleIcon.react />
@@ -220,10 +250,8 @@ display(w)
         return ["import pandas as pd"];
     }
 
-
     public provideFunctions({ config }): string[] {
         let functions = [];
-
         return functions;
     }
 

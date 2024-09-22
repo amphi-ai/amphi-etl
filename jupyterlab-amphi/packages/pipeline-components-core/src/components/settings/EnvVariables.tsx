@@ -310,7 +310,7 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  public UIComponent({ id, data, context, componentService, manager, commands, settings }) {
+  public UIComponent({ id, data, context, componentService, manager, commands, rendermimeRegistry, settings }) {
 
     const { setNodes, deleteElements, setViewport } = useReactFlow();
     const store = useStoreApi();

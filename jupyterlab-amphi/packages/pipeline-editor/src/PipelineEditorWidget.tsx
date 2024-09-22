@@ -16,6 +16,7 @@ import AutoLayoutButton from './AutoLayout';
 import { useCopyPaste, useUndoRedo } from './Commands';
 import { ContentsManager } from '@jupyterlab/services';
 import Sidebar from './Sidebar'; 
+import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 
 import React, { useCallback, useRef, useState, useEffect } from 'react';
 import ReactFlow, {
@@ -76,6 +77,7 @@ export class PipelineEditorWidget extends ReactWidget {
   shell: ILabShell;
   toolbarRegistry: IToolbarWidgetRegistry;
   commands: any;
+  rendermimeRegistry: IRenderMimeRegistry;
   context: Context;
   settings: ISettingRegistry.ISettings;
   componentService: any;
@@ -88,6 +90,7 @@ export class PipelineEditorWidget extends ReactWidget {
     this.shell = options.shell;
     this.toolbarRegistry = options.toolbarRegistry;
     this.commands = options.commands;
+    this.rendermimeRegistry =  options.rendermimeRegistry;
     this.context = options.context;
     this.settings = options.settings;
     this.componentService = options.componentService;
@@ -119,6 +122,7 @@ export class PipelineEditorWidget extends ReactWidget {
         shell={this.shell}
         toolbarRegistry={this.toolbarRegistry}
         commands={this.commands}
+        rendermimeRegistry={this.rendermimeRegistry}
         widgetId={this.parent?.id}
         settings={this.settings}
         componentService={this.componentService}
@@ -139,6 +143,7 @@ interface IProps {
   shell: ILabShell;
   toolbarRegistry: IToolbarWidgetRegistry;
   commands: any;
+  rendermimeRegistry: IRenderMimeRegistry;
   settings?: ISettingRegistry.ISettings;
   widgetId?: string;
   componentService: any;
@@ -151,6 +156,7 @@ const PipelineWrapper: React.FC<IProps> = ({
   shell,
   toolbarRegistry,
   commands,
+  rendermimeRegistry,
   settings,
   widgetId,
   componentService,
@@ -165,7 +171,7 @@ const PipelineWrapper: React.FC<IProps> = ({
 
   const nodeTypes = componentService.getComponents().reduce((acc, component: any) => {
     const id = component._id;
-    const ComponentUI = (props) => <component.UIComponent context={context} componentService={componentService} manager={manager} commands={commands} settings={settings} {...props} />;
+    const ComponentUI = (props) => <component.UIComponent context={context} componentService={componentService} manager={manager} commands={commands} rendermimeRegistry={rendermimeRegistry} settings={settings} {...props} />;
 
     acc[id] = (props) => <ComponentUI context={context} componentService={componentService} manager={manager} commands={commands} {...props} />;
     return acc;

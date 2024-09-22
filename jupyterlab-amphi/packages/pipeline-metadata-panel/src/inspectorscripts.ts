@@ -293,6 +293,9 @@ def _amphi_display_documents_as_html(documents):
     html_content += "</div>"
     display(HTML(html_content))
 
+
+
+
   `;
   
   

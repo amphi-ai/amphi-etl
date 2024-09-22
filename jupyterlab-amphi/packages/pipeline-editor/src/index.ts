@@ -82,7 +82,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
   activate: (
     app: JupyterFrontEnd,
     palette: ICommandPalette,
-    rendermime: IRenderMimeRegistry,
+    rendermimeRegistry: IRenderMimeRegistry,
     launcher: ILauncher,
     browserFactory: IFileBrowserFactory,
     defaultFileBrowser: IDefaultFileBrowser,
@@ -141,6 +141,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           shell: app.shell,
           toolbarRegistry: toolbarRegistry,
           commands: app.commands,
+          rendermime: rendermimeRegistry,
           browserFactory: browserFactory,
           defaultFileBrowser: defaultFileBrowser,
           serviceManager: app.serviceManager,

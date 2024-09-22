@@ -1,6 +1,6 @@
 {
   "name": "@amphi/pipeline-metadata-panel",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Amphi Metadata Panel",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {
@@ -88,6 +88,7 @@
   "jupyterlab": {
     "extension": true,
     "outputDir": "../../amphi/pipeline-metadata-panel",
+    "schemaDir": "schema",
     "sharedPackages": {
       "@amphi/pipeline-editor": {
         "bundled": false,
