@@ -36,6 +36,7 @@ _amphi_metadatapanel_Jupyter = get_ipython()
 # _amphi_metadatapanel_nms.shell = _amphi_metadatapanel_Jupyter.kernel.shell  
 __np = None
 __pd = None
+__mpd = None
 __pyspark = None
 __tf = None
 __K = None
@@ -55,6 +56,7 @@ def _check_imported():
 
     __np = _attempt_import('numpy')
     __pd = _attempt_import('pandas')
+    __mpd = _attempt_import('modin.pandas')
     __pyspark = _attempt_import('pyspark')
     __tf = _attempt_import('tensorflow')
     __K = _attempt_import('keras.backend') or _attempt_import('tensorflow.keras.backend')
@@ -114,7 +116,7 @@ def _amphi_metadatapanel_getcontentof(x):
         return unnamed_columns
 
     # Check if the input is a DataFrame and handle it
-    if __pd and isinstance(x, __pd.DataFrame):
+    if (__pd and isinstance(x, __pd.DataFrame)) or (__mpd and isinstance(x, __mpd.DataFrame)):
         unnamed_cols = check_unnamed_columns(x)
         colnames = ', '.join([f"{col} ({dtype}, {'unnamed' if col in unnamed_cols else 'named'})" for col, dtype in zip(x.columns, x.dtypes)])
         content = "%s" % colnames
@@ -292,11 +294,7 @@ def _amphi_display_documents_as_html(documents):
     
     html_content += "</div>"
     display(HTML(html_content))
-
-
-
-
-  `;
+`;
   
   
     static scripts: { [index: string]: Languages.LanguageModel } = {

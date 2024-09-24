@@ -273,121 +273,113 @@ const pipelines: JupyterFrontEndPlugin<void> = {
     let customCodeInitialization = "";
 
     function loadSetting(setting: ISettingRegistry.ISettings): void {
-      // Read the settings and convert to the correct type
-      console.log("setting %o", setting)
       customCodeInitialization = setting.get('customCodeInitialization').composite as string;
+      console.log(`Settings: Amphi Metadata extension: customCodeInitialization is set to '${customCodeInitialization}'`);
+    }
 
-      console.log(
-        `Settings: Amphi Metadata extension: customCodeInitialization is set to '${customCodeInitialization}'`
-      );
+    settings.load('@amphi/pipeline-metadata-panel:pipelines')
+      .then((setting) => {
+        // Initial call to loadSetting after the settings are first loaded
+        loadSetting(setting);
 
-      Promise.all([app.restored, settings.load('@amphi/pipeline-metadata-panel:pipelines')])
-        .then(([, setting]) => {
-          // Read the settings
-          loadSetting(setting);
+        // Listen for your plugin setting changes using Signal
+        setting.changed.connect(loadSetting);
 
-          // Listen for your plugin setting changes using Signal
-          setting.changed.connect(loadSetting);
+        /**
+         * Subscribes to the creation of new pipelines. If a new notebook is created, build a new handler for the consoles.
+         * Adds a promise for a instanced handler to the 'handlers' collection.
+         */
+        pipelines.widgetAdded.connect((sender, pipelinePanel) => {
+          if (manager.hasHandler(pipelinePanel.context.sessionContext.path)) {
+            handlers[pipelinePanel.id] = new Promise((resolve, reject) => {
+              resolve(manager.getHandler(pipelinePanel.context.sessionContext.path));
+            });
+          } else {
+            handlers[pipelinePanel.id] = new Promise((resolve, reject) => {
+              const session = pipelinePanel.context.sessionContext;
 
-
-
-
-          /**
-           * Subscribes to the creation of new pipelines. If a new notebook is created, build a new handler for the consoles.
-           * Adds a promise for a instanced handler to the 'handlers' collection.
-           */
-          pipelines.widgetAdded.connect((sender, pipelinePanel) => {
-            if (manager.hasHandler(pipelinePanel.context.sessionContext.path)) {
-              handlers[pipelinePanel.id] = new Promise((resolve, reject) => {
-                resolve(manager.getHandler(pipelinePanel.context.sessionContext.path));
-              });
-            } else {
-              handlers[pipelinePanel.id] = new Promise((resolve, reject) => {
-                const session = pipelinePanel.context.sessionContext;
-
-                // Create connector and init w script if it exists for kernel type.
-                const connector = new KernelConnector({ session });
-                const scripts: Promise<Languages.LanguageModel> =
-                  connector.ready.then(() => {
-                    return connector.kernelLanguage.then(lang => {
-                      return Languages.getScript(lang);
-                    });
-                  });
-
-                scripts.then((result: Languages.LanguageModel) => {
-                  const initScript = result.initScript;
-                  const queryCommand = result.queryCommand;
-                  const matrixQueryCommand = result.matrixQueryCommand;
-                  const widgetQueryCommand = result.widgetQueryCommand;
-                  const deleteCommand = result.deleteCommand;
-                  const deleteAllCommand = result.deleteAllCommand;
-
-
-                  const options: VariableInspectionHandler.IOptions = {
-                    queryCommand: queryCommand,
-                    matrixQueryCommand: matrixQueryCommand,
-                    widgetQueryCommand,
-                    deleteCommand: deleteCommand,
-                    deleteAllCommand: deleteAllCommand,
-                    connector: connector,
-                    initScript: initScript,
-                    id: session.path //Using the sessions path as an identifier for now.
-                  };
-                  const handler = new VariableInspectionHandler(options);
-                  manager.addHandler(handler);
-                  pipelinePanel.disposed.connect(() => {
-                    delete handlers[pipelinePanel.id];
-                    handler.dispose();
-                  });
-
-                  handler.ready.then(() => {
-                    resolve(handler);
+              // Create connector and init w script if it exists for kernel type.
+              const connector = new KernelConnector({ session });
+              const scripts: Promise<Languages.LanguageModel> =
+                connector.ready.then(() => {
+                  return connector.kernelLanguage.then(lang => {
+                    return Languages.getScript(lang);
                   });
                 });
 
-                //Otherwise log error message.
-                scripts.catch((result: string) => {
-                  const handler = new DummyHandler(connector);
-                  pipelinePanel.disposed.connect(() => {
-                    delete handlers[pipelinePanel.id];
-                    handler.dispose();
-                  });
+              scripts.then((result: Languages.LanguageModel) => {
+                const initScript = result.initScript + "\n" + customCodeInitialization;
+                console.log("initScript: %s", initScript);
+                const queryCommand = result.queryCommand;
+                const matrixQueryCommand = result.matrixQueryCommand;
+                const widgetQueryCommand = result.widgetQueryCommand;
+                const deleteCommand = result.deleteCommand;
+                const deleteAllCommand = result.deleteAllCommand;
 
+                const options: VariableInspectionHandler.IOptions = {
+                  queryCommand: queryCommand,
+                  matrixQueryCommand: matrixQueryCommand,
+                  widgetQueryCommand,
+                  deleteCommand: deleteCommand,
+                  deleteAllCommand: deleteAllCommand,
+                  connector: connector,
+                  initScript: initScript,
+                  id: session.path //Using the sessions path as an identifier for now.
+                };
+                const handler = new VariableInspectionHandler(options);
+                manager.addHandler(handler);
+                pipelinePanel.disposed.connect(() => {
+                  delete handlers[pipelinePanel.id];
+                  handler.dispose();
+                });
+
+                handler.ready.then(() => {
                   resolve(handler);
                 });
               });
-            }
 
-            setSource(labShell);
-          });
+              //Otherwise log error message.
+              scripts.catch((result: string) => {
+                const handler = new DummyHandler(connector);
+                pipelinePanel.disposed.connect(() => {
+                  delete handlers[pipelinePanel.id];
+                  handler.dispose();
+                });
 
-          const setSource = (sender: ILabShell, args?: ILabShell.IChangedArgs) => {
-            const widget = args?.newValue ?? sender.currentWidget;
-            if (!widget || !pipelines.has(widget)) {
-              return;
-            }
-            const future = handlers[widget.id];
-            future.then((source: IMetadataPanel.IInspectable) => {
-              if (source) {
-                manager.source = source;
-                manager.source.performInspection();
-              }
+                resolve(handler);
+              });
             });
-          };
-          /**
-           * If focus window changes, checks whether new focus widget is a console.
-           * In that case, retrieves the handler associated to the console after it has been
-           * initialized and updates the manager with it.
-           */
-          setSource(labShell);
-          labShell.currentChanged.connect(setSource);
+          }
 
-        }).catch(reason => {
-          console.error(
-            `Something went wrong when reading the settings.\n${reason}`
-          );
+          setSource(labShell);
         });
-    }
+
+        const setSource = (sender: ILabShell, args?: ILabShell.IChangedArgs) => {
+          const widget = args?.newValue ?? sender.currentWidget;
+          if (!widget || !pipelines.has(widget)) {
+            return;
+          }
+          const future = handlers[widget.id];
+          future.then((source: IMetadataPanel.IInspectable) => {
+            if (source) {
+              manager.source = source;
+              manager.source.performInspection();
+            }
+          });
+        };
+        /**
+         * If focus window changes, checks whether new focus widget is a console.
+         * In that case, retrieves the handler associated to the console after it has been
+         * initialized and updates the manager with it.
+         */
+        setSource(labShell);
+        labShell.currentChanged.connect(setSource);
+
+      }).catch(reason => {
+        console.error(
+          `Something went wrong when reading the settings.\n${reason}`
+        );
+      });
   }
 };
 

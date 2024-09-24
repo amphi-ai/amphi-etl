@@ -168,7 +168,7 @@ ${outputName} = ${inputName}.copy()
         if (conversionType === 'dateToString') {
             code += `
 # Convert date/time column to string with specified format
-${outputName}[${outputColumnReference}] = ${outputName}[${inputColumnReference}].dt.strftime('${dateTimeFormat}')
+${outputName}[${outputColumnReference}] = ${outputName}[${inputColumnReference}].dt.strftime('${dateTimeFormat}').astype('string')
 `;
         } else if (conversionType === 'stringToDate') {
             code += `

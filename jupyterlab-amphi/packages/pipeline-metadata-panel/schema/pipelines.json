@@ -6,7 +6,7 @@
           "type": "string",
           "title": "Additional code imports",
           "description": "This setting defines additional code to execute at the kernel execution.",
-          "default": "// Add code to execute at kernel initialization"
+          "default": "# Add code to execute at kernel initialization"
         }
       },
     "additionalProperties": false,
