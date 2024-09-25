@@ -291,7 +291,7 @@ export class CodeGenerator {
             if (!fromStart) {
               code = lastCodeGenerated;
             }
-            code += '\n' + nodeOutputs.get(nodeId);
+            code += '\n' + '__amphi_display_pandas_dataframe(' + nodeOutputs.get(nodeId) + ')';
           }
 
         } else if (component_type.includes('output')) {

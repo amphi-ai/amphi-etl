@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table } from 'antd';
+import { Table, Tag } from 'antd';
 import type { ColumnsType } from 'antd/lib/table';
-
 
 const DataView = ({ htmlData }: { htmlData: string }) => {
   const [dataSource, setDataSource] = useState<Array<Record<string, string>>>([]);
@@ -10,36 +9,54 @@ const DataView = ({ htmlData }: { htmlData: string }) => {
   useEffect(() => {
     const { data, headers } = htmlToJson(htmlData);
     setDataSource(data);
-    setColumns(headers.map((header, index) => ({
-      title: index === 0 ? '' : header,
-      dataIndex: header,
-      key: header,
-      ...(index === 0 && { rowScope: 'row' }),
-      ellipsis: true,
-      render: (text: string) => (
-        <div style={{
-          fontSize: '12px',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          maxWidth: '200px', 
-          minWidth: '25px'
-        }}>
-          {text}
-        </div>
-      ),
-    })));
+    setColumns(headers.map((header, index) => {
+      // Extract the type in parentheses at the end of the header
+      const matches = header.match(/^(.*)\s\(([^)]+)\)$/); // Match pattern "ColumnName (type)"
+      const columnName = matches ? matches[1] : header;
+      const columnType = matches ? matches[2] : null;
+
+      return {
+        title: index === 0 ? '' : (
+          <>
+            <div style={{ whiteSpace: 'nowrap' }}>
+              <div>{columnName}</div>
+              {columnType && (
+                <Tag style={{ fontSize: '10px', marginTop: '4px', color: '#5F9A97' }}>
+                  {columnType}
+                </Tag>
+              )}
+            </div>
+          </>
+        ),
+        dataIndex: header,
+        key: header,
+        ...(index === 0 && { rowScope: 'row' }),
+        ellipsis: true,
+        render: (text: string) => (
+          <div style={{
+            fontSize: '12px',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            maxWidth: '200px',
+            minWidth: '25px'
+          }}>
+            {text}
+          </div>
+        ),
+      };
+    }));
   }, [htmlData]);
 
   return (
-    <Table 
-      dataSource={dataSource} 
-      columns={columns} 
-      pagination={false} 
+    <Table
+      dataSource={dataSource}
+      columns={columns}
+      pagination={false}
       size="small"
       scroll={{ x: 'max-content' }} // This enables horizontal scrolling
       style={{ fontSize: '12px', tableLayout: 'fixed', minWidth: '100%' }}
-      />
+    />
   );
 };
 
@@ -68,7 +85,5 @@ function htmlToJson(htmlString: string): { data: Array<Record<string, string>>, 
 
   return { data, headers: ['index', ...headers] };  // Set the first header to empty string
 }
-
-  
 
 export default DataView;

@@ -36,7 +36,6 @@ _amphi_metadatapanel_Jupyter = get_ipython()
 # _amphi_metadatapanel_nms.shell = _amphi_metadatapanel_Jupyter.kernel.shell  
 __np = None
 __pd = None
-__mpd = None
 __pyspark = None
 __tf = None
 __K = None
@@ -56,7 +55,6 @@ def _check_imported():
 
     __np = _attempt_import('numpy')
     __pd = _attempt_import('pandas')
-    __mpd = _attempt_import('modin.pandas')
     __pyspark = _attempt_import('pyspark')
     __tf = _attempt_import('tensorflow')
     __K = _attempt_import('keras.backend') or _attempt_import('tensorflow.keras.backend')
@@ -116,7 +114,7 @@ def _amphi_metadatapanel_getcontentof(x):
         return unnamed_columns
 
     # Check if the input is a DataFrame and handle it
-    if (__pd and isinstance(x, __pd.DataFrame)) or (__mpd and isinstance(x, __mpd.DataFrame)):
+    if __pd and isinstance(x, __pd.DataFrame):
         unnamed_cols = check_unnamed_columns(x)
         colnames = ', '.join([f"{col} ({dtype}, {'unnamed' if col in unnamed_cols else 'named'})" for col, dtype in zip(x.columns, x.dtypes)])
         content = "%s" % colnames
@@ -258,6 +256,10 @@ def _amphi_metadatapanel_deleteallvariables():
         if not key.startswith('_') and not hasattr(__builtins__, key) and not key in ['exit', 'quit', 'get_ipython', 'In', 'Out'] and not isinstance(value, (type(sys), types.ModuleType)) and camel_case_pattern.match(key):
             exec("del %s" % key, globals())
 
+def __amphi_display_pandas_dataframe(df):
+    df_with_types = df.copy()
+    df_with_types.columns = [f"{col} ({df[col].dtype})" for col in df.columns]
+    display(df_with_types)
 
 def _amphi_display_documents_as_html(documents):
     html_content = "<div id='documents'>"

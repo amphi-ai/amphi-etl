@@ -138,7 +138,7 @@ export class VariableInspectionHandler extends AbstractHandler {
         this._ready = kernelReady.then(() => {
           this._initOnKernel().then((msg: KernelMessage.IExecuteReplyMsg) => {
             this._connector.iopubMessage.connect(this._queryCall);
-            this.performInspection();
+            // this.performInspection();
           });
         });
 

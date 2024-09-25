@@ -122,7 +122,6 @@ export class CsvFileInput extends BaseCoreComponent {
     return this.generatePandasComponentCode({ config, outputName });
   }
 
-
   public generatePandasComponentCode({ config, outputName }): string {
     // Initialize an object to modify without affecting the original config
     let csvOptions = { ...config.csvOptions };

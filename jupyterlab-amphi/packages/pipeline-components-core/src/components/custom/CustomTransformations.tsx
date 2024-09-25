@@ -41,7 +41,7 @@ export class CustomTransformations extends BaseCoreComponent {
     let imports: string[] = [];
 
     // Always add 'import pandas as pd'
-    imports.push("import pandas as pd");
+    // imports.push("import pandas as pd");
 
     // Check if config.imports exists and is a string
     if (config.imports && typeof config.imports === 'string') {
