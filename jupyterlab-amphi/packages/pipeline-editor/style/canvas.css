@@ -2,17 +2,6 @@
 Editor components styles
 */
 
-.component {
-  background-color: #F2F4F7;
-  width: 180px;
-  min-height: 120px;
-  padding: 8px;
-  border-color: #F0F5F7;
-  border-radius: 3px;
-  color: #161616;
-  box-shadow: var(--jp-elevation-z1);
-  transition: box-shadow 0.2s;
-}
 
 .react-flow__node {
   z-index: 1000 !important;
@@ -79,6 +68,20 @@ Editor components styles
   border-left: none;
 }
 
+.component {
+  position: relative; /* Ensures pseudo-element positioning works */
+  background-color: #F2F4F7;
+  width: 180px;
+  min-height: 120px;
+  padding: 8px;
+  border-color: #F0F5F7;
+  border-radius: 3px;
+  color: #161616;
+  box-shadow: var(--jp-elevation-z1);
+  transition: box-shadow 0.2s;
+}
+
+
 .component .handle-right {
   position: absolute;
   top: 54px;
@@ -139,6 +142,35 @@ Editor components styles
 .component__body {
   padding-bottom: 3px;
   padding-top: 3px;
+}
+
+.component--default {
+  background-color: #F2F4F7;
+}
+
+.component__header--default {
+  border-bottom-color: #e2e8f0;
+}
+
+/* Snowflake-specific styles */
+.component--snowflake {
+  background-color: #F2F4F7;
+}
+
+.component--snowflake::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px; /* Thickness of the blue border */
+  background-color: #00ADEF; /* Blue top border */
+  border-top-left-radius: 3px; /* Match border radius */
+  border-top-right-radius: 3px; /* Match border radius */
+}
+
+.component__header--snowflake {
+  background-color: #F6F6F7;
 }
 
 /* Components delete button */

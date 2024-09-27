@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
 import Icon from '@ant-design/icons';
-import { AutoComplete, Input } from 'antd';
-import { PipelineService } from './PipelineService';
 import type { GetProps } from 'antd';
+import React, { useEffect, useRef, useState } from 'react';
+import { PipelineService } from './PipelineService';
 
 type CustomIconComponentProps = GetProps<typeof Icon>;
 

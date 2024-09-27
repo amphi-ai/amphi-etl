@@ -11,7 +11,6 @@ import alignIconSvgStr from '../style/icons/align.svg';
 import exportIconSvgStr from '../style/icons/export-svg.svg';
 
 
-
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
   svgstr: fileTextIconSvgStr

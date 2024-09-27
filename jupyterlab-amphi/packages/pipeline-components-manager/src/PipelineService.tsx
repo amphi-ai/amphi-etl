@@ -1,8 +1,4 @@
-import React from 'react';
 import { PathExt } from '@jupyterlab/coreutils';
-import { CodeGenerator } from './CodeGenerator';
-import { KernelMessage } from '@jupyterlab/services';
-
 
 export class PipelineService {
 

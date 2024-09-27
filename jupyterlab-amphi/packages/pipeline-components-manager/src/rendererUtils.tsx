@@ -124,37 +124,49 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
     event.preventDefault();
   };
 
+  const modifier = data.backend?.engine === "snowflake" ? "--snowflake" : "--default";
+  const colorPrimary = modifier === "--snowflake" ? "#00ADEF" : "#5F9B97";
+
   return (
     <>
-      <div className="component" onDoubleClick={handleDoubleClick}>
-        <div className="component__header">
-          <Text
-            onDoubleClick={stopPropagation}
-            onDragStart={disableDrag}
-            editable={isSelected ? { onChange: onTitleChange, tooltip: false, icon: <EditOutlined style={{ color: '#5F9B97' }} /> } : undefined}
-            className='ant-select-sm'
-          >
-            {titleName}
-          </Text>
-          <Popconfirm title="Sure to delete?" placement="right" onConfirm={() => deleteNode()} icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
-            <div className='deletebutton'>
-              <xIcon.react className="group-hover:text-primary" />
-            </div>
-          </Popconfirm>
-        </div>
-        <div className="component__body">
-          <form>
-            {showContent ? (
-              ConfigForm
-            ) : (
-              <div className="placeholder">
-                <Icon.react height="42px" width="42px;" color="#5A8F7B" verticalAlign="middle" />
+      <ConfigProvider
+        theme={{
+          token: {
+            // Seed Token
+            colorPrimary: colorPrimary,
+          },
+        }}
+      >
+        <div className={`component component${modifier}`} onDoubleClick={handleDoubleClick}>
+          <div className={`component__header component__header${modifier}`}>
+            <Text
+              onDoubleClick={stopPropagation}
+              onDragStart={disableDrag}
+              editable={isSelected ? { onChange: onTitleChange, tooltip: false, icon: <EditOutlined style={{ color: '#5F9B97' }} /> } : undefined}
+              className='ant-select-sm'
+            >
+              {titleName}
+            </Text>
+            <Popconfirm title="Sure to delete?" placement="right" onConfirm={() => deleteNode()} icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
+              <div className='deletebutton'>
+                <xIcon.react className="group-hover:text-primary" />
               </div>
-            )}
-          </form>
+            </Popconfirm>
+          </div>
+          <div className="component__body">
+            <form>
+              {showContent ? (
+                ConfigForm
+              ) : (
+                <div className="placeholder">
+                  <Icon.react height="42px" width="42px;" color={`${colorPrimary}`} verticalAlign="middle" />
+                </div>
+              )}
+            </form>
+          </div>
+          {handle}
         </div>
-        {handle}
-      </div>
+      </ConfigProvider>
     </>
   );
 };

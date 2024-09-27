@@ -1,5 +1,5 @@
-import { ILabShell, JupyterFrontEnd } from '@jupyterlab/application';
-import { IToolbarWidgetRegistry, Dialog, showDialog, ReactWidget, Toolbar, ToolbarButton } from '@jupyterlab/apputils';
+import { ILabShell } from '@jupyterlab/application';
+import { Dialog, IToolbarWidgetRegistry, ReactWidget, Toolbar, ToolbarButton, showDialog } from '@jupyterlab/apputils';
 import {
   ABCWidgetFactory,
   Context,
@@ -7,53 +7,46 @@ import {
   DocumentWidget
 } from '@jupyterlab/docregistry';
 import { IDefaultFileBrowser, IFileBrowserFactory } from '@jupyterlab/filebrowser';
-import { Toolbar as UIToolbar, buildIcon, listIcon, runIcon, saveIcon } from '@jupyterlab/ui-components';
+import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
+import { ContentsManager } from '@jupyterlab/services';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
+import { Toolbar as UIToolbar, codeIcon, listIcon, runIcon, saveIcon } from '@jupyterlab/ui-components';
 import { Drag } from '@lumino/dragdrop';
 import { Widget } from '@lumino/widgets';
+import { useUndoRedo } from './Commands';
 import DownloadImageButton from './ExportToImage';
-import AutoLayoutButton from './AutoLayout';
-import { useCopyPaste, useUndoRedo } from './Commands';
-import { ContentsManager } from '@jupyterlab/services';
-import Sidebar from './Sidebar'; 
-import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
+import Sidebar from './Sidebar';
 
-import React, { useCallback, useRef, useState, useEffect } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import ReactFlow, {
   Background,
   Controls,
+  NodeDragHandler,
+  OnConnect,
+  OnEdgesDelete,
   Panel,
   ReactFlowProvider,
+  SelectionDragHandler,
   addEdge,
   getConnectedEdges,
   getIncomers,
   getOutgoers,
-  OnConnect,
   useEdgesState,
   useNodesState,
   useReactFlow,
-  useStoreApi,
-  NodeDragHandler,
-  SelectionDragHandler,
-  OnEdgesDelete,
-  ControlButton,
-  useOnViewportChange,
-  useStore
+  useStoreApi
 } from 'reactflow';
 
 
-import { Tree, TreeDataNode, TabsProps, Tabs, ConfigProvider, Input } from 'antd';
-
-
+import { ConfigProvider } from 'antd';
 import { CodeGenerator, PipelineService } from '@amphi/pipeline-components-manager';
-import CustomEdge from './customEdge';
-import 'reactflow/dist/style.css';
-import { pipelineIcon } from './icons';
-import { Dropzone } from './Dropzone';
 import ReactDOM from 'react-dom';
+import 'reactflow/dist/style.css';
+import CustomEdge from './customEdge';
+import { Dropzone } from './Dropzone';
+import { pipelineIcon } from './icons';
 
 import CodeEditor from './CodeEditor';
-
 
 const PIPELINE_CLASS = 'amphi-PipelineEditor';
 
@@ -90,7 +83,7 @@ export class PipelineEditorWidget extends ReactWidget {
     this.shell = options.shell;
     this.toolbarRegistry = options.toolbarRegistry;
     this.commands = options.commands;
-    this.rendermimeRegistry =  options.rendermimeRegistry;
+    this.rendermimeRegistry = options.rendermimeRegistry;
     this.context = options.context;
     this.settings = options.settings;
     this.componentService = options.componentService;
@@ -169,13 +162,33 @@ const PipelineWrapper: React.FC<IProps> = ({
     'custom-edge': CustomEdge
   }
 
-  const nodeTypes = componentService.getComponents().reduce((acc, component: any) => {
-    const id = component._id;
-    const ComponentUI = (props) => <component.UIComponent context={context} componentService={componentService} manager={manager} commands={commands} rendermimeRegistry={rendermimeRegistry} settings={settings} {...props} />;
+  const nodeTypes = {
+    ...componentService.getComponents().reduce((acc, component: any) => {
+      const id = component._id;
+      const ComponentUI = (props) => (
+        <component.UIComponent
+          context={context}
+          componentService={componentService}
+          manager={manager}
+          commands={commands}
+          rendermimeRegistry={rendermimeRegistry}
+          settings={settings}
+          {...props}
+        />
+      );
 
-    acc[id] = (props) => <ComponentUI context={context} componentService={componentService} manager={manager} commands={commands} {...props} />;
-    return acc;
-  }, {});
+      acc[id] = (props) => (
+        <ComponentUI
+          context={context}
+          componentService={componentService}
+          manager={manager}
+          commands={commands}
+          {...props}
+        />
+      );
+      return acc;
+    }, {})
+  };
 
   const getNodeId = () => `node_${+new Date()}`;
 
@@ -186,106 +199,14 @@ const PipelineWrapper: React.FC<IProps> = ({
     const pipelineId = pipeline['id']
     const initialNodes = pipeline['pipelines'][0]['flow']['nodes'];
     const initialEdges = pipeline['pipelines'][0]['flow']['edges'];
-    const initialViewport =  pipeline['pipelines'][0]['flow']['viewport'];
+    const initialViewport = pipeline['pipelines'][0]['flow']['viewport'];
     const defaultViewport = { x: 0, y: 0, zoom: 1 };
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const [reactFlowInstance, setRfInstance] = useState(null);
-    const { getViewport,  setViewport } = useReactFlow();
+    const { getViewport, setViewport } = useReactFlow();
     const store = useStoreApi();
 
-    // Proximity connect
-    /*
-    const MIN_DISTANCE = 150;
-
-    const getClosestEdge = useCallback((node) => {
-      const { nodeInternals } = store.getState();
-      const storeNodes = Array.from(nodeInternals.values());
-
-      const closestNode = storeNodes.reduce(
-        (res, n) => {
-          if (n.id !== node.id) {
-            const dx = n.positionAbsolute.x - node.positionAbsolute.x;
-            const dy = n.positionAbsolute.y - node.positionAbsolute.y;
-            const d = Math.sqrt(dx * dx + dy * dy);
-
-            if (d < res.distance && d < MIN_DISTANCE) {
-              res.distance = d;
-              res.node = n;
-            }
-          }
-
-          return res;
-        },
-        {
-          distance: Number.MAX_VALUE,
-          node: null,
-        },
-      );
-
-      if (!closestNode.node) {
-        return null;
-      }
-
-      const closeNodeIsSource =
-        closestNode.node.positionAbsolute.x < node.positionAbsolute.x;
-
-      return {
-        id: closeNodeIsSource
-          ? `${closestNode.node.id}-${node.id}`
-          : `${node.id}-${closestNode.node.id}`,
-        source: closeNodeIsSource ? closestNode.node.id : node.id,
-        target: closeNodeIsSource ? node.id : closestNode.node.id,
-      };
-    }, []);
-
-    const onNodeDrag = useCallback(
-      (_, node) => {
-        const closeEdge = getClosestEdge(node);
-  
-        setEdges((es) => {
-          const nextEdges = es.filter((e) => e.className !== 'temp');
-  
-          if (
-            closeEdge &&
-            !nextEdges.find(
-              (ne) =>
-                ne.source === closeEdge.source && ne.target === closeEdge.target,
-            )
-          ) {
-            // closeEdge.className = 'temp';
-            nextEdges.push(closeEdge);
-          }
-  
-          return nextEdges;
-        });
-      },
-      [getClosestEdge, setEdges],
-    );
-  
-    const onNodeDragStop = useCallback(
-      (_, node) => {
-        const closeEdge = getClosestEdge(node);
-  
-        setEdges((es) => {
-          const nextEdges = es.filter((e) => e.className !== 'temp');
-  
-          if (
-            closeEdge &&
-            !nextEdges.find(
-              (ne) =>
-                ne.source === closeEdge.source && ne.target === closeEdge.target,
-            )
-          ) {
-            nextEdges.push(closeEdge);
-          }
-  
-          return nextEdges;
-        });
-      },
-      [getClosestEdge],
-    );
-    */
 
     // Copy paste
     // const { cut, copy, paste, bufferedNodes } = useCopyPaste();
@@ -375,6 +296,8 @@ const PipelineWrapper: React.FC<IProps> = ({
       [nodes, edges, takeSnapshot]
     );
 
+
+
     const handleAddFileToPipeline = useCallback(
       (location?: { x: number; y: number }) => {
         const fileBrowser = defaultFileBrowser;
@@ -401,7 +324,8 @@ const PipelineWrapper: React.FC<IProps> = ({
           Array.from(fileBrowser.selectedItems()).forEach(async (item: any) => {
             const filePath = item.path;
             const fileExtension = item.name.split('.').pop();
-            
+            const fileName = item.name.split('/').pop();
+
             if (fileExtension === "amcpn") {
               const contentsManager = new ContentsManager();
               try {
@@ -426,7 +350,7 @@ const PipelineWrapper: React.FC<IProps> = ({
                       lastUpdated: Date.now()
                     }
                   };
-          
+
                   setNodes((nds) => nds.concat(newNode));
                 } else {
                   showDialog({
@@ -456,6 +380,7 @@ const PipelineWrapper: React.FC<IProps> = ({
                 data: {
                   filePath: PipelineService.getRelativePath(context.context.sessionContext.path, filePath), // Relative path
                   lastUpdated: Date.now(),
+                  customTitle: fileName,
                   ...(nodeDefaults || {}) // Merge nodeDefaults into the data field
                 }
               };
@@ -494,7 +419,9 @@ const PipelineWrapper: React.FC<IProps> = ({
 
         const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
         const type = event.dataTransfer.getData('application/reactflow');
-        const config = event.dataTransfer.getData('additionalData');
+        const config = JSON.parse(event.dataTransfer.getData('additionalData'));
+
+        console.log("config %o", config)
 
         // check if the dropped element is valid
         if (typeof type === 'undefined' || !type) {
@@ -532,6 +459,7 @@ const PipelineWrapper: React.FC<IProps> = ({
 
     const proOptions = { hideAttribution: true };
 
+
     return (
       <div className="reactflow-wrapper" data-id={pipelineId} ref={reactFlowWrapper}>
         <Dropzone onDrop={handleFileDrop}>
@@ -556,13 +484,13 @@ const PipelineWrapper: React.FC<IProps> = ({
             nodeTypes={nodeTypes}
             snapToGrid={true}
             snapGrid={[15, 15]}
-            fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0, padding: 0.4  }}
+            fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0, padding: 0.4 }}
             defaultViewport={initialViewport}
             // viewport={initialViewport}
             // onViewportChange={onViewportChange}
             deleteKeyCode={["Delete", "Backspace"]}
             proOptions={proOptions}
-            >
+          >
             <Panel position="top-right">
             </Panel>
             <Controls>
@@ -576,23 +504,23 @@ const PipelineWrapper: React.FC<IProps> = ({
   }
 
 
-return (
-  <div className="canvas" id="pipeline-panel">
-    <ConfigProvider
-      theme={{
-        token: {
-          // Seed Token
-          colorPrimary: '#5F9B97',
-        },
-      }}
-    >
-      <ReactFlowProvider>
-        <PipelineFlow context={context} />
-        <Sidebar componentService={componentService} />
-      </ReactFlowProvider>
-    </ConfigProvider>
-  </div>
-);
+  return (
+    <div className="canvas" id="pipeline-panel">
+      <ConfigProvider
+        theme={{
+          token: {
+            // Seed Token
+            colorPrimary: '#5F9B97',
+          },
+        }}
+      >
+        <ReactFlowProvider>
+          <PipelineFlow context={context} />
+          <Sidebar componentService={componentService} />
+        </ReactFlowProvider>
+      </ConfigProvider>
+    </div>
+  );
 }
 
 export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
@@ -690,7 +618,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
     const generateCodeButton = new ToolbarButton({
       label: 'Export to Python code',
       iconLabel: 'Export to Python code',
-      icon: buildIcon,
+      icon: codeIcon,
       onClick: async () => {
         const code = await CodeGenerator.generateCode(context.model.toString(), this.commands, this.componentService);
         showCodeModal(code, this.commands);

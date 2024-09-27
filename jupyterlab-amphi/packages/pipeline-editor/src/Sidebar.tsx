@@ -26,6 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
 
     const onDragStart = (event: React.DragEvent, nodeType: string, config: any) => {
         event.dataTransfer.setData('application/reactflow', nodeType);
+        console.log("config %o", config)
         event.dataTransfer.setData('additionalData', config);
         event.dataTransfer.effectAllowed = 'move';
     };
@@ -74,7 +75,7 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
                                 <span
                                     draggable
                                     className="palette-component"
-                                    onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
+                                    onDragStart={(event) => onDragStart(event, component._id, component._default ? JSON.stringify(component._default) : '{}')}
                                     key={`category-${index}-item-${childIndex}`}
                                 >
                                     {component._name}
@@ -103,7 +104,7 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
                                     <span
                                         draggable
                                         className="palette-component"
-                                        onDragStart={(event) => onDragStart(event, component._id, component.getDefaultConfig ? component.getDefaultConfig() : '')}
+                                        onDragStart={(event) => onDragStart(event, component._id, component._default ? JSON.stringify(component._default) : '{}')}
                                         key={`category-${index}-sub-${subIndex}-item-${childIndex}`}
                                     >
                                         {component._name}
