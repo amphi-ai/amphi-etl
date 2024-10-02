@@ -216,7 +216,7 @@ const pipelines: JupyterFrontEndPlugin<void> = {
             connector.ready.then(async () => {
               session.session.kernel.anyMessage.connect((sender, args) => {
 
-                console.log("NEW LOG session %o", session)
+
 
                 if (manager.panel) {
                   if (args.direction === 'recv') {
@@ -227,6 +227,7 @@ const pipelines: JupyterFrontEndPlugin<void> = {
 
                     if (args.msg.header.msg_type === 'execute_result' || args.msg.header.msg_type === 'display_data') {
                       // Assert the message type to IExecuteResultMsg or IDisplayDataMsg to access 'data'
+                      console.log("NEW LOG args.msg %o", args.msg)
                       const content = args.msg.content as KernelMessage.IExecuteResultMsg['content'] | KernelMessage.IDisplayDataMsg['content'];
                       if (content.data['text/html']) {
                         manager.panel.onNewLog(formatLogDate(args.msg.header.date), session.name, "data", content.data['text/html'])

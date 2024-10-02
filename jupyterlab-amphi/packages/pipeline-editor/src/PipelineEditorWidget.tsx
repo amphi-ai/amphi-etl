@@ -251,11 +251,11 @@ const PipelineWrapper: React.FC<IProps> = ({
     const onConnect: OnConnect = useCallback(
       (connection) => {
         takeSnapshot();
-        
+
         // Find source and target nodes
         const sourceNode = nodes.find(node => node.id === connection.source);
         const targetNode = nodes.find(node => node.id === connection.target);
-    
+
         // Check if both sourceNode and targetNode exist
         if (sourceNode && targetNode) {
           // Check if source node has data.backend.engine
@@ -263,24 +263,24 @@ const PipelineWrapper: React.FC<IProps> = ({
           if (sourceBackend?.engine) {
             // Update the target node's backend and engine to match the source
             setNodes((nds) =>
-              nds.map((node) => 
+              nds.map((node) =>
                 node.id === targetNode.id
                   ? {
-                      ...node,
-                      data: {
-                        ...node.data,
-                        backend: {
-                          ...node.data.backend,
-                          engine: sourceBackend.engine
-                        }
+                    ...node,
+                    data: {
+                      ...node.data,
+                      backend: {
+                        ...node.data.backend,
+                        engine: sourceBackend.engine
                       }
                     }
+                  }
                   : node
               )
             );
           }
         }
-    
+
         // Add the edge to the flow
         setEdges((edges) => addEdge({ ...connection, type: 'custom-edge' }, edges));
       },
@@ -333,6 +333,29 @@ const PipelineWrapper: React.FC<IProps> = ({
       [nodes, edges, takeSnapshot]
     );
 
+    function generateUniqueNodeName(type: string, nodes: any): string {
+
+      console.log("generateUniqueNodeName %o", nodes)
+      // Filter nodes of the same type with a name
+      const existingNodesOfType = nodes.filter(
+        node => node.type === type && node.data?.nameId
+      );
+    
+      // Extract numbers from the node names
+      const numbers = existingNodesOfType.map(node => {
+        const regex = new RegExp(`^${type}(\\d+)$`);
+        const match = node.data.nameId.match(regex);
+        return match ? parseInt(match[1], 10) : 0;
+      });
+    
+      const maxNumber = numbers.length > 0 ? Math.max(...numbers) : 0;
+    
+      // Create a new name by incrementing the highest number
+      const nameId = `${type}${maxNumber + 1}`;
+    
+      return nameId;
+    }
+
     const handleAddFileToPipeline = useCallback(
       (location?: { x: number; y: number }) => {
         const fileBrowser = defaultFileBrowser;
@@ -381,6 +404,7 @@ const PipelineWrapper: React.FC<IProps> = ({
                     type: nodeType,
                     position: adjustedPosition,
                     data: {
+                      nameId: generateUniqueNodeName(nodeType, nodes),
                       ...nodeData,
                       lastUpdated: Date.now()
                     }
@@ -413,6 +437,7 @@ const PipelineWrapper: React.FC<IProps> = ({
                 type: nodeType,
                 position: adjustedPosition,
                 data: {
+                  nameId: generateUniqueNodeName(nodeType, nodes),
                   filePath: PipelineService.getRelativePath(context.context.sessionContext.path, filePath), // Relative path
                   lastUpdated: Date.now(),
                   customTitle: fileName,
@@ -434,7 +459,7 @@ const PipelineWrapper: React.FC<IProps> = ({
         }
         return;
       },
-      [defaultFileBrowser, shell, widgetId, reactFlowInstance]
+      [defaultFileBrowser, shell, widgetId, reactFlowInstance, nodes]
     );
 
     const handleFileDrop = async (e: Drag.Event): Promise<void> => {
@@ -472,6 +497,7 @@ const PipelineWrapper: React.FC<IProps> = ({
           type,
           position,
           data: {
+            nameId: generateUniqueNodeName(type, nodes),
             ...config,
             lastUpdated: Date.now(), // current timestamp in milliseconds
           }
@@ -479,7 +505,7 @@ const PipelineWrapper: React.FC<IProps> = ({
 
         setNodes((nds) => nds.concat(newNode));
       },
-      [reactFlowInstance]
+      [reactFlowInstance, nodes]
     );
 
     const onViewportChange = useCallback(
@@ -654,7 +680,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       iconLabel: 'Export to Python code',
       icon: codeIcon,
       onClick: async () => {
-        const code = await CodeGenerator.generateCode(context.model.toString(), this.commands, this.componentService);
+        const code = await CodeGenerator.generateCode(context.model.toString(), this.commands, this.componentService, true);
         showCodeModal(code, this.commands);
       }
     });
@@ -670,7 +696,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
         this.commands.execute('docmanager:save');
 
         // Second, generate code
-        const code = CodeGenerator.generateCode(context.model.toString(), this.commands, this.componentService);
+        const code = CodeGenerator.generateCode(context.model.toString(), this.commands, this.componentService, true);
 
         this.commands.execute('pipeline-editor:run-pipeline', { code }).catch(reason => {
           console.error(

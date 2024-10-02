@@ -26,7 +26,8 @@ export class CodeGenerator {
     flow: Flow,
     componentService: any,
     targetNodeId: string,
-    fromStart: boolean
+    fromStart: boolean, 
+    variablesAutoNaming: boolean
   ): { codeList: string[]; incrementalCodeList: { code: string; nodeId: string }[], executedNodes: Set<string> } => {
     // Initialization
     const codeList: string[] = [];
@@ -56,7 +57,7 @@ export class CodeGenerator {
     });
 
     // Create node objects
-    const nodeObjects = this.createNodeObjects(flow, componentService, nodesToTraverse, nodesMap);
+    const nodeObjects = this.createNodeObjects(flow, componentService, nodesToTraverse, nodesMap, variablesAutoNaming);
 
     // Process node objects
     for (const nodeObject of nodeObjects) {
@@ -157,7 +158,8 @@ export class CodeGenerator {
     flow: Flow,
     componentService: any,
     nodesToTraverse: string[],
-    nodesMap: Map<string, Node>
+    nodesMap: Map<string, Node>,
+    variablesAutoNaming: boolean
   ): NodeObject[] => {
     const nodeObjects: NodeObject[] = [];
     const counters = new Map<string, number>();
@@ -175,6 +177,17 @@ export class CodeGenerator {
       if (!name) {
         throw new Error(`Input name is undefined for node ${nodeId} in context: ${context}`);
       }
+      return name;
+    }
+
+    function getOutputName(node: Node, componentId: string, variablesAutoNaming: boolean): string {
+      let name = '';
+      if(variablesAutoNaming) {
+        name = `${node.type}${incrementCounter(componentId)}`
+      } else {
+        name = `${node.data.nameId}`
+      }
+
       return name;
     }
 
@@ -209,7 +222,7 @@ export class CodeGenerator {
           case 'documents_processor': {
             const previousNodeId = PipelineService.findPreviousNodeId(flow, nodeId);
             inputName = getInputName(previousNodeId, componentType);
-            outputName = `${node.type}${incrementCounter(componentId)}`;
+            outputName = getOutputName(node, componentId, variablesAutoNaming)
             nodeOutputs.set(nodeId, outputName);
             code = component.generateComponentCode({ config, inputName, outputName });
             break;
@@ -218,7 +231,7 @@ export class CodeGenerator {
             const [input1Id, input2Id] = PipelineService.findMultiplePreviousNodeIds(flow, nodeId);
             const inputName1 = getInputName(input1Id, componentType);
             const inputName2 = getInputName(input2Id, componentType);
-            outputName = `${node.type}${incrementCounter(componentId)}`;
+            outputName = getOutputName(node, componentId, variablesAutoNaming)
             nodeOutputs.set(nodeId, outputName);
             code = component.generateComponentCode({ config, inputName1, inputName2, outputName });
             break;
@@ -226,14 +239,14 @@ export class CodeGenerator {
           case 'pandas_df_multi_processor': {
             const inputIds = PipelineService.findMultiplePreviousNodeIds(flow, nodeId);
             const inputNames = inputIds.map(id => getInputName(id, componentType));
-            outputName = `${node.type}${incrementCounter(componentId)}`;
+            outputName = getOutputName(node, componentId, variablesAutoNaming)
             nodeOutputs.set(nodeId, outputName);
             code = component.generateComponentCode({ config, inputNames, outputName });
             break;
           }
           case 'pandas_df_input':
           case 'documents_input': {
-            outputName = `${node.type}${incrementCounter(componentId)}`;
+            outputName = getOutputName(node, componentId, variablesAutoNaming)
             nodeOutputs.set(nodeId, outputName);
             code = component.generateComponentCode({ config, outputName });
             break;
@@ -270,9 +283,9 @@ export class CodeGenerator {
     return nodeObjects;
   };
 
-  static generateCode(pipelineJson: string, commands: any, componentService: any) {
+  static generateCode(pipelineJson: string, commands: any, componentService: any, variablesAutoNaming: boolean) {
 
-    const { codeList, incrementalCodeList, executedNodes } = this.generateCodeForNodes(PipelineService.filterPipeline(pipelineJson), componentService, 'none', true);
+    const { codeList, incrementalCodeList, executedNodes } = this.generateCodeForNodes(PipelineService.filterPipeline(pipelineJson), componentService, 'none', true, variablesAutoNaming);
 
     const code = codeList.join('\n');
 
@@ -285,9 +298,15 @@ export class CodeGenerator {
     commands: any,
     componentService: any,
     targetNode: string,
-    incremental: boolean
+    incremental: boolean,
+    variablesAutoNaming: boolean
   ): any[] {
     const flow = PipelineService.filterPipeline(pipelineJson);
+
+    // Check if any node is missing the 'name' attribute which means legacy pipeline
+    if (flow.nodes.some((node) => !node.data.nameId)) {
+      variablesAutoNaming = true;
+    }
 
     // Get nodes to traverse and related data
     const { nodesToTraverse, nodesMap } = this.computeNodesToTraverse(
@@ -326,12 +345,18 @@ export class CodeGenerator {
       }
     }
 
+    // Transition
+    if(variablesAutoNaming) {
+      fromStart = true;
+    }
+
     // Generate code and collect executed node IDs
     const { codeList, incrementalCodeList, executedNodes } = this.generateCodeForNodes(
       flow,
       componentService,
       targetNode,
-      fromStart
+      fromStart,
+      variablesAutoNaming
     );
 
     if (fromStart) {

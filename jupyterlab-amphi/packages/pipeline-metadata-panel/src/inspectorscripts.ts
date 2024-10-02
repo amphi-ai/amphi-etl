@@ -259,7 +259,9 @@ def _amphi_metadatapanel_deleteallvariables():
 def __amphi_display_pandas_dataframe(df):
     df_with_types = df.copy()
     df_with_types.columns = [f"{col} ({df[col].dtype})" for col in df.columns]
-    display(df_with_types)
+    metadata = {}
+    metadata['runtime'] = "local (pandas)"
+    display(df_with_types, metadata=metadata)
 
 def _amphi_display_documents_as_html(documents):
     html_content = "<div id='documents'>"

@@ -32,7 +32,6 @@ import htmlIconSvgStr from '../style/icons/html.svg';
 import MarkdownSvgStr from '../style/icons/markdown-fill.svg';
 import htmlLineSvgStr from '../style/icons/html-line.svg';
 import chromaSvgStr from '../style/icons/chroma.svg'
-import transposeSvgStr from '../style/icons/repeat-24.svg'
 import checkDiamondSvgStr from '../style/icons/check-diamond-24.svg'
 import plusCircleSvgStr from '../style/icons/plus-circle-24.svg'
 import hashSvgStr from '../style/icons/hash-24.svg'
@@ -50,6 +49,8 @@ import bigQueryIconSvgStr from '../style/icons/bigquery.svg'
 import databaseIconSvgStr from '../style/icons/database-24.svg'
 import xIconSvgStr from '../style/icons/x-16.svg';
 import calendarSvgStr from '../style/icons/calendar-24.svg';
+import pivotSvgStr from '../style/icons/corner-up-right-24.svg';
+import transposeSvgStr from '../style/icons/corner-right-down-24.svg';
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -219,6 +220,11 @@ export const chromaIcon = new LabIcon({
 export const transposeIcon = new LabIcon({
   name: 'amphi:transpose-icon',
   svgstr: transposeSvgStr
+});
+
+export const pivotIcon = new LabIcon({
+  name: 'amphi:pivot-icon',
+  svgstr: pivotSvgStr
 });
 
 export const checkDiamondIcon = new LabIcon({

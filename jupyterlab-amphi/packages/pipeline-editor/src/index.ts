@@ -409,7 +409,7 @@ ${args.code}
 
             const nodeId = args.nodeId.toString();
             const context = args.context;
-            const codeList = CodeGenerator.generateCodeUntil(current.context.model.toString(), commands, componentService, nodeId, false);
+            const codeList = CodeGenerator.generateCodeUntil(current.context.model.toString(), commands, componentService, nodeId, false, false);
             const code = codeList.join('\n');
 
             commands.execute('pipeline-editor:run-pipeline', { code }).then(result => {
@@ -445,7 +445,8 @@ ${args.code}
               commands, 
               componentService, 
               nodeId, 
-              true
+              true,
+              false
             );
 
             console.log("incrementalCodeList 2 %o", incrementalCodeList)
