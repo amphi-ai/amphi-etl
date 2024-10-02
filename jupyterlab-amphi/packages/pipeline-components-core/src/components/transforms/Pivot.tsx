@@ -1,5 +1,5 @@
 import { transposeIcon } from '../../icons';
-import { BaseCoreComponent } from '../BaseCoreComponent'; // Adjust the import path
+import { BaseCoreComponent } from '../BaseCoreComponent';// Adjust the import path
 
 export class Pivot extends BaseCoreComponent {
   constructor() {

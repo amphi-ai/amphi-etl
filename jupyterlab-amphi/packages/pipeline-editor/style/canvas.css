@@ -148,6 +148,10 @@ Editor components styles
   background-color: #F2F4F7;
 }
 
+.component--success {
+  box-shadow: 0 4px 8px rgba(0, 255, 0, 0.6); /* Green shadow */
+}
+
 .component__header--default {
   border-bottom-color: #e2e8f0;
 }
@@ -169,9 +173,16 @@ Editor components styles
   border-top-right-radius: 3px; /* Match border radius */
 }
 
+
 .component__header--snowflake {
   background-color: #F6F6F7;
 }
+
+.component__header--success {
+  /* Optional: additional styles for header when success */
+  border-bottom: 2px solid #00FF00; /* Example: green bottom border */
+}
+
 
 /* Components delete button */
 .component .deletebutton:hover {

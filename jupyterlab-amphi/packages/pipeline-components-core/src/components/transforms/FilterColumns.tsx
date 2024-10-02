@@ -1,6 +1,8 @@
 import { crosshairIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
+
+
 export class FilterColumns extends BaseCoreComponent {
   constructor() {
     const defaultConfig = { columns: { sourceData: [], targetKeys: [] } };

@@ -1,4 +1,4 @@
-import { BaseCoreComponent } from '../../BaseCoreComponent'; 
+import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { fileTextIcon } from '../../../icons';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 

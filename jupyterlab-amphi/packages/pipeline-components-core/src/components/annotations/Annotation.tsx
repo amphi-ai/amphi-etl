@@ -215,7 +215,6 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
 
     return (
       <>
-        <div style={{ position: 'relative' }}>
           {isSelected && (
             <Popconfirm
               title="Sure to delete?"
@@ -264,7 +263,6 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
               <button onClick={() => setModalOpen(true)}><settingsIcon.react /></button>
             </NodeToolbar>
           </div>
-        </div>
 
         <Annotation.ConfigForm
           nodeId={id}

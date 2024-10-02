@@ -1,6 +1,8 @@
 import { filterIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
+
+
 export class Filter extends BaseCoreComponent {
   constructor() {
     const defaultConfig = { condition: "==" };

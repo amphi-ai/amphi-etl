@@ -2,6 +2,8 @@
 import { checkDiamondIcon } from '../../icons'; // Define this icon in your icons file
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
+
+
 export class DataCleansing extends BaseCoreComponent {
   constructor() {
     const defaultConfig = { method: "value", value: 0, forward: false, backward: false };

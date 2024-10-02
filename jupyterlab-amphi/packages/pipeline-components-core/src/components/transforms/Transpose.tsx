@@ -2,6 +2,8 @@
 import { transposeIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
+
+
 export class Transpose extends BaseCoreComponent {
   constructor() {
     const defaultConfig = { order: "True" };
@@ -29,7 +31,7 @@ export class Transpose extends BaseCoreComponent {
 
     const code = `
 # Transpose data
-${outputName} = ${inputName}.transpose()
+${outputName} = ${inputName}.transpose().convert_dtypes()
 `;
     return code;
   }

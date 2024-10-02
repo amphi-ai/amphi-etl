@@ -1,4 +1,4 @@
-import { ComponentItem, PipelineComponent, createZoomSelector, GenerateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig } from '@amphi/pipeline-components-manager';
+import { CodeGenerator, ComponentItem, PipelineComponent, createZoomSelector, GenerateUIFormComponent, onChange, renderComponentUI, renderHandle, setDefaultConfig, PipelineService } from '@amphi/pipeline-components-manager';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Handle, NodeToolbar, Position, useReactFlow, useStore, useStoreApi } from 'reactflow';
 import { playCircleIcon, settingsIcon, engineIcon } from '../icons';
@@ -97,8 +97,44 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
     const isSelected = useStore((state) => !!state.nodeInternals.get(id)?.selected);
 
     const executeUntilComponent = () => {
-      commands.execute('pipeline-editor:run-pipeline-until', { nodeId: nodeId, context: context });
-      handleChange(Date.now(), 'lastExecuted');
+
+      const timestamp = Date.now()
+        
+      const flow = PipelineService.filterPipeline(context.model.toString());
+
+      // Get nodes to traverse and related data
+      const { nodesToTraverse, nodesMap } = CodeGenerator.computeNodesToTraverse(
+        flow,
+        nodeId,
+        componentService
+      );
+
+      commands.execute('pipeline-editor:run-pipeline-until', { nodeId: nodeId, context: context }).then(result => {
+
+        setNodes(prevNodes =>
+          prevNodes.map(node =>
+            nodesToTraverse.includes(node.id)
+              ? { ...node, data: { ...node.data, lastExecuted: timestamp, successfulExecution: true } }
+              : node
+          )
+        );
+
+      })
+      .catch(reason => {
+
+        setNodes(prevNodes =>
+          prevNodes.map(node =>
+            nodesToTraverse.includes(node.id)
+              ? { ...node, data: { ...node.data, successfulExecution: null } }
+              : node
+          )
+        );
+
+        console.error(
+          `Error with pipeline, nodes not updated.'.\n${reason}`
+        );
+      });;
+
     };
 
     const [modalOpen, setModalOpen] = useState(false);

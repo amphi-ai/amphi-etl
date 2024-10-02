@@ -1,6 +1,8 @@
 import { splitIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
+
+
 export class SplitColumn extends BaseCoreComponent {
   constructor() {
     const defaultConfig = { keepOriginalColumn: false };

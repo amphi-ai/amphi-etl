@@ -18,17 +18,19 @@ export class RequestService {
   ): any {
     setLoadings(true);
     const flow = PipelineService.filterPipeline(context.model.toString());
+    let codeList: any[];
     let code: string = '';
 
     try {
       let refNodeId = previousNodes ? PipelineService.findMultiplePreviousNodeIds(flow, nodeId)[inputNb] : nodeId;
-      code = CodeGenerator.generateCodeUntil(
+      codeList = CodeGenerator.generateCodeUntil(
         context.model.toString(),
         commands,
         componentService,
         refNodeId,
-        context
+        false
       );
+      code = codeList.join('\n');
     } catch (error) {
       console.error("Error generating code.", error);
       code = null; // Or handle error appropriately

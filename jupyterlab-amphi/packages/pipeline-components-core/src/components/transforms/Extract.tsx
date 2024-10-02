@@ -1,6 +1,8 @@
 import { extractIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
+
+
 export class Extract extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {};

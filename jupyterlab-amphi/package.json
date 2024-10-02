@@ -1,6 +1,6 @@
 {
     "name": "@amphi/jupyterlab-amphi",
-    "version": "0.6.12",
+    "version": "0.7.0",
     "keywords": [
         "amphi",
         "etl",
@@ -27,6 +27,7 @@
             "packages/pipeline-editor",
             "packages/pipeline-components-manager",
             "packages/pipeline-components-core",
+            "packages/pipeline-components-local",
             "packages/pipeline-console",
             "packages/pipeline-metadata-panel"
         ]

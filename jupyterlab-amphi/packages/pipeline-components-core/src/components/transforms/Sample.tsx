@@ -2,6 +2,8 @@ import { ComponentItem, PipelineComponent } from '@amphi/pipeline-components-man
 import { randomIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
+
+
 export class Sample extends BaseCoreComponent {
   constructor() {
     const defaultConfig = { mode: "random" };

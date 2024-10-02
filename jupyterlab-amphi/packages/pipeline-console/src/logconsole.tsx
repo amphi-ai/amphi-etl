@@ -1,12 +1,11 @@
 import { Widget } from '@lumino/widgets';
 import { IPipelineConsole } from './tokens';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
-import ReactDOMServer from 'react-dom/server';
 import DataView from './DataView';
-import DocumentView from './DocumentView'
-import { Alert, Spin, DatePicker, Typography, Space } from 'antd';
-import { ClockCircleOutlined, LoadingOutlined } from '@ant-design/icons';
+import DocumentView from './DocumentView';
+import { Alert, Tag, Typography, Divider } from 'antd';
+import { clockIcon, pipelineIcon, gridIcon } from './icons';
 
 const { Text } = Typography;
 
@@ -15,7 +14,7 @@ const PANEL_CLASS = 'amphi-Console';
 const TABLE_CLASS = 'amphi-Console-table';
 const TABLE_BODY_CLASS = 'amphi-Console-content';
 const TABLE_ROW_CLASS = 'amphi-Console-table-row';
-const TABLE_DATE_CLASS = 'amphi-Console-date';
+const SINGLE_COLUMN_CLASS = 'amphi-Console-single-column'; // New class for single column
 
 /**
  * A panel that renders the pipeline logs
@@ -38,7 +37,6 @@ export class PipelineConsolePanel
     this.node.appendChild(this._console as HTMLElement);
   }
 
-
   get source(): IPipelineConsole.ILogging | null {
     return this._source;
   }
@@ -47,12 +45,12 @@ export class PipelineConsolePanel
     if (this._source === source) {
       return;
     }
-    //Remove old subscriptions
+    // Remove old subscriptions
     if (this._source) {
       this._source.disposed.disconnect(this.onSourceDisposed, this);
     }
     this._source = source;
-    //Subscribe to new object
+    // Subscribe to new object
     if (this._source) {
       this._source.disposed.connect(this.onSourceDisposed, this);
     }
@@ -69,8 +67,7 @@ export class PipelineConsolePanel
     super.dispose();
   }
 
-  onNewLog(date: string, level: string, content): void {
-
+  onNewLog(date: string, pipelineName: string, level: string, content: any): void {
     if (!this.isAttached) {
       return;
     }
@@ -82,88 +79,97 @@ export class PipelineConsolePanel
     }
 
     // Insert a new row at the beginning of the table footer
-    let row = this._console.tFoot!.insertRow(0); // Changed from -1 to 0
-    row.className = `${TABLE_ROW_CLASS}`;
+    let row = this._console.tFoot!.insertRow(0);
+    row.className = `${TABLE_ROW_CLASS} ${SINGLE_COLUMN_CLASS}`; // Add single column class
 
-    // Add cells to the new row
-    let cell = row.insertCell(0);
-    let container;
-    cell.innerHTML = `
-    <span>
-      ${ReactDOMServer.renderToString(
-      <Space>
-        <Text>{date}</Text>
-      </Space>
-    )}
-    </span>
-  `;
-    cell.style.padding = "5px";  // Remove padding from the cell
-    cell.className = TABLE_DATE_CLASS;
-    const spinIndicator = <LoadingOutlined style={{ fontSize: 24 }} spin />;
+    // Add a single cell to the new row
+    let singleCell = row.insertCell(0);
+    singleCell.style.padding = "5px";
+    singleCell.className = SINGLE_COLUMN_CLASS;
+
+    let dateTag;
+    let pipelineNameTag = <Tag bordered={false} icon={<pipelineIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{pipelineName}</Tag>;
+    let dataframeSizeTag = null;
+    let contentComponent;
 
     switch (level) {
       case "info":
-        cell = row.insertCell(1);
-        cell.style.padding = "5px"; // Remove padding from the cell
-        container = document.createElement('div'); // Create a container for the React component
-        cell.appendChild(container); // Append the container to the cell
-
-        // Determine the alert type based on content
-        let alertType: "info" | "warning" | "success" = /SUCCESS/i.test(content)
-          ? "success"
-          : /ERROR|WARNING/i.test(content)
-            ? "warning"
-            : "info";
-
-        console.log("content %o", content)
-
-        ReactDOM.render(
+        dateTag = <Tag bordered={false} icon={<clockIcon.react className="anticon"/>} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{date}</Tag>;
+        contentComponent = (
           <Alert
             showIcon
+            banner
             message={<div dangerouslySetInnerHTML={{ __html: content }} />}
-            type={alertType}
-          />,
-          container
+            type={/SUCCESS/i.test(content) ? "success" : /ERROR|WARNING/i.test(content) ? "warning" : "info"}
+          />
         );
         break;
       case "error":
-        cell = row.insertCell(1);
-        cell.style.padding = "5px";  // Remove padding from the cell
-        container = document.createElement('div'); // Create a container for the React component
-        cell.appendChild(container);  // Append the container to the cell
-        ReactDOM.render(
+        dateTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size"/>}  style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{date}</Tag>;
+        contentComponent = (
           <Alert
             message="Error"
+            banner
             showIcon
             description={<div dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;') }} />}
             type="error"
-          />,
-          container
+          />
         );
         break;
-      case "data":
-        cell = row.insertCell(1);
-        cell.style.padding = "5";  // Remove padding from the cell
-        container = document.createElement('div'); // Create a container for the React component
-        cell.appendChild(container);  // Append the container to the cell
-
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(content, 'text/html');
-        const firstDiv = doc.querySelector('div');
-
-        if (firstDiv && firstDiv.id === 'documents') {
-          ReactDOM.render(<DocumentView htmlData={content} />, container);
-        } else {
-          ReactDOM.render(<DataView htmlData={content} />, container);
-        }
-        break;
+        case "data":
+          dateTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size"/>} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{date}</Tag>;
+          const parser = new DOMParser();
+          console.log("content %o", content);
+    
+          const doc = parser.parseFromString(content, 'text/html');
+          const firstDiv = doc.querySelector('div');
+          if (firstDiv && firstDiv.id === 'documents') {
+            contentComponent = <DocumentView htmlData={content} />;
+          } else {
+            // Extract dataframe size from the last paragraph if it exists
+            const sizeElement = doc.querySelector('p:last-of-type');
+            let dataframeSize = null;
+    
+            if (sizeElement && sizeElement.textContent.includes('rows ×')) {
+              dataframeSize = sizeElement.textContent.trim();
+            }
+    
+            if (dataframeSize) {
+              dataframeSizeTag = <Tag bordered={false} icon={<gridIcon.react className="anticon amphi-Console-icon-size"/>} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{dataframeSize}</Tag>;
+            }
+    
+            contentComponent = (
+              <>
+                <DataView htmlData={content} />
+              </>
+            );
+          }
+          break;
       default:
-        // Handle other cases or do nothing
-        break;
+        dateTag = <Tag bordered={false} >{date}</Tag>;
+        contentComponent = <div>{content}</div>;
     }
 
+    // Render tags and content inside the single cell
+    ReactDOM.render(
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+        {/* Tags on the same line */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0px', marginBottom: '2px' }}>
+          {dateTag}
+          {pipelineNameTag}
+          {dataframeSizeTag}
+        </div>
+        {/* Content below the tags */}
+        <div>
+          {contentComponent}
+        </div>
+        {/* Divider between logs */}
+        <Divider style={{ margin: '6px 0' }}/>
+      </div>,
+      singleCell
+    );
     // Scroll to the top
-    this._console.parentElement.scrollTop = 0; // Changed to scroll to the top
+    this._console.parentElement.scrollTop = 0;
   }
 
   clearLogs(): void {

@@ -2,7 +2,8 @@ import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
-
+import { folderIcon, saveIcon, runIcon, newFolderIcon, fileUploadIcon, refreshIcon, codeIcon, fileIcon, pdfIcon, spreadsheetIcon, jsonIcon, notebookIcon, listIcon, homeIcon } from '@jupyterlab/ui-components';
+import { folderAmphiIcon, saveAmphiIcon, playAmphiIcon, folderPlusAmphiIcon, uploadAmphiIcon, reloadAmphiIcon, fileSourceAmphiIcon, fileAmphiIcon, filePdfAmphiIcon, fileCsvAmphiIcon, fileJsonAmphiIcon, fileNotebookIcon, terminalIcon, homeAmphiIcon } from './icons'
 import { IThemeManager } from '@jupyterlab/apputils';
 
 /**
@@ -22,6 +23,21 @@ const extension: JupyterFrontEndPlugin<void> = {
       load: () => manager.loadCSS(style),
       unload: () => Promise.resolve(undefined)
     });
+
+    folderIcon.svgstr = folderAmphiIcon.svgstr;
+    saveIcon.svgstr = saveAmphiIcon.svgstr;
+    runIcon.svgstr = playAmphiIcon.svgstr
+    newFolderIcon.svgstr = folderPlusAmphiIcon.svgstr;
+    fileUploadIcon.svgstr = uploadAmphiIcon.svgstr;
+    refreshIcon.svgstr = reloadAmphiIcon.svgstr;
+    codeIcon.svgstr = fileSourceAmphiIcon.svgstr;
+    fileIcon.svgstr = fileAmphiIcon.svgstr;
+    pdfIcon.svgstr = filePdfAmphiIcon.svgstr;
+    spreadsheetIcon.svgstr = fileCsvAmphiIcon.svgstr;
+    jsonIcon.svgstr = fileJsonAmphiIcon.svgstr;
+    notebookIcon.svgstr = fileNotebookIcon.svgstr;
+    listIcon.svgstr = terminalIcon.svgstr;
+    homeIcon.svgstr = homeAmphiIcon.svgstr;
   }
 };
 

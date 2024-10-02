@@ -1,7 +1,6 @@
 import { trinoIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 
-
 export class TrinoInput extends BaseCoreComponent {
   constructor() {
     const defaultConfig = { host: "localhost", port: "8082",catalogs : "", schemaName: "", username: "", password: "", tableName: "" };

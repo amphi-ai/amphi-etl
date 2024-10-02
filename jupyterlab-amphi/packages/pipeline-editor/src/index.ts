@@ -27,7 +27,7 @@ import { IDocumentManager } from '@jupyterlab/docmanager';
 import { LIB_VERSION } from './version';
 import { Dialog, showDialog } from '@jupyterlab/apputils';
 import { createAboutDialog } from './AboutDialog';
-
+import { RunService } from './RunService'
 
 import { ComponentManager, CodeGenerator, PipelineService } from '@amphi/pipeline-components-manager';
 import { pipelineCategoryIcon, pipelineBrandIcon, componentIcon } from './icons';
@@ -44,6 +44,7 @@ namespace CommandIDs {
   export const restartPipelineKernel = 'pipeline-editor:restart-kernel';
   export const runPipeline = 'pipeline-editor:run-pipeline';
   export const runPipelineUntil = 'pipeline-editor:run-pipeline-until';
+  export const runIncrementalPipelineUntil = 'pipeline-editor:run-incremental-pipeline-until';
 }
 
 const PIPELINE_FACTORY = 'Pipeline Editor';
@@ -305,226 +306,98 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
         /**
          * Run Pipeline on Kernel linked to the current Editor
          */
+        // Command Registration
         commands.addCommand(CommandIDs.runPipeline, {
-
           label: 'Run Pipeline',
-          execute: args => {
-
-            // Delete Python variables for the metadata panel (reinitialization)
-            /*
-            const command = 'pipeline-metadata-panel:delete-all';
-            commands.execute(command, {}).catch(reason => {
-              console.error(
-                `An error occurred during the execution of ${command}.\n${reason}`
-              );
-            });
-            */
-
-            // First open log console
-            // Open in same panel as metadata panel is openned
-            if (args.datapanel) {
-              const command = 'metadatapanel:open';
-              commands.execute(command, {}).catch(reason => {
-                console.error(
-                  `An error occurred during the execution of ${command}.\n${reason}`
-                );
-              });
-            } else {
-              commands.execute('pipeline-console:open', {}).catch(reason => {
-                console.error(
-                  `An error occurred during the execution of ${command}.\n${reason}`
-                );
-              });
-            }
-
-            const current = getCurrent(args);
-            if (!current) {
-              return;
-            }
-
-            if (!current.context.sessionContext.session) {
-              Notification.error('The pipeline cannot be run because the local Python engine cannot be found.', {
-                actions: [
-                  { label: 'Try to reload the application and run again.', callback: () => location.reload() }
-                ],
-                autoClose: 6000
-              });
-              return;
-            }
-
-            if (current.context.sessionContext.hasNoKernel) {
-              Notification.error('The pipeline cannot be run because no processing engine can be found.', {
-                actions: [
-                  { label: 'Try to reload the application and run again.', callback: () => location.reload() }
-                ],
-                autoClose: 6000
-              });
-              return;
-            }
-
-            if (!current.context.sessionContext) {
-              Notification.error('The pipeline cannot be run because the local Python engine cannot be found.', {
-                actions: [
-                  { label: 'Try to reload the application and run again.', callback: () => location.reload() }
-                ],
-                autoClose: 6000
-              });
-              return;
-            }
-
-            // Second, install dependencies packages if needed
-            current.context.sessionContext.ready.then(async () => {
-
-              const delegate = new PromiseDelegate<ReadonlyJSONValue>();
-              const start = performance.now();
-
-              const code = args.code.toString();
-              let packages: string[];
-              // const imports = PipelineService.extractPythonImportPackages(code);
-              // packages = PipelineService.extractPackageNames(imports);
-              const lines = code.split(/\r?\n/); // Split the code into lines
-              const dependencyLine = lines[2]; // Extract dependencies from the third line (index 2, as arrays are zero-indexed)
-              const dependencies = dependencyLine.startsWith("# Additional dependencies: ") // Assuming the structure is "# Additional imports: package1, package2, ..."
-                ? dependencyLine.split(': ')[1].split(',').map(pkg => pkg.trim())
-                : [];
-              packages = [...dependencies];
-
-              if (packages.length > 0 && packages[0] != null && packages[0] !== '') {
-
-                const pips_code = PipelineService.getInstallCommandsFromPackageNames(packages).join('\n');
-                console.log("pips_code: " + pips_code);
-                // Install packages
-                try {
-                  const future = current.context.sessionContext.session.kernel!.requestExecute({ code: pips_code });
-
-                  let enableDebugMode = settings.get('enableDebugMode').composite as boolean;
-                  if (enableDebugMode) {
-                    console.log("Dependencies to be installed: %o", pips_code)
-                  }
-
-                  future.onIOPub = msg => {
-                    if (msg.header.msg_type === 'stream') {
-                      // Handle stream messages if necessary
-                    } else if (msg.header.msg_type === 'error') {
-                      // Handle error messages
-                      const errorMsg = msg as KernelMessage.IErrorMsg;
-                      const errorOutput = errorMsg.content;
-
-                      console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
-                    }
-                  };
-
-                  future.onDone = () => {
-                    const end = performance.now();
-                    const delay = end - start;
-                    const delayInSeconds = (delay / 1000).toFixed(1);
-                    console.log(`Dependencies installed. ${delayInSeconds}`)
-                  };
-
-                  await future.done;
-
-                } catch (error) {
-                  console.error(error);
-                }
+          execute: async args => { // Make the execute function async
+            try {
+              // Main Execution Flow
+              if (args.datapanel) {
+                RunService.executeCommand(commands, 'metadatapanel:open');
+              } else {
+                RunService.executeCommand(commands, 'pipeline-console:open');
               }
-            });
-
-            // Third, run pipeline code
-            current.context.sessionContext.ready.then(async () => {
-
-              try {
-                // Create promise to track success or failure of the request
-                const delegate = new PromiseDelegate<ReadonlyJSONValue>();
-                const start = performance.now();
-
-                Notification.promise(delegate.promise, {
-                  // Message when the task is pending
-                  pending: { message: 'Running...', options: { autoClose: false } },
-                  // Message when the task finished successfully
-                  success: {
-                    message: (result: any) => `Pipeline execution successful after ${result.delayInSeconds} seconds.`,
-                    options: {
-                      autoClose: 3000
-                    }
-                  },
-                  // Message when the task finished with errors
-                  error: {
-                    message: () => 'Pipeline execution failed. Check error messages in the Log Console.',
-                    options: {
-                      actions: [
-                        {
-                          label: 'Log Console',
-                          callback: () => {
-                            const command = 'pipeline-console:open';
-                            commands.execute(command, {}).catch(reason => {
-                              console.error(
-                                `An error occurred during the execution of ${command}.\n${reason}`
-                              );
-                            });
-                          }
-                        }
-                      ],
-                      autoClose: 5000
-                    }
-                  }
-                });
-
-                const pythonCodeWithSleep = `
+        
+              const current = getCurrent(args);
+              if (!current) {
+                return;
+              }
+        
+              if (!RunService.checkSessionAndKernel(Notification, current)) {
+                return;
+              }
+        
+              // Install dependencies if needed
+              await current.context.sessionContext.ready; // Await the readiness
+        
+              const code = args.code.toString();
+              const packages = RunService.extractDependencies(code);
+        
+              if (packages.length > 0 && packages[0] !== '') {
+                const pips_code = PipelineService.getInstallCommandsFromPackageNames(packages).join('\n');
+                console.log('pips_code: ' + pips_code);
+        
+                const enableDebugMode = settings.get('enableDebugMode').composite as boolean;
+                if (enableDebugMode) {
+                  console.log('Dependencies to be installed: %o', pips_code);
+                }
+        
+                await RunService.executeKernelCode(
+                  current.context.sessionContext.session,
+                  pips_code
+                );
+              }
+        
+              // Run pipeline code
+              const pythonCodeWithSleep = `
 import time
 time.sleep(0.25)
 ${args.code}
 `;
-
-                const future = current.context.sessionContext.session.kernel!.requestExecute({ code: pythonCodeWithSleep });
-
-
-                console.log("future %o", future)
-
-                future.onReply = reply => {
-                  const end = performance.now();
-                  const delay = end - start;
-                  const delayInSeconds = (delay / 1000).toFixed(1);
-
-                  if (reply.content.status === "ok") {
-                    delegate.resolve({ delayInSeconds });
-                  } else {
-                    delegate.reject({ delayInSeconds });
+        
+              const notificationOptions = {
+                pending: { message: 'Running...', options: { autoClose: false } },
+                success: {
+                  message: (result: any) =>
+                    `Pipeline execution successful after ${result.delayInSeconds} seconds.`,
+                  options: {
+                    autoClose: 3000
                   }
-                };
-
-                future.onIOPub = msg => {
-                  if (msg.header.msg_type === 'stream') {
-                    // Handle stream messages if necessary
-                  } else if (msg.header.msg_type === 'error') {
-                    // Handle error messages
-                    const errorMsg = msg as KernelMessage.IErrorMsg;
-                    const errorOutput = errorMsg.content;
-
-                    console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
+                },
+                error: {
+                  message: () =>
+                    'Pipeline execution failed. Check error messages in the Log Console.',
+                  options: {
+                    actions: [
+                      {
+                        label: 'Log Console',
+                        callback: () => {
+                          RunService.executeCommand(commands, 'pipeline-console:open');
+                        }
+                      }
+                    ],
+                    autoClose: 5000
                   }
-                };
-
-                future.onDone = () => {
-                  const end = performance.now();
-                  const delay = end - start;
-                  const delayInSeconds = (delay / 1000).toFixed(1);
-
-                  delegate.resolve({ delayInSeconds });
-                };
-
-                await future.done;
-
-              } catch (error) {
-                console.error(error);
-              }
-
-            });
-
+                }
+              };
+        
+              await RunService.executeKernelCodeWithNotifications(
+                Notification,
+                current.context.sessionContext.session,
+                pythonCodeWithSleep,
+                notificationOptions
+              );
+        
+            } catch (error) {
+              console.error('Error in runPipeline command:', error);
+              throw error; // Propagate the error to allow .catch() to handle it
+            }
           },
           isEnabled
         });
+        
 
-        commands.addCommand('pipeline-editor:run-pipeline-until', {
+        commands.addCommand(CommandIDs.runPipelineUntil, {
           label: 'Run pipeline until ...',
 
           execute: async args => {
@@ -536,13 +409,92 @@ ${args.code}
 
             const nodeId = args.nodeId.toString();
             const context = args.context;
-            const code = CodeGenerator.generateCodeUntil(current.context.model.toString(), commands, componentService, nodeId, context);
+            const codeList = CodeGenerator.generateCodeUntil(current.context.model.toString(), commands, componentService, nodeId, false);
+            const code = codeList.join('\n');
 
-            commands.execute('pipeline-editor:run-pipeline', { code }).catch(reason => {
+            commands.execute('pipeline-editor:run-pipeline', { code }).then(result => {
+              // This block runs only if the pipeline succeeds
+              console.log('Pipeline executed successfully:', result);
+
+
+
+            }).catch(reason => {
               console.error(
                 `An error occurred during the execution of 'pipeline-editor:run-pipeline'.\n${reason}`
               );
             });
+          }
+        });
+
+        commands.addCommand(CommandIDs.runIncrementalPipelineUntil, {
+          label: 'Run incremental pipeline until ...',
+        
+          execute: async args => {
+        
+            const current = getCurrent(args);
+            if (!current) {
+              return;
+            }
+        
+            const nodeId = args.nodeId.toString();
+            const context = args.context;
+        
+            // Generate the incremental list of code to run
+            const incrementalCodeList  = CodeGenerator.generateCodeUntil(
+              current.context.model.toString(), 
+              commands, 
+              componentService, 
+              nodeId, 
+              true
+            );
+
+            console.log("incrementalCodeList 2 %o", incrementalCodeList)
+        
+            // Notification options
+            const notificationOptions = {
+              pending: { message: 'Running incremental code...', options: { autoClose: false } },
+              success: { message: 'Code block executed successfully.', options: { autoClose: 3000 } },
+              error: { 
+                message: () => 'Execution failed. Stopping pipeline.',
+                options: { 
+                  actions: [{
+                    label: 'Log Console', 
+                    callback: () => RunService.executeCommand(commands, 'pipeline-console:open') 
+                  }],
+                  autoClose: 5000 
+                }
+              }
+            };
+
+            const flow = PipelineService.filterPipeline(current.context.context.model.toJSON());
+        
+            // Iterate over each incremental code block and execute
+            for (const codeBlock of incrementalCodeList) {
+              const code = codeBlock.code;
+
+              const pythonCodeWithSleep = `
+import time
+time.sleep(0.25)
+${code}
+`;
+              try {
+                console.log("pythonCodeWithSleep %o", pythonCodeWithSleep)
+
+                await RunService.executeKernelCodeWithNotifications(
+                  Notification,
+                  current.context.sessionContext.session,
+                  pythonCodeWithSleep,
+                  notificationOptions
+                );
+                const nodeId = codeBlock.nodeId;
+
+                console.log(`Executed code block: ${pythonCodeWithSleep}`);
+              } catch (error) {
+                console.error(`Execution failed for code block: ${pythonCodeWithSleep}`, error);
+                // Stop execution if a block fails
+                break;
+              }
+            }
           }
         });
 
@@ -624,8 +576,6 @@ ${args.code}
               await doc.context.save();
               await commands.execute('docmanager:reload', { path: file.path });
               await commands.execute('docmanager:rename');
-
-
               // await commands.execute('docmanager:save', { path: file.path });
             }
           },
@@ -664,8 +614,6 @@ ${args.code}
           },
           label: 'Paste'
         });
-
-
 
         const contextMenuItems = [
           /*

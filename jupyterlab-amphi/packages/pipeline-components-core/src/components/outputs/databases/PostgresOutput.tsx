@@ -1,5 +1,6 @@
 import { postgresIcon } from '../../../icons';
-import { BaseCoreComponent } from '../../BaseCoreComponent'; // Adjust the import path
+import { BaseCoreComponent } from '../../BaseCoreComponent';
+
 
 export class PostgresOutput extends BaseCoreComponent {
   constructor() {

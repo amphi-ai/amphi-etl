@@ -1,5 +1,5 @@
 import { fileTextIcon } from '../../../../icons';
-import { BaseCoreComponent } from '../../../BaseCoreComponent'; 
+import { BaseCoreComponent } from '../../../BaseCoreComponent';// Adjust the import path
 
 export class S3CsvFileInput extends BaseCoreComponent {
   constructor() {
@@ -159,9 +159,8 @@ ${outputName} = pd.read_csv("${config.filePath}"${optionsString ? `, ${optionsSt
   
     // Generate the Python code for Ibis
     const code = `
-  # Reading data from ${config.filePath}
-  ${outputName} = ibis.read_csv("${config.filePath}"${optionsString ? `, ${optionsString}` : ''})
-  `;
+# Reading data from ${config.filePath}
+${outputName} = ibis.read_csv("${config.filePath}"${optionsString ? `, ${optionsString}` : ''})`;
     return code;
   }
 

@@ -1,6 +1,8 @@
 import { typeIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
+
+
 export class TypeConverter extends BaseCoreComponent {
   constructor() {
     const defaultConfig = { dataType: "string" };
@@ -146,14 +148,16 @@ export class TypeConverter extends BaseCoreComponent {
       }
     } else if (dataType.startsWith('int') || dataType.startsWith('float') || dataType.startsWith('uint')) {
       // Use pd.to_numeric for numeric types
+
       conversionFunction = `pd.to_numeric(${inputName}["${columnName}"], errors='${errorsParam}')`;
+
       if (columnNamed) {
         code += `${outputName}["${columnName}"] = ${conversionFunction}\n`;
       } else {
         code += `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}\n`;
       }
       // Then convert to the specified data type
-      // code += `${outputName}["${columnName}"] = ${outputName}["${columnName}"].astype("${dataType}", errors='${errorsParam}')\n`;
+      code += `${outputName}["${columnName}"] = ${outputName}["${columnName}"].astype("${dataType}", errors='${errorsParam}')\n`;
     } else {
       // For other types, use astype with errors parameter
       conversionFunction = `astype("${dataType}", errors='${errorsParam}')`;

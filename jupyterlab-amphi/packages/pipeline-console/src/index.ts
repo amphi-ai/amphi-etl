@@ -216,6 +216,8 @@ const pipelines: JupyterFrontEndPlugin<void> = {
             connector.ready.then(async () => {
               session.session.kernel.anyMessage.connect((sender, args) => {
 
+                console.log("NEW LOG session %o", session)
+
                 if (manager.panel) {
                   if (args.direction === 'recv') {
                     // Filter and process kernel messages here
@@ -227,7 +229,7 @@ const pipelines: JupyterFrontEndPlugin<void> = {
                       // Assert the message type to IExecuteResultMsg or IDisplayDataMsg to access 'data'
                       const content = args.msg.content as KernelMessage.IExecuteResultMsg['content'] | KernelMessage.IDisplayDataMsg['content'];
                       if (content.data['text/html']) {
-                        manager.panel.onNewLog(formatLogDate(args.msg.header.date), "data", content.data['text/html'])
+                        manager.panel.onNewLog(formatLogDate(args.msg.header.date), session.name, "data", content.data['text/html'])
                       }
                     }
 
@@ -250,7 +252,7 @@ const pipelines: JupyterFrontEndPlugin<void> = {
                           // Once the traceback is sanitized and rendered, append it to the errorContainer
                           // Convert the entire structure to HTML string if necessary
                           const streamHTML = streamText.outerHTML;
-                          manager.panel.onNewLog(formatLogDate(args.msg.header.date), "info", streamHTML);
+                          manager.panel.onNewLog(formatLogDate(args.msg.header.date), session.name, "info", streamHTML);
                         });
 
                       }
@@ -288,7 +290,7 @@ const pipelines: JupyterFrontEndPlugin<void> = {
                         // Once the traceback is sanitized and rendered, append it to the errorContainer
                         // Convert the entire structure to HTML string if necessary
                         const errorHTML = errorContainer.outerHTML;
-                        manager.panel.onNewLog(formatLogDate(errorMsg.header.date), "error", errorHTML);
+                        manager.panel.onNewLog(formatLogDate(errorMsg.header.date), session.name, "error", errorHTML);
                       });
                     }
                   }

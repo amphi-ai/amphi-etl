@@ -1,5 +1,7 @@
 import { aggregateIcon } from '../../icons';
-import { BaseCoreComponent } from '../BaseCoreComponent'; // Adjust the import path
+import { BaseCoreComponent } from '../BaseCoreComponent';
+
+
 
 export class Aggregate extends BaseCoreComponent {
   constructor() {

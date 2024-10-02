@@ -1,6 +1,8 @@
 import { editIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
+
+
 export class RenameColumns extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {};

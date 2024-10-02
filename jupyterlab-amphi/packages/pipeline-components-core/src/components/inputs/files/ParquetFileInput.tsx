@@ -1,6 +1,6 @@
 
 import { fileTextIcon } from '../../../icons';
-import { BaseCoreComponent } from '../../BaseCoreComponent'; 
+import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class ParquetFileInput extends BaseCoreComponent {

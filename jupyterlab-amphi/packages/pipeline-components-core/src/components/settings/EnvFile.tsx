@@ -1,5 +1,3 @@
-import { BaseCoreComponent } from '../BaseCoreComponent'; // Adjust the import path
-import { DeleteOutlined } from '@ant-design/icons';
 import React, { useContext, useEffect, useCallback, useState, useRef } from 'react';
 import { ComponentItem, PipelineComponent, InputFile, InputRegular, SelectRegular, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector, RequestService, Option } from '@amphi/pipeline-components-manager';
 import { KernelMessage } from '@jupyterlab/services';
@@ -13,7 +11,7 @@ export class EnvFile extends PipelineComponent<ComponentItem>() {
   public _name = "Env. Variables File";
   public _id = "envFile";
   public _type = "env_variables";
-  public _category = "settings";
+  public _category = "configuration";
   public _description = "Use Env. Variables to define environment variable names for use in the pipeline. You can also assign a value directly and set a default value. It is not recommended for credentials or sensitive data unless you fully understand the implications."
   public _icon = bracesIcon;
   public _default = {};

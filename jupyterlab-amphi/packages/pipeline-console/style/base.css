@@ -52,3 +52,10 @@
 .filter-list {
   display: flex;
 }
+
+.amphi-Console-icon-size {
+  width: 12px;
+  height: 12px;
+  position: relative;
+  top: 2px;
+}

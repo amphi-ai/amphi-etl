@@ -26,7 +26,6 @@ Sarah,Wilson,30`;
             ],
         };
         const description = "Use Inline Input to manually enter data you can use in the pipeline using a CSV-like format."
-
         super("Inline Input", "inlineInput", description, "pandas_df_input", [], "inputs", editIcon, defaultConfig, form);
     }
 

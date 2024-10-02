@@ -87,9 +87,11 @@
   /* --amphi-ui-01: #f4f4f4; */
   --amphi-ui-01: #ffffff;
   --amphi-ui-02: #ffffff;
-  --amphi-ui-03: #F2F4F7;
+  --amphi-ui-03: #FFFFFF;
   --amphi-ui-04: #fff;
   --amphi-ui-05: #161616;
+  --amphi-ui-06: #F2F4F7;
+
   --amphi-text-01: #000000;
   --amphi-text-02: #000000;
   --amphi-text-03: #a8a8a8;
@@ -231,7 +233,7 @@
   --jp-content-link-color: var(--amphi-link-01);
   --jp-border-color0: var(--amphi-ui-04);
   --jp-border-color1: var(--amphi-ui-04);
-  --jp-border-color2: var(--amphi-ui-03);
+  --jp-border-color2: var(--amphi-ui-06);
   --jp-border-color3: var(--amphi-ui-01);
   --jp-border-focus: var(--amphi-focus);
   --jp-ui-font-color0: var(--amphi-text-01);
@@ -246,7 +248,7 @@
   --jp-layout-background: var(--amphi-ui-background);
   --jp-layout-color0: var(--amphi-ui-01);
   --jp-layout-color1: var(--amphi-ui-02);
-  --jp-layout-color2: var(--amphi-ui-03);
+  --jp-layout-color2: var(--amphi-ui-06);
   --jp-layout-color3: var(--amphi-ui-04);
   --jp-layout-color4: var(--amphi-ui-05);
   --jp-layout-hover: var(--amphi-hover-ui);
@@ -284,7 +286,7 @@
   --jp-toolbar-border-color: var(--amphi-ui-04);
   --jp-toolbar-background: var(--amphi-ui-01);
   --jp-toolbar-box-shadow: none;
-  --jp-toolbar-active-background: var(--amphi-ui-03);
+  --jp-toolbar-active-background: var(--amphi-ui-06);
   --jp-input-box-shadow: inset 0 0 2px var(--amphi-ui-01);
   --jp-input-active-background: var(--amphi-field-01);
   --jp-input-hover-background: var(--amphi-hover-field);
@@ -322,7 +324,7 @@
   --jp-private-sidebar-tab-width: 48px;
   --jp-private-sidebar-tab-height: 48px;
 
-  --neutral-fill-input-rest: var(--amphi-ui-03)
+  --neutral-fill-input-rest: var(--amphi-ui-01)
   /*  --accent-fill-rest: var(--jp-info-color1);   */
 /* search bar */
 

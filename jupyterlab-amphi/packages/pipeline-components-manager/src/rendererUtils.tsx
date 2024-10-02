@@ -137,9 +137,12 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
           },
         }}
       >
-        <div className={`component component${modifier}`} onDoubleClick={handleDoubleClick}>
-          <div className={`component__header component__header${modifier}`}>
-            <Text
+      <div 
+        className={`component component${modifier}`} 
+        onDoubleClick={handleDoubleClick}
+      >    
+        <div className={`component__header component__header`}>
+        <Text
               onDoubleClick={stopPropagation}
               onDragStart={disableDrag}
               editable={isSelected ? { onChange: onTitleChange, tooltip: false, icon: <EditOutlined style={{ color: '#5F9B97' }} /> } : undefined}

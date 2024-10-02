@@ -197,7 +197,14 @@ const PipelineWrapper: React.FC<IProps> = ({
     const reactFlowWrapper = useRef(null);
     const [pipeline, setPipeline] = useState<any>(context.context.model.toJSON());
     const pipelineId = pipeline['id']
-    const initialNodes = pipeline['pipelines'][0]['flow']['nodes'];
+    const initialNodes = pipeline['pipelines'][0]['flow']['nodes'].map(node => ({
+      ...node,
+      data: {
+        ...node.data,
+        lastUpdated: 0,
+        lastExecuted: 0
+      }
+    }));
     const initialEdges = pipeline['pipelines'][0]['flow']['edges'];
     const initialViewport = pipeline['pipelines'][0]['flow']['viewport'];
     const defaultViewport = { x: 0, y: 0, zoom: 1 };
@@ -243,11 +250,41 @@ const PipelineWrapper: React.FC<IProps> = ({
 
     const onConnect: OnConnect = useCallback(
       (connection) => {
-        // 👇 make adding edges undoable
         takeSnapshot();
+        
+        // Find source and target nodes
+        const sourceNode = nodes.find(node => node.id === connection.source);
+        const targetNode = nodes.find(node => node.id === connection.target);
+    
+        // Check if both sourceNode and targetNode exist
+        if (sourceNode && targetNode) {
+          // Check if source node has data.backend.engine
+          const sourceBackend = sourceNode.data?.backend;
+          if (sourceBackend?.engine) {
+            // Update the target node's backend and engine to match the source
+            setNodes((nds) =>
+              nds.map((node) => 
+                node.id === targetNode.id
+                  ? {
+                      ...node,
+                      data: {
+                        ...node.data,
+                        backend: {
+                          ...node.data.backend,
+                          engine: sourceBackend.engine
+                        }
+                      }
+                    }
+                  : node
+              )
+            );
+          }
+        }
+    
+        // Add the edge to the flow
         setEdges((edges) => addEdge({ ...connection, type: 'custom-edge' }, edges));
       },
-      [setEdges, takeSnapshot]
+      [nodes, takeSnapshot]
     );
 
     const getCategory = (nodeId: string): string | undefined => {
@@ -295,8 +332,6 @@ const PipelineWrapper: React.FC<IProps> = ({
       },
       [nodes, edges, takeSnapshot]
     );
-
-
 
     const handleAddFileToPipeline = useCallback(
       (location?: { x: number; y: number }) => {
@@ -458,7 +493,6 @@ const PipelineWrapper: React.FC<IProps> = ({
     );
 
     const proOptions = { hideAttribution: true };
-
 
     return (
       <div className="reactflow-wrapper" data-id={pipelineId} ref={reactFlowWrapper}>

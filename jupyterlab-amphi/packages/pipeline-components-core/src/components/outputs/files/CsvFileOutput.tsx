@@ -1,5 +1,6 @@
 import { filePlusIcon } from '../../../icons';
-import { BaseCoreComponent } from '../../BaseCoreComponent'; // Adjust the import path
+import { BaseCoreComponent } from '../../BaseCoreComponent';
+
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class CsvFileOutput extends BaseCoreComponent {

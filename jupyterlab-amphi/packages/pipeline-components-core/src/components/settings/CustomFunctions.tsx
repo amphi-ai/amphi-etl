@@ -1,5 +1,5 @@
 import { codeIcon } from '../../icons';
-import { BaseCoreComponent } from '../BaseCoreComponent'; // Adjust the import path
+import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class CustomFunctions extends BaseCoreComponent {
   constructor() {

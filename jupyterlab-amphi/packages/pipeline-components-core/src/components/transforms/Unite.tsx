@@ -1,6 +1,8 @@
 import { plusCircleIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
+
+
 export class Unite extends BaseCoreComponent {
   constructor() {
     const defaultConfig = { ignoreIndex: true, sort: false, concatDirection: "horizontal" };

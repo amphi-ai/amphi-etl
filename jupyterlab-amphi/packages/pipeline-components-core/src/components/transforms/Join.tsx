@@ -1,6 +1,8 @@
 import { mergeIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
+
+
 export class Join extends BaseCoreComponent {
   constructor() {
     const defaultConfig = { how: "left" };

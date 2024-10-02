@@ -1,5 +1,5 @@
 import { apiIcon } from '../../../icons';
-import { BaseCoreComponent } from '../../BaseCoreComponent'; 
+import { BaseCoreComponent } from '../../BaseCoreComponent';// Adjust the import path
 
 export class RestInput extends BaseCoreComponent {
   constructor() {

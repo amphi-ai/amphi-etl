@@ -1,5 +1,5 @@
 import { databaseIcon } from '../../../icons';
-import { BaseCoreComponent } from '../../BaseCoreComponent';
+import { BaseCoreComponent } from '../../BaseCoreComponent';// Adjust the import path
 
 export class ODBCInput extends BaseCoreComponent {
     constructor() {

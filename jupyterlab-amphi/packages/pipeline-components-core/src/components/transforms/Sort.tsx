@@ -1,9 +1,11 @@
 import { sortIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
+
+
 export class Sort extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { order: "True" };
+    const defaultConfig = { columnAndOrder: [] };
     const form = {
       idPrefix: "component__form",
       fields: [

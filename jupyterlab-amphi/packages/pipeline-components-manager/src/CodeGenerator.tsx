@@ -7,121 +7,398 @@ import {
 import { RequestService } from './RequestService';
 import { KernelMessage } from '@jupyterlab/services';
 
+interface NodeObject {
+  id: string;
+  title: string;
+  imports: string[];
+  dependencies: string[];
+  type: string;
+  code: string;
+  outputName: string;
+  functions: string[];
+  lastUpdated: number;
+  lastExecuted: number;
+}
+
 export class CodeGenerator {
+
+  static generateCodeForNodes = (
+    flow: Flow,
+    componentService: any,
+    targetNodeId: string,
+    fromStart: boolean
+  ): { codeList: string[]; incrementalCodeList: { code: string; nodeId: string }[], executedNodes: Set<string> } => {
+    // Initialization
+    const codeList: string[] = [];
+    const incrementalCodeList: { code: string; nodeId: string }[] = [];
+    const executedNodes = new Set<string>();
+    const uniqueImports = new Set<string>();
+    const uniqueDependencies = new Set<string>();
+    const functions = new Set<string>();
+    const envVariablesMap = new Map<string, Node>();
+    const connectionsMap = new Map<string, Node>();
+
+    // Get nodes to traverse and related data
+    const { nodesToTraverse, nodesMap } = this.computeNodesToTraverse(
+      flow,
+      targetNodeId,
+      componentService
+    );
+
+    // Categorize special nodes
+    flow.nodes.forEach(node => {
+      const type = componentService.getComponent(node.type)._type;
+      if (type === 'env_variables' || type === 'env_file') {
+        envVariablesMap.set(node.id, node);
+      } else if (type === 'connection') {
+        connectionsMap.set(node.id, node);
+      }
+    });
+
+    // Create node objects
+    const nodeObjects = this.createNodeObjects(flow, componentService, nodesToTraverse, nodesMap);
+
+    // Process node objects
+    for (const nodeObject of nodeObjects) {
+      // Add imports, dependencies, and functions
+      nodeObject.imports.forEach(importStatement => uniqueImports.add(importStatement));
+      nodeObject.dependencies.forEach(dep => uniqueDependencies.add(dep));
+      nodeObject.functions.forEach(func => functions.add(func));
+
+      // Combine the code, imports, dependencies, and functions for the incremental code list
+      const nodeCode = [
+        ...nodeObject.imports,
+        ...nodeObject.functions,
+        nodeObject.code
+      ].join('\n');
+
+      incrementalCodeList.push({ code: nodeCode, nodeId: nodeObject.id });
+
+      // Add code to codeList
+      codeList.push(nodeObject.code);
+      executedNodes.add(nodeObject.id);
+
+      // Handle target node
+      if (nodeObject.id === targetNodeId) {
+        console.log(`Reached target node ${targetNodeId}`);
+        let displayCode = '';
+        if (nodeObject.type.includes('processor') || nodeObject.type.includes('input')) {
+          if (nodeObject.type.includes('documents')) {
+            if (!fromStart) {
+              console.log(`fromStart is false, resetting code to last code generated for target node.`);
+              codeList.length = 0;
+              codeList.push(nodeObject.code);
+              executedNodes.clear();
+              executedNodes.add(nodeObject.id);
+            }
+            displayCode = `\n_amphi_display_documents_as_html(${nodeObject.outputName})`;
+          } else {
+            if (!fromStart) {
+              console.log(`fromStart is false, resetting code to last code generated for target node.`);
+              codeList.length = 0;
+              codeList.push(nodeObject.code);
+              executedNodes.clear();
+              executedNodes.add(nodeObject.id);
+            }
+            displayCode = `\n__amphi_display_pandas_dataframe(${nodeObject.outputName})`;
+          }
+
+          // Append display code to both codeList and the last element of incrementalCodeList
+          codeList.push(displayCode);
+          if (incrementalCodeList.length > 0) {
+            incrementalCodeList[incrementalCodeList.length - 1].code += displayCode;
+          }
+        }
+      }
+    }
+
+    // Generate code for special nodes
+    let envVariablesCode = '';
+    envVariablesMap.forEach((node) => {
+      const component = componentService.getComponent(node.type);
+      const config: any = node.data as any;
+      envVariablesCode += component.generateComponentCode({ config });
+      component.provideImports({ config }).forEach(importStatement => uniqueImports.add(importStatement));
+    });
+
+    let connectionsCode = '';
+    connectionsMap.forEach((node) => {
+      const component = componentService.getComponent(node.type);
+      const config: any = node.data as any;
+      connectionsCode += component.generateComponentCode({ config });
+      component.provideImports({ config }).forEach(importStatement => uniqueImports.add(importStatement));
+    });
+
+    // Prepare final code list
+    const currentDate = new Date();
+    const dateString = currentDate.toISOString().replace(/T/, ' ').replace(/\..+/, '');
+    const dateComment = `# Source code generated by Amphi\n# Date: ${dateString}`;
+    const additionalImports = `# Additional dependencies: ${Array.from(uniqueDependencies).join(', ')}`;
+
+    const generatedCodeList = [
+      dateComment,
+      additionalImports,
+      ...Array.from(uniqueImports),
+      envVariablesCode,
+      connectionsCode,
+      ...Array.from(functions),
+      ...codeList
+    ].filter(Boolean); // Remove empty strings
+
+    // Format variables in the generated code
+    const formattedCodeList = generatedCodeList.map(code => this.formatVariables(code));
+
+    console.log("incrementalCodeList %o", incrementalCodeList);
+
+    return { codeList: formattedCodeList, incrementalCodeList, executedNodes };
+  };
+
+  static createNodeObjects = (
+    flow: Flow,
+    componentService: any,
+    nodesToTraverse: string[],
+    nodesMap: Map<string, Node>
+  ): NodeObject[] => {
+    const nodeObjects: NodeObject[] = [];
+    const counters = new Map<string, number>();
+    const nodeOutputs = new Map<string, string>();
+
+    function incrementCounter(key: string) {
+      const count = counters.get(key) || 0;
+      counters.set(key, count + 1);
+      return count + 1;
+    }
+
+    // Helper function to validate input names
+    function getInputName(nodeId: string, context: string): string {
+      const name = nodeOutputs.get(nodeId);
+      if (!name) {
+        throw new Error(`Input name is undefined for node ${nodeId} in context: ${context}`);
+      }
+      return name;
+    }
+
+    for (const nodeId of nodesToTraverse) {
+      const node = nodesMap.get(nodeId);
+      if (!node) {
+        console.error(`Node with id ${nodeId} not found.`);
+        continue;
+      }
+
+      const config: any = node.data as any;
+      const component = componentService.getComponent(node.type);
+      const componentType = component._type;
+      const componentId = component._id;
+
+      const imports = component.provideImports({ config });
+      const dependencies = typeof component.provideDependencies === 'function'
+        ? component.provideDependencies({ config })
+        : [];
+      const functions = typeof component.provideFunctions === 'function'
+        ? component.provideFunctions({ config })
+        : [];
+
+      let inputName = '';
+      let outputName = '';
+      let code = '';
+
+      try {
+        switch (componentType) {
+          case 'pandas_df_processor':
+          case 'pandas_df_to_documents_processor':
+          case 'documents_processor': {
+            const previousNodeId = PipelineService.findPreviousNodeId(flow, nodeId);
+            inputName = getInputName(previousNodeId, componentType);
+            outputName = `${node.type}${incrementCounter(componentId)}`;
+            nodeOutputs.set(nodeId, outputName);
+            code = component.generateComponentCode({ config, inputName, outputName });
+            break;
+          }
+          case 'pandas_df_double_processor': {
+            const [input1Id, input2Id] = PipelineService.findMultiplePreviousNodeIds(flow, nodeId);
+            const inputName1 = getInputName(input1Id, componentType);
+            const inputName2 = getInputName(input2Id, componentType);
+            outputName = `${node.type}${incrementCounter(componentId)}`;
+            nodeOutputs.set(nodeId, outputName);
+            code = component.generateComponentCode({ config, inputName1, inputName2, outputName });
+            break;
+          }
+          case 'pandas_df_multi_processor': {
+            const inputIds = PipelineService.findMultiplePreviousNodeIds(flow, nodeId);
+            const inputNames = inputIds.map(id => getInputName(id, componentType));
+            outputName = `${node.type}${incrementCounter(componentId)}`;
+            nodeOutputs.set(nodeId, outputName);
+            code = component.generateComponentCode({ config, inputNames, outputName });
+            break;
+          }
+          case 'pandas_df_input':
+          case 'documents_input': {
+            outputName = `${node.type}${incrementCounter(componentId)}`;
+            nodeOutputs.set(nodeId, outputName);
+            code = component.generateComponentCode({ config, outputName });
+            break;
+          }
+          case 'pandas_df_output':
+          case 'documents_output': {
+            const previousNodeId = PipelineService.findPreviousNodeId(flow, nodeId);
+            inputName = getInputName(previousNodeId, componentType);
+            code = component.generateComponentCode({ config, inputName });
+            break;
+          }
+          default:
+            throw new Error(`Pipeline Configuration Error: ${componentType} for node ${nodeId}`);
+        }
+
+        nodeObjects.push({
+          id: nodeId,
+          title: config.customTitle || node.type,
+          imports,
+          dependencies,
+          type: componentType,
+          code,
+          outputName,
+          functions,
+          lastUpdated: config.lastUpdated || 0,
+          lastExecuted: config.lastExecuted || 0
+        });
+      } catch (error) {
+        console.error(`Error processing node ${nodeId}:`, error);
+        throw error; // Stop and throw error...
+      }
+    }
+
+    return nodeObjects;
+  };
 
   static generateCode(pipelineJson: string, commands: any, componentService: any) {
 
-    let code = this.generateCodeForNodes(PipelineService.filterPipeline(pipelineJson), componentService, 'none', true);
+    const { codeList, incrementalCodeList, executedNodes } = this.generateCodeForNodes(PipelineService.filterPipeline(pipelineJson), componentService, 'none', true);
+
+    const code = codeList.join('\n');
 
     return code;
+
   }
 
-  static generateCodeUntil(pipelineJson: string, commands: any, componentService: any, targetNode: string, context: any) {
-
+  static generateCodeUntil(
+    pipelineJson: string,
+    commands: any,
+    componentService: any,
+    targetNode: string,
+    incremental: boolean
+  ): any[] {
     const flow = PipelineService.filterPipeline(pipelineJson);
 
-
-    // Only generate code up until target node
-    let fromStart: boolean = true;
-    const previousNodesIds = PipelineService.findMultiplePreviousNodeIds(flow, targetNode); // list of previous nodes
-
-    const lastExecuted = (flow.nodes.find(node => node.id === targetNode) || {}).data?.lastExecuted || null;
-    const previousLastExecutedValues = flow.nodes
-      .filter(node => previousNodesIds.includes(node.id)) // Get lastExecuted from previous nodes
-      .map(node => node.data.lastExecuted); // Map to lastExecuted
-    const lastUpdatedValues = PipelineService.getLastUpdatedInPath(flow, targetNode); // Get last updated values
-
-    // Add lastExecuted to the list of previous last executed values
-    const allLastExecutedValues = [...previousLastExecutedValues, lastExecuted];
-
-    // Check if any lastUpdated is greater than any of the lastExecuted values
-    const updatesSinceLastExecutions = lastUpdatedValues.some(updatedValue =>
-      allLastExecutedValues.some(executedValue => updatedValue > executedValue)
+    // Get nodes to traverse and related data
+    const { nodesToTraverse, nodesMap } = this.computeNodesToTraverse(
+      flow,
+      targetNode,
+      componentService
     );
 
-    /*
-    console.log("updatesSinceLastExecutions %o", updatesSinceLastExecutions)
+    // Initialize fromStart to false
+    let fromStart = false;
+    let maxLastUpdated = 0;
 
-    if(updatesSinceLastExecutions) {
-      fromStart = true;
-    } else {
-      const dataframes = previousNodesIds.map((nodeId) => {
-        const nodeCode = this.generateCodeForNodes(flow, componentService, nodeId, false);
-        const codeLines = nodeCode.split("\n"); // Split into individual lines
-        return codeLines[codeLines.length - 1]; // Get the last line
-      });
+    // For each node in nodesToTraverse except the target node
+    for (const nodeId of nodesToTraverse) {
+      if (nodeId === targetNode) {
+        continue; // Skip target node
+      }
+      const node = nodesMap.get(nodeId);
+      if (!node) {
+        console.error(`Node with id ${nodeId} not found.`);
+        continue;
+      }
 
-      frames: %o", dataframes);
-  
-      dataframes.forEach((df) => {
-        const future = context.sessionContext.session.kernel!.requestExecute({ code: "print(_amphi_metadatapanel_getcontentof(" + df + "))" });
-        future.onIOPub = msg => {
-          if (msg.header.msg_type === 'stream') {
-            const streamMsg = msg as KernelMessage.IStreamMsg;
-            const output = streamMsg.content.text;
-            console.log("output successful")
-            fromStart = false;
-          } else  {
-            const errorMsg = msg as KernelMessage.IErrorMsg;
-            const errorOutput = errorMsg.content;
-            console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
-            fromStart = true;
-          }
-        };
-      });
+      const data = node.data || {};
+      const lastUpdated = data.lastUpdated || 0;
+      const lastExecuted = data.lastExecuted || 0;
+
+      if (lastUpdated > maxLastUpdated) {
+        maxLastUpdated = lastUpdated;
+      }
+
+      if (lastUpdated >= lastExecuted) {
+        fromStart = true;
+        console.log(`Node ${nodeId} has been updated since last execution.`);
+        break; // No need to check further
+      }
     }
-    */
 
-    if (true) {
+    // Generate code and collect executed node IDs
+    const { codeList, incrementalCodeList, executedNodes } = this.generateCodeForNodes(
+      flow,
+      componentService,
+      targetNode,
+      fromStart
+    );
+
+    if (fromStart) {
+      console.log(
+        "Generating code from START due to updates in previous nodes."
+      );
       const command = 'pipeline-metadata-panel:delete-all';
-      commands.execute(command, {}).catch(reason => {
+      commands.execute(command, {}).catch((reason) => {
         console.error(
           `An error occurred during the execution of ${command}.\n${reason}`
         );
       });
+    } else {
+      console.log(
+        "No updates in previous nodes. Generating code for target node only."
+      );
     }
 
-    const code = this.generateCodeForNodes(flow, componentService, targetNode, true);
-    console.log("Code generated %o", code)
-    return code;
+    console.log("Code generated %o", codeList);
+
+    // After execution, update lastExecuted for all executed nodes
+    const currentTimestamp = Date.now();
+    executedNodes.forEach((nodeId) => {
+      const node = nodesMap.get(nodeId);
+      if (node && node.data) {
+        node.data.lastExecuted = currentTimestamp;
+        console.log(`Updated lastExecuted for node ${nodeId}`);
+      }
+    });
+
+    // Also update lastExecuted for the target node
+    const targetNodeData = nodesMap.get(targetNode)?.data;
+    if (targetNodeData) {
+      targetNodeData.lastExecuted = currentTimestamp;
+      console.log(`Updated lastExecuted for target node ${targetNode}`);
+    }
+
+    if (incremental) {
+      return incrementalCodeList;
+    } else {
+      return codeList;
+    }
+
   }
 
-  static generateCodeForNodes = (flow: Flow, componentService: any, targetNodeId: string, fromStart: boolean): string => {
-
-    // Intialization
-    let code: string = '';
-    let lastCodeGenerated: string = '';
-    let counters = new Map<string, number>(); // Map with string as key and integer as value
+  // External function to compute nodes to traverse and related data
+  static computeNodesToTraverse(flow: Flow, targetNodeId: string, componentService: any): {
+    nodesToTraverse: string[],
+    nodesMap: Map<string, Node>,
+    nodeDependencies: Map<string, string[]>,
+    sortedNodes: string[]
+  } {
     const nodesMap = new Map<string, Node>();
     const nodeDependencies = new Map<string, string[]>(); // To keep track of node dependencies
     const sortedNodes: string[] = []; // To store the topologically sorted nodes
-    const loggersMap = new Map<string, Node>();
-    const envVariablesMap = new Map<string, Node>();
-    const connectionsMap = new Map<string, Node>();
-    const nodeOutputs = new Map<string, string>();
-    const uniqueImports = new Set<string>();
-    const uniqueDependencies = new Set<string>();
-    const functions = new Set<string>();
 
-    // Helper function to increment counter
-    function incrementCounter(key: string) {
-      const count = counters.get(key) || 0;
-      counters.set(key, count + 1);
-    }
-
-    // Add all pipeline nodes to nodeMap, except annotations and loggers
+    // Add all pipeline nodes to nodesMap, except annotations and specific types
     flow.nodes.forEach(node => {
       const type = componentService.getComponent(node.type)._type;
-      if (type !== 'annotation') {
-        if (type === 'logger') {
-          loggersMap.set(node.id, node);
-        } else if (type === 'env_variables' || type === 'env_file') {
-          envVariablesMap.set(node.id, node);
-        } else if (type === 'connection') {
-          connectionsMap.set(node.id, node);
-        } else {
-          nodesMap.set(node.id, node);
-        }
+      if (
+        type !== 'annotation' &&
+        type !== 'logger' &&
+        type !== 'env_variables' &&
+        type !== 'env_file' &&
+        type !== 'connection'
+      ) {
+        nodesMap.set(node.id, node);
       }
     });
 
@@ -129,30 +406,30 @@ export class CodeGenerator {
     const visited = new Set<string>();
     const nodePaths = new Map<string, Set<string>>();
 
-    const topologicalSortWithPathTracking = (node: string, path: Set<string>) => {
-      if (visited.has(node)) {
+    const topologicalSortWithPathTracking = (nodeId: string, path: Set<string>) => {
+      if (visited.has(nodeId)) {
         // Combine the current path with the existing path for the node
-        const existingPath = nodePaths.get(node) || new Set();
-        nodePaths.set(node, new Set([...existingPath, ...path]));
+        const existingPath = nodePaths.get(nodeId) || new Set();
+        nodePaths.set(nodeId, new Set([...existingPath, ...path]));
         return;
       }
-      visited.add(node);
+      visited.add(nodeId);
 
       const dependencies = flow.edges
-        .filter(edge => edge.target === node)
+        .filter(edge => edge.target === nodeId)
         .map(edge => edge.source);
 
-      nodeDependencies.set(node, dependencies);
+      nodeDependencies.set(nodeId, dependencies);
 
       // Include the current node in the path for subsequent calls
-      const currentPath = new Set([...path, node]);
-      nodePaths.set(node, currentPath);
+      const currentPath = new Set([...path, nodeId]);
+      nodePaths.set(nodeId, currentPath);
 
       dependencies.forEach(dependency => {
         topologicalSortWithPathTracking(dependency, currentPath);
       });
 
-      sortedNodes.push(node);
+      sortedNodes.push(nodeId);
     };
 
     // Perform topological sort with path tracking
@@ -162,16 +439,14 @@ export class CodeGenerator {
       }
     });
 
-    // Assume sortedNodes is already populated from the topological sort
-    let nodesToTraverse = [];
-
-    // After topological sorting and path tracking
+    // Determine nodes to traverse based on the targetNodeId
+    let nodesToTraverse: string[] = [];
     if (targetNodeId !== 'none') {
-      let nodesToConsider = new Set<string>([targetNodeId]);
-      let pathToTarget = new Set<string>();
+      const nodesToConsider = new Set<string>([targetNodeId]);
+      const pathToTarget = new Set<string>();
 
       while (nodesToConsider.size > 0) {
-        let nextNodesToConsider = new Set<string>();
+        const nextNodesToConsider = new Set<string>();
 
         nodesToConsider.forEach(nodeId => {
           pathToTarget.add(nodeId);
@@ -183,231 +458,18 @@ export class CodeGenerator {
           });
         });
 
-        nodesToConsider = nextNodesToConsider;
+        nodesToConsider.clear();
+        nextNodesToConsider.forEach(nodeId => nodesToConsider.add(nodeId));
       }
+
       // Filter the sortedNodes to include only those in pathToTarget, preserving the topological order
       nodesToTraverse = sortedNodes.filter(nodeId => pathToTarget.has(nodeId));
     } else {
       nodesToTraverse = sortedNodes;
     }
 
-    // nodesToTraverse.reverse();
-
-    for (const nodeId of nodesToTraverse) {
-      const node = nodesMap.get(nodeId);
-      if (!node) {
-        console.error(`Node with id ${nodeId} not found.`);
-        continue;
-      }
-
-      let config: any = node.data as any; // Initialize config
-      const component = componentService.getComponent(node.type);
-      const component_type = componentService.getComponent(node.type)._type;
-      const component_id = componentService.getComponent(node.type)._id;
-
-      // Only gather additionnal dependencies if the function exists
-      if (typeof component?.provideDependencies === 'function') {
-        const deps = component.provideDependencies({ config });
-        deps.forEach(dep => uniqueDependencies.add(dep));
-      }
-
-      const imports = component.provideImports({ config }); // Gather imports
-      imports.forEach(importStatement => uniqueImports.add(importStatement));
-
-      // Gather functions
-      if (typeof component?.provideFunctions === 'function') {
-        component.provideFunctions({ config }).forEach(func => functions.add(func));
-      }
-
-      // Initiliaze input and output variables
-      let inputName = '';
-      let outputName = '';
-
-
-      switch (component_type) {
-        case 'pandas_df_processor':
-        case 'pandas_df_to_documents_processor':
-        case 'documents_processor':
-          incrementCounter(component_id);
-          inputName = nodeOutputs.get(PipelineService.findPreviousNodeId(flow, nodeId));
-          outputName = `${node.type}${counters.get(component_id)}`;
-          nodeOutputs.set(nodeId, outputName); // xMap the source node to its output variable
-          lastCodeGenerated = componentService.getComponent(node.type).generateComponentCode({ config, inputName, outputName });
-          break;
-        case 'pandas_df_double_processor':
-          const [input1Id, input2Id] = PipelineService.findMultiplePreviousNodeIds(flow, nodeId);
-          incrementCounter(component_id);
-          outputName = `${node.type}${counters.get(component_id)}`;
-          nodeOutputs.set(node.id, outputName);
-          const inputName1 = nodeOutputs.get(input1Id);
-          const inputName2 = nodeOutputs.get(input2Id);
-          lastCodeGenerated = componentService.getComponent(node.type).generateComponentCode({
-            config,
-            inputName1,
-            inputName2,
-            outputName
-          });
-          break;
-        case 'pandas_df_multi_processor':
-          const inputIds = PipelineService.findMultiplePreviousNodeIds(flow, nodeId);
-          incrementCounter(component_id);
-          outputName = `${node.type}${counters.get(component_id)}`;
-          nodeOutputs.set(node.id, outputName);
-          const inputNames = inputIds.map(inputId => nodeOutputs.get(inputId));
-          lastCodeGenerated = componentService.getComponent(node.type).generateComponentCode({
-            config,
-            inputNames,
-            outputName
-          });
-          break;
-        case 'pandas_df_input':
-        case 'documents_input':
-          incrementCounter(component_id);
-          outputName = `${node.type}${counters.get(component_id)}`;
-          nodeOutputs.set(nodeId, outputName); // Map the source node to its output variable
-          lastCodeGenerated = componentService.getComponent(node.type).generateComponentCode({ config, outputName });
-          break;
-        case 'pandas_df_output':
-        case 'documents_output':
-          incrementCounter(component_id);
-          inputName = nodeOutputs.get(PipelineService.findPreviousNodeId(flow, nodeId));
-          lastCodeGenerated = componentService.getComponent(node.type).generateComponentCode({ config, inputName });
-          break;
-        default:
-          console.error("Error generating code.");
-      }
-
-      code += lastCodeGenerated;
-
-      // If target node....  
-      if (nodeId === targetNodeId) {
-        if (component_type.includes('processor') || component_type.includes('input')) {
-          if (component_type.includes('documents')) {
-            if (!fromStart) {
-              code = lastCodeGenerated;
-            }
-            code += '\n' + '_amphi_display_documents_as_html(' + nodeOutputs.get(nodeId) + ')';
-          } else {
-            if (!fromStart) {
-              code = lastCodeGenerated;
-            }
-            code += '\n' + '__amphi_display_pandas_dataframe(' + nodeOutputs.get(nodeId) + ')';
-          }
-
-        } else if (component_type.includes('output')) {
-          // Add try block and indent existing code
-          const indentedCode = code.split('\n').map(line => '    ' + line).join('\n');
-          code = 'try:\n' + indentedCode + '\n    print("Pipeline Execution: SUCCESS")\n';
-          code += 'except Exception as e:\n';
-          code += '    print(f"Pipeline Execution: FAILED with error {e}")\n';
-          code += '    raise\n';  // Re-raise the exception to propagate the error status
-        }
-      }
-    }
-
-    // Env variables
-    let envVariablesCode = '';
-    if (envVariablesMap.size > 0) {
-      envVariablesMap.forEach((node, nodeId) => {
-        // Process each logger
-        const component = componentService.getComponent(node.type);
-
-        let config: any = node.data as any; // Initialize config
-
-        const imports = component.provideImports({ config }); // Gather imports
-        imports.forEach(importStatement => uniqueImports.add(importStatement));
-
-        envVariablesCode += componentService.getComponent(node.type).generateComponentCode({ config });
-
-      });
-    } else {
-      console.log('No env variables component found.');
-    }
-
-    // Connections
-    let connectionsCode = '';
-    if (connectionsMap.size > 0) {
-      connectionsMap.forEach((node, nodeId) => {
-        // Process each logger
-        const component = componentService.getComponent(node.type);
-
-        let config: any = node.data as any; // Initialize config
-
-        const imports = component.provideImports({ config }); // Gather imports
-        imports.forEach(importStatement => uniqueImports.add(importStatement));
-
-        connectionsCode += componentService.getComponent(node.type).generateComponentCode({ config });
-
-      });
-    } else {
-      console.log('No connection component found.');
-    }
-
-    // Loggers when full pipeline execution
-    if (loggersMap.size > 0) {
-
-      let loggerCode = '';
-
-      loggersMap.forEach((node, nodeId) => {
-        // Process each logger
-        const component = componentService.getComponent(node.type);
-
-        let config: any = node.data as any; // Initialize config
-        // Only gather additionnal dependencies if the function exists
-        if (typeof component?.provideDependencies === 'function') {
-          const deps = component.provideDependencies({ config });
-          deps.forEach(dep => uniqueDependencies.add(dep));
-        }
-
-        if (typeof component?.provideFunctions === 'function') {
-          component.provideFunctions({ config }).forEach(func => functions.add(func));
-        }
-
-        const imports = component.provideImports({ config }); // Gather imports
-        imports.forEach(importStatement => uniqueImports.add(importStatement));
-
-        loggerCode += componentService.getComponent(node.type).generateComponentCode({ config });
-
-      });
-
-      // Indentation for the Python code block
-      const indent = '    ';
-      loggerCode = loggerCode.split('\n').map(line => indent + line).join('\n');
-      code = code.split('\n').map(line => indent + line).join('\n');
-
-      code = `
-try:
-${code}
-except Exception as e:
-    print(f"An error occurred: {e}")
-${loggerCode}
-`;
-
-    } else {
-      // console.log('No loggers found.');
-    }
-
-    const currentDate = new Date();
-    const dateString = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}-${currentDate.getDate().toString().padStart(2, '0')} ${currentDate.getHours().toString().padStart(2, '0')}:${currentDate.getMinutes().toString().padStart(2, '0')}:${currentDate.getSeconds().toString().padStart(2, '0')}`;
-    const dateComment = `# Source code generated by Amphi\n# Date: ${dateString}`;
-    const additionalImports = `# Additional dependencies: ${Array.from(uniqueDependencies).join(', ')}`;
-
-    console.log("previous code " + code)
-
-    // Replace env variable string 
-    code = this.formatVariables(code);
-
-
-    const generatedCode =
-      `${dateComment}
-${additionalImports}
-${Array.from(uniqueImports).join('\n')}
-\n${envVariablesCode}\n${connectionsCode}${Array.from(functions).join('\n\n')}
-${code}`;
-
-    return generatedCode;
-
-  };
+    return { nodesToTraverse, nodesMap, nodeDependencies, sortedNodes };
+  }
 
   static formatVariables(code: string): string {
     const lines = code.split('\n');
@@ -498,24 +560,24 @@ ${code}`;
 
   static getComponentAndDataForNode(nodeId: string, componentService: any, pipelineJson: string): { component: any, data: any } | null {
     const flow = PipelineService.filterPipeline(pipelineJson);
-    
+
     // Find the node by nodeId
     const node = flow.nodes.find((n: Node) => n.id === nodeId);
     if (!node) {
-        console.error(`Node with id ${nodeId} not found.`);
-        return null;
+      console.error(`Node with id ${nodeId} not found.`);
+      return null;
     }
 
     // Get the component type and the component instance
     const component = componentService.getComponent(node.type);
     if (!component || typeof component.generateDatabaseConnectionCode !== 'function') {
-        console.error(`Component for node type ${node.type} does not have a generateDatabaseConnectionCode method.`);
-        return null;
+      console.error(`Component for node type ${node.type} does not have a generateDatabaseConnectionCode method.`);
+      return null;
     }
 
     // Return the component and the node's data
     return { component, data: node.data };
-}
+  }
 
 };
 

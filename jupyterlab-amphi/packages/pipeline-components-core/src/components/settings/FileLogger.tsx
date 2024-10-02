@@ -1,5 +1,5 @@
 import { filterIcon } from '../../icons';
-import { BaseCoreComponent } from '../BaseCoreComponent'; // Adjust the import path
+import { BaseCoreComponent } from '../BaseCoreComponent';// Adjust the import path
 
 export class FileLogger extends BaseCoreComponent {
   constructor() {

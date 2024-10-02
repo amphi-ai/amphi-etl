@@ -1,6 +1,8 @@
 import { dedupIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
+
+
 export class Deduplicate extends BaseCoreComponent {
   constructor() {
     const defaultConfig = { keep: "first" };

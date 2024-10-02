@@ -1,5 +1,5 @@
 import { bigQueryIcon } from '../../../icons';
-import { BaseCoreComponent } from '../../BaseCoreComponent';
+import { BaseCoreComponent } from '../../BaseCoreComponent';// Adjust the import path
 
 export class BigQueryInput extends BaseCoreComponent {
     constructor() {

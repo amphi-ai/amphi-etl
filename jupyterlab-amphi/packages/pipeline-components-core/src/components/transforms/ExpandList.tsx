@@ -2,6 +2,8 @@ import { expandIcon } from '../../icons';
 
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
+
+
 export class ExpandList extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {};

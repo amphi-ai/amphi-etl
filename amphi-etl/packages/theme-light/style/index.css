@@ -5,19 +5,46 @@
 @import './variables.css';
 
 /* Filter Box */
+/* Filter Box */
 .jp-FilterBox {
-  background-color: white!important;
-  border-radius: none;
+  background-color: white !important;
+  border-radius: 4px; /* Rounded corners */
+  border: 1px solid #d9d9d9; /* Light gray border */
+  padding: 0px 2px; /* Space inside the box */
+  width: 100%;
+  display: flex; /* Align content horizontally */
+  align-items: center; /* Center align the text and icon vertically */
+}
+
+.jp-FilterBox::part(root) {
+  background: #fff !important; /* Ensure no background for the root */
+  flex-grow: 1;
+  border: none;
+  padding: 0;
   width: 100%;
 }
 
-.jp-FilterBox .root {
-  background: white;
+.jp-FilterBox::part(root):hover {
+  border: none;
 }
 
-.jp-FilterBox .root:hover {
-  border: none; /* Change to your desired hover border color */
+.jp-FilterBox input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 14px;
 }
+
+.jp-FilterBox input:focus {
+  outline: none;
+  box-shadow: 0 0 5px rgba(142, 178, 172, 0.8); /* Add subtle focus shadow */
+}
+
+.jp-FilterBox input::placeholder {
+  color: #b3b3b3; /* Grayish placeholder text */
+}
+
+/* FILTER BOX */
 
 #jp-main-dock-panel {
   padding: 0

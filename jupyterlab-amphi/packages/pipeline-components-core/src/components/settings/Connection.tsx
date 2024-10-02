@@ -10,7 +10,7 @@ export class Connection extends PipelineComponent<ComponentItem>() {
   public _name = "Connection";
   public _id = "connection";
   public _type = "connection";
-  public _category = "settings";
+  public _category = "configuration";
   public _description = `Use Connection to set up a connection (e.g., credentials, database parameters, configuration file)
   once for the pipeline, and reuse it across different components. This approach ensures that no credentials are stored 
   in the pipeline, as they can be retrieved from environment variables or a configuration files.`;

@@ -22,9 +22,6 @@ export { SnowflakeInput } from './inputs/databases/SnowflakeInput';
 export { BigQueryInput } from './inputs/databases/BigQueryInput';
 export { ODBCInput } from './inputs/databases/ODBCInput';
 
-
-export { RedditInput } from './inputs/cloud/RedditInput';
-
 // Transforms
 export { Filter } from './transforms/Filter';
 export { Aggregate } from './transforms/Aggregate';
@@ -37,16 +34,8 @@ export { Sort } from './transforms/Sort';
 export { RenameColumns } from './transforms/RenameColumns';
 export { TypeConverter } from './transforms/TypeConverter';
 export { Extract } from './transforms/Extract';
-export { FixedSizeChunking } from './transforms/FixedSizeChunking';
-export { SemanticChunking } from './transforms/SemanticChunking';
-export { RecursiveChunking } from './transforms/RecursiveChunking';
-export { SQLQuery } from './transforms/SqlQuery';
 export { FilterColumns } from './transforms/FilterColumns';
 export { Join } from './transforms/Join';
-export { OpenAILookUp } from './transforms/OpenAILookUp';
-export { ConvertToDocuments } from './transforms/ConvertToDocuments';
-export { HtmlToMarkdown } from './transforms/HtmlToMarkdown';
-export { ParseHTML } from './transforms/ParseHTML';
 export { Transpose } from './transforms/Transpose';
 export { DataCleansing } from './transforms/DataCleansing';
 export { Unite } from './transforms/Unite';
@@ -60,8 +49,6 @@ export { DateTimeConverter } from './transforms/DateTimeConverter';
 export { PyGWalker } from './custom/PyGWalker';
 export { Slider } from './custom/Slider';
 
-
-
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';
 export { CsvFileOutput } from './outputs/files/CsvFileOutput';
@@ -72,8 +59,6 @@ export { ParquetFileOutput } from './outputs/files/ParquetFileOutput';
 export { MySQLOutput } from './outputs/databases/MySQLOutput';
 export { XmlFileOutput } from './outputs/files/XmlFileOutput';
 export { PostgresOutput } from './outputs/databases/PostgresOutput';
-export { PineconeOutput } from './outputs/vector-stores/PineconeOutput';
-export { ChromaOutput } from './outputs/vector-stores/ChromaOutput';
 export { RestOutput } from './outputs/cloud/RestOutput';
 export { S3FileOutput } from './outputs/files/S3FileOutput';
 

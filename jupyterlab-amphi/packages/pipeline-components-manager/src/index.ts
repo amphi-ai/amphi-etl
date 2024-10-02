@@ -27,6 +27,7 @@ interface Components {
   getComponents(): any;
   getComponent(type: string): ComponentItem;
   addComponent(newComponent: ComponentItem): any;
+  removeComponent(id: string): void;
 }
 
 const ComponentManager = new Token<Components>(
@@ -52,10 +53,14 @@ class ComponentService implements Components {
     this._components.push(newComponent)
   };
 
-    // Method to get the number of components
-    getComponentCount(): number {
-      return this._components.length;
-    }
+  // Method to get the number of components
+  getComponentCount(): number {
+    return this._components.length;
+  }
+
+  removeComponent(id: string): void {
+    this._components = this._components.filter(component => component._id !== id);
+  }
 }
 
 const plugin: JupyterFrontEndPlugin<Components> = {

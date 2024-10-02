@@ -1,6 +1,6 @@
 
 import { fileTextIcon } from '../../../icons';
-import { BaseCoreComponent } from '../../BaseCoreComponent'; 
+import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class WordFileInput extends BaseCoreComponent {
   constructor() {

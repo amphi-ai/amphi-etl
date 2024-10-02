@@ -1,5 +1,6 @@
 import { mySQLIcon } from '../../../icons';
-import { BaseCoreComponent } from '../../BaseCoreComponent'; // Adjust the import path
+import { BaseCoreComponent } from '../../BaseCoreComponent';
+
 
 export class MySQLOutput extends BaseCoreComponent {
   constructor() {

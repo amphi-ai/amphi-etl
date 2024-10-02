@@ -1,4 +1,4 @@
-import { BaseCoreComponent } from '../../BaseCoreComponent'; 
+import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { htmlIcon } from '../../../icons';
 
 export class HtmlFileInput extends BaseCoreComponent {
