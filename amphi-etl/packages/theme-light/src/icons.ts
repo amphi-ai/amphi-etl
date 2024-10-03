@@ -11,6 +11,8 @@ import reloadIconSvgStr from '../style/icons/reload-24.svg';
 import fileIconSvgStr from '../style/icons/file-24.svg';
 import fileCsvIconSvgStr from '../style/icons/file-csv-24.svg';
 import filePdfIconSvgStr from '../style/icons/file-pdf-24.svg';
+import fileExcelIconSvgStr from '../style/icons/file-excel-24.svg';
+import fileParquetIconSvgStr from '../style/icons/file-parquet-24.svg';
 import fileJsonIconSvgStr from '../style/icons/file-json-24.svg';
 import fileNotebookIconSvgStr from '../style/icons/file-ipynb-24.svg';
 import terminalIconSvgStr from '../style/icons/terminal-screen-24.svg';
@@ -80,6 +82,16 @@ export const filePdfAmphiIcon = new LabIcon({
 export const fileJsonAmphiIcon = new LabIcon({
   name: 'amphi:file-json-icon',
   svgstr: fileJsonIconSvgStr
+});
+
+export const fileExcelAmphiIcon = new LabIcon({
+  name: 'amphi:file-excel-icon',
+  svgstr: fileExcelIconSvgStr
+});
+
+export const fileParquetAmphiIcon = new LabIcon({
+  name: 'amphi:file-parquet-icon',
+  svgstr: fileParquetIconSvgStr
 });
 
 export const fileNotebookIcon = new LabIcon({

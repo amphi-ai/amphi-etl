@@ -3,7 +3,7 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 import { folderIcon, saveIcon, runIcon, newFolderIcon, fileUploadIcon, refreshIcon, codeIcon, fileIcon, pdfIcon, spreadsheetIcon, jsonIcon, notebookIcon, listIcon, homeIcon } from '@jupyterlab/ui-components';
-import { folderAmphiIcon, saveAmphiIcon, playAmphiIcon, folderPlusAmphiIcon, uploadAmphiIcon, reloadAmphiIcon, fileSourceAmphiIcon, fileAmphiIcon, filePdfAmphiIcon, fileCsvAmphiIcon, fileJsonAmphiIcon, fileNotebookIcon, terminalIcon, homeAmphiIcon } from './icons'
+import { folderAmphiIcon, saveAmphiIcon, playAmphiIcon, folderPlusAmphiIcon, uploadAmphiIcon, reloadAmphiIcon, fileSourceAmphiIcon, fileAmphiIcon, filePdfAmphiIcon, fileCsvAmphiIcon, fileJsonAmphiIcon, fileNotebookIcon, terminalIcon, homeAmphiIcon, fileParquetAmphiIcon, fileExcelAmphiIcon } from './icons'
 import { IThemeManager } from '@jupyterlab/apputils';
 
 /**
@@ -23,6 +23,26 @@ const extension: JupyterFrontEndPlugin<void> = {
       load: () => manager.loadCSS(style),
       unload: () => Promise.resolve(undefined)
     });
+
+    app.docRegistry.addFileType(
+      {
+        name: 'parquet',
+        displayName: 'parquet',
+        extensions: ['.parquet'],
+        icon: fileParquetAmphiIcon,
+        fileFormat: "base64",
+      }
+    );
+
+    app.docRegistry.addFileType(
+      {
+        name: 'excel',
+        displayName: 'Excel',
+        extensions: ['.xlsx', 'xls'],
+        icon: fileExcelAmphiIcon,
+        fileFormat: "base64",
+      }
+    );
 
     folderIcon.svgstr = folderAmphiIcon.svgstr;
     saveIcon.svgstr = saveAmphiIcon.svgstr;
