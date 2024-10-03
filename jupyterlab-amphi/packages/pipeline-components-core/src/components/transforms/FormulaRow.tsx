@@ -36,7 +36,6 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
         const [formulas, setFormulas] = useState(data.formulas || [{ columns: [], formula: '', type: 'expr' }]);
 
         useEffect(() => {
-            console.log("formulas :%o", formulas)
         }, [formulas]);
 
         const handleAddFormula = () => {
@@ -45,9 +44,8 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
         };
 
         const handleRemoveFormula = (index: number) => {
-            console.log("index :%o", index)
             const updatedFormulas = formulas.filter((_, i) => i !== index);
-            console.log("updatedFormulas :%o", updatedFormulas)
+
 
             setFormulas(updatedFormulas);
             handleChange(updatedFormulas, 'formulas');

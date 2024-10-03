@@ -125,7 +125,6 @@ export class CsvFileInput extends BaseCoreComponent {
   public generatePandasComponentCode({ config, outputName }): string {
     // Initialize an object to modify without affecting the original config
     let csvOptions = { ...config.csvOptions };
-    console.log("csvOptions.names %o", csvOptions.names);
 
     // Handle 'infer' option
     if (csvOptions.sep === 'infer') {
@@ -138,11 +137,10 @@ export class CsvFileInput extends BaseCoreComponent {
       csvOptions.header = config.header;
     }
 
-    console.log("config.names %o", csvOptions.names)
     if (csvOptions.names) {
       if (csvOptions.names.length > 0) {
         csvOptions.names = `['${csvOptions.names.join("', '")}'], index_col=False`;
-        console.log("csvOptions.names %o", csvOptions.names);
+
         csvOptions.header = 0;
       }
     }

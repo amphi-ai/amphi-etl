@@ -15,6 +15,12 @@
       "title": "Enable Debug Mode",
       "description": "Enable debug mode provide additional messages in the console.",
       "default": false
+    },
+    "defaultEngineBackend": {
+      "type": "string",
+      "title": "Default Engine for File Browser files",
+      "description": "This parameter defines which backeng engine is used by default when drag and dropping files form the file browser onto the canvas.",
+      "default": ""
     }
   },
   "additionalProperties": false,

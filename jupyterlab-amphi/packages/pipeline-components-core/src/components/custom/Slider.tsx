@@ -3,13 +3,16 @@ import React, { useContext, useEffect, useCallback, useState, useRef } from 'rea
 import type { GetRef, InputRef } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { KernelMessage } from '@jupyterlab/services';
+import { Widget } from '@lumino/widgets';
+import { OutputArea, OutputAreaModel } from '@jupyterlab/outputarea';
+import { RenderMimeRegistry } from '@jupyterlab/rendermime';
 
 import { Form, Table, ConfigProvider, Card, Input, Select, Row, Button, Typography, Modal, Col } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Handle, Position, useReactFlow, useStore, useStoreApi, NodeToolbar } from 'reactflow';
 import { bracesIcon, settingsIcon, playCircleIcon } from '../../icons';
 
-import { WidgetManager } from '@jupyter-widgets/jupyterlab-manager';
+import { WidgetManager, WidgetRenderer } from '@jupyter-widgets/jupyterlab-manager';
 
 export class Slider extends PipelineComponent<ComponentItem>() {
 
@@ -34,100 +37,63 @@ export class Slider extends PipelineComponent<ComponentItem>() {
         setNodes,
         handleChange,
         modalOpen,
-        setModalOpen
+        setModalOpen,
     }) => {
-        const widgetContainerRef = useRef<HTMLDivElement>(null);
-        const [widgetManagerReady, setWidgetManagerReady] = useState(false);
-
-        const widgetManagerRef = useRef<WidgetManager | null>(null);
+        const outputAreaRef = useRef(null);
 
         useEffect(() => {
-            const initializeWidgetManager = async () => {
-                await context.sessionContext.ready;
-                const kernel = context.sessionContext.session?.kernel;
-                if (!kernel) {
-                    console.log("No kernel available yet");
-                    return;
-                }
-                await kernel.ready;
+            if (modalOpen && context.sessionContext) {
+                const sessionContext = context.sessionContext;
 
-                if (!widgetManagerRef.current && context.sessionContext) {
-                    widgetManagerRef.current = new WidgetManager(
-                        rendermimeRegistry,
-                        context.sessionContext,
-                        { saveState: false }
-                    );
-                    setWidgetManagerReady(true);
-                }
-            };
-            initializeWidgetManager();
-        }, [context.sessionContext.session?.kernel, rendermimeRegistry]);
+                // Create an OutputAreaModel
+                const model = new OutputAreaModel();
 
-        useEffect(() => {
-            const executeCode = async () => {
-                if (!widgetManagerReady) {
-                    console.log("WidgetManager not ready yet");
-                    return;
-                }
-                await context.sessionContext.ready;
-                const kernel = context.sessionContext.session?.kernel;
-                if (!kernel) {
-                    console.log("No kernel available");
-                    return;
-                }
-                await kernel.ready;
+                // Initialize rendermime
+                const rendermime = rendermimeRegistry || new RenderMimeRegistry();
 
-                if (modalOpen) {
-                    const code = `
-import pandas as pd
-from ipywidgets import IntSlider
-slider = IntSlider()
+                // Create a WidgetManager and link it to the session and rendermime
+                const widgetManager = new WidgetManager(context.sessionContext, rendermime, {saveState: false});
+
+                // Add the widget renderer to rendermime
+                const outputArea = new OutputArea({
+                    model: model,
+                    rendermime: rendermimeRegistry || new RenderMimeRegistry(),
+                });
+                
+                // Attach the OutputArea to the DOM
+                if (outputAreaRef.current) {
+                    outputAreaRef.current.appendChild(outputArea.node);
+                }
+
+                // Execute code to create and display the slider
+                const code = `
+from ipywidgets import widgets
+slider = widgets.IntSlider(value=50, min=0, max=100, step=1, description='Test:')
 display(slider)
-`;
+            `;
 
-                    try {
-                        const future = kernel.requestExecute({ code: code });
+                // Execute the code and display the output
+                const future = sessionContext.session.kernel.requestExecute({ code });
+                outputArea.future = future;
 
-                        future.onIOPub = async (msg) => {
-                            if (msg.header.msg_type === 'display_data') {
-                                const content = msg.content as KernelMessage.IDisplayDataMsg['content'];
-                                if (content.data['application/vnd.jupyter.widget-view+json']) {
-                                    const widgetData = content.data['application/vnd.jupyter.widget-view+json'] as any;
-                                    const modelId = widgetData.model_id;
-                                    await renderWidget(modelId);
-                                }
-                            } else if (msg.header.msg_type === 'error') {
-                                console.error(`Kernel Error: ${msg.content.ename}: ${msg.content.evalue}`);
-                            }
-                        };
-                    } catch (error) {
-                        console.error("Error executing code:", error);
-                    }
-                }
-            };
+                future.done
+                    .then((reply) => {
+                        if (reply.content.status === 'ok') {
+                            console.log('Slider widget created successfully');
+                        } else {
+                            console.error('Failed to create slider widget:', reply.content);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error('Execution failed', error);
+                    });
 
-            executeCode();
-        }, [modalOpen, widgetManagerReady]);
-
-        const renderWidget = async (modelId) => {
-            if (!widgetManagerRef.current) {
-                console.error('WidgetManager not available');
-                return;
+                // Cleanup function
+                return () => {
+                    outputArea.dispose();
+                };
             }
-
-            try {
-                const model = await widgetManagerRef.current.get_model(modelId);
-                if (!model) {
-                    console.error('Model not found');
-                    return;
-                }
-
-                const view = await widgetManagerRef.current.create_view(model, {});
-                await widgetManagerRef.current.display_view(undefined, view, { el: widgetContainerRef.current });
-            } catch (error) {
-                console.error('Error rendering widget:', error);
-            }
-        };
+        }, [modalOpen, context.sessionContext, rendermimeRegistry]);
 
         return (
             <ConfigProvider
@@ -138,18 +104,16 @@ display(slider)
                 }}
             >
                 <Modal
-                    title="Slider"
+                    title="Kernel Slider"
                     open={modalOpen}
                     onOk={() => setModalOpen(false)}
                     onCancel={() => setModalOpen(false)}
                     width={900}
-                    footer={(_, { OkBtn }) => (
-                        <>
-                            <OkBtn />
-                        </>
-                    )}
+                    footer={null}
                 >
-                    <div ref={widgetContainerRef} />
+                    <div ref={outputAreaRef}>
+                        {/* This div will contain the output from the kernel, including the slider */}
+                    </div>
                 </Modal>
             </ConfigProvider>
         );

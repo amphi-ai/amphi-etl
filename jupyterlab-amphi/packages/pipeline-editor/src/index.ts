@@ -109,6 +109,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
 
     let enableExecution: boolean;
     let enableDebugMode: boolean;
+    let defaultEngineBackend: string;
 
     // Fetch the initial state of the settings.
     function loadSetting(setting: ISettingRegistry.ISettings): void {
@@ -121,7 +122,12 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
       console.log(
         `Settings extension: enableDebugMode is set to '${enableDebugMode}'`
       );
+      defaultEngineBackend = setting.get('defaultEngineBackend').composite as string;
+      console.log(
+        `Settings extension: defaultEngineBackend is set to '${enableDebugMode}'`
+      );
     }
+    
 
     Promise.all([app.restored, settings.load(EXTENSION_ID)])
       .then(([, settings]) => {

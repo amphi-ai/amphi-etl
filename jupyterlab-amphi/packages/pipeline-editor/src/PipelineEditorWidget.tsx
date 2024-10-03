@@ -191,6 +191,10 @@ const PipelineWrapper: React.FC<IProps> = ({
   };
 
   const getNodeId = () => `node_${+new Date()}`;
+  let defaultEngineBackend = settings.get('defaultEngineBackend').composite as boolean;
+  console.log(
+    `Settings extension in PipelineEditor: defaultEngineBackend is set to '${defaultEngineBackend}'`
+  );
 
   function PipelineFlow(context) {
 
@@ -441,7 +445,8 @@ const PipelineWrapper: React.FC<IProps> = ({
                   filePath: PipelineService.getRelativePath(context.context.sessionContext.path, filePath), // Relative path
                   lastUpdated: Date.now(),
                   customTitle: fileName,
-                  ...(nodeDefaults || {}) // Merge nodeDefaults into the data field
+                  ...(nodeDefaults || {}), // Merge nodeDefaults into the data field
+                  ...(defaultEngineBackend ? { backend: { engine: defaultEngineBackend } } : {}) // Store defaultEngineBackend in backend.engine
                 }
               };
 

@@ -26,7 +26,7 @@ export class CodeGenerator {
     flow: Flow,
     componentService: any,
     targetNodeId: string,
-    fromStart: boolean, 
+    fromStart: boolean,
     variablesAutoNaming: boolean
   ): { codeList: string[]; incrementalCodeList: { code: string; nodeId: string }[], executedNodes: Set<string> } => {
     // Initialization
@@ -57,101 +57,104 @@ export class CodeGenerator {
     });
 
     // Create node objects
-    const nodeObjects = this.createNodeObjects(flow, componentService, nodesToTraverse, nodesMap, variablesAutoNaming);
+    try {
+      const nodeObjects = this.createNodeObjects(flow, componentService, nodesToTraverse, nodesMap, variablesAutoNaming);
 
-    // Process node objects
-    for (const nodeObject of nodeObjects) {
-      // Add imports, dependencies, and functions
-      nodeObject.imports.forEach(importStatement => uniqueImports.add(importStatement));
-      nodeObject.dependencies.forEach(dep => uniqueDependencies.add(dep));
-      nodeObject.functions.forEach(func => functions.add(func));
+      // Process node objects
+      for (const nodeObject of nodeObjects) {
+        // Add imports, dependencies, and functions
+        nodeObject.imports.forEach(importStatement => uniqueImports.add(importStatement));
+        nodeObject.dependencies.forEach(dep => uniqueDependencies.add(dep));
+        nodeObject.functions.forEach(func => functions.add(func));
 
-      // Combine the code, imports, dependencies, and functions for the incremental code list
-      const nodeCode = [
-        ...nodeObject.imports,
-        ...nodeObject.functions,
-        nodeObject.code
-      ].join('\n');
+        // Combine the code, imports, dependencies, and functions for the incremental code list
+        const nodeCode = [
+          ...nodeObject.imports,
+          ...nodeObject.functions,
+          nodeObject.code
+        ].join('\n');
 
-      incrementalCodeList.push({ code: nodeCode, nodeId: nodeObject.id });
+        incrementalCodeList.push({ code: nodeCode, nodeId: nodeObject.id });
 
-      // Add code to codeList
-      codeList.push(nodeObject.code);
-      executedNodes.add(nodeObject.id);
+        // Add code to codeList
+        codeList.push(nodeObject.code);
+        executedNodes.add(nodeObject.id);
 
-      // Handle target node
-      if (nodeObject.id === targetNodeId) {
-        console.log(`Reached target node ${targetNodeId}`);
-        let displayCode = '';
-        if (nodeObject.type.includes('processor') || nodeObject.type.includes('input')) {
-          if (nodeObject.type.includes('documents')) {
-            if (!fromStart) {
-              console.log(`fromStart is false, resetting code to last code generated for target node.`);
-              codeList.length = 0;
-              codeList.push(nodeObject.code);
-              executedNodes.clear();
-              executedNodes.add(nodeObject.id);
+        // Handle target node
+        if (nodeObject.id === targetNodeId) {
+          console.log(`Reached target node ${targetNodeId}`);
+          let displayCode = '';
+          if (nodeObject.type.includes('processor') || nodeObject.type.includes('input')) {
+            if (nodeObject.type.includes('documents')) {
+              if (!fromStart) {
+                console.log(`fromStart is false, resetting code to last code generated for target node.`);
+                codeList.length = 0;
+                codeList.push(nodeObject.code);
+                executedNodes.clear();
+                executedNodes.add(nodeObject.id);
+              }
+              displayCode = `\n_amphi_display_documents_as_html(${nodeObject.outputName})`;
+            } else {
+              if (!fromStart) {
+                console.log(`fromStart is false, resetting code to last code generated for target node.`);
+                codeList.length = 0;
+                codeList.push(nodeObject.code);
+                executedNodes.clear();
+                executedNodes.add(nodeObject.id);
+              }
+              displayCode = `\n__amphi_display_pandas_dataframe(${nodeObject.outputName})`;
             }
-            displayCode = `\n_amphi_display_documents_as_html(${nodeObject.outputName})`;
-          } else {
-            if (!fromStart) {
-              console.log(`fromStart is false, resetting code to last code generated for target node.`);
-              codeList.length = 0;
-              codeList.push(nodeObject.code);
-              executedNodes.clear();
-              executedNodes.add(nodeObject.id);
-            }
-            displayCode = `\n__amphi_display_pandas_dataframe(${nodeObject.outputName})`;
-          }
 
-          // Append display code to both codeList and the last element of incrementalCodeList
-          codeList.push(displayCode);
-          if (incrementalCodeList.length > 0) {
-            incrementalCodeList[incrementalCodeList.length - 1].code += displayCode;
+            // Append display code to both codeList and the last element of incrementalCodeList
+            codeList.push(displayCode);
+            if (incrementalCodeList.length > 0) {
+              incrementalCodeList[incrementalCodeList.length - 1].code += displayCode;
+            }
           }
         }
       }
+
+      // Generate code for special nodes
+      let envVariablesCode = '';
+      envVariablesMap.forEach((node) => {
+        const component = componentService.getComponent(node.type);
+        const config: any = node.data as any;
+        envVariablesCode += component.generateComponentCode({ config });
+        component.provideImports({ config }).forEach(importStatement => uniqueImports.add(importStatement));
+      });
+
+      let connectionsCode = '';
+      connectionsMap.forEach((node) => {
+        const component = componentService.getComponent(node.type);
+        const config: any = node.data as any;
+        connectionsCode += component.generateComponentCode({ config });
+        component.provideImports({ config }).forEach(importStatement => uniqueImports.add(importStatement));
+      });
+
+      // Prepare final code list
+      const currentDate = new Date();
+      const dateString = currentDate.toISOString().replace(/T/, ' ').replace(/\..+/, '');
+      const dateComment = `# Source code generated by Amphi\n# Date: ${dateString}`;
+      const additionalImports = `# Additional dependencies: ${Array.from(uniqueDependencies).join(', ')}`;
+
+      const generatedCodeList = [
+        dateComment,
+        additionalImports,
+        ...Array.from(uniqueImports),
+        envVariablesCode,
+        connectionsCode,
+        ...Array.from(functions),
+        ...codeList
+      ].filter(Boolean); // Remove empty strings
+
+      // Format variables in the generated code
+      const formattedCodeList = generatedCodeList.map(code => this.formatVariables(code));
+
+      return { codeList: formattedCodeList, incrementalCodeList, executedNodes };
+    } catch (error) {
+      throw new Error(`Error in createNodeObjects: ${error}`);
     }
 
-    // Generate code for special nodes
-    let envVariablesCode = '';
-    envVariablesMap.forEach((node) => {
-      const component = componentService.getComponent(node.type);
-      const config: any = node.data as any;
-      envVariablesCode += component.generateComponentCode({ config });
-      component.provideImports({ config }).forEach(importStatement => uniqueImports.add(importStatement));
-    });
-
-    let connectionsCode = '';
-    connectionsMap.forEach((node) => {
-      const component = componentService.getComponent(node.type);
-      const config: any = node.data as any;
-      connectionsCode += component.generateComponentCode({ config });
-      component.provideImports({ config }).forEach(importStatement => uniqueImports.add(importStatement));
-    });
-
-    // Prepare final code list
-    const currentDate = new Date();
-    const dateString = currentDate.toISOString().replace(/T/, ' ').replace(/\..+/, '');
-    const dateComment = `# Source code generated by Amphi\n# Date: ${dateString}`;
-    const additionalImports = `# Additional dependencies: ${Array.from(uniqueDependencies).join(', ')}`;
-
-    const generatedCodeList = [
-      dateComment,
-      additionalImports,
-      ...Array.from(uniqueImports),
-      envVariablesCode,
-      connectionsCode,
-      ...Array.from(functions),
-      ...codeList
-    ].filter(Boolean); // Remove empty strings
-
-    // Format variables in the generated code
-    const formattedCodeList = generatedCodeList.map(code => this.formatVariables(code));
-
-    console.log("incrementalCodeList %o", incrementalCodeList);
-
-    return { codeList: formattedCodeList, incrementalCodeList, executedNodes };
   };
 
   static createNodeObjects = (
@@ -182,7 +185,7 @@ export class CodeGenerator {
 
     function getOutputName(node: Node, componentId: string, variablesAutoNaming: boolean): string {
       let name = '';
-      if(variablesAutoNaming) {
+      if (variablesAutoNaming) {
         name = `${node.type}${incrementCounter(componentId)}`
       } else {
         name = `${node.data.nameId}`
@@ -285,11 +288,20 @@ export class CodeGenerator {
 
   static generateCode(pipelineJson: string, commands: any, componentService: any, variablesAutoNaming: boolean) {
 
-    const { codeList, incrementalCodeList, executedNodes } = this.generateCodeForNodes(PipelineService.filterPipeline(pipelineJson), componentService, 'none', true, variablesAutoNaming);
+    try {
+      const { codeList, incrementalCodeList, executedNodes } = this.generateCodeForNodes(
+        PipelineService.filterPipeline(pipelineJson),
+        componentService,
+        'none',
+        true,
+        variablesAutoNaming
+      );
+      const code = codeList.join('\n');
 
-    const code = codeList.join('\n');
-
-    return code;
+      return code;
+    } catch (error) {
+      throw new Error(`Error in generateCodeForNodes: ${error}`);
+    }
 
   }
 
@@ -346,58 +358,59 @@ export class CodeGenerator {
     }
 
     // Transition
-    if(variablesAutoNaming) {
+    if (variablesAutoNaming) {
       fromStart = true;
     }
 
     // Generate code and collect executed node IDs
-    const { codeList, incrementalCodeList, executedNodes } = this.generateCodeForNodes(
-      flow,
-      componentService,
-      targetNode,
-      fromStart,
-      variablesAutoNaming
-    );
-
-    if (fromStart) {
-      console.log(
-        "Generating code from START due to updates in previous nodes."
+    try {
+      // Generate code and collect executed node IDs
+      const { codeList, incrementalCodeList, executedNodes } = this.generateCodeForNodes(
+        flow,
+        componentService,
+        targetNode,
+        fromStart,
+        variablesAutoNaming
       );
-      const command = 'pipeline-metadata-panel:delete-all';
-      commands.execute(command, {}).catch((reason) => {
-        console.error(
-          `An error occurred during the execution of ${command}.\n${reason}`
+
+      if (fromStart) {
+        console.log(
+          "Generating code from start due to updates in previous nodes."
         );
-      });
-    } else {
-      console.log(
-        "No updates in previous nodes. Generating code for target node only."
-      );
-    }
-
-    console.log("Code generated %o", codeList);
-
-    // After execution, update lastExecuted for all executed nodes
-    const currentTimestamp = Date.now();
-    executedNodes.forEach((nodeId) => {
-      const node = nodesMap.get(nodeId);
-      if (node && node.data) {
-        node.data.lastExecuted = currentTimestamp;
-        console.log(`Updated lastExecuted for node ${nodeId}`);
+        const command = 'pipeline-metadata-panel:delete-all';
+        commands.execute(command, {}).catch((reason) => {
+          console.error(
+            `An error occurred during the execution of ${command}.\n${reason}`
+          );
+        });
+      } else {
+        console.log(
+          "No updates in previous nodes. Generating code for target node only."
+        );
       }
-    });
 
-    // Also update lastExecuted for the target node
-    const targetNodeData = nodesMap.get(targetNode)?.data;
-    if (targetNodeData) {
-      targetNodeData.lastExecuted = currentTimestamp;
-      console.log(`Updated lastExecuted for target node ${targetNode}`);
-    }
+      // After execution, update lastExecuted for all executed nodes
+      const currentTimestamp = Date.now();
+      executedNodes.forEach((nodeId) => {
+        const node = nodesMap.get(nodeId);
+        if (node && node.data) {
+          node.data.lastExecuted = currentTimestamp;
+        }
+      });
 
-    if (incremental) {
-      return incrementalCodeList;
-    } else {
-      return codeList;
+      // Also update lastExecuted for the target node
+      const targetNodeData = nodesMap.get(targetNode)?.data;
+      if (targetNodeData) {
+        targetNodeData.lastExecuted = currentTimestamp;
+      }
+
+      if (incremental) {
+        return incrementalCodeList;
+      } else {
+        return codeList;
+      }
+    } catch (error) {
+      throw new Error(`Error in generateCodeForNodes: ${error}`);
     }
 
   }
