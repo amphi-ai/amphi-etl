@@ -405,30 +405,35 @@ ${args.code}
 
         commands.addCommand(CommandIDs.runPipelineUntil, {
           label: 'Run pipeline until ...',
-
+        
           execute: async args => {
-
-            const current = getCurrent(args);
-            if (!current) {
-              return;
-            }
-
-            const nodeId = args.nodeId.toString();
-            const context = args.context;
-            const codeList = CodeGenerator.generateCodeUntil(current.context.model.toString(), commands, componentService, nodeId, false, false);
-            const code = codeList.join('\n');
-
-            commands.execute('pipeline-editor:run-pipeline', { code }).then(result => {
-              // This block runs only if the pipeline succeeds
-              console.log('Pipeline executed successfully:', result);
-
-
-
-            }).catch(reason => {
-              console.error(
-                `An error occurred during the execution of 'pipeline-editor:run-pipeline'.\n${reason}`
+            try {
+              const current = getCurrent(args);
+              if (!current) {
+                throw new Error('No current context available.');
+              }
+        
+              const nodeId = args.nodeId.toString();
+              const context = args.context;
+              const codeList = CodeGenerator.generateCodeUntil(
+                current.context.model.toString(),
+                commands,
+                componentService,
+                nodeId,
+                false,
+                false
               );
-            });
+              const code = codeList.join('\n');
+        
+              await commands.execute('pipeline-editor:run-pipeline', { code });
+        
+              // Handle successful pipeline run
+              console.log('Pipeline executed successfully');
+        
+            } catch (reason) {
+              console.error(`An error occurred during pipeline execution: ${reason}`);
+              throw reason;
+            }
           }
         });
 
