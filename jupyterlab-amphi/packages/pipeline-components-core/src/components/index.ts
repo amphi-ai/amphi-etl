@@ -45,10 +45,6 @@ export { Pivot } from './transforms/Pivot';
 export { FormulaRow } from './transforms/FormulaRow';
 export { DateTimeConverter } from './transforms/DateTimeConverter';
 
-// Custom
-export { PyGWalker } from './custom/PyGWalker';
-export { Slider } from './custom/Slider';
-
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';
 export { CsvFileOutput } from './outputs/files/CsvFileOutput';
