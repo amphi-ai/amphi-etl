@@ -92,7 +92,28 @@ export class Filter extends BaseCoreComponent {
         } else {
           queryExpression = `${columnReference} ${condition} ${conditionValue}`;
         }
-        code += `${outputName} = ${inputName}.query("${queryExpression}")`;
+
+        // Use boolean indexing instead of query
+        switch (condition) {
+          case "==":
+            code += `${outputName} = ${inputName}[${inputName}['${columnReference}'] == ${conditionValue}]`;
+            break;
+          case "!=":
+            code += `${outputName} = ${inputName}[${inputName}['${columnReference}'] != ${conditionValue}]`;
+            break;
+          case ">":
+            code += `${outputName} = ${inputName}[${inputName}['${columnReference}'] > ${conditionValue}]`;
+            break;
+          case "<":
+            code += `${outputName} = ${inputName}[${inputName}['${columnReference}'] < ${conditionValue}]`;
+            break;
+          case ">=":
+            code += `${outputName} = ${inputName}[${inputName}['${columnReference}'] >= ${conditionValue}]`;
+            break;
+          case "<=":
+            code += `${outputName} = ${inputName}[${inputName}['${columnReference}'] <= ${conditionValue}]`;
+            break;
+        }
         break;
       case "contains":
       case "not contains":
