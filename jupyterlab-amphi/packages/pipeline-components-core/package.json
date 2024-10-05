@@ -33,7 +33,8 @@
     "lib",
     "lib/components/",
     "style/*.css",
-    "style/index.js"
+    "style/index.js",
+    "style/icons/"
   ],
   "scripts": {
     "build": "jlpm run build:lib && jlpm run build:labextension:dev",
