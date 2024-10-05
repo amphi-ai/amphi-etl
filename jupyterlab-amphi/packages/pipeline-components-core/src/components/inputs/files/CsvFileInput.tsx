@@ -44,16 +44,20 @@ export class CsvFileInput extends BaseCoreComponent {
           ],
         },
         {
-          type: "selectCustomizable",
-          tooltip: "Row number containing column labels and marking the start of the data (zero-indexed).",
-          label: "Header",
-          id: "csvOptions.header",
-          placeholder: "Default: first line",
-          options: [
-            { value: "None", label: "None" },
-            { value: "0", label: "First line" },
-            { value: "1", label: "Second Line" }
-          ],
+          type: "inputNumber",
+          tooltip: "Number of rows of file to read. Useful for reading pieces of large files.",
+          label: "Rows number",
+          id: "csvOptions.nrows",
+          placeholder: "Default: all",
+          advanced: true
+        },
+        {
+          type: "selectTokenization",
+          tooltip: "Sequence of column labels to apply.",
+          label: "Column names",
+          id: "csvOptions.names",
+          placeholder: "Type header fields (ordered and comma-separated)",
+          options: [],
           advanced: true
         },
         {
@@ -118,11 +122,19 @@ export class CsvFileInput extends BaseCoreComponent {
     return ["import pandas as pd"];
   }
 
+  // Main generation method
   public generateComponentCode({ config, outputName }): string {
-    return this.generatePandasComponentCode({ config, outputName });
+    const optionsString = this.generateOptionsCode({ config });
+
+    const code = `
+# Reading data from ${config.filePath}
+${outputName} = pd.read_csv("${config.filePath}"${optionsString ? `, ${optionsString}` : ''}).convert_dtypes()
+`;
+
+    return code;
   }
 
-  public generatePandasComponentCode({ config, outputName }): string {
+  public generateOptionsCode({ config }): string {
     // Initialize an object to modify without affecting the original config
     let csvOptions = { ...config.csvOptions };
 
@@ -137,20 +149,15 @@ export class CsvFileInput extends BaseCoreComponent {
       csvOptions.header = config.header;
     }
 
-    if (csvOptions.names) {
-      if (csvOptions.names.length > 0) {
-        csvOptions.names = `['${csvOptions.names.join("', '")}'], index_col=False`;
-
-        csvOptions.header = 0;
-      }
+    if (csvOptions.names && csvOptions.names.length > 0) {
+      csvOptions.names = `['${csvOptions.names.join("', '")}'], index_col=False`;
+      csvOptions.header = 0;
     }
 
     // Initialize storage_options if not already present
     let storageOptions = csvOptions.storage_options || {};
-
     storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
 
-    // Only add storage_options to csvOptions if it's not empty
     if (Object.keys(storageOptions).length > 0) {
       csvOptions.storage_options = storageOptions;
     }
@@ -160,26 +167,30 @@ export class CsvFileInput extends BaseCoreComponent {
       .filter(([key, value]) => value !== null && value !== '' && !(key === 'sep' && value === 'infer') && (Array.isArray(value) ? value.length > 0 : true))
       .map(([key, value]) => {
         if (key === 'header' && (value === '0' || value === '1' || value === 'None')) {
-          return `${key}=${value}`; // Handle header as string without quotes
+          return `${key}=${value}`;
         } else if (key === 'names') {
-          return `${key}=${value}`; // Directly use the formatted names list
+          return `${key}=${value}`;
         } else if (key === 'storage_options') {
-          return `${key}=${JSON.stringify(value)}`; 
+          return `${key}=${JSON.stringify(value)}`;
         } else if (typeof value === 'string' && value !== 'None') {
-          return `${key}="${value}"`; // Handle strings with quotes, except for 'None'
+          return `${key}="${value}"`;
         } else {
-          return `${key}=${value}`; // Handle numbers and Python's None without quotes
+          return `${key}=${value}`;
         }
       })
       .join(', ');
 
-    // Generate the Python code
-    const code = `
-# Reading data from ${config.filePath}
-${outputName} = pd.read_csv("${config.filePath}"${optionsString ? `, ${optionsString}` : ''}).convert_dtypes()
-`;
-    return code;
+    return optionsString;
   }
 
-
+  public generateSampledComponentCode({ config, outputName, nrows }): string {
+    config = {
+      ...config,
+      csvOptions: {
+        ...config.csvOptions,
+        nrows: nrows
+      }
+    };
+    return this.generateComponentCode({ config, outputName });
+  }
 }
