@@ -1,6 +1,6 @@
 {
   "name": "@amphi/pipeline-editor",
-  "version": "0.7.43",
+  "version": "0.7.44",
   "description": "Amphi Pipeline Editor",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {
@@ -52,7 +52,7 @@
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@amphi/pipeline-components-manager": "file:./../pipeline-components-manager",
+    "@amphi/pipeline-components-manager": "^0.7.44",
     "@dagrejs/dagre": "^1.0.4",
     "@jupyter-widgets/jupyterlab-manager": "3.1.9",
     "@jupyterlab/application": "^4.2.2",
@@ -106,5 +106,6 @@
         "singleton": true
       }
     }
-  }
+  },
+  "gitHead": "ae6768c043298b2a5a2046ccacfb5412c2adcc8c"
 }

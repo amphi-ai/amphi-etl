@@ -1,6 +1,6 @@
 {
   "name": "@amphi/pipeline-components-manager",
-  "version": "0.7.43",
+  "version": "0.7.44",
   "description": "Amphi Pipeline Components Manager",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {
@@ -102,5 +102,6 @@
         "bundle": false
       }
     }
-  }
+  },
+  "gitHead": "ae6768c043298b2a5a2046ccacfb5412c2adcc8c"
 }
