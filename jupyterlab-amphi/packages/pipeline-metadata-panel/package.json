@@ -1,6 +1,6 @@
 {
   "name": "@amphi/pipeline-metadata-panel",
-  "version": "0.7.44",
+  "version": "0.7.45",
   "description": "Amphi Metadata Panel",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {
@@ -49,7 +49,7 @@
     "watch:src": "tsc -w"
   },
   "dependencies": {
-    "@amphi/pipeline-editor": "^0.7.44",
+    "@amphi/pipeline-editor": "^0.7.45",
     "@jupyterlab/application": "^4.0.0",
     "@jupyterlab/apputils": "^4.0.0",
     "@jupyterlab/console": "^4.0.0",
