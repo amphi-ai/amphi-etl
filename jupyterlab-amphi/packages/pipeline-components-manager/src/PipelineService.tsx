@@ -179,25 +179,56 @@ except ImportError:
     return relativePath;
   }
 
-  static getComponentIdForFileExtension(fileExtension: string, componentService: any): { id: string | null, default: any | null } {
+  static getComponentIdForFileExtension(
+    fileExtension: string, 
+    componentService: any, 
+    defaultEngineBackend: string
+  ): { id: string | null, default: any | null } {
     // Extract file extension from item.name
-
     if (!fileExtension) return { id: null, default: null }; // Return nulls if there is no file extension
-
+  
     // Retrieve all components
     const components = componentService.getComponents();
-
+  
+    // List to store matching components
+    const matchingComponents = [];
+  
     // Iterate through all components
     for (const component of components) {
       // Check if the component has the _fileDrop attribute and it contains the file extension
       if (component._fileDrop && component._fileDrop.includes(fileExtension.toLowerCase())) {
-        // Return the component's _id and _default if the file extension matches
+        // Store the component in the list if the file extension matches
+        matchingComponents.push(component);
+      }
+    }
+  
+    // If only one matching component is found, return it immediately
+    console.log("Components matching: %o", matchingComponents);
+  
+    if (matchingComponents.length === 1) {
+      const component = matchingComponents[0];
+      return { id: component._id, default: component._default || null };
+    }
+  
+    // If multiple matching components are found, check for the one with backend.engine matching defaultEngineBackend
+    for (const component of matchingComponents) {
+      console.log("Component._default?.backend?.engine: %o",  component._default?.backend?.engine);
+  
+      if (component._default?.backend?.engine === defaultEngineBackend) {
         return { id: component._id, default: component._default || null };
       }
     }
-
-    return { id: null, default: null }; // Return nulls if no matching component is found
+  
+    // If no match is found for defaultEngineBackend, return the first matching component
+    if (matchingComponents.length > 0) {
+      const component = matchingComponents[0];
+      return { id: component._id, default: component._default || null };
+    }
+  
+    // Return nulls if no matching component is found
+    return { id: null, default: null };
   }
+  
 
   static getLastUpdatedInPath(flow: Flow, targetId: string): string[] {
     const visited = new Set<string>();

@@ -191,7 +191,7 @@ const PipelineWrapper: React.FC<IProps> = ({
   };
 
   const getNodeId = () => `node_${+new Date()}`;
-  let defaultEngineBackend = settings.get('defaultEngineBackend').composite as boolean;
+  let defaultEngineBackend = settings.get('defaultEngineBackend').composite as string;
   console.log(
     `Settings extension in PipelineEditor: defaultEngineBackend is set to '${defaultEngineBackend}'`
   );
@@ -432,7 +432,7 @@ const PipelineWrapper: React.FC<IProps> = ({
               return;
             }
 
-            const { id: nodeType, default: nodeDefaults } = PipelineService.getComponentIdForFileExtension(fileExtension, componentService);
+            const { id: nodeType, default: nodeDefaults } = PipelineService.getComponentIdForFileExtension(fileExtension, componentService, defaultEngineBackend);
 
             // Check if nodeType exists
             if (nodeType) {
