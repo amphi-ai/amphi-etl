@@ -72,6 +72,7 @@ export class Filter extends BaseCoreComponent {
 # Filter rows based on condition
 `;
     let queryExpression: string;
+    let conditionValueReference: string;
     let columnReference: string;
 
     switch (condition) {
@@ -81,37 +82,37 @@ export class Filter extends BaseCoreComponent {
       case "<":
       case ">=":
       case "<=":
-        columnReference = /[^a-zA-Z0-9_]/.test(columnName) ? `\`${columnName}\`` : columnName;
+        columnReference = `'${columnName}'`;
 
         // If columnType is not a string or category, don't wrap into quotes
         if (enforceString) {
-          queryExpression = `${columnReference} ${condition} '${conditionValue}'`;
+          conditionValueReference = `'${conditionValue}'`;
         }
-        else if (columnType === 'string' || columnType === 'category') {
-          queryExpression = `${columnReference} ${condition} '${conditionValue}'`;
+        else if (columnType === 'string' || columnType === 'category' || columnType === 'object') {
+          conditionValueReference = `'${conditionValue}'`;
         } else {
-          queryExpression = `${columnReference} ${condition} ${conditionValue}`;
+          conditionValueReference = `${conditionValue}`;
         }
 
         // Use boolean indexing instead of query
         switch (condition) {
           case "==":
-            code += `${outputName} = ${inputName}[${inputName}['${columnReference}'] == ${conditionValue}]`;
+            code += `${outputName} = ${inputName}[${inputName}[${columnReference}] == ${conditionValueReference}]`;
             break;
           case "!=":
-            code += `${outputName} = ${inputName}[${inputName}['${columnReference}'] != ${conditionValue}]`;
+            code += `${outputName} = ${inputName}[${inputName}[${columnReference}] != ${conditionValueReference}]`;
             break;
           case ">":
-            code += `${outputName} = ${inputName}[${inputName}['${columnReference}'] > ${conditionValue}]`;
+            code += `${outputName} = ${inputName}[${inputName}[${columnReference}] > ${conditionValueReference}]`;
             break;
           case "<":
-            code += `${outputName} = ${inputName}[${inputName}['${columnReference}'] < ${conditionValue}]`;
+            code += `${outputName} = ${inputName}[${inputName}[${columnReference}] < ${conditionValueReference}]`;
             break;
           case ">=":
-            code += `${outputName} = ${inputName}[${inputName}['${columnReference}'] >= ${conditionValue}]`;
+            code += `${outputName} = ${inputName}[${inputName}[${columnReference}] >= ${conditionValueReference}]`;
             break;
           case "<=":
-            code += `${outputName} = ${inputName}[${inputName}['${columnReference}'] <= ${conditionValue}]`;
+            code += `${outputName} = ${inputName}[${inputName}[${columnReference}] <= ${conditionValueReference}]`;
             break;
         }
         break;

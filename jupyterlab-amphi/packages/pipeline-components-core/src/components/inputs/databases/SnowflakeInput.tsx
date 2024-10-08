@@ -128,8 +128,8 @@ ${connectionName} = sqlalchemy.create_engine(URL(
   public generateComponentCode({ config, outputName }): string {
     const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
     const tableReference = (config.schema && config.schema.toLowerCase() !== 'public')
-      ? `${config.schema}.${config.tableName.value}`
-      : config.tableName.value;
+      ? `"${config.schema}"."${config.tableName.value}"`
+      : `"${config.tableName.value}"`;
 
     const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim()
       ? config.sqlQuery
