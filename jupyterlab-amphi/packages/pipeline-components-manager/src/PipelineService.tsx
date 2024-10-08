@@ -202,9 +202,6 @@ except ImportError:
       }
     }
   
-    // If only one matching component is found, return it immediately
-    console.log("Components matching: %o", matchingComponents);
-  
     if (matchingComponents.length === 1) {
       const component = matchingComponents[0];
       return { id: component._id, default: component._default || null };
@@ -274,8 +271,6 @@ except ImportError:
       return acc.concat(variables.map(variable => variable.name));
     }, []);
 
-    console.log("variablesList %o", variablesList);
-
     return variablesList;
   }
 
@@ -286,7 +281,6 @@ except ImportError:
     const connectionsList = connectionsNodes.reduce((acc, node) => {
       return acc.concat(node.data || []);
     }, []);
-    console.log("connectionsList %o", connectionsList);
     // const envFileNodes = flow.nodes.filter(node => node.type === 'envFile' );
     return connectionsList;
   }
@@ -298,7 +292,6 @@ except ImportError:
     components.forEach(component => {
       if (component._form && component._form.fields) {
         component._form.fields.forEach(field => {
-          console.log("field checking %o", field)
           if (field.connection && !field.ignoreConnection) {
             if (!connectionMap[field.connection]) {
               connectionMap[field.connection] = [];

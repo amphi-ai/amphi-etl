@@ -339,7 +339,6 @@ const PipelineWrapper: React.FC<IProps> = ({
 
     function generateUniqueNodeName(type: string, nodes: any): string {
 
-      console.log("generateUniqueNodeName %o", nodes)
       // Filter nodes of the same type with a name
       const existingNodesOfType = nodes.filter(
         node => node.type === type && node.data?.nameId
@@ -392,13 +391,10 @@ const PipelineWrapper: React.FC<IProps> = ({
               const contentsManager = new ContentsManager();
               try {
                 const file = await contentsManager.get(filePath);
-                console.log('File %o:', file);
 
                 const content = file.content;
-                console.log('File Content:', content);
 
                 const fileData = JSON.parse(content);
-                console.log("fileData %o", fileData)
 
                 const { type: nodeType, data: nodeData } = fileData.component;
 
@@ -433,6 +429,7 @@ const PipelineWrapper: React.FC<IProps> = ({
             }
 
             const { id: nodeType, default: nodeDefaults } = PipelineService.getComponentIdForFileExtension(fileExtension, componentService, defaultEngineBackend);
+            const defaultConfig = componentService.getComponent(nodeType)['_default']
 
             // Check if nodeType exists
             if (nodeType) {
@@ -441,6 +438,7 @@ const PipelineWrapper: React.FC<IProps> = ({
                 type: nodeType,
                 position: adjustedPosition,
                 data: {
+                  ...defaultConfig,
                   nameId: generateUniqueNodeName(nodeType, nodes),
                   filePath: PipelineService.getRelativePath(context.context.sessionContext.path, filePath), // Relative path
                   lastUpdated: Date.now(),
@@ -485,8 +483,9 @@ const PipelineWrapper: React.FC<IProps> = ({
         const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
         const type = event.dataTransfer.getData('application/reactflow');
         const config = JSON.parse(event.dataTransfer.getData('additionalData'));
+        const nodeId = getNodeId();
 
-        console.log("config %o", config)
+        const defaultConfig = componentService.getComponent(type)['_default']
 
         // check if the dropped element is valid
         if (typeof type === 'undefined' || !type) {
@@ -497,11 +496,13 @@ const PipelineWrapper: React.FC<IProps> = ({
           x: event.clientX - reactFlowBounds.left,
           y: event.clientY - reactFlowBounds.top,
         });
+
         const newNode = {
-          id: getNodeId(),
+          id: nodeId,
           type,
           position,
           data: {
+            ...defaultConfig,
             nameId: generateUniqueNodeName(type, nodes),
             ...config,
             lastUpdated: Date.now(), // current timestamp in milliseconds
@@ -517,7 +518,6 @@ const PipelineWrapper: React.FC<IProps> = ({
       (viewport) => {
         const updatedPipeline = { ...pipeline };
         updatedPipeline['pipelines'][0]['flow']['viewport'] = viewport;
-        console.log("update viewport")
         context.context.model.fromJSON(updatedPipeline);
       },
       [pipeline, context]
@@ -670,8 +670,6 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
           accept: true
         })],
       });
-
-      console.log("result %o", result)
 
       if (result.button.label === 'Open in new file') {
         await saveAsFile();

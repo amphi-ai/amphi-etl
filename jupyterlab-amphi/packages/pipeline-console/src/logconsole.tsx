@@ -119,7 +119,6 @@ export class PipelineConsolePanel
         case "data":
           dateTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size"/>} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{date}</Tag>;
           const parser = new DOMParser();
-          console.log("content %o", content);
     
           const doc = parser.parseFromString(content, 'text/html');
           const firstDiv = doc.querySelector('div');

@@ -140,12 +140,7 @@ export function useCopyPaste<NodeData, EdgeData>() {
         ]);
       } else if (!parsedData) {
         // Handle plain text paste
-        console.log("plain text")
         const activeElement = document.activeElement as HTMLElement;
-        console.log("active element %o", activeElement)
-        console.log("active element tagname %o", activeElement.tagName)
-        console.log("text %o", text)
-        
 
         if (activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA')) {
           (activeElement as HTMLInputElement | HTMLTextAreaElement).value += text;
@@ -154,11 +149,9 @@ export function useCopyPaste<NodeData, EdgeData>() {
           const event = new Event('input', { bubbles: true });
           activeElement.dispatchEvent(event);
         } else {
-          console.log("Pasted text: ", text);
         }
       } else {
         // Fallback to normal text paste if it's not nodes and edges
-        console.log("fallback to normal");
       }
     } catch (error) {
       console.error("Failed to read clipboard contents: ", error);

@@ -223,11 +223,8 @@ const pipelines: JupyterFrontEndPlugin<void> = {
                     // Filter and process kernel messages here
                     // For example, args.msg.header.msg_type might be 'stream' for log messages
 
-                    // console.log("MESSAGE %o", args.msg);
-
                     if (args.msg.header.msg_type === 'execute_result' || args.msg.header.msg_type === 'display_data') {
                       // Assert the message type to IExecuteResultMsg or IDisplayDataMsg to access 'data'
-                      console.log("NEW LOG args.msg %o", args.msg)
                       const content = args.msg.content as KernelMessage.IExecuteResultMsg['content'] | KernelMessage.IDisplayDataMsg['content'];
                       if (content.data['text/html']) {
                         manager.panel.onNewLog(formatLogDate(args.msg.header.date), session.name, "data", content.data['text/html'])

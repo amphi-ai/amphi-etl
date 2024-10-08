@@ -28,7 +28,6 @@ import { PipelineService } from './PipelineService';
 const shouldDisplayField = (field, values) => {
 
   if (!field.condition) {
-    // console.log("No condition for field, displaying:", field.id);
     return true;
   }
 
@@ -41,14 +40,6 @@ const shouldDisplayField = (field, values) => {
     const matches = Array.isArray(fieldConditionValue)
       ? fieldConditionValue.includes(formValue)
       : formValue === fieldConditionValue;
-
-    /*
-  console.log(`Checking condition for key '${key}':`, {
-    fieldConditionValue,
-    formValue,
-    matches
-  });
-  */
 
     return matches;
   });
@@ -131,8 +122,6 @@ export const GenerateUIFormComponent = React.memo(({
   setModalOpen
 }: FormComponentProps) => {
 
-  // console.log("GenerateUIFormComponent");
-
   const stopPropagation = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
   }, []);
@@ -199,8 +188,6 @@ export const GenerateUIInputs = React.memo(({
   advanced,
   formValues
 }: UIInputsProps) => {
-
-  // console.log("GenerateUIInputs")
 
   const [connections, setConnections] = useState([]);
   const [optionsConnections, setOptionsConnections] = useState<Record<string, any[]>>({});
@@ -474,14 +461,7 @@ export default function ConfigModal({
 
   const [fieldsForm] = Form.useForm();
   const [formValues, setFormValues] = useState(fieldsForm.getFieldsValue());
-
-  /*
-  useEffect(() => {
-    console.log("changed form")
-    setFormValues(fieldsForm.getFieldsValue());
-  }, [fieldsForm]);
-  */
-
+  
   return (
     <>
       <Modal
@@ -502,7 +482,6 @@ export default function ConfigModal({
             form={fieldsForm}
             layout="vertical"
             onValuesChange={(_, values) => {
-              console.log("onValuesChange %o", values);
               setFormValues(values);
             }}
           >

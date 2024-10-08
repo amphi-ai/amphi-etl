@@ -50,21 +50,6 @@ export const useVariableAutoComplete = ({ field, value, handleChange, context, a
             return false;
         }
 
-        /*
-        if (inputValue.endsWith('{')) {
-          setOpenValue(true);
-          return true;
-        } else {
-          setOpenValue(false);
-          const lastDollarIndex = inputValue.lastIndexOf('{');
-          if (lastDollarIndex !== -1 && lastDollarIndex < inputValue.length - 1) {
-            const searchTerm = inputValue.substring(lastDollarIndex + 1);
-            // console.log("Option: %o", option);
-            return option.value.startsWith(searchTerm);
-          }
-          return false;
-        }
-        */
     };
 
     const renderTitle = (title: string) => <span>{title}</span>;

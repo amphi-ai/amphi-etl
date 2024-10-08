@@ -21,12 +21,10 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
     useEffect(() => {
         const fetchedComponents = componentService.getComponents();
         setComponents(fetchedComponents);
-        console.log('Fetched components:', fetchedComponents);
     }, [componentService]);
 
     const onDragStart = (event: React.DragEvent, nodeType: string, config: any) => {
         event.dataTransfer.setData('application/reactflow', nodeType);
-        console.log("config %o", config)
         event.dataTransfer.setData('additionalData', config);
         event.dataTransfer.effectAllowed = 'move';
     };
@@ -50,7 +48,6 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
                 result[category]['_'].push(component);
             }
         });
-        console.log('Categorized components:', result);
         return result;
     }, [components]);
 
@@ -128,7 +125,6 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
     };
 
     const filterTree = (data: any[], searchValue: string) => {
-        console.log('Filtering tree with search value:', searchValue);
         const filteredData = data
             .map((item) => {
                 const newItem = { ...item };
@@ -137,9 +133,7 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
                 const childrenText = typeof newItem.title.props.children === 'object' 
                     ? newItem.title.props.children.props.children 
                     : newItem.title.props.children;
-    
-                console.log("childrenText %o", childrenText);
-    
+        
                 if (newItem.children) {
                     newItem.children = filterTree(newItem.children, searchValue);
                 }
@@ -153,7 +147,6 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
                 return null;
             })
             .filter(item => item !== null);
-        console.log('Filtered data:', filteredData);
         return filteredData;
     };
     
@@ -168,10 +161,8 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
 
     const filteredTreeData = useMemo(() => {
         if (searchValue && searchValue.trim()) {
-            console.log("Filter applied:", searchValue);
             return filterTree(treeData, searchValue);
         } else {
-            console.log("No filter applied");
             return treeData;
         }
     }, [searchValue, treeData]);

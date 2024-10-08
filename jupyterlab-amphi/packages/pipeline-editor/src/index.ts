@@ -298,7 +298,6 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
             if (!current) {
               return;
             }
-            console.log(current.context.sessionContext);
 
             try {
               await current.context.sessionContext.restartKernel();
@@ -340,9 +339,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
               const packages = RunService.extractDependencies(code);
         
               if (packages.length > 0 && packages[0] !== '') {
-                const pips_code = PipelineService.getInstallCommandsFromPackageNames(packages).join('\n');
-                console.log('pips_code: ' + pips_code);
-        
+                const pips_code = PipelineService.getInstallCommandsFromPackageNames(packages).join('\n');        
                 const enableDebugMode = settings.get('enableDebugMode').composite as boolean;
                 if (enableDebugMode) {
                   console.log('Dependencies to be installed: %o', pips_code);
@@ -460,8 +457,6 @@ ${args.code}
               false
             );
 
-            console.log("incrementalCodeList 2 %o", incrementalCodeList)
-        
             // Notification options
             const notificationOptions = {
               pending: { message: 'Running incremental code...', options: { autoClose: false } },
@@ -490,8 +485,6 @@ time.sleep(0.25)
 ${code}
 `;
               try {
-                console.log("pythonCodeWithSleep %o", pythonCodeWithSleep)
-
                 await RunService.executeKernelCodeWithNotifications(
                   Notification,
                   current.context.sessionContext.session,
@@ -499,8 +492,6 @@ ${code}
                   notificationOptions
                 );
                 const nodeId = codeBlock.nodeId;
-
-                console.log(`Executed code block: ${pythonCodeWithSleep}`);
               } catch (error) {
                 console.error(`Execution failed for code block: ${pythonCodeWithSleep}`, error);
                 // Stop execution if a block fails
@@ -602,7 +593,6 @@ ${code}
             );
             if (contextNode) {
               const nodeId = contextNode.getAttribute('data-id');
-              console.log(nodeId);
             }
           },
           label: 'Copy'
@@ -614,7 +604,6 @@ ${code}
               node => !!node.dataset.id
             );
             if (contextNode) {
-              console.log(contextNode)
             }
           },
           label: 'Cut'

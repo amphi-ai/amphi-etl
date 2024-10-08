@@ -82,12 +82,11 @@ export class CodeGenerator {
 
         // Handle target node
         if (nodeObject.id === targetNodeId) {
-          console.log(`Reached target node ${targetNodeId}`);
           let displayCode = '';
           if (nodeObject.type.includes('processor') || nodeObject.type.includes('input')) {
             if (nodeObject.type.includes('documents')) {
               if (!fromStart) {
-                console.log(`fromStart is false, resetting code to last code generated for target node.`);
+                console.log(`Generate code from last component. (fromStart: false)`);
                 codeList.length = 0;
                 codeList.push(nodeObject.code);
                 executedNodes.clear();
@@ -96,7 +95,7 @@ export class CodeGenerator {
               displayCode = `\n_amphi_display_documents_as_html(${nodeObject.outputName})`;
             } else {
               if (!fromStart) {
-                console.log(`fromStart is false, resetting code to last code generated for target node.`);
+                console.log(`Generate code from last component. (fromStart: false)`);
                 codeList.length = 0;
                 codeList.push(nodeObject.code);
                 executedNodes.clear();
@@ -352,7 +351,7 @@ export class CodeGenerator {
 
       if (lastUpdated >= lastExecuted) {
         fromStart = true;
-        console.log(`Node ${nodeId} has been updated since last execution.`);
+        // console.log(`Node ${nodeId} has been updated since last execution.`);
         break; // No need to check further
       }
     }
@@ -375,7 +374,7 @@ export class CodeGenerator {
 
       if (fromStart) {
         console.log(
-          "Generating code from start due to updates in previous nodes."
+          "Generating code from start due to updates in previous nodes. (fromStart: true)"
         );
         const command = 'pipeline-metadata-panel:delete-all';
         commands.execute(command, {}).catch((reason) => {
@@ -543,7 +542,6 @@ export class CodeGenerator {
         const component = componentService.getComponent(node.type);
         let config: any = node.data;
 
-        console.log("config %o", config)
         // Gather imports
         const imports = component.provideImports({ config });
         imports.forEach(importStatement => uniqueImports.add(importStatement));

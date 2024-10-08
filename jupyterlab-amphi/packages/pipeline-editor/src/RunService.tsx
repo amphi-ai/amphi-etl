@@ -79,7 +79,6 @@ export class RunService {
         const start = performance.now();
       
         const notificationPromise = new Promise<{ delayInSeconds: string }>((resolve, reject) => {
-          console.log("CODE to BE executed %o", code);
           const future = session.kernel.requestExecute({ code });
       
           future.onReply = (reply: any) => {
@@ -87,14 +86,9 @@ export class RunService {
             const delay = end - start;
             const delayInSeconds = (delay / 1000).toFixed(1);
       
-            console.log("reply %o", reply)
-
             if (reply.content.status === 'ok') {
-                console.log("OOOOOOKKKKKK")
               resolve({ delayInSeconds });
             } else {
-                console.log("NOOOK")
-
               reject(new Error(`Execution failed: ${reply.content.status}`));
             }
           };
@@ -142,24 +136,16 @@ export class RunService {
         Notification.promise(delegate.promise, notificationOptions);
       
         try {
-          for (const code of codes) {
-            console.log('Executing code:', code);
-      
-            const future = session.kernel.requestExecute({ code });
-            console.log('Kernel execution request sent.');
-      
+          for (const code of codes) {      
+            const future = session.kernel.requestExecute({ code });      
             await new Promise<void>((resolve, reject) => {
-              future.onReply = (reply: any) => {
-                console.log('Received kernel reply:', reply);
-      
+              future.onReply = (reply: any) => {      
                 if (reply.content.status !== 'ok') {
-                  console.error('Kernel execution error:', reply);
                   reject(new Error('Kernel execution error'));
                 }
               };
       
               future.onIOPub = (msg: any) => {
-                console.log('Received IOPub message:', msg);
       
                 if (msg.header.msg_type === 'error') {
                   const errorMsg = msg as KernelMessage.IErrorMsg;

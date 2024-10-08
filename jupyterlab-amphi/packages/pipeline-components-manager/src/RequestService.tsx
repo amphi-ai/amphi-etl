@@ -68,8 +68,6 @@ export class RequestService {
                 });
               }
 
-              console.log("Retrieve col, new items %o", newItems)
-
               // Update the items array with the new items, ensuring no duplicates
               setItems(items => {
                 const itemSet = new Set(items.map(item => item.value)); // Create a set of existing item values
@@ -118,8 +116,6 @@ export class RequestService {
     let escapedQuery = query.replace(/"/g, '\\"');
     escapedQuery = escapedQuery.replace(/{{schema}}/g, schemaName);
 
-    console.log("context %o", context);
-
     // Get environment and connection code
     const envVariableCode = CodeGenerator.getEnvironmentVariableCode(context.model.toString(), componentService);
     const connectionCode = CodeGenerator.getConnectionCode(context.model.toString(), componentService);
@@ -143,9 +139,6 @@ export class RequestService {
     // Generate the import statements string (one per line)
     const importStatements = imports.map((imp: string) => `${imp}`).join('\n');
 
-    console.log("DATA %o", data)
-
-
     // Build the Python code string
     let code = `
 !pip install --quiet ${dependencyString} --disable-pip-version-check
@@ -167,21 +160,15 @@ print(formatted_output)
     // Format any remaining variables in the code
     code = CodeGenerator.formatVariables(code);
 
-    console.log("code: " + code);
-
     const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
 
     future.onReply = reply => {
       if (reply.content.status == "ok") {
-        console.log("OK")
       } else if (reply.content.status == "error") {
-        console.log("error")
         setLoadings(false)
       } else if (reply.content.status == "abort") {
-        console.log("abort")
         setLoadings(false)
       } else {
-        console.log("Other")
         setLoadings(false)
       }
     };
@@ -193,7 +180,6 @@ print(formatted_output)
         // Check if the stream message is from 'stdout'
         if (streamMsg.content.name === 'stdout') {
           const output = streamMsg.content.text;
-          console.log("stream msg %o", streamMsg);
     
           const tables = output.split(', ');
           const newItems = tables.map(tableName => ({
@@ -203,9 +189,7 @@ print(formatted_output)
             label: tableName,
             type: 'table'
           }));
-    
-          console.log("new item %o", newItems);
-    
+        
           setList((items) => {
             const existingKeys = new Set(items.map((item) => item.key));
             const uniqueItems = newItems.filter(newItem => !existingKeys.has(newItem.key));
@@ -260,21 +244,15 @@ print(formatted_output)
     // Replace connections string 
     code = CodeGenerator.formatVariables(code);
 
-    console.log("code: " + code);
-
     const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
 
     future.onReply = reply => {
       if (reply.content.status == "ok") {
-        console.log("OK")
       } else if (reply.content.status == "error") {
-        console.log("error")
         setLoadings(false)
       } else if (reply.content.status == "abort") {
-        console.log("abort")
         setLoadings(false)
       } else {
-        console.log("Other")
         setLoadings(false)
       }
     };
@@ -341,21 +319,15 @@ print(formatted_output)
     // Replace connection string
     code = CodeGenerator.formatVariables(code);
 
-    console.log("code: " + code);
-
     const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
 
     future.onReply = reply => {
       if (reply.content.status == "ok") {
-        console.log("OK")
       } else if (reply.content.status == "error") {
-        console.log("error")
         setLoadings(false)
       } else if (reply.content.status == "abort") {
-        console.log("abort")
         setLoadings(false)
       } else {
-        console.log("Other")
         setLoadings(false)
       }
     };

@@ -309,7 +309,6 @@ const pipelines: JupyterFrontEndPlugin<void> = {
 
               scripts.then((result: Languages.LanguageModel) => {
                 const initScript = result.initScript + "\n" + customCodeInitialization;
-                console.log("initScript: %s", initScript);
                 const queryCommand = result.queryCommand;
                 const matrixQueryCommand = result.matrixQueryCommand;
                 const widgetQueryCommand = result.widgetQueryCommand;

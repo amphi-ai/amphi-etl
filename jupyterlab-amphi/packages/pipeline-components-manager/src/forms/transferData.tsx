@@ -145,8 +145,6 @@ export const TransferData: React.FC<TransferDataProps> = ({
         } else {
 
           const rowDrop = (dragIndex, hoverIndex) => {
-            console.log("dragIndex:", dragIndex);
-            console.log("hoverIndex:", hoverIndex);
 
             // Ensure the indices are valid
             if (dragIndex === undefined || hoverIndex === undefined) {
@@ -157,13 +155,9 @@ export const TransferData: React.FC<TransferDataProps> = ({
             // Create a copy of the target keys with all properties intact
             let newKeys = [...targetKeys];
 
-            console.log("Initial newKeys:", newKeys);
-
             // Extract the dragged item and re-insert at the hover index
             const dragRow = newKeys.splice(dragIndex, 1)[0]; // Ensure correct extraction
             newKeys.splice(hoverIndex, 0, dragRow); // Insert at the correct position
-
-            console.log("Updated newKeys:", newKeys);
 
             setTargetKeys(newKeys);
             const savedSchema = { sourceData: sourceData, targetKeys: newKeys }
@@ -208,7 +202,6 @@ export const TransferData: React.FC<TransferDataProps> = ({
   const [loadings, setLoadings] = useState<boolean>();
 
   useEffect(() => {
-    console.log("Transfer Data, items %o", items);
   
     const newSourceData = items.map(item => ({
       ...item,
@@ -250,7 +243,6 @@ export const TransferData: React.FC<TransferDataProps> = ({
   ];
 
   const onChange: TableTransferProps['onChange'] = (nextTargetKeys) => {
-    console.log("newTargetKeys %o", nextTargetKeys);
     setTargetKeys(nextTargetKeys);
     const savedSchema = { sourceData: sourceData, targetKeys: nextTargetKeys }
     handleChange(savedSchema, field.id);

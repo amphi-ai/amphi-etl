@@ -9,15 +9,12 @@ interface Document {
 }
 
 const parseHTMLToJSON = (htmlContent: string): Document[] => {
-  console.log("htmlContent: %o", htmlContent);
   const parser = new DOMParser();
   const doc = parser.parseFromString(htmlContent, 'text/html');
   const documentElements = doc.querySelectorAll('#documents > div._amphi_document');
-  console.log("documentElements: %o", documentElements);
   const documents: Document[] = [];
 
   documentElements.forEach((element) => {
-      console.log("element: %o", element);
       const nbElement = element.querySelector('div._amphi_nb');
       const pageContentElement = element.querySelector('div._amphi_page_content');
       const metadataElement = element.querySelector('div._amphi_metadata');
@@ -25,9 +22,7 @@ const parseHTMLToJSON = (htmlContent: string): Document[] => {
       if (nbElement && pageContentElement && metadataElement) {
           const nb = nbElement.textContent?.trim() || '';
           const pageContent = pageContentElement.innerHTML?.replace('<strong>Document Content:</strong>', '').trim() || '';
-          console.log("pageContent: %o", pageContent);
           let metadataText = metadataElement.textContent?.replace('Metadata:', '').trim() || '';
-          console.log("metadataText: %o", metadataText);
 
           let metadata: any;
 
@@ -43,7 +38,6 @@ const parseHTMLToJSON = (htmlContent: string): Document[] => {
       }
   });
 
-  console.log("documents: %o", documents);
   return documents;
 };
 
@@ -80,7 +74,6 @@ const createTreeData = (documents: Document[]): DataNode[] => {
 const DocumentView: React.FC<{ htmlData: string }> = ({ htmlData }) => {
   const documents = parseHTMLToJSON(htmlData);
   const treeData = createTreeData(documents);
-  console.log("Tree data %o", treeData);
 
   return (
     <Tree

@@ -159,8 +159,6 @@ export class Connection extends PipelineComponent<ComponentItem>() {
     // const [fetchMethod, setFetchMethod] = useState<Option>(data.fetchMethod || "clear" );
     const fetchMethod = useMemo(() => data.fetchMethod || "clear", [data.fetchMethod]);
 
-    console.log("fetchMethod obj %o", fetchMethod)
-
     if (!data.fetchMethod) {
       handleChange(fetchMethod, "fetchMethod")
     }
@@ -277,8 +275,6 @@ export class Connection extends PipelineComponent<ComponentItem>() {
 
     const handleSelectChange = useCallback((value: { value: string; label: string }) => {
       setSelectedConnection(value);
-      console.log("connections %o", connections)
-
 
       const selectedConnectionFields = connections.find(conn => conn.value === value.value)?.fields || [];
       handleChange(value.value, "connectionType");
@@ -287,8 +283,6 @@ export class Connection extends PipelineComponent<ComponentItem>() {
       }
       handleChange(value.value, "connectionName");
       setConnectionName(value.value);
-
-      console.log("selectedConnectionFields %o", selectedConnectionFields)
 
       setDataSource(selectedConnectionFields.map(field => ({
         key: field.id,
@@ -316,7 +310,6 @@ export class Connection extends PipelineComponent<ComponentItem>() {
       components.forEach(component => {
         if (component._form && component._form.fields) {
           component._form.fields.forEach(field => {
-            console.log("THIS field %o", field)
             if (field.connection && !field.ignoreConnection) {
               if (!connectionMap[field.connection]) {
                 connectionMap[field.connection] = [];
@@ -418,12 +411,7 @@ export class Connection extends PipelineComponent<ComponentItem>() {
                     ]
                   }}
                   handleChange={(value) => {
-                    console.log('Selected value: %o', value);
-
                     handleChange(value, 'fetchMethod');
-
-                    // setFetchMethod(value);
-                    console.log('Selected fetchMethod: %o', fetchMethod);
 
                     if (value === "envVars" || value === "envFile") {
                       setDataSource(prevDataSource =>
@@ -542,7 +530,7 @@ export class Connection extends PipelineComponent<ComponentItem>() {
   public provideDependencies({ config }): string[] {
     let deps: string[] = [];
     deps.push('python-dotenv');
-    console.log("python-dotenv");
+    // console.log("python-dotenv");
     return deps;
   }
 

@@ -60,10 +60,8 @@ export const CodeTextareaMirror: React.FC<CodeTextareaMirrorProps> = ({
 
       // Insert initial value only if `value` is not empty
       if (sharedModel.ysource && value) {
-        console.log("Inserting initial value into ysource", value);
         sharedModel.ysource.insert(0, value);
       } else {
-        console.error("ysource is not initialized correctly or value is empty.");
       }
 
       // Set initial value in the editor

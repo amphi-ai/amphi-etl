@@ -67,8 +67,6 @@ export const InputFile = ({ field, value, handleChange, context, advanced, manag
             }
           });
 
-        console.log("res %o", res)
-
         // Get relative path
         handleInputChange(PipelineService.getRelativePath(context.path, res.value[0].path));
 
