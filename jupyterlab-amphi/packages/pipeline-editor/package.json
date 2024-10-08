@@ -1,6 +1,6 @@
 {
   "name": "@amphi/pipeline-editor",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "description": "Amphi Pipeline Editor",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {
@@ -52,7 +52,7 @@
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@amphi/pipeline-components-manager": "^0.7.5",
+    "@amphi/pipeline-components-manager": "^0.7.6",
     "@dagrejs/dagre": "^1.0.4",
     "@jupyter-widgets/jupyterlab-manager": "3.1.9",
     "@jupyterlab/application": "^4.2.2",

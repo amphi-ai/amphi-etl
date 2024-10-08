@@ -4,7 +4,7 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';// Adjust the import
 
 export class SnowflakeInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { schema: "public", tableName: "", queryMethod: "table" };
+    const defaultConfig = { schema: "PUBLIC", tableName: "", queryMethod: "table" };
     const form = {
       fields: [
         {
@@ -144,7 +144,9 @@ ${connectionCode}
 try:
     with ${uniqueEngineName}.connect() as conn:
         ${outputName} = pd.read_sql(
-            """${sqlQuery}""",
+            """
+            ${sqlQuery}
+            """,
             con=conn.connection
         ).convert_dtypes()
 finally:
