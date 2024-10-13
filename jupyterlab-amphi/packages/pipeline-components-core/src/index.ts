@@ -9,7 +9,8 @@ import {
   SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join,
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, DateTimeConverter,
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, 
-  DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput
+  DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
+  SnowflakeOutput, SqlServerOutput, OracleOutput
 } from './components';
 
 export { CsvFileInput }
@@ -84,6 +85,10 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(MySQLOutput.getInstance())
     componentService.addComponent(PostgresOutput.getInstance())
     componentService.addComponent(Console.getInstance())
+    componentService.addComponent(SnowflakeOutput.getInstance())
+    componentService.addComponent(SqlServerOutput.getInstance())
+    componentService.addComponent(OracleOutput.getInstance())
+
 
     // Documentation
     componentService.addComponent(Annotation.getInstance())

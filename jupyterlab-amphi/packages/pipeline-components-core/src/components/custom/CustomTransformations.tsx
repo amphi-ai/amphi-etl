@@ -24,6 +24,7 @@ export class CustomTransformations extends BaseCoreComponent {
         {
           type: "codeTextarea",
           label: "Code",
+          tooltip: "Use the dataframe 'input' as input and 'output' output. For example, output = input would return the same data as input.",
           id: "code",
           mode: "python",
           height: '300px',

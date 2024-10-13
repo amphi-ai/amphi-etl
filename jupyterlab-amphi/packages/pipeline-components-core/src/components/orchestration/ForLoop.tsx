@@ -12,11 +12,19 @@ export class ForLoop extends BaseCoreComponent {
           label: "Instructions",
           id: "instructions",
           text: "For Loop / Todo.",
-        }
+        },
+        {
+          type: "input",
+          label: "Host",
+          id: "host",
+          placeholder: "Enter Trino host",
+          connection: 'Trino',
+          advanced: true
+        },
       ],
     };
 
-    super("For (Loop)", "forLoop", "no desc", "orchestrator", [], "Orchestration", codeIcon, defaultConfig, form);
+    super("For Loop", "forLoop", "no desc", "orchestrator_to_data", [], "Orchestration", codeIcon, defaultConfig, form);
   }
 
   public provideImports(config): string[] {
@@ -24,7 +32,7 @@ export class ForLoop extends BaseCoreComponent {
     return imports;
   }
 
-  public generateComponentCode({ config, inputName, outputName }): string {
+  public generateComponentCode({ config, dependency }): string {
     let code = ''
     return code;
   }

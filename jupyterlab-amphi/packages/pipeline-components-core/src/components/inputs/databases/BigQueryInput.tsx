@@ -15,7 +15,7 @@ export class BigQueryInput extends BaseCoreComponent {
                         { value: "storage_options", label: "Pass directly (storage_options)", tooltip: "You can pass credentials using the storage_options parameter. Using Environment Variables for this method is also recommended." }
                     ],
                     condition: { fileLocation: "s3" },
-                    connection: "AWS",
+                    connection: "Google Cloud Platform",
                     ignoreConnection: true,
                     advanced: true
                 },

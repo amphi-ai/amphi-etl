@@ -746,6 +746,8 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       },
       enabled: enableExecution
     });
+
+    
     widget.toolbar.addItem('openlogconsole', logconsole);
 
     const kernelName = Toolbar.createKernelNameItem(

@@ -52,9 +52,14 @@ export { Console } from './outputs/Console';
 export { JsonFileOutput } from './outputs/files/JsonFileOutput';
 export { GoogleSheetsOutput } from './outputs/cloud/GoogleSheetsOutput';
 export { ParquetFileOutput } from './outputs/files/ParquetFileOutput';
-export { MySQLOutput } from './outputs/databases/MySQLOutput';
 export { XmlFileOutput } from './outputs/files/XmlFileOutput';
+// Outputs Database
 export { PostgresOutput } from './outputs/databases/PostgresOutput';
+export { MySQLOutput } from './outputs/databases/MySQLOutput';
+export { SnowflakeOutput } from './outputs/databases/SnowflakeOutput';
+export { SqlServerOutput } from './outputs/databases/SqlServerOutput';
+export { OracleOutput } from './outputs/databases/OracleOutput';
+
 export { RestOutput } from './outputs/cloud/RestOutput';
 export { S3FileOutput } from './outputs/files/S3FileOutput';
 

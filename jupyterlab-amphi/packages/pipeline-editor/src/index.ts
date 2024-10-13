@@ -585,6 +585,31 @@ ${code}
           label: 'Save component'
         });
 
+        commands.addCommand('pipeline-editor-component:lock-component', {
+          execute: async args => {
+            const current = getCurrent(args);
+            if (!current) {
+              return;
+            }
+
+            const contextNode: HTMLElement | undefined = app.contextMenuHitTest(
+              node => !!node.dataset.id
+            );
+
+            if (contextNode) {
+              const nodeId = contextNode.dataset.id; // Extract the node ID
+
+              // Assuming PipelineService.getNodeById is available
+              const nodeJson = PipelineService.getNodeById(current.context.model.toString(), nodeId);
+
+              // Extract data and type attributes
+              const { data, type } = nodeJson;
+
+            }
+          },
+          label: 'Lock component'
+        });
+
 
         commands.addCommand('pipeline-editor-component:copy', {
           execute: async args => {
