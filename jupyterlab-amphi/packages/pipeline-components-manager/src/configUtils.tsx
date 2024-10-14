@@ -598,6 +598,7 @@ export interface FieldDescriptor {
   text?: string;
   imports?: string[];
   query?: string;
+  pythonExtraction?: string;
   onlyLastValue?: boolean;
   noneOption?: boolean;
   connection?: string;

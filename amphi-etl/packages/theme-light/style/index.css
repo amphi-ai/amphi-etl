@@ -725,7 +725,7 @@ input.jp-mod-styled:focus {
 }
 
 .jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-item {
-  cursor: default
+  cursor: pointer
 }
 
 .jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-item:nth-last-child(2) {
@@ -814,6 +814,16 @@ input.jp-mod-styled:focus {
   fill: var(--amphi-icon-01) !important
 }
   */
+
+  .jp-DirListing-item {
+    cursor: pointer;
+  }
+
+
+  .jp-DirListing-item.jp-mod-selected {
+    color: #000 !important;
+    background: #F1F4F7 !important;
+  }
 
 
 .jp-FileBrowser .jp-DirListing-content .jp-DirListing-item .jp-DirListing-itemText {

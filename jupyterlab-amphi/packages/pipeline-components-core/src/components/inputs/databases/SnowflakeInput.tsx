@@ -67,9 +67,7 @@ export class SnowflakeInput extends BaseCoreComponent {
         },
         {
           type: "table",
-          drivers: "snowflake",
           label: "Table Name",
-          connectionString: "snowflake://{{username}}:{{password}}@{{account}}/{{database}}/{{schema}}?warehouse={{warehouse}}",
           query: `SELECT table_name FROM information_schema.tables WHERE table_schema = '{{schema}}'`,
           id: "tableName",
           placeholder: "Enter table name",

@@ -1,5 +1,5 @@
 import { bigQueryIcon } from '../../../icons';
-import { BaseCoreComponent } from '../../BaseCoreComponent';// Adjust the import path
+import { BaseCoreComponent } from '../../BaseCoreComponent'; // Adjust the import path
 
 export class BigQueryInput extends BaseCoreComponent {
     constructor() {
@@ -11,13 +11,23 @@ export class BigQueryInput extends BaseCoreComponent {
                     label: "Connection Method",
                     id: "connectionMethod",
                     options: [
-                        { value: "service_account", label: "Service Account", tooltip: "Use AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY variables, using an Env. Variable File is recommended." },
-                        { value: "storage_options", label: "Pass directly (storage_options)", tooltip: "You can pass credentials using the storage_options parameter. Using Environment Variables for this method is also recommended." }
+                        { value: "service_account", label: "Service Account", tooltip: "Use a service account JSON key file for authentication." },
+                        { value: "prompt", label: "Login via browser", tooltip: "You will be prompted to login via the browser." }
                     ],
-                    condition: { fileLocation: "s3" },
                     connection: "Google Cloud Platform",
                     ignoreConnection: true,
                     advanced: true
+                },
+                {
+                    type: "file",
+                    label: "Service Account Key",
+                    id: "filePath",
+                    placeholder: "Type file name",
+                    validation: "\\.(json)$",
+                    validationMessage: "This field expects a file with a .json extension such as your-service-account-file.json.",
+                    advanced: true,
+                    connection: "Google Cloud Platform",
+                    condition: { connectionMethod: "service_account" }
                 },
                 {
                     type: "input",
@@ -74,29 +84,60 @@ export class BigQueryInput extends BaseCoreComponent {
 
     public provideDependencies({ config }): string[] {
         let deps: string[] = [];
-        deps.push('pandas-gbq');
+        deps.push('sqlalchemy-bigquery');
+        deps.push('pandas');
         return deps;
     }
 
     public provideImports({ config }): string[] {
-        return ["import pandas as pd", "import pandas_gbq"];
+        return ["import pandas as pd", "from sqlalchemy.engine import create_engine"];
+    }
+
+    public generateDatabaseConnectionCode({ config, connectionName }): string {
+        const connectionString = `bigquery://${config.projectId}`;
+        let connectionCode = `
+# Connect to the BigQuery database using SQLAlchemy
+`;
+
+        if (config.connectionMethod === 'application_default') {
+            connectionCode += `
+${connectionName} = sqlalchemy.create_engine("${connectionString}")
+`;
+        } else if (config.connectionMethod === 'service_account') {
+            connectionCode += `
+${connectionName} = sqlalchemy.create_engine("${connectionString}", credentials_path='${config.filePath}')
+`;
+        } else {
+            throw new Error("Unsupported connection method: " + config.connectionMethod);
+        }
+
+        return connectionCode;
     }
 
     public generateComponentCode({ config, outputName }): string {
+        const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
+
         const tableReference = `${config.dataset}.${config.tableName}`;
         const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim()
             ? config.sqlQuery
             : `SELECT * FROM ${tableReference}`;
 
+        const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName });
+
         const code = `
-# Connect to BigQuery and execute SQL statement
+${connectionCode}
+
+# Execute SQL statement
 try:
-    ${outputName} = pandas_gbq.read_gbq(
-        """${sqlQuery}""",
-        project_id="${config.projectId}"
-    ).convert_dtypes()
-except Exception as e:
-    print(f"Error fetching data from BigQuery: {e}")
+    with ${uniqueEngineName}.connect() as conn:
+        ${outputName} = pd.read_sql(
+            """
+            ${sqlQuery}
+            """,
+            con=conn
+        ).convert_dtypes()
+finally:
+    ${uniqueEngineName}.dispose()
 `;
         return code;
     }

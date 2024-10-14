@@ -58,8 +58,9 @@ export class SqlServerOutput extends BaseCoreComponent {
                     advanced: true
                 },
                 {
-                    type: "input",
+                    type: "table",
                     label: "Table Name",
+                    query: `SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE';`,
                     id: "tableName",
                     placeholder: "Enter table name"
                 },
@@ -154,8 +155,16 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
         return ["import pandas as pd", "import sqlalchemy", "import pyodbc"];
     }
 
+    public generateDatabaseConnectionCode({ config, connectionName }): string {
+        return `
+# Connect to the SQL Server database
+${connectionName} = sqlalchemy.create_engine(
+  "mssql+pyodbc://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}?driver=ODBC+Driver+17+for+SQL+Server"
+)
+`;
+    }
+
     public generateComponentCode({ config, inputName }): string {
-        const connectionString = `mssql+pyodbc://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}?driver=ODBC+Driver+17+for+SQL+Server`;
         const uniqueEngineName = `${inputName}_Engine`;
 
         let mappingsCode = "";
@@ -194,13 +203,10 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
 
         const ifExistsAction = config.ifTableExists;
 
-        // For SQL Server, the default schema is 'dbo', unless specified otherwise
-        const schemaParam = `,
-    schema="dbo"`;
+        const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName });
 
-        const code = `
-# Connect to the SQL Server database
-${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
+        return `
+${connectionCode}
 ${mappingsCode}${columnsCode}
 # Write DataFrame to SQL Server
 try:
@@ -208,11 +214,11 @@ try:
         name="${config.tableName}",
         con=${uniqueEngineName},
         if_exists="${ifExistsAction}",
-        index=False${schemaParam}
+        index=False,
+        schema="dbo"
     )
 finally:
     ${uniqueEngineName}.dispose()
 `;
-        return code;
     }
 }

@@ -9,7 +9,6 @@ export class PostgresOutput extends BaseCoreComponent {
       port: "5432",
       databaseName: "",
       schema: "public",
-      tableName: "",
       username: "",
       password: "",
       ifTableExists: "fail",
@@ -49,16 +48,18 @@ export class PostgresOutput extends BaseCoreComponent {
           placeholder: "Enter schema name",
         },
         {
-          type: "input",
+          type: "table",
           label: "Table Name",
+          query: `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';`,
           id: "tableName",
-          placeholder: "Enter table name",
+          placeholder: "Enter table name"
         },
         {
           type: "input",
           label: "Username",
           id: "username",
           placeholder: "Enter username",
+          connection: "Postgres",
           advanced: true
         },
         {
@@ -66,6 +67,7 @@ export class PostgresOutput extends BaseCoreComponent {
           inputType: "password",
           label: "Password",
           id: "password",
+          connection: "Postgres",
           placeholder: "Enter password",
           advanced: true
         },
@@ -112,6 +114,7 @@ FROM
 WHERE 
     table_schema = '{{schema}}' AND
     table_name = '{{table}}';`,
+          pythonExtraction: `column_info = schema[[\"Field\", \"Type\"]]\nformatted_output = \", \".join([f\"{row['Field']} ({row['Type']})\" for _, row in column_info.iterrows()])\nprint(formatted_output)`,
           typeOptions: [
             { value: "SMALLINT", label: "SMALLINT" },
             { value: "INTEGER", label: "INTEGER" },
@@ -164,16 +167,19 @@ WHERE
     return ["import pandas as pd", "import sqlalchemy", "import psycopg2"];
   }
 
+  public generateDatabaseConnectionCode({ config, connectionName }): string {
+    return `
+# Connect to the Postgres database
+${connectionName} = sqlalchemy.create_engine(
+  "postgresql://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}"
+)
+`;
+  }
+
   public generateComponentCode({ config, inputName }): string {
-    const connectionString = `postgresql://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}`;
     const uniqueEngineName = `${inputName}Engine`;
     let mappingsCode = "";
     let columnsCode = "";
-
-    const selectedColumns = config.mapping
-      .filter(map => map.value !== null && map.value !== undefined && map.input?.value !== null && map.input?.value !== undefined)
-      .map(map => `"${map.value}"`)
-      .join(', ');
 
     if (config.mapping && config.mapping.length > 0) {
       const renameMap = config.mapping
@@ -188,7 +194,7 @@ WHERE
           }
           return undefined; // Explicitly return undefined for clarity
         })
-        .filter(value => value !== undefined); // Remove undefined values
+        .filter(value => value !== undefined);
 
       if (renameMap.length > 0) {
         mappingsCode = `
@@ -197,7 +203,12 @@ ${inputName} = ${inputName}.rename(columns={${renameMap.join(", ")}})
 `;
       }
 
-      if (selectedColumns !== '' && selectedColumns !== undefined) {
+      const selectedColumns = config.mapping
+        .filter(map => map.value !== null && map.value !== undefined)
+        .map(map => `"${map.value}"`)
+        .join(', ');
+
+      if (selectedColumns) {
         columnsCode = `
 # Only keep relevant columns
 ${inputName} = ${inputName}[[${selectedColumns}]]
@@ -212,19 +223,21 @@ ${inputName} = ${inputName}[[${selectedColumns}]]
   schema="${config.schema}"`
       : '';
 
-    const code = `
-# Connect to Postgres and output into table
-${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
+    const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName });
+
+    return `
+${connectionCode}
 ${mappingsCode}${columnsCode}
-${inputName}.to_sql(
-  name="${config.tableName}",
-  con=${uniqueEngineName},
-  if_exists="${ifExistsAction}",
-  index=False${schemaParam}
-)
+# Write DataFrame to Postgres
+try:
+    ${inputName}.to_sql(
+        name="${config.tableName.value}",
+        con=${uniqueEngineName},
+        if_exists="${ifExistsAction}",
+        index=False${schemaParam}
+    )
+finally:
+    ${uniqueEngineName}.dispose()
 `;
-    return code;
   }
-
-
 }

@@ -41,10 +41,11 @@ export class MySQLOutput extends BaseCoreComponent {
           placeholder: "Enter database name"
         },
         {
-          type: "input",
+          type: "table",
           label: "Table Name",
+          query: `SHOW TABLES;`,
           id: "tableName",
-          placeholder: "Enter table name",
+          placeholder: "Enter table name"
         },
         {
           type: "input",
@@ -92,6 +93,7 @@ export class MySQLOutput extends BaseCoreComponent {
           outputType: "relationalDatabase",
           drivers: "mysql+pymysql",
           query: "DESCRIBE {{table}}",
+          pythonExtraction: "column_info = schema[[\"Field\", \"Type\"]]\nformatted_output = \", \".join([f\"{row['Field']} ({row['Type']})\" for _, row in column_info.iterrows()])\nprint(formatted_output)",
           typeOptions: [
             { value: "INT", label: "INT" },
             { value: "VARCHAR", label: "VARCHAR" },
@@ -133,16 +135,19 @@ export class MySQLOutput extends BaseCoreComponent {
     return ["import pandas as pd", "import sqlalchemy", "import pymysql"];
   }
 
+  public generateDatabaseConnectionCode({ config, connectionName }): string {
+    return `
+# Connect to the MySQL database
+${connectionName} = sqlalchemy.create_engine(
+  "mysql+pymysql://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}"
+)
+`;
+  }
+
   public generateComponentCode({ config, inputName }): string {
-    const connectionString = `mysql+pymysql://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}`;
     const uniqueEngineName = `${inputName}Engine`;
     let mappingsCode = "";
     let columnsCode = "";
-
-    const selectedColumns = config.mapping
-      .filter(map => map.value !== null && map.value !== undefined && map.input?.value !== null && map.input?.value !== undefined)
-      .map(map => `"${map.value}"`)
-      .join(', ');
 
     if (config.mapping && config.mapping.length > 0) {
       const renameMap = config.mapping
@@ -157,7 +162,7 @@ export class MySQLOutput extends BaseCoreComponent {
           }
           return undefined; // Explicitly return undefined for clarity
         })
-        .filter(value => value !== undefined); // Remove undefined values
+        .filter(value => value !== undefined);
 
       if (renameMap.length > 0) {
         mappingsCode = `
@@ -166,7 +171,12 @@ ${inputName} = ${inputName}.rename(columns={${renameMap.join(", ")}})
 `;
       }
 
-      if (selectedColumns !== '' && selectedColumns !== undefined) {
+      const selectedColumns = config.mapping
+        .filter(map => map.value !== null && map.value !== undefined)
+        .map(map => `"${map.value}"`)
+        .join(', ');
+
+      if (selectedColumns) {
         columnsCode = `
 # Only keep relevant columns
 ${inputName} = ${inputName}[[${selectedColumns}]]
@@ -176,20 +186,21 @@ ${inputName} = ${inputName}[[${selectedColumns}]]
 
     const ifExistsAction = config.ifTableExists;
 
-    const code = `
-# Connect to MySQL and output into table
-${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
-${mappingsCode}
-${columnsCode}
-${inputName}.to_sql(
-  name="${config.tableName}",
-  con=${uniqueEngineName},
-  if_exists="${ifExistsAction}",
-  index=False
-)
+    const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName });
+
+    return `
+${connectionCode}
+${mappingsCode}${columnsCode}
+# Write DataFrame to MySQL
+try:
+    ${inputName}.to_sql(
+        name="${config.tableName.value}",
+        con=${uniqueEngineName},
+        if_exists="${ifExistsAction}",
+        index=False
+    )
+finally:
+    ${uniqueEngineName}.dispose()
 `;
-    return code;
   }
-
-
 }

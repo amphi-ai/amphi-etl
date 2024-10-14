@@ -59,11 +59,12 @@ export class SqlServerInput extends BaseCoreComponent {
                     advanced: true
                 },
                 {
-                    type: "input",
+                    type: "table",
                     label: "Table Name",
+                    query: `SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE';`,
                     id: "tableName",
                     condition: { queryMethod: "table" },
-                    placeholder: "Enter table name",
+                    placeholder: "Enter table name"
                 },
                 {
                     type: "codeTextarea",
@@ -100,23 +101,34 @@ export class SqlServerInput extends BaseCoreComponent {
         return ["import pandas as pd", "import sqlalchemy", "import pyodbc"];
     }
 
-    public generateComponentCode({ config, outputName }): string {
+    public generateDatabaseConnectionCode({ config, connectionName }): string {
         let connectionString = `mssql+pyodbc://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}?driver=ODBC+Driver+17+for+SQL+Server`;
+        const connectionCode = `
+# Connect to the SQL Server database
+${connectionName} = sqlalchemy.create_engine("${connectionString}")
+`;
+        return connectionCode;
+    }
+
+    public generateComponentCode({ config, outputName }): string {
         const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
 
         const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim()
             ? config.sqlQuery
-            : `SELECT * FROM ${config.tableName}`;
+            : `SELECT * FROM ${config.tableName.value}`;
+
+        const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName });
 
         const code = `
-# Connect to the SQL Server database
-${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
+${connectionCode}
 
 # Execute SQL statement
 try:
     with ${uniqueEngineName}.connect() as conn:
         ${outputName} = pd.read_sql(
-            """${sqlQuery}""",
+            """
+            ${sqlQuery}
+            """,
             con=conn.connection
         ).convert_dtypes()
 finally:

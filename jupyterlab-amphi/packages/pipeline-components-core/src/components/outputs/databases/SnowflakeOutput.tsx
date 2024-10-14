@@ -73,8 +73,9 @@ export class SnowflakeOutput extends BaseCoreComponent {
           advanced: true
         },
         {
-          type: "input",
+          type: "table",
           label: "Table Name",
+          query: `SELECT table_name FROM information_schema.tables WHERE table_schema = '{{schema}}'`,
           id: "tableName",
           placeholder: "Enter table name"
         },
@@ -107,6 +108,7 @@ export class SnowflakeOutput extends BaseCoreComponent {
           imports: ["snowflake-sqlalchemy"],
           drivers: "snowflake",
           query: `DESCRIBE TABLE "{{schema}}"."{{table}}"`,
+          pythonExtraction: `columns_types = ', '.join(f"{row['name']} ({row['type']})" for _, row in schema.iterrows())\nprint(columns_types)`,
           typeOptions: [
             { value: "INTEGER", label: "INTEGER" },
             { value: "FLOAT", label: "FLOAT" },
@@ -207,7 +209,8 @@ ${mappingsCode}${columnsCode}
 # Write DataFrame to Snowflake
 try:
     ${inputName}.to_sql(
-        name="${config.tableName}",
+        name="${config.tableName.value}",
+        schema="${config.schema}",
         con=${uniqueEngineName},
         if_exists="${ifExistsAction}",
         index=False${schemaParam}

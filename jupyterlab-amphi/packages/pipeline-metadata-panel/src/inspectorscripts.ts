@@ -19,6 +19,9 @@ import json
 import sys
 import types
 import re
+from warnings import filterwarnings
+
+filterwarnings("ignore", category=UserWarning, message='.*pandas only supports SQLAlchemy connectable.*')
 
 from importlib import __import__
 from IPython import get_ipython

@@ -60,8 +60,9 @@ export class MySQLInput extends BaseCoreComponent {
           advanced: true
         },
         {
-          type: "input",
+          type: "table",
           label: "Table Name",
+          query: `SHOW TABLES;`,
           id: "tableName",
           placeholder: "Enter table name",
           condition: { queryMethod: "table" }
@@ -94,26 +95,39 @@ export class MySQLInput extends BaseCoreComponent {
     return ["import pandas as pd", "import sqlalchemy", "import pymysql"];
   }
 
-  public generateComponentCode({ config, outputName }): string {
+  public generateDatabaseConnectionCode({ config, connectionName }): string {
     let connectionString = `mysql+pymysql://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}`;
-    const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
-    const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim()
-      ? config.sqlQuery
-      : `SELECT * FROM ${config.tableName}`;
-    const code = `
+    const connectionCode = `
 # Connect to the MySQL database
-${uniqueEngineName} = sqlalchemy.create_engine("${connectionString}")
+${connectionName} = sqlalchemy.create_engine("${connectionString}")
+`;
+    return connectionCode;
+}
+
+public generateComponentCode({ config, outputName }): string {
+    const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
+
+    const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim()
+        ? config.sqlQuery
+        : `SELECT * FROM ${config.tableName.value}`;
+
+    const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName });
+
+    const code = `
+${connectionCode}
 
 # Execute SQL statement
 try:
     with ${uniqueEngineName}.connect() as conn:
         ${outputName} = pd.read_sql(
-            """${sqlQuery}""",
+            """
+            ${sqlQuery}
+            """,
             con=conn.connection
         ).convert_dtypes()
 finally:
     ${uniqueEngineName}.dispose()
 `;
     return code;
-  }
+}
 }

@@ -88,7 +88,9 @@ conn = pyodbc.connect(f"""${connectionString}""", autocommit=${autoCommit ? 'Tru
 # Execute SQL statement
 try:
     ${outputName} = pd.read_sql(
-        """${sqlQuery}""",
+        """
+        ${sqlQuery}
+        """,
         conn
     ).convert_dtypes()
 finally:

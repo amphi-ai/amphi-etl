@@ -69,8 +69,9 @@ export class OracleOutput extends BaseCoreComponent {
           advanced: true
         },
         {
-          type: "input",
+          type: "table",
           label: "Table Name",
+          query: `SELECT table_name FROM user_tables;`,
           id: "tableName",
           placeholder: "Enter table name"
         },
@@ -235,6 +236,7 @@ ${mappingsCode}${columnsCode}
 try:
     ${inputName}.to_sql(
         name="${config.tableName}",
+        schema="${config.schema}",
         con=${uniqueEngineName},
         if_exists="${ifExistsAction}",
         index=False${schemaParam}
