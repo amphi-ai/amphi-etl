@@ -163,6 +163,8 @@ const consoles: JupyterFrontEndPlugin<void> = {
           const scripts: Promise<Languages.LanguageModel> =
             connector.ready.then(() => {
               return connector.kernelLanguage.then(lang => {
+                console.log("===> Check lang 166: ",lang)
+                console.log("===> check code lang: ",Languages.getScript(lang))
                 return Languages.getScript(lang);
               });
             });
@@ -279,6 +281,8 @@ const pipelines: JupyterFrontEndPlugin<void> = {
           const scripts: Promise<Languages.LanguageModel> =
             connector.ready.then(() => {
               return connector.kernelLanguage.then(lang => {
+                console.log("===> Check lang 284: ",lang)
+                console.log("===> check code lang: ",Languages.getScript(lang))
                 return Languages.getScript(lang);
               });
             });

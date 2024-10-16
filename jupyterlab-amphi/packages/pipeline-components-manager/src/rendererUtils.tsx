@@ -42,6 +42,7 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
   switch (type) {
     case "pandas_df_input":
     case "documents_input":
+    case "spark_ss_input":
       return (
         <Handle
           className="handle-right"
@@ -58,6 +59,7 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
     case "pandas_df_processor":
     case 'pandas_df_to_documents_processor':
     case 'documents_processor':
+    case "spark_load_input":
       return (
         <>
           <LimitedInputHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in" />
@@ -131,7 +133,7 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
           <Text
             onDoubleClick={stopPropagation}
             onDragStart={disableDrag}
-            editable={isSelected ? { onChange: onTitleChange, tooltip: false, icon: <EditOutlined style={{ color: '#5F9B97' }} /> } : undefined}
+            editable={isSelected ? { onChange: onTitleChange, tooltip: false, icon: <EditOutlined style={{ color: '#0e7fc2' }} /> } : undefined}
             className='ant-select-sm'
           >
             {titleName}
@@ -148,7 +150,7 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
               ConfigForm
             ) : (
               <div className="placeholder">
-                <Icon.react top="8px" height="32px" width="32px;" color="#5A8F7B" verticalAlign="middle" />
+                <Icon.react top="8px" height="32px" width="32px;" color="#5a8f7b" verticalAlign="middle" />
               </div>
             )}
           </form>

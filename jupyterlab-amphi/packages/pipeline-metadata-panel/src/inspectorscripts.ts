@@ -63,19 +63,21 @@ def _check_imported():
 
 
 def _amphi_metadatapanel_getsizeof(x):
+
     if type(x).__name__ in ['ndarray', 'Series']:
         return x.nbytes
     elif __pyspark and isinstance(x, __pyspark.sql.DataFrame):
-        return "?"
+        return "N/A"
     elif __tf and isinstance(x, __tf.Variable):
         return "?"
     elif __torch and isinstance(x, __torch.Tensor):
-        return x.element_size() * x.nelement()
+        return x.element_size() * x.nelement() 
+    elif __pd and 'pyspark' in str(type(x)):
+        return "N/A"
     elif __pd and type(x).__name__ == 'DataFrame':
         return x.memory_usage().sum()
     else:
         return sys.getsizeof(x)
-
 
 def _amphi_metadatapanel_getshapeof(x):
     if __pd and isinstance(x, __pd.DataFrame):
@@ -114,6 +116,7 @@ def _amphi_metadatapanel_getcontentof(x):
 
     # Check if the input is a DataFrame and handle it
     if __pd and isinstance(x, __pd.DataFrame):
+        print("===> Check 1: ")
         unnamed_cols = check_unnamed_columns(x)
         colnames = ', '.join([f"{col} ({dtype}, {'unnamed' if col in unnamed_cols else 'named'})" for col, dtype in zip(x.columns, x.dtypes)])
         content = "%s" % colnames
@@ -125,6 +128,10 @@ def _amphi_metadatapanel_getcontentof(x):
         content = f"ndarray (shape={x.shape}, dtype={x.dtype})"
     elif __xr and isinstance(x, __xr.DataArray):
         content = f"DataArray (shape={x.shape}, dtype={x.dtype})"
+    elif __pyspark and isinstance(x, __pyspark.pandas.frame.DataFrame):
+        unnamed_cols = check_unnamed_columns(x)
+        colnames = ', '.join([f"{col} ({dtype}, {'unnamed' if col in unnamed_cols else 'named'})" for col, dtype in zip(x.columns, x.dtypes)])
+        content = "%s" % colnames
     else:
         content = f"{type(x).__name__}, " + str(x)
 
@@ -322,7 +329,7 @@ def _amphi_display_documents_as_html(documents):
       }
     };
   
-    static getScript(lang: string): Promise<Languages.LanguageModel> {
+    static getScript(lang: string): Promise<Languages.LanguageModel> {  
       return new Promise((resolve, reject) => {
         if (lang in Languages.scripts) {
           resolve(Languages.scripts[lang]);

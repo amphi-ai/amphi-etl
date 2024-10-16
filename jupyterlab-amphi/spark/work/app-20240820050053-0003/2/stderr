@@ -1,0 +1,173 @@
+Spark Executor Command: "/usr/lib/jvm/java-11-openjdk-amd64/bin/java" "-cp" "/opt/spark/conf/:/opt/spark/jars/*" "-Xmx1024M" "-Dspark.driver.port=45621" "-Djava.net.preferIPv6Addresses=false" "-XX:+IgnoreUnrecognizedVMOptions" "--add-opens=java.base/java.lang=ALL-UNNAMED" "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED" "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED" "--add-opens=java.base/java.io=ALL-UNNAMED" "--add-opens=java.base/java.net=ALL-UNNAMED" "--add-opens=java.base/java.nio=ALL-UNNAMED" "--add-opens=java.base/java.util=ALL-UNNAMED" "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED" "--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED" "--add-opens=java.base/jdk.internal.ref=ALL-UNNAMED" "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED" "--add-opens=java.base/sun.nio.cs=ALL-UNNAMED" "--add-opens=java.base/sun.security.action=ALL-UNNAMED" "--add-opens=java.base/sun.util.calendar=ALL-UNNAMED" "--add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED" "-Djdk.reflect.useDirectMethodHandle=false" "org.apache.spark.executor.CoarseGrainedExecutorBackend" "--driver-url" "spark://CoarseGrainedScheduler@556f599680e2:45621" "--executor-id" "2" "--hostname" "172.23.0.2" "--cores" "8" "--app-id" "app-20240820050053-0003" "--worker-url" "spark://Worker@172.23.0.2:34115" "--resourceProfileId" "0"
+========================================
+
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+24/08/20 05:02:24 INFO CoarseGrainedExecutorBackend: Started daemon with process name: 3151@556f599680e2
+24/08/20 05:02:24 INFO SignalUtils: Registering signal handler for TERM
+24/08/20 05:02:24 INFO SignalUtils: Registering signal handler for HUP
+24/08/20 05:02:24 INFO SignalUtils: Registering signal handler for INT
+24/08/20 05:02:24 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+24/08/20 05:02:24 INFO SecurityManager: Changing view acls to: root
+24/08/20 05:02:24 INFO SecurityManager: Changing modify acls to: root
+24/08/20 05:02:24 INFO SecurityManager: Changing view acls groups to: 
+24/08/20 05:02:24 INFO SecurityManager: Changing modify acls groups to: 
+24/08/20 05:02:24 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+24/08/20 05:02:25 INFO TransportClientFactory: Successfully created connection to 556f599680e2/172.23.0.2:45621 after 65 ms (0 ms spent in bootstraps)
+24/08/20 05:02:25 INFO SecurityManager: Changing view acls to: root
+24/08/20 05:02:25 INFO SecurityManager: Changing modify acls to: root
+24/08/20 05:02:25 INFO SecurityManager: Changing view acls groups to: 
+24/08/20 05:02:25 INFO SecurityManager: Changing modify acls groups to: 
+24/08/20 05:02:25 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+24/08/20 05:02:25 INFO TransportClientFactory: Successfully created connection to 556f599680e2/172.23.0.2:45621 after 4 ms (0 ms spent in bootstraps)
+24/08/20 05:02:25 INFO DiskBlockManager: Created local directory at /tmp/spark-e340b88a-5702-46e2-b7e8-fffa2a8bbef6/executor-68d1a63d-bf09-4811-9ae2-67d9269e84d2/blockmgr-8d2c8496-13f0-4306-9102-ff6edd39fefc
+24/08/20 05:02:25 INFO MemoryStore: MemoryStore started with capacity 434.4 MiB
+24/08/20 05:02:25 INFO CoarseGrainedExecutorBackend: Connecting to driver: spark://CoarseGrainedScheduler@556f599680e2:45621
+24/08/20 05:02:25 INFO WorkerWatcher: Connecting to worker spark://Worker@172.23.0.2:34115
+24/08/20 05:02:25 INFO TransportClientFactory: Successfully created connection to /172.23.0.2:34115 after 7 ms (0 ms spent in bootstraps)
+24/08/20 05:02:25 INFO WorkerWatcher: Successfully connected to spark://Worker@172.23.0.2:34115
+24/08/20 05:02:25 INFO ResourceUtils: ==============================================================
+24/08/20 05:02:25 INFO ResourceUtils: No custom resources configured for spark.executor.
+24/08/20 05:02:25 INFO ResourceUtils: ==============================================================
+24/08/20 05:02:25 INFO CoarseGrainedExecutorBackend: Successfully registered with driver
+24/08/20 05:02:25 INFO Executor: Starting executor ID 2 on host 172.23.0.2
+24/08/20 05:02:25 INFO Executor: OS info Linux, 5.15.0-106-generic, amd64
+24/08/20 05:02:25 INFO Executor: Java version 11.0.22
+24/08/20 05:02:25 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 38405.
+24/08/20 05:02:25 INFO NettyBlockTransferService: Server created on 172.23.0.2:38405
+24/08/20 05:02:25 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+24/08/20 05:02:25 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(2, 172.23.0.2, 38405, None)
+24/08/20 05:02:25 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(2, 172.23.0.2, 38405, None)
+24/08/20 05:02:25 INFO BlockManager: Initialized BlockManager: BlockManagerId(2, 172.23.0.2, 38405, None)
+24/08/20 05:02:25 INFO Executor: Starting executor with user classpath (userClassPathFirst = false): ''
+24/08/20 05:02:25 INFO Executor: Created or updated repl class loader org.apache.spark.util.MutableURLClassLoader@6017c55d for default.
+24/08/20 05:02:25 INFO CoarseGrainedExecutorBackend: Got assigned task 167
+24/08/20 05:02:25 INFO CoarseGrainedExecutorBackend: Got assigned task 168
+24/08/20 05:02:25 INFO CoarseGrainedExecutorBackend: Got assigned task 169
+24/08/20 05:02:25 INFO CoarseGrainedExecutorBackend: Got assigned task 170
+24/08/20 05:02:25 INFO CoarseGrainedExecutorBackend: Got assigned task 171
+24/08/20 05:02:25 INFO CoarseGrainedExecutorBackend: Got assigned task 172
+24/08/20 05:02:25 INFO CoarseGrainedExecutorBackend: Got assigned task 173
+24/08/20 05:02:25 INFO CoarseGrainedExecutorBackend: Got assigned task 174
+24/08/20 05:02:25 INFO Executor: Running task 6.2 in stage 2.1 (TID 168)
+24/08/20 05:02:25 INFO Executor: Running task 8.1 in stage 2.1 (TID 167)
+24/08/20 05:02:25 INFO Executor: Running task 1.1 in stage 2.1 (TID 171)
+24/08/20 05:02:25 INFO Executor: Running task 5.2 in stage 2.1 (TID 172)
+24/08/20 05:02:25 INFO Executor: Running task 4.1 in stage 2.1 (TID 170)
+24/08/20 05:02:25 INFO Executor: Running task 3.2 in stage 2.1 (TID 169)
+24/08/20 05:02:25 INFO Executor: Running task 0.2 in stage 2.1 (TID 173)
+24/08/20 05:02:25 INFO Executor: Running task 2.2 in stage 2.1 (TID 174)
+24/08/20 05:02:25 INFO MapOutputTrackerWorker: Updating epoch to 3 and clearing cache
+24/08/20 05:02:25 INFO TorrentBroadcast: Started reading broadcast variable 6 with 1 pieces (estimated total size 4.0 MiB)
+24/08/20 05:02:26 INFO TransportClientFactory: Successfully created connection to 556f599680e2/172.23.0.2:37745 after 2 ms (0 ms spent in bootstraps)
+24/08/20 05:02:26 INFO MemoryStore: Block broadcast_6_piece0 stored as bytes in memory (estimated size 6.2 KiB, free 434.4 MiB)
+24/08/20 05:02:26 INFO TorrentBroadcast: Reading broadcast variable 6 took 90 ms
+24/08/20 05:02:26 INFO MemoryStore: Block broadcast_6 stored as values in memory (estimated size 11.9 KiB, free 434.4 MiB)
+24/08/20 05:02:26 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:26 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:26 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:26 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:26 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:26 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:26 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:26 INFO MapOutputTrackerWorker: Doing the fetch; tracker endpoint = NettyRpcEndpointRef(spark://MapOutputTracker@556f599680e2:45621)
+24/08/20 05:02:26 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:26 INFO MapOutputTrackerWorker: Got the map output locations
+24/08/20 05:02:26 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 49
+24/08/20 05:02:26 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 26
+24/08/20 05:02:26 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 198
+24/08/20 05:02:26 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 0
+24/08/20 05:02:26 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 151
+24/08/20 05:02:26 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 127
+24/08/20 05:02:26 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 74
+24/08/20 05:02:26 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 101
+24/08/20 05:02:26 INFO CoarseGrainedExecutorBackend: Got assigned task 175
+24/08/20 05:02:26 INFO Executor: Running task 7.1 in stage 2.1 (TID 175)
+24/08/20 05:02:26 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:26 INFO MapOutputTrackerWorker: Doing the fetch; tracker endpoint = NettyRpcEndpointRef(spark://MapOutputTracker@556f599680e2:45621)
+24/08/20 05:02:26 INFO MapOutputTrackerWorker: Got the map output locations
+24/08/20 05:02:26 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 175
+24/08/20 05:02:26 INFO CoarseGrainedExecutorBackend: Got assigned task 176
+24/08/20 05:02:26 INFO Executor: Running task 0.0 in stage 1.2 (TID 176)
+24/08/20 05:02:26 INFO CoarseGrainedExecutorBackend: Got assigned task 177
+24/08/20 05:02:26 INFO CoarseGrainedExecutorBackend: Got assigned task 178
+24/08/20 05:02:26 INFO Executor: Running task 1.0 in stage 1.2 (TID 177)
+24/08/20 05:02:26 INFO CoarseGrainedExecutorBackend: Got assigned task 179
+24/08/20 05:02:26 INFO Executor: Running task 2.0 in stage 1.2 (TID 178)
+24/08/20 05:02:26 INFO Executor: Running task 3.0 in stage 1.2 (TID 179)
+24/08/20 05:02:26 INFO CoarseGrainedExecutorBackend: Got assigned task 180
+24/08/20 05:02:26 INFO CoarseGrainedExecutorBackend: Got assigned task 181
+24/08/20 05:02:26 INFO Executor: Running task 4.0 in stage 1.2 (TID 180)
+24/08/20 05:02:26 INFO Executor: Running task 5.0 in stage 1.2 (TID 181)
+24/08/20 05:02:26 INFO CoarseGrainedExecutorBackend: Got assigned task 182
+24/08/20 05:02:26 INFO CoarseGrainedExecutorBackend: Got assigned task 183
+24/08/20 05:02:26 INFO Executor: Running task 6.0 in stage 1.2 (TID 182)
+24/08/20 05:02:26 INFO Executor: Running task 7.0 in stage 1.2 (TID 183)
+24/08/20 05:02:26 INFO MapOutputTrackerWorker: Updating epoch to 4 and clearing cache
+24/08/20 05:02:26 INFO TorrentBroadcast: Started reading broadcast variable 7 with 1 pieces (estimated total size 4.0 MiB)
+24/08/20 05:02:26 INFO MemoryStore: Block broadcast_7_piece0 stored as bytes in memory (estimated size 9.3 KiB, free 434.4 MiB)
+24/08/20 05:02:26 INFO TorrentBroadcast: Reading broadcast variable 7 took 11 ms
+24/08/20 05:02:26 INFO MemoryStore: Block broadcast_7 stored as values in memory (estimated size 30.5 KiB, free 434.3 MiB)
+24/08/20 05:02:27 INFO CodeGenerator: Code generated in 263.592843 ms
+24/08/20 05:02:27 INFO CodeGenerator: Code generated in 19.875654 ms
+24/08/20 05:02:27 INFO TorrentBroadcast: Started reading broadcast variable 1 with 1 pieces (estimated total size 4.0 MiB)
+24/08/20 05:02:27 INFO MemoryStore: Block broadcast_1_piece0 stored as bytes in memory (estimated size 3.7 KiB, free 434.3 MiB)
+24/08/20 05:02:27 INFO TorrentBroadcast: Reading broadcast variable 1 took 9 ms
+24/08/20 05:02:27 INFO MemoryStore: Block broadcast_1 stored as values in memory (estimated size 32.0 KiB, free 434.3 MiB)
+24/08/20 05:02:29 INFO VectorizedSparkParquetReaders: Enabling arrow.enable_unsafe_memory_access
+24/08/20 05:02:29 INFO VectorizedSparkParquetReaders: Disabling arrow.enable_null_check_for_get
+24/08/20 05:02:29 INFO BaseAllocator: Debug mode disabled.
+24/08/20 05:02:29 INFO DefaultAllocationManagerOption: allocation manager type not specified, using netty as the default type
+24/08/20 05:02:29 INFO CheckAllocator: Using DefaultAllocationManager at memory/DefaultAllocationManagerFactory.class
+24/08/20 05:02:29 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:29 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:29 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:29 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:29 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:29 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:29 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:29 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:29 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:29 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:29 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO Executor: Finished task 2.0 in stage 1.2 (TID 178). 3414 bytes result sent to driver
+24/08/20 05:02:30 INFO CoarseGrainedExecutorBackend: Got assigned task 184
+24/08/20 05:02:30 INFO Executor: Running task 8.0 in stage 1.2 (TID 184)
+24/08/20 05:02:30 INFO Executor: Finished task 4.0 in stage 1.2 (TID 180). 3414 bytes result sent to driver
+24/08/20 05:02:30 INFO CoarseGrainedExecutorBackend: Got assigned task 185
+24/08/20 05:02:30 INFO Executor: Running task 9.0 in stage 1.2 (TID 185)
+24/08/20 05:02:30 INFO Executor: Finished task 0.0 in stage 1.2 (TID 176). 3414 bytes result sent to driver
+24/08/20 05:02:30 INFO CoarseGrainedExecutorBackend: Got assigned task 186
+24/08/20 05:02:30 INFO Executor: Running task 10.0 in stage 1.2 (TID 186)
+24/08/20 05:02:30 INFO Executor: Finished task 5.0 in stage 1.2 (TID 181). 3414 bytes result sent to driver
+24/08/20 05:02:30 INFO CoarseGrainedExecutorBackend: Got assigned task 187
+24/08/20 05:02:30 INFO Executor: Running task 11.0 in stage 1.2 (TID 187)
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO Executor: Finished task 1.0 in stage 1.2 (TID 177). 3371 bytes result sent to driver
+24/08/20 05:02:30 INFO CoarseGrainedExecutorBackend: Got assigned task 188
+24/08/20 05:02:30 INFO Executor: Running task 12.0 in stage 1.2 (TID 188)
+24/08/20 05:02:30 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:30 INFO Executor: Finished task 3.0 in stage 1.2 (TID 179). 3414 bytes result sent to driver
+24/08/20 05:02:30 INFO CoarseGrainedExecutorBackend: Got assigned task 189
+24/08/20 05:02:30 INFO Executor: Running task 13.0 in stage 1.2 (TID 189)
+24/08/20 05:02:31 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:31 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:32 INFO CoarseGrainedExecutorBackend: Driver commanded a shutdown
+24/08/20 05:02:32 ERROR CoarseGrainedExecutorBackend: RECEIVED SIGNAL TERM
+tdown

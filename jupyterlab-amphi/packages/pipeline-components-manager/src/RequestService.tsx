@@ -21,6 +21,15 @@ export class RequestService {
     setLoadings(true);
     const flow = PipelineService.filterPipeline(context.model.toString());
     let code: string = '';
+    
+    console.log("=== Check retrieveDataframeColumns ===")
+    console.log("event: ",event)
+    console.log("context: ",context)
+    console.log("commands: ",commands)
+    console.log("componentService: ",componentService)
+    console.log("setLoadings: ",setLoadings)
+    console.log("nodeId: ",nodeId)
+    console.log("previousNodes: ",previousNodes)
 
     try {
         let refNodeId = previousNodes ? PipelineService.findMultiplePreviousNodeIds(flow, nodeId)[inputNb] : nodeId;
@@ -39,6 +48,8 @@ export class RequestService {
 
     const lines = code.split('\n');
     const output_df = lines.pop(); // Extract the last line and store it in output_df
+    
+    console.log("===> Check output_df: ", output_df)
 
     if (output_df && output_df.trim() && output_df.trim().split(' ').length === 1) {
 

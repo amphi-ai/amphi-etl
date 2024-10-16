@@ -1,0 +1,63 @@
+Spark Command: /usr/lib/jvm/java-11-openjdk-amd64/bin/java -cp /opt/spark/conf/:/opt/spark/jars/* -Xmx1g org.apache.spark.deploy.master.Master --host 556f599680e2 --port 7077 --webui-port 8080 -p 7077
+========================================
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+24/08/07 09:10:08 INFO Master: Started daemon with process name: 24@556f599680e2
+24/08/07 09:10:08 INFO SignalUtils: Registering signal handler for TERM
+24/08/07 09:10:08 INFO SignalUtils: Registering signal handler for HUP
+24/08/07 09:10:08 INFO SignalUtils: Registering signal handler for INT
+24/08/07 09:10:08 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+24/08/07 09:10:09 INFO SecurityManager: Changing view acls to: root
+24/08/07 09:10:09 INFO SecurityManager: Changing modify acls to: root
+24/08/07 09:10:09 INFO SecurityManager: Changing view acls groups to: 
+24/08/07 09:10:09 INFO SecurityManager: Changing modify acls groups to: 
+24/08/07 09:10:09 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+24/08/07 09:10:09 INFO Utils: Successfully started service 'sparkMaster' on port 7077.
+24/08/07 09:10:09 INFO Master: Starting Spark master at spark://556f599680e2:7077
+24/08/07 09:10:09 INFO Master: Running Spark version 3.5.1
+24/08/07 09:10:09 INFO JettyUtils: Start Jetty 0.0.0.0:8080 for MasterUI
+24/08/07 09:10:09 INFO Utils: Successfully started service 'MasterUI' on port 8080.
+24/08/07 09:10:09 INFO MasterWebUI: Bound MasterWebUI to 0.0.0.0, and started at http://556f599680e2:8080
+24/08/07 09:10:09 INFO Master: I have been elected leader! New state: ALIVE
+24/08/07 09:11:30 INFO Master: Registering worker 172.23.0.2:34115 with 8 cores, 14.6 GiB RAM
+24/08/19 09:27:19 INFO Master: Registering app test
+24/08/19 09:27:21 INFO Master: Registered app test with ID app-20240819092720-0000
+24/08/19 09:27:22 INFO Master: Start scheduling for app app-20240819092720-0000 with rpId: 0
+24/08/19 09:27:22 INFO Master: Launching executor app-20240819092720-0000/0 on worker worker-20240807091129-172.23.0.2-34115
+24/08/19 09:27:22 INFO Master: Registering app test
+24/08/19 09:27:22 INFO Master: Attempted to re-register application at same address: 556f599680e2:34861
+24/08/19 09:27:22 INFO Master: Registered app test with ID app-20240819092722-0001
+24/08/19 09:27:22 INFO Master: Start scheduling for app app-20240819092720-0000 with rpId: 0
+24/08/19 09:27:35 INFO Master: Received unregister request from application app-20240819092722-0001
+24/08/19 09:27:36 INFO Master: 172.23.0.2:54064 got disassociated, removing it.
+24/08/19 09:27:36 INFO Master: 556f599680e2:34861 got disassociated, removing it.
+24/08/19 09:27:36 INFO Master: Removing app app-20240819092720-0000
+24/08/19 09:28:10 WARN Master: Got status update for unknown executor app-20240819092720-0000/0
+24/08/19 09:28:10 WARN Master: Got status update for unknown executor app-20240819092720-0000/0
+24/08/20 04:59:38 INFO Master: Registering app migra
+24/08/20 04:59:38 INFO Master: Registered app migra with ID app-20240820045938-0002
+24/08/20 04:59:38 INFO Master: Start scheduling for app app-20240820045938-0002 with rpId: 0
+24/08/20 04:59:38 INFO Master: Launching executor app-20240820045938-0002/0 on worker worker-20240807091129-172.23.0.2-34115
+24/08/20 04:59:38 INFO Master: Start scheduling for app app-20240820045938-0002 with rpId: 0
+24/08/20 04:59:40 INFO Master: Received unregister request from application app-20240820045938-0002
+24/08/20 04:59:40 INFO Master: Removing app app-20240820045938-0002
+24/08/20 04:59:40 INFO Master: 172.23.0.2:60782 got disassociated, removing it.
+24/08/20 04:59:40 INFO Master: 556f599680e2:34225 got disassociated, removing it.
+24/08/20 04:59:40 WARN Master: Got status update for unknown executor app-20240820045938-0002/0
+24/08/20 05:00:53 INFO Master: Registering app migra
+24/08/20 05:00:53 INFO Master: Registered app migra with ID app-20240820050053-0003
+24/08/20 05:00:53 INFO Master: Start scheduling for app app-20240820050053-0003 with rpId: 0
+24/08/20 05:00:53 INFO Master: Launching executor app-20240820050053-0003/0 on worker worker-20240807091129-172.23.0.2-34115
+24/08/20 05:00:53 INFO Master: Start scheduling for app app-20240820050053-0003 with rpId: 0
+24/08/20 05:01:55 INFO Master: Removing executor app-20240820050053-0003/0 because it is EXITED
+24/08/20 05:01:55 INFO Master: Start scheduling for app app-20240820050053-0003 with rpId: 0
+24/08/20 05:01:55 INFO Master: Launching executor app-20240820050053-0003/1 on worker worker-20240807091129-172.23.0.2-34115
+24/08/20 05:01:55 INFO Master: Start scheduling for app app-20240820050053-0003 with rpId: 0
+24/08/20 05:02:22 INFO Master: Removing executor app-20240820050053-0003/1 because it is EXITED
+24/08/20 05:02:22 INFO Master: Start scheduling for app app-20240820050053-0003 with rpId: 0
+24/08/20 05:02:22 INFO Master: Launching executor app-20240820050053-0003/2 on worker worker-20240807091129-172.23.0.2-34115
+24/08/20 05:02:23 INFO Master: Start scheduling for app app-20240820050053-0003 with rpId: 0
+24/08/20 05:02:32 INFO Master: Received unregister request from application app-20240820050053-0003
+24/08/20 05:02:32 INFO Master: Removing app app-20240820050053-0003
+24/08/20 05:02:32 INFO Master: 172.23.0.2:39278 got disassociated, removing it.
+24/08/20 05:02:32 INFO Master: 556f599680e2:45621 got disassociated, removing it.
+24/08/20 05:02:32 WARN Master: Got status update for unknown executor app-20240820050053-0003/2

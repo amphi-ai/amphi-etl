@@ -1,0 +1,61 @@
+Spark Command: /usr/lib/jvm/java-11-openjdk-amd64/bin/java -cp /opt/spark/conf/:/opt/spark/jars/* -Xmx1g org.apache.spark.deploy.history.HistoryServer
+========================================
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+24/08/07 09:10:11 INFO HistoryServer: Started daemon with process name: 111@556f599680e2
+24/08/07 09:10:11 INFO SignalUtils: Registering signal handler for TERM
+24/08/07 09:10:11 INFO SignalUtils: Registering signal handler for HUP
+24/08/07 09:10:11 INFO SignalUtils: Registering signal handler for INT
+24/08/07 09:10:11 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+24/08/07 09:10:11 INFO SecurityManager: Changing view acls to: root
+24/08/07 09:10:11 INFO SecurityManager: Changing modify acls to: root
+24/08/07 09:10:11 INFO SecurityManager: Changing view acls groups to: 
+24/08/07 09:10:11 INFO SecurityManager: Changing modify acls groups to: 
+24/08/07 09:10:11 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+24/08/07 09:10:11 INFO FsHistoryProvider: History server ui acls disabled; users with admin permissions: ; groups with admin permissions: 
+24/08/07 09:10:11 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+24/08/07 09:10:11 INFO MetricsSystemImpl: Scheduled Metric snapshot period at 10 second(s).
+24/08/07 09:10:11 INFO MetricsSystemImpl: s3a-file-system metrics system started
+24/08/07 09:10:12 INFO JettyUtils: Start Jetty 0.0.0.0:18080 for HistoryServerUI
+24/08/07 09:10:12 INFO Utils: Successfully started service 'HistoryServerUI' on port 18080.
+24/08/07 09:10:12 INFO HistoryServer: Bound HistoryServer to 0.0.0.0, and started at http://556f599680e2:18080
+Exception in thread "main" java.nio.file.AccessDeniedException: s3a://iceberg/spark-logs: getFileStatus on s3a://iceberg/spark-logs: com.amazonaws.services.s3.model.AmazonS3Exception: Forbidden (Service: Amazon S3; Status Code: 403; Error Code: 403 Forbidden; Request ID: E1Y2KAEVHZ0VBYYC; S3 Extended Request ID: 0fWCQgmg5+WlVdl5Ns1FJF9KlkLS8MTfu35CNmV/btbxQJn4VLBPgZwTo/N+0aFjkP3Y5wa/4p0=; Proxy: null), S3 Extended Request ID: 0fWCQgmg5+WlVdl5Ns1FJF9KlkLS8MTfu35CNmV/btbxQJn4VLBPgZwTo/N+0aFjkP3Y5wa/4p0=:403 Forbidden
+	at org.apache.hadoop.fs.s3a.S3AUtils.translateException(S3AUtils.java:255)
+	at org.apache.hadoop.fs.s3a.S3AUtils.translateException(S3AUtils.java:175)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.s3GetFileStatus(S3AFileSystem.java:3796)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.innerGetFileStatus(S3AFileSystem.java:3688)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.lambda$getFileStatus$24(S3AFileSystem.java:3556)
+	at org.apache.hadoop.fs.statistics.impl.IOStatisticsBinding.lambda$trackDurationOfOperation$5(IOStatisticsBinding.java:499)
+	at org.apache.hadoop.fs.statistics.impl.IOStatisticsBinding.trackDuration(IOStatisticsBinding.java:444)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.trackDurationAndSpan(S3AFileSystem.java:2337)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.trackDurationAndSpan(S3AFileSystem.java:2356)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.getFileStatus(S3AFileSystem.java:3554)
+	at org.apache.spark.deploy.history.FsHistoryProvider.startPolling(FsHistoryProvider.scala:260)
+	at org.apache.spark.deploy.history.FsHistoryProvider.initialize(FsHistoryProvider.scala:215)
+	at org.apache.spark.deploy.history.FsHistoryProvider.start(FsHistoryProvider.scala:388)
+	at org.apache.spark.deploy.history.HistoryServer$.main(HistoryServer.scala:311)
+	at org.apache.spark.deploy.history.HistoryServer.main(HistoryServer.scala)
+Caused by: com.amazonaws.services.s3.model.AmazonS3Exception: Forbidden (Service: Amazon S3; Status Code: 403; Error Code: 403 Forbidden; Request ID: E1Y2KAEVHZ0VBYYC; S3 Extended Request ID: 0fWCQgmg5+WlVdl5Ns1FJF9KlkLS8MTfu35CNmV/btbxQJn4VLBPgZwTo/N+0aFjkP3Y5wa/4p0=; Proxy: null), S3 Extended Request ID: 0fWCQgmg5+WlVdl5Ns1FJF9KlkLS8MTfu35CNmV/btbxQJn4VLBPgZwTo/N+0aFjkP3Y5wa/4p0=
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.handleErrorResponse(AmazonHttpClient.java:1879)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.handleServiceErrorResponse(AmazonHttpClient.java:1418)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeOneRequest(AmazonHttpClient.java:1387)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeHelper(AmazonHttpClient.java:1157)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.doExecute(AmazonHttpClient.java:814)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeWithTimer(AmazonHttpClient.java:781)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.execute(AmazonHttpClient.java:755)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.access$500(AmazonHttpClient.java:715)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutionBuilderImpl.execute(AmazonHttpClient.java:697)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:561)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:541)
+	at com.amazonaws.services.s3.AmazonS3Client.invoke(AmazonS3Client.java:5520)
+	at com.amazonaws.services.s3.AmazonS3Client.invoke(AmazonS3Client.java:5467)
+	at com.amazonaws.services.s3.AmazonS3Client.getObjectMetadata(AmazonS3Client.java:1402)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.lambda$getObjectMetadata$10(S3AFileSystem.java:2545)
+	at org.apache.hadoop.fs.s3a.Invoker.retryUntranslated(Invoker.java:414)
+	at org.apache.hadoop.fs.s3a.Invoker.retryUntranslated(Invoker.java:377)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.getObjectMetadata(S3AFileSystem.java:2533)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.getObjectMetadata(S3AFileSystem.java:2513)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.s3GetFileStatus(S3AFileSystem.java:3776)
+	... 12 more
+24/08/07 09:10:14 INFO MetricsSystemImpl: Stopping s3a-file-system metrics system...
+24/08/07 09:10:14 INFO MetricsSystemImpl: s3a-file-system metrics system stopped.
+24/08/07 09:10:14 INFO MetricsSystemImpl: s3a-file-system metrics system shutdown complete.

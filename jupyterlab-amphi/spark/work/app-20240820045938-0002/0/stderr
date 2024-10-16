@@ -1,0 +1,25 @@
+Spark Executor Command: "/usr/lib/jvm/java-11-openjdk-amd64/bin/java" "-cp" "/opt/spark/conf/:/opt/spark/jars/*" "-Xmx1024M" "-Dspark.driver.port=34225" "-Djava.net.preferIPv6Addresses=false" "-XX:+IgnoreUnrecognizedVMOptions" "--add-opens=java.base/java.lang=ALL-UNNAMED" "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED" "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED" "--add-opens=java.base/java.io=ALL-UNNAMED" "--add-opens=java.base/java.net=ALL-UNNAMED" "--add-opens=java.base/java.nio=ALL-UNNAMED" "--add-opens=java.base/java.util=ALL-UNNAMED" "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED" "--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED" "--add-opens=java.base/jdk.internal.ref=ALL-UNNAMED" "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED" "--add-opens=java.base/sun.nio.cs=ALL-UNNAMED" "--add-opens=java.base/sun.security.action=ALL-UNNAMED" "--add-opens=java.base/sun.util.calendar=ALL-UNNAMED" "--add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED" "-Djdk.reflect.useDirectMethodHandle=false" "org.apache.spark.executor.CoarseGrainedExecutorBackend" "--driver-url" "spark://CoarseGrainedScheduler@556f599680e2:34225" "--executor-id" "0" "--hostname" "172.23.0.2" "--cores" "8" "--app-id" "app-20240820045938-0002" "--worker-url" "spark://Worker@172.23.0.2:34115" "--resourceProfileId" "0"
+========================================
+
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+24/08/20 04:59:39 INFO CoarseGrainedExecutorBackend: Started daemon with process name: 2622@556f599680e2
+24/08/20 04:59:39 INFO SignalUtils: Registering signal handler for TERM
+24/08/20 04:59:39 INFO SignalUtils: Registering signal handler for HUP
+24/08/20 04:59:39 INFO SignalUtils: Registering signal handler for INT
+24/08/20 04:59:39 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+24/08/20 04:59:39 INFO SecurityManager: Changing view acls to: root
+24/08/20 04:59:39 INFO SecurityManager: Changing modify acls to: root
+24/08/20 04:59:39 INFO SecurityManager: Changing view acls groups to: 
+24/08/20 04:59:39 INFO SecurityManager: Changing modify acls groups to: 
+24/08/20 04:59:39 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+24/08/20 04:59:40 INFO TransportClientFactory: Successfully created connection to 556f599680e2/172.23.0.2:34225 after 64 ms (0 ms spent in bootstraps)
+24/08/20 04:59:40 INFO SecurityManager: Changing view acls to: root
+24/08/20 04:59:40 INFO SecurityManager: Changing modify acls to: root
+24/08/20 04:59:40 INFO SecurityManager: Changing view acls groups to: 
+24/08/20 04:59:40 INFO SecurityManager: Changing modify acls groups to: 
+24/08/20 04:59:40 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+24/08/20 04:59:40 INFO TransportClientFactory: Successfully created connection to 556f599680e2/172.23.0.2:34225 after 4 ms (0 ms spent in bootstraps)
+24/08/20 04:59:40 INFO DiskBlockManager: Created local directory at /tmp/spark-e340b88a-5702-46e2-b7e8-fffa2a8bbef6/executor-edb038dd-8e42-48b5-8c30-9cdb4d56d89f/blockmgr-8eb18a5b-d09d-437b-8254-09f4a38a257a
+24/08/20 04:59:40 INFO MemoryStore: MemoryStore started with capacity 434.4 MiB
+24/08/20 04:59:40 ERROR CoarseGrainedExecutorBackend: RECEIVED SIGNAL TERM
+ MiB

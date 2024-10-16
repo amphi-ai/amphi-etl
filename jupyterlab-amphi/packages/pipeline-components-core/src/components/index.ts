@@ -20,10 +20,11 @@ export { SnowflakeInput } from './inputs/databases/SnowflakeInput';
 
 export { RedditInput } from './inputs/cloud/RedditInput';
 
-export { IcebergInput } from './inputs/lakehouse/IcebergInput';
+//export { IcebergInput } from './inputs/lakehouse/IcebergInput';
 export { TrinoInput } from './inputs/lakehouse/TrinoInput';
 export { SparkSession } from './inputs/lakehouse/SparkSession';
 export { SparkLoadTable} from './inputs/lakehouse/SparkLoadTable';
+export { SparkWrite} from './inputs/lakehouse/SparkWrite';
 
 // Transforms
 export { Filter } from './transforms/Filter';

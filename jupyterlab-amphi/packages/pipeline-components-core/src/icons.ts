@@ -45,6 +45,7 @@ import snowflakeIconSvgStr from '../style/icons/snowflake.svg'
 
 import icebergIconSvgStr from '../style/icons/iceberg.svg'
 import trinoIconSvgStr from '../style/icons/trino.svg'
+import sparkIconSvgStr from '../style/icons/spark-icon.svg'
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -264,4 +265,9 @@ export const icebergIcon = new LabIcon({
 export const trinoIcon = new LabIcon({
   name: 'amphi:trinoIcon',
   svgstr: trinoIconSvgStr
+});
+
+export const sparkIcon = new LabIcon({
+  name: 'amphi:sparkIcon',
+  svgstr: sparkIconSvgStr
 });

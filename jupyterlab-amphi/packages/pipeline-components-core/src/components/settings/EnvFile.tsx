@@ -285,7 +285,7 @@ export class EnvFile extends PipelineComponent<ComponentItem>() {
           theme={{
             token: {
               // Seed Token
-              colorPrimary: '#5F9B97',
+              colorPrimary: '#0e7fc2',
             },
           }}
         >

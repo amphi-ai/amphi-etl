@@ -4,7 +4,7 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: '#5A8F7B', // Replace '#yourColorValue' with your desired color value
+        primary: '#5a8f7b', // Replace '#yourColorValue' with your desired color value
         pastel: '#c4eddd',
       },
     },

@@ -17,6 +17,7 @@ import { IcebergInput } from './components/inputs/lakehouse/IcebergInput';
 import { TrinoInput } from './components/inputs/lakehouse/TrinoInput';
 import { SparkSession } from './components/inputs/lakehouse/SparkSession';
 import { SparkLoadTable } from './components/inputs/lakehouse/SparkLoadTable';
+import { SparkWrite } from './components/inputs/lakehouse/SparkWrite';
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-components-core',
@@ -51,10 +52,12 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(SqlServerInput.getInstance())
     componentService.addComponent(SnowflakeInput.getInstance())
     
-    componentService.addComponent(IcebergInput.getInstance())
+    // componentService.addComponent(IcebergInput.getInstance())
     componentService.addComponent(TrinoInput.getInstance())
     componentService.addComponent(SparkSession.getInstance())
     componentService.addComponent(SparkLoadTable.getInstance())
+    componentService.addComponent(SparkWrite.getInstance())
+    
     // Processors
     componentService.addComponent(FilterColumns.getInstance())
     componentService.addComponent(RenameColumns.getInstance())

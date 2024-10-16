@@ -662,8 +662,8 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
         if (launcher) {
           launcher.add({
             command: CommandIDs.create,
-            category: 'Amphi',
-            rank: 3
+            category: 'Vnpt ETL',
+            rank: 1
           });
         }
 

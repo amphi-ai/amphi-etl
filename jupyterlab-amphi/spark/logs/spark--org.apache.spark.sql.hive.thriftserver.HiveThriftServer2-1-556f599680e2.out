@@ -1,0 +1,176 @@
+Spark Command: /usr/lib/jvm/java-11-openjdk-amd64/bin/java -cp /opt/spark/conf/:/opt/spark/jars/* -Xmx1g -Dderby.system.home=/tmp/derby -XX:+IgnoreUnrecognizedVMOptions --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.base/jdk.internal.ref=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.nio.cs=ALL-UNNAMED --add-opens=java.base/sun.security.action=ALL-UNNAMED --add-opens=java.base/sun.util.calendar=ALL-UNNAMED --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED -Djdk.reflect.useDirectMethodHandle=false org.apache.spark.deploy.SparkSubmit --conf spark.driver.extraJavaOptions=-Dderby.system.home=/tmp/derby --class org.apache.spark.sql.hive.thriftserver.HiveThriftServer2 --name Thrift JDBC/ODBC Server spark-internal
+========================================
+24/08/07 09:10:14 INFO HiveThriftServer2: Started daemon with process name: 181@556f599680e2
+24/08/07 09:10:14 INFO SignalUtils: Registering signal handler for TERM
+24/08/07 09:10:14 INFO SignalUtils: Registering signal handler for HUP
+24/08/07 09:10:14 INFO SignalUtils: Registering signal handler for INT
+24/08/07 09:10:14 INFO HiveThriftServer2: Starting SparkContext
+24/08/07 09:10:14 INFO SparkContext: Running Spark version 3.5.1
+24/08/07 09:10:14 INFO SparkContext: OS info Linux, 5.15.0-106-generic, amd64
+24/08/07 09:10:14 INFO SparkContext: Java version 11.0.22
+24/08/07 09:10:14 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+24/08/07 09:10:14 INFO ResourceUtils: ==============================================================
+24/08/07 09:10:14 INFO ResourceUtils: No custom resources configured for spark.driver.
+24/08/07 09:10:14 INFO ResourceUtils: ==============================================================
+24/08/07 09:10:14 INFO SparkContext: Submitted application: Thrift JDBC/ODBC Server
+24/08/07 09:10:14 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 1024, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+24/08/07 09:10:14 INFO ResourceProfile: Limiting resource is cpu
+24/08/07 09:10:14 INFO ResourceProfileManager: Added ResourceProfile id: 0
+24/08/07 09:10:14 INFO SecurityManager: Changing view acls to: root
+24/08/07 09:10:14 INFO SecurityManager: Changing modify acls to: root
+24/08/07 09:10:14 INFO SecurityManager: Changing view acls groups to: 
+24/08/07 09:10:14 INFO SecurityManager: Changing modify acls groups to: 
+24/08/07 09:10:14 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+24/08/07 09:10:15 INFO Utils: Successfully started service 'sparkDriver' on port 44551.
+24/08/07 09:10:15 INFO SparkEnv: Registering MapOutputTracker
+24/08/07 09:10:15 INFO SparkEnv: Registering BlockManagerMaster
+24/08/07 09:10:15 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+24/08/07 09:10:15 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+24/08/07 09:10:15 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+24/08/07 09:10:15 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-fb70dfc2-4bcb-4b17-80b5-986e4bcf6427
+24/08/07 09:10:15 INFO MemoryStore: MemoryStore started with capacity 434.4 MiB
+24/08/07 09:10:15 INFO SparkEnv: Registering OutputCommitCoordinator
+24/08/07 09:10:15 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+24/08/07 09:10:15 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+24/08/07 09:10:15 INFO Executor: Starting executor ID driver on host 556f599680e2
+24/08/07 09:10:15 INFO Executor: OS info Linux, 5.15.0-106-generic, amd64
+24/08/07 09:10:15 INFO Executor: Java version 11.0.22
+24/08/07 09:10:15 INFO Executor: Starting executor with user classpath (userClassPathFirst = false): ''
+24/08/07 09:10:15 INFO Executor: Created or updated repl class loader org.apache.spark.util.MutableURLClassLoader@4232b34a for default.
+24/08/07 09:10:15 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 45725.
+24/08/07 09:10:15 INFO NettyBlockTransferService: Server created on 556f599680e2:45725
+24/08/07 09:10:15 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+24/08/07 09:10:15 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 556f599680e2, 45725, None)
+24/08/07 09:10:15 INFO BlockManagerMasterEndpoint: Registering block manager 556f599680e2:45725 with 434.4 MiB RAM, BlockManagerId(driver, 556f599680e2, 45725, None)
+24/08/07 09:10:15 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 556f599680e2, 45725, None)
+24/08/07 09:10:15 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 556f599680e2, 45725, None)
+24/08/07 09:10:15 WARN MetricsConfig: Cannot locate configuration: tried hadoop-metrics2-s3a-file-system.properties,hadoop-metrics2.properties
+24/08/07 09:10:15 INFO MetricsSystemImpl: Scheduled Metric snapshot period at 10 second(s).
+24/08/07 09:10:15 INFO MetricsSystemImpl: s3a-file-system metrics system started
+24/08/07 09:10:17 ERROR SparkContext: Error initializing SparkContext.
+java.nio.file.AccessDeniedException: s3a://iceberg/spark-logs: getFileStatus on s3a://iceberg/spark-logs: com.amazonaws.services.s3.model.AmazonS3Exception: Forbidden (Service: Amazon S3; Status Code: 403; Error Code: 403 Forbidden; Request ID: ESYZEDYG11Q6Y09D; S3 Extended Request ID: 5+rI5lF43YsPoXi8pRpDDlDj9p2InOTzBMiZmG7rkXkLqER6rBAT56QCPIESc2mXtMjaaKG9jyc=; Proxy: null), S3 Extended Request ID: 5+rI5lF43YsPoXi8pRpDDlDj9p2InOTzBMiZmG7rkXkLqER6rBAT56QCPIESc2mXtMjaaKG9jyc=:403 Forbidden
+	at org.apache.hadoop.fs.s3a.S3AUtils.translateException(S3AUtils.java:255)
+	at org.apache.hadoop.fs.s3a.S3AUtils.translateException(S3AUtils.java:175)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.s3GetFileStatus(S3AFileSystem.java:3796)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.innerGetFileStatus(S3AFileSystem.java:3688)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.lambda$getFileStatus$24(S3AFileSystem.java:3556)
+	at org.apache.hadoop.fs.statistics.impl.IOStatisticsBinding.lambda$trackDurationOfOperation$5(IOStatisticsBinding.java:499)
+	at org.apache.hadoop.fs.statistics.impl.IOStatisticsBinding.trackDuration(IOStatisticsBinding.java:444)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.trackDurationAndSpan(S3AFileSystem.java:2337)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.trackDurationAndSpan(S3AFileSystem.java:2356)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.getFileStatus(S3AFileSystem.java:3554)
+	at org.apache.spark.deploy.history.EventLogFileWriter.requireLogBaseDirAsDirectory(EventLogFileWriters.scala:77)
+	at org.apache.spark.deploy.history.SingleEventLogFileWriter.start(EventLogFileWriters.scala:221)
+	at org.apache.spark.scheduler.EventLoggingListener.start(EventLoggingListener.scala:81)
+	at org.apache.spark.SparkContext.<init>(SparkContext.scala:637)
+	at org.apache.spark.SparkContext$.getOrCreate(SparkContext.scala:2888)
+	at org.apache.spark.sql.SparkSession$Builder.$anonfun$getOrCreate$2(SparkSession.scala:1099)
+	at scala.Option.getOrElse(Option.scala:189)
+	at org.apache.spark.sql.SparkSession$Builder.getOrCreate(SparkSession.scala:1093)
+	at org.apache.spark.sql.hive.thriftserver.SparkSQLEnv$.init(SparkSQLEnv.scala:64)
+	at org.apache.spark.sql.hive.thriftserver.HiveThriftServer2$.main(HiveThriftServer2.scala:96)
+	at org.apache.spark.sql.hive.thriftserver.HiveThriftServer2.main(HiveThriftServer2.scala)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.apache.spark.deploy.JavaMainApplication.start(SparkApplication.scala:52)
+	at org.apache.spark.deploy.SparkSubmit.org$apache$spark$deploy$SparkSubmit$$runMain(SparkSubmit.scala:1029)
+	at org.apache.spark.deploy.SparkSubmit.doRunMain$1(SparkSubmit.scala:194)
+	at org.apache.spark.deploy.SparkSubmit.submit(SparkSubmit.scala:217)
+	at org.apache.spark.deploy.SparkSubmit.doSubmit(SparkSubmit.scala:91)
+	at org.apache.spark.deploy.SparkSubmit$$anon$2.doSubmit(SparkSubmit.scala:1120)
+	at org.apache.spark.deploy.SparkSubmit$.main(SparkSubmit.scala:1129)
+	at org.apache.spark.deploy.SparkSubmit.main(SparkSubmit.scala)
+Caused by: com.amazonaws.services.s3.model.AmazonS3Exception: Forbidden (Service: Amazon S3; Status Code: 403; Error Code: 403 Forbidden; Request ID: ESYZEDYG11Q6Y09D; S3 Extended Request ID: 5+rI5lF43YsPoXi8pRpDDlDj9p2InOTzBMiZmG7rkXkLqER6rBAT56QCPIESc2mXtMjaaKG9jyc=; Proxy: null), S3 Extended Request ID: 5+rI5lF43YsPoXi8pRpDDlDj9p2InOTzBMiZmG7rkXkLqER6rBAT56QCPIESc2mXtMjaaKG9jyc=
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.handleErrorResponse(AmazonHttpClient.java:1879)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.handleServiceErrorResponse(AmazonHttpClient.java:1418)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeOneRequest(AmazonHttpClient.java:1387)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeHelper(AmazonHttpClient.java:1157)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.doExecute(AmazonHttpClient.java:814)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeWithTimer(AmazonHttpClient.java:781)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.execute(AmazonHttpClient.java:755)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.access$500(AmazonHttpClient.java:715)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutionBuilderImpl.execute(AmazonHttpClient.java:697)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:561)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:541)
+	at com.amazonaws.services.s3.AmazonS3Client.invoke(AmazonS3Client.java:5520)
+	at com.amazonaws.services.s3.AmazonS3Client.invoke(AmazonS3Client.java:5467)
+	at com.amazonaws.services.s3.AmazonS3Client.getObjectMetadata(AmazonS3Client.java:1402)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.lambda$getObjectMetadata$10(S3AFileSystem.java:2545)
+	at org.apache.hadoop.fs.s3a.Invoker.retryUntranslated(Invoker.java:414)
+	at org.apache.hadoop.fs.s3a.Invoker.retryUntranslated(Invoker.java:377)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.getObjectMetadata(S3AFileSystem.java:2533)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.getObjectMetadata(S3AFileSystem.java:2513)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.s3GetFileStatus(S3AFileSystem.java:3776)
+	... 30 more
+24/08/07 09:10:17 INFO SparkContext: SparkContext is stopping with exitCode 0.
+24/08/07 09:10:17 INFO SparkUI: Stopped Spark web UI at http://556f599680e2:4040
+24/08/07 09:10:17 INFO MapOutputTrackerMasterEndpoint: MapOutputTrackerMasterEndpoint stopped!
+24/08/07 09:10:17 INFO MemoryStore: MemoryStore cleared
+24/08/07 09:10:17 INFO BlockManager: BlockManager stopped
+24/08/07 09:10:17 INFO BlockManagerMaster: BlockManagerMaster stopped
+24/08/07 09:10:17 INFO OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped!
+24/08/07 09:10:17 INFO SparkContext: Successfully stopped SparkContext
+Exception in thread "main" java.nio.file.AccessDeniedException: s3a://iceberg/spark-logs: getFileStatus on s3a://iceberg/spark-logs: com.amazonaws.services.s3.model.AmazonS3Exception: Forbidden (Service: Amazon S3; Status Code: 403; Error Code: 403 Forbidden; Request ID: ESYZEDYG11Q6Y09D; S3 Extended Request ID: 5+rI5lF43YsPoXi8pRpDDlDj9p2InOTzBMiZmG7rkXkLqER6rBAT56QCPIESc2mXtMjaaKG9jyc=; Proxy: null), S3 Extended Request ID: 5+rI5lF43YsPoXi8pRpDDlDj9p2InOTzBMiZmG7rkXkLqER6rBAT56QCPIESc2mXtMjaaKG9jyc=:403 Forbidden
+	at org.apache.hadoop.fs.s3a.S3AUtils.translateException(S3AUtils.java:255)
+	at org.apache.hadoop.fs.s3a.S3AUtils.translateException(S3AUtils.java:175)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.s3GetFileStatus(S3AFileSystem.java:3796)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.innerGetFileStatus(S3AFileSystem.java:3688)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.lambda$getFileStatus$24(S3AFileSystem.java:3556)
+	at org.apache.hadoop.fs.statistics.impl.IOStatisticsBinding.lambda$trackDurationOfOperation$5(IOStatisticsBinding.java:499)
+	at org.apache.hadoop.fs.statistics.impl.IOStatisticsBinding.trackDuration(IOStatisticsBinding.java:444)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.trackDurationAndSpan(S3AFileSystem.java:2337)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.trackDurationAndSpan(S3AFileSystem.java:2356)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.getFileStatus(S3AFileSystem.java:3554)
+	at org.apache.spark.deploy.history.EventLogFileWriter.requireLogBaseDirAsDirectory(EventLogFileWriters.scala:77)
+	at org.apache.spark.deploy.history.SingleEventLogFileWriter.start(EventLogFileWriters.scala:221)
+	at org.apache.spark.scheduler.EventLoggingListener.start(EventLoggingListener.scala:81)
+	at org.apache.spark.SparkContext.<init>(SparkContext.scala:637)
+	at org.apache.spark.SparkContext$.getOrCreate(SparkContext.scala:2888)
+	at org.apache.spark.sql.SparkSession$Builder.$anonfun$getOrCreate$2(SparkSession.scala:1099)
+	at scala.Option.getOrElse(Option.scala:189)
+	at org.apache.spark.sql.SparkSession$Builder.getOrCreate(SparkSession.scala:1093)
+	at org.apache.spark.sql.hive.thriftserver.SparkSQLEnv$.init(SparkSQLEnv.scala:64)
+	at org.apache.spark.sql.hive.thriftserver.HiveThriftServer2$.main(HiveThriftServer2.scala:96)
+	at org.apache.spark.sql.hive.thriftserver.HiveThriftServer2.main(HiveThriftServer2.scala)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
+	at org.apache.spark.deploy.JavaMainApplication.start(SparkApplication.scala:52)
+	at org.apache.spark.deploy.SparkSubmit.org$apache$spark$deploy$SparkSubmit$$runMain(SparkSubmit.scala:1029)
+	at org.apache.spark.deploy.SparkSubmit.doRunMain$1(SparkSubmit.scala:194)
+	at org.apache.spark.deploy.SparkSubmit.submit(SparkSubmit.scala:217)
+	at org.apache.spark.deploy.SparkSubmit.doSubmit(SparkSubmit.scala:91)
+	at org.apache.spark.deploy.SparkSubmit$$anon$2.doSubmit(SparkSubmit.scala:1120)
+	at org.apache.spark.deploy.SparkSubmit$.main(SparkSubmit.scala:1129)
+	at org.apache.spark.deploy.SparkSubmit.main(SparkSubmit.scala)
+Caused by: com.amazonaws.services.s3.model.AmazonS3Exception: Forbidden (Service: Amazon S3; Status Code: 403; Error Code: 403 Forbidden; Request ID: ESYZEDYG11Q6Y09D; S3 Extended Request ID: 5+rI5lF43YsPoXi8pRpDDlDj9p2InOTzBMiZmG7rkXkLqER6rBAT56QCPIESc2mXtMjaaKG9jyc=; Proxy: null), S3 Extended Request ID: 5+rI5lF43YsPoXi8pRpDDlDj9p2InOTzBMiZmG7rkXkLqER6rBAT56QCPIESc2mXtMjaaKG9jyc=
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.handleErrorResponse(AmazonHttpClient.java:1879)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.handleServiceErrorResponse(AmazonHttpClient.java:1418)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeOneRequest(AmazonHttpClient.java:1387)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeHelper(AmazonHttpClient.java:1157)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.doExecute(AmazonHttpClient.java:814)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.executeWithTimer(AmazonHttpClient.java:781)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.execute(AmazonHttpClient.java:755)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutor.access$500(AmazonHttpClient.java:715)
+	at com.amazonaws.http.AmazonHttpClient$RequestExecutionBuilderImpl.execute(AmazonHttpClient.java:697)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:561)
+	at com.amazonaws.http.AmazonHttpClient.execute(AmazonHttpClient.java:541)
+	at com.amazonaws.services.s3.AmazonS3Client.invoke(AmazonS3Client.java:5520)
+	at com.amazonaws.services.s3.AmazonS3Client.invoke(AmazonS3Client.java:5467)
+	at com.amazonaws.services.s3.AmazonS3Client.getObjectMetadata(AmazonS3Client.java:1402)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.lambda$getObjectMetadata$10(S3AFileSystem.java:2545)
+	at org.apache.hadoop.fs.s3a.Invoker.retryUntranslated(Invoker.java:414)
+	at org.apache.hadoop.fs.s3a.Invoker.retryUntranslated(Invoker.java:377)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.getObjectMetadata(S3AFileSystem.java:2533)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.getObjectMetadata(S3AFileSystem.java:2513)
+	at org.apache.hadoop.fs.s3a.S3AFileSystem.s3GetFileStatus(S3AFileSystem.java:3776)
+	... 30 more
+24/08/07 09:10:17 INFO ShutdownHookManager: Shutdown hook called
+24/08/07 09:10:17 INFO ShutdownHookManager: Deleting directory /tmp/spark-cfa265c1-5fcf-4e2e-8fc6-18ded397fbe1
+24/08/07 09:10:17 INFO ShutdownHookManager: Deleting directory /tmp/spark-efe82671-2cee-4e55-adbd-f136c11d74cb
+24/08/07 09:10:17 INFO MetricsSystemImpl: Stopping s3a-file-system metrics system...
+24/08/07 09:10:17 INFO MetricsSystemImpl: s3a-file-system metrics system stopped.
+24/08/07 09:10:17 INFO MetricsSystemImpl: s3a-file-system metrics system shutdown complete.

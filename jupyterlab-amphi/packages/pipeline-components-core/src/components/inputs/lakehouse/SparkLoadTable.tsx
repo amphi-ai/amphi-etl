@@ -1,4 +1,4 @@
-import { trinoIcon } from '../../../icons';
+import { codeIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { Connection } from '../../settings/Connection';
 
@@ -25,7 +25,7 @@ export class SparkLoadTable extends BaseCoreComponent {
       ],
     };
 
-    super("Spark load table", "SparkLoadTable", "pandas_df_processor", [], "inputs.Lakehouse", trinoIcon, defaultConfig, form);
+    super("Spark load table", "SparkLoadTable", "spark_load_input", [], "Lakehouse", codeIcon, defaultConfig, form);
   }
   
     public provideImports({config}): string[] {
@@ -37,8 +37,8 @@ export class SparkLoadTable extends BaseCoreComponent {
       const code = `
       
 try:
-    df = ${inputName}.read.format("iceberg").load(${schemaTable})
-    ${outputName} = ps.DataFrame(df)
+    ${outputName} = ${inputName}.read.format("iceberg").load(${schemaTable})
+    ${outputName} = ${outputName}.pandas_api()
 except Exception as e:
     print("Error load table:", e)
 

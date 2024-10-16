@@ -340,6 +340,10 @@ const PipelineWrapper: React.FC<IProps> = ({
 
       if ((sourceCategory === "pandas_df_to_documents_processor")) {
         return targetCategory.startsWith("documents");
+      } else if(sourceCategory.startsWith("spark_ss_input")){
+        return targetCategory.startsWith("spark_load_input");
+      } else if(sourceCategory.startsWith("spark_load_input")){
+        return targetCategory.startsWith("pandas_df");
       } else if (sourceCategory.startsWith("documents")) {
         return targetCategory.startsWith("documents");
       } else if (sourceCategory.startsWith("pandas_df")) {
@@ -579,7 +583,7 @@ return (
       theme={{
         token: {
           // Seed Token
-          colorPrimary: '#5F9B97',
+          colorPrimary: '#0e7fc2',
         },
       }}
     >

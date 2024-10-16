@@ -74,15 +74,15 @@
   --jp-success-color3: #a7f0ba;
   --jp-info-color0: #002d9c;
   
-  --jp-info-color1: #5A8F7B;
+  --jp-info-color1: #5a8f7b;
   --jp-info-color2: #78a9ff;
   --jp-info-color3: #d0e2ff;
   --jp-statusbar-height: 24px;
 
-  --amphi-interactive-01: #5A8F7B;
+  --amphi-interactive-01: #5a8f7b;
   --amphi-interactive-02: #393939;
-  --amphi-interactive-03: #5A8F7B;
-  --amphi-interactive-04: #5A8F7B;
+  --amphi-interactive-03: #5a8f7b;
+  --amphi-interactive-04: #5a8f7b;
   --amphi-ui-background: #ffffff;
   /* --amphi-ui-01: #f4f4f4; */
   --amphi-ui-01: #ffffff;
@@ -99,7 +99,7 @@
   --amphi-icon-01: #161616;
   --amphi-icon-02: #525252;
   --amphi-icon-03: #ffffff;
-  --amphi-link-01: #5A8F7B;
+  --amphi-link-01: #5a8f7b;
   --amphi-link-02: #0043ce;
   --amphi-inverse-link: #78a9ff;
   --amphi-field-01: #f4f4f4;
@@ -117,7 +117,7 @@
   --amphi-overlay-01: rgba(22, 22, 22, .5);
   --amphi-danger-01: #da1e28;
   --amphi-danger-02: #da1e28;
-  --amphi-focus: #5A8F7B;
+  --amphi-focus: #5a8f7b;
   --amphi-inverse-focus-ui: #ffffff;
   --amphi-hover-primary: #0353e9;
   --amphi-active-primary: #002d9c;
@@ -137,7 +137,7 @@
   --amphi-hover-danger: #b81921;
   --amphi-active-danger: #750e13;
   --amphi-hover-row: #EBEBEA;
-  --amphi-visited-link: #5A8F7B;
+  --amphi-visited-link: #5a8f7b;
   --amphi-disabled-01: #f4f4f4;
   --amphi-disabled-02: #c6c6c6;
   --amphi-disabled-03: #8d8d8d;
@@ -153,21 +153,21 @@
   --amphi-layer-accent-active: #a8a8a8;
   --amphi-field: #f4f4f4;
   --amphi-background-inverse: #393939;
-  --amphi-background-brand: #5A8F7B;
-  --amphi-interactive: #5A8F7B;
+  --amphi-background-brand: #5a8f7b;
+  --amphi-interactive: #5a8f7b;
   --amphi-border-subtle: #e0e0e0;
   --amphi-border-strong: #8d8d8d;
   --amphi-border-inverse: #161616;
-  --amphi-border-interactive: #5A8F7B;
+  --amphi-border-interactive: #5a8f7b;
   --amphi-text-primary: #161616;
   --amphi-text-secondary: #525252;
   --amphi-text-placeholder: #a8a8a8;
   --amphi-text-helper: #6f6f6f;
   --amphi-text-on-color: #ffffff;
   --amphi-text-inverse: #ffffff;
-  --amphi-link-primary: #5A8F7B;
+  --amphi-link-primary: #5a8f7b;
   --amphi-link-secondary: #0043ce;
-  --amphi-link-visited: #5A8F7B;
+  --amphi-link-visited: #5a8f7b;
   --amphi-link-inverse: #78a9ff;
   --amphi-icon-primary: #161616;
   --amphi-icon-secondary: #525252;
@@ -184,9 +184,9 @@
   --amphi-overlay: rgba(22, 22, 22, .5);
   --amphi-toggle-off: #8d8d8d;
   --amphi-shadow: rgba(0, 0, 0, .3);
-  --amphi-button-primary: #5A8F7B;
+  --amphi-button-primary: #5a8f7b;
   --amphi-button-secondary: #393939;
-  --amphi-button-tertiary: #5A8F7B;
+  --amphi-button-tertiary: #5a8f7b;
   --amphi-button-danger-primary: #da1e28;
   --amphi-button-danger-secondary: #da1e28;
   --amphi-background-active: #c6c6c6;
@@ -221,9 +221,9 @@
   --amphi-layer-selected-disabled: #8d8d8d;
   --amphi-skeleton-background: #EBEBEA;
   --amphi-skeleton-element: #c6c6c6;
-  --amphi-brand-01: #5A8F7B;
+  --amphi-brand-01: #5a8f7b;
   --amphi-brand-02: #393939;
-  --amphi-brand-03: #5A8F7B;
+  --amphi-brand-03: #5a8f7b;
   --amphi-active-01: #c6c6c6;
   --amphi-hover-field: #EBEBEA;
   --amphi-danger: #da1e28;

@@ -1,0 +1,68 @@
+Spark Command: /usr/lib/jvm/java-11-openjdk-amd64/bin/java -cp /opt/spark/conf/:/opt/spark/jars/* -Xmx1g -Dderby.system.home=/tmp/derby -XX:+IgnoreUnrecognizedVMOptions --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED --add-opens=java.base/jdk.internal.ref=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/sun.nio.cs=ALL-UNNAMED --add-opens=java.base/sun.security.action=ALL-UNNAMED --add-opens=java.base/sun.util.calendar=ALL-UNNAMED --add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED -Djdk.reflect.useDirectMethodHandle=false org.apache.spark.deploy.SparkSubmit --conf spark.driver.extraJavaOptions=-Dderby.system.home=/tmp/derby --class org.apache.spark.sql.hive.thriftserver.HiveThriftServer2 --name Thrift JDBC/ODBC Server spark-internal
+========================================
+24/08/06 08:16:20 INFO HiveThriftServer2: Started daemon with process name: 186@556f599680e2
+24/08/06 08:16:20 INFO SignalUtils: Registering signal handler for TERM
+24/08/06 08:16:20 INFO SignalUtils: Registering signal handler for HUP
+24/08/06 08:16:20 INFO SignalUtils: Registering signal handler for INT
+24/08/06 08:16:20 INFO HiveThriftServer2: Starting SparkContext
+24/08/06 08:16:21 INFO SparkContext: Running Spark version 3.5.1
+24/08/06 08:16:21 INFO SparkContext: OS info Linux, 5.15.0-106-generic, amd64
+24/08/06 08:16:21 INFO SparkContext: Java version 11.0.22
+24/08/06 08:16:21 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+24/08/06 08:16:21 INFO ResourceUtils: ==============================================================
+24/08/06 08:16:21 INFO ResourceUtils: No custom resources configured for spark.driver.
+24/08/06 08:16:21 INFO ResourceUtils: ==============================================================
+24/08/06 08:16:21 INFO SparkContext: Submitted application: Thrift JDBC/ODBC Server
+24/08/06 08:16:21 INFO ResourceProfile: Default ResourceProfile created, executor resources: Map(cores -> name: cores, amount: 1, script: , vendor: , memory -> name: memory, amount: 1024, script: , vendor: , offHeap -> name: offHeap, amount: 0, script: , vendor: ), task resources: Map(cpus -> name: cpus, amount: 1.0)
+24/08/06 08:16:21 INFO ResourceProfile: Limiting resource is cpu
+24/08/06 08:16:21 INFO ResourceProfileManager: Added ResourceProfile id: 0
+24/08/06 08:16:21 INFO SecurityManager: Changing view acls to: root
+24/08/06 08:16:21 INFO SecurityManager: Changing modify acls to: root
+24/08/06 08:16:21 INFO SecurityManager: Changing view acls groups to: 
+24/08/06 08:16:21 INFO SecurityManager: Changing modify acls groups to: 
+24/08/06 08:16:21 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+24/08/06 08:16:21 INFO Utils: Successfully started service 'sparkDriver' on port 45171.
+24/08/06 08:16:21 INFO SparkEnv: Registering MapOutputTracker
+24/08/06 08:16:21 INFO SparkEnv: Registering BlockManagerMaster
+24/08/06 08:16:21 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+24/08/06 08:16:21 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+24/08/06 08:16:21 INFO SparkEnv: Registering BlockManagerMasterHeartbeat
+24/08/06 08:16:21 INFO DiskBlockManager: Created local directory at /tmp/blockmgr-e59bd49c-6a3a-4233-8a15-e2ab79e9e35d
+24/08/06 08:16:21 INFO MemoryStore: MemoryStore started with capacity 434.4 MiB
+24/08/06 08:16:21 INFO SparkEnv: Registering OutputCommitCoordinator
+24/08/06 08:16:21 INFO JettyUtils: Start Jetty 0.0.0.0:4040 for SparkUI
+24/08/06 08:16:21 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+24/08/06 08:16:21 INFO Executor: Starting executor ID driver on host 556f599680e2
+24/08/06 08:16:21 INFO Executor: OS info Linux, 5.15.0-106-generic, amd64
+24/08/06 08:16:21 INFO Executor: Java version 11.0.22
+24/08/06 08:16:21 INFO Executor: Starting executor with user classpath (userClassPathFirst = false): ''
+24/08/06 08:16:21 INFO Executor: Created or updated repl class loader org.apache.spark.util.MutableURLClassLoader@345cbf40 for default.
+24/08/06 08:16:21 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 43899.
+24/08/06 08:16:21 INFO NettyBlockTransferService: Server created on 556f599680e2:43899
+24/08/06 08:16:21 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+24/08/06 08:16:21 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 556f599680e2, 43899, None)
+24/08/06 08:16:21 INFO BlockManagerMasterEndpoint: Registering block manager 556f599680e2:43899 with 434.4 MiB RAM, BlockManagerId(driver, 556f599680e2, 43899, None)
+24/08/06 08:16:21 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 556f599680e2, 43899, None)
+24/08/06 08:16:21 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 556f599680e2, 43899, None)
+24/08/06 08:16:22 INFO SingleEventLogFileWriter: Logging events to file:/home/iceberg/spark-events/local-1722932181912.inprogress
+24/08/06 08:16:22 INFO SharedState: Setting hive.metastore.warehouse.dir ('null') to the value of spark.sql.warehouse.dir.
+24/08/06 08:16:22 INFO SharedState: Warehouse path is 'file:/opt/spark/spark-warehouse'.
+24/08/06 08:16:23 INFO HiveUtils: Initializing execution hive, version 2.3.9
+24/08/06 08:16:23 INFO HiveConf: Found configuration file null
+24/08/06 08:16:24 INFO HiveClientImpl: Warehouse location for Hive client (version 2.3.9) is file:/opt/spark/spark-warehouse
+24/08/06 08:16:24 INFO SessionManager: Operation log root directory is created: /tmp/root/operation_logs
+24/08/06 08:16:24 INFO SessionManager: HiveServer2: Background operation thread pool size: 100
+24/08/06 08:16:24 INFO SessionManager: HiveServer2: Background operation thread wait queue size: 100
+24/08/06 08:16:24 INFO SessionManager: HiveServer2: Background operation thread keepalive time: 10 seconds
+24/08/06 08:16:24 INFO AbstractService: Service:OperationManager is inited.
+24/08/06 08:16:24 INFO AbstractService: Service:SessionManager is inited.
+24/08/06 08:16:24 INFO AbstractService: Service: CLIService is inited.
+24/08/06 08:16:24 INFO AbstractService: Service:ThriftBinaryCLIService is inited.
+24/08/06 08:16:24 INFO AbstractService: Service: HiveServer2 is inited.
+24/08/06 08:16:24 INFO AbstractService: Service:OperationManager is started.
+24/08/06 08:16:24 INFO AbstractService: Service:SessionManager is started.
+24/08/06 08:16:24 INFO AbstractService: Service: CLIService is started.
+24/08/06 08:16:24 INFO AbstractService: Service:ThriftBinaryCLIService is started.
+24/08/06 08:16:25 INFO ThriftCLIService: Starting ThriftBinaryCLIService on port 10000 with 5...500 worker threads
+24/08/06 08:16:25 INFO AbstractService: Service:HiveServer2 is started.
+24/08/06 08:16:25 INFO HiveThriftServer2: HiveThriftServer2 started

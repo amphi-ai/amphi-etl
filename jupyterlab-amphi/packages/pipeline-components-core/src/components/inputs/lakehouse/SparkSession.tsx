@@ -1,11 +1,11 @@
-import { trinoIcon } from '../../../icons';
+import { codeIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 
 
 export class SparkSession extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { spark_config: "",input_lib: ""};
+    const defaultConfig = { spark_config: "", input_lib: "", spark_tablename:""};
     const form = {
       fields: [
         {
@@ -17,7 +17,7 @@ export class SparkSession extends BaseCoreComponent {
         {
           type: "codeTextarea",
           label: "Add python library",
-          height: '50px',
+          height: '150px',
           mode: "python",
           placeholder: 'Input python library',
           id: "input_lib",
@@ -40,25 +40,27 @@ export class SparkSession extends BaseCoreComponent {
       ],
     };
 
-    super("Init SparkSession", "SparkSession", "pandas_df_input", [], "inputs.Lakehouse", trinoIcon, defaultConfig, form);
+    super("Init SparkSession", "SparkSession", "spark_ss_input", [], "Lakehouse", codeIcon, defaultConfig, form);
   }
   
     public provideImports({config}): string[] {
-      return ["import pandas as pd","import os","import sqlalchemy", "from pyspark.sql import SparkSession","from pyspark.sql.functions import *"];
+      return ["import pandas as pd","from pyspark.sql import SparkSession","from pyspark.sql.functions import *"];
     }  
 
     public generateComponentCode({ config, outputName }): string {
       let connectionString = config.spark_config;
-      let add_lidString= config.input_lib;
+      let add_lidString = config.input_lib;
       const code = `
       
 ${add_lidString}
 try:
     ${outputName} = ${connectionString}
     print("SparkSession created successfully")
+    print(f"App Name: {${outputName}.sparkContext.appName}")
+    print(f"Master: {${outputName}.sparkContext.master}")
+    print(f"Spark Version: {${outputName}.version}")
 except Exception as e:
     print("Error creating SparkSession:", e)
-
 `;
       return code;
     }

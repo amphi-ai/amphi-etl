@@ -67,7 +67,7 @@ export class IcebergInput extends BaseCoreComponent {
       ],
     };
 
-    super("Iceberg Input", "icebergInput", "pandas_df_input", [], "inputs.Lakehouse", icebergIcon, defaultConfig, form);
+    super("Iceberg Input", "icebergInput", "pandas_df_input", [], "inputs", icebergIcon, defaultConfig, form);
   }
   
     public provideImports({config}): string[] {

@@ -59,7 +59,7 @@ Editor components styles
 }
 
 .react-flow__node-toolbar button:hover svg {
-  color: #5F9B97;
+  color: #0e7fc2;
   /* Change icon color on hover */
 }
 
@@ -74,15 +74,15 @@ Editor components styles
 }
 
 .component .handle-right {
-  @apply absolute top-[54px] right-[-6px] w-[8px] h-[25px] rounded-[2px] bg-[#778899];
+  @apply absolute top-[54px] right-[-6px] w-[8px] h-[25px] rounded-[2px] bg-[#0e7fc2];
 }
 
 .component .handle-left {
-  @apply absolute top-[54px] left-[-6px] w-[8px] h-[25px] rounded-[2px] bg-[#778899];
+  @apply absolute top-[54px] left-[-6px] w-[8px] h-[25px] rounded-[2px] bg-[#0e7fc2];
 }
 
 .component .second-handle-left {
-  @apply absolute top-[114px] left-[-6px] w-[8px] h-[25px] rounded-[2px] bg-[#778899];
+  @apply absolute top-[114px] left-[-6px] w-[8px] h-[25px] rounded-[2px] bg-[#0e7fc2];
 }
 
 .component .handle-bottom {
@@ -200,9 +200,15 @@ Edges
 */
 
 .temp .react-flow__edge-path {
-  stroke: #bbb;
+  stroke: #0e7fc2 !important;
   stroke-dasharray: 5 5;
 }
+
+.react-flow__edge-path {
+  stroke: #0e7fc2 !important;
+  stroke-dasharray: 5 5;
+}
+
 
 
 .edgebutton {

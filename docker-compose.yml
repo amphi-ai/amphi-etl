@@ -1,0 +1,22 @@
+version: "3"
+services:
+  spark-iceberg:
+    image: anhbtsi/spark-test:3.5.1
+    container_name: spark-iceberg
+    volumes:
+      - ./warehouse:/home/iceberg/warehouse
+      - ./notebooks:/home/iceberg/notebooks/notebooks
+    environment:
+      - AWS_ACCESS_KEY_ID=admin
+      - AWS_SECRET_ACCESS_KEY=password
+      - AWS_REGION=us-east-1
+      - SPARK_CLUSTER=MASTER
+    ports:
+      - 8889:8888
+      - 8082:8080
+      - 10000:10000
+      - 10001:10001
+      - 8081:8081
+      - 7077:7077
+      - 18080:18080
+  

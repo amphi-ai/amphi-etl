@@ -558,9 +558,9 @@
   border-left-color: rgb(224 224 224 / var(--tw-border-opacity)) !important;
 }
 
-.bg-\[\#778899\] {
+.bg-\[\#0e7fc2\] {
   --tw-bg-opacity: 1 !important;
-  background-color: rgb(119 136 153 / var(--tw-bg-opacity)) !important;
+  background-color: rgb(14 127 194 / var(--tw-bg-opacity)) !important;
 }
 
 .bg-\[\#F2F4F7\] {
@@ -937,7 +937,7 @@ Editor components styles
 }
 
 .react-flow__node-toolbar button:hover svg {
-  color: #5F9B97;
+  color: #0e7fc2;
   /* Change icon color on hover */
 }
 
@@ -959,7 +959,7 @@ Editor components styles
   width: 8px;
   border-radius: 2px;
   --tw-bg-opacity: 1;
-  background-color: rgb(119 136 153 / var(--tw-bg-opacity));
+  background-color: rgb(14 127 194 / var(--tw-bg-opacity));
 }
 
 .component .handle-left {
@@ -970,7 +970,7 @@ Editor components styles
   width: 8px;
   border-radius: 2px;
   --tw-bg-opacity: 1;
-  background-color: rgb(119 136 153 / var(--tw-bg-opacity));
+  background-color: rgb(14 127 194 / var(--tw-bg-opacity));
 }
 
 .component .second-handle-left {
@@ -981,7 +981,7 @@ Editor components styles
   width: 8px;
   border-radius: 2px;
   --tw-bg-opacity: 1;
-  background-color: rgb(119 136 153 / var(--tw-bg-opacity));
+  background-color: rgb(14 127 194 / var(--tw-bg-opacity));
 }
 
 .component .handle-bottom {
@@ -1152,7 +1152,12 @@ Edges
 */
 
 .temp .react-flow__edge-path {
-  stroke: #bbb;
+  stroke: #0e7fc2 !important;
+  stroke-dasharray: 5 5;
+}
+
+.react-flow__edge-path {
+  stroke: #0e7fc2 !important;
   stroke-dasharray: 5 5;
 }
 

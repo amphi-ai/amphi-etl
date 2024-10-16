@@ -333,7 +333,7 @@ export class Connection extends PipelineComponent<ComponentItem>() {
         <ConfigProvider
           theme={{
             token: {
-              colorPrimary: '#5F9B97',
+              colorPrimary: '#0e7fc2',
             },
           }}
         >

@@ -26,7 +26,7 @@ export class PipelineService {
   
     for (const node of flow.nodes) {
       const nodeType = componentService.getComponent(node.type)._type;
-      if (!targetMap.has(node.id) && nodeType === "pandas_df_input") {
+      if (!targetMap.has(node.id) && (nodeType === "pandas_df_input" || nodeType === "spark_ss_input")) {
         return node.id;
       }
     }
@@ -55,7 +55,7 @@ export class PipelineService {
     for (const node of flow.nodes) {
       const nodeType = componentService.getComponent(node.type)._type;
   
-      if (!targetMap.has(node.id) && nodeType === "pandas_df_input") {
+      if (!targetMap.has(node.id) && (nodeType === "pandas_df_input" || nodeType === "spark_ss_input")) {
         startNodes.push(node.id);
   
         if (startNodes.length === 2) {

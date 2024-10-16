@@ -1,0 +1,1249 @@
+Spark Executor Command: "/usr/lib/jvm/java-11-openjdk-amd64/bin/java" "-cp" "/opt/spark/conf/:/opt/spark/jars/*" "-Xmx1024M" "-Dspark.driver.port=45621" "-Djava.net.preferIPv6Addresses=false" "-XX:+IgnoreUnrecognizedVMOptions" "--add-opens=java.base/java.lang=ALL-UNNAMED" "--add-opens=java.base/java.lang.invoke=ALL-UNNAMED" "--add-opens=java.base/java.lang.reflect=ALL-UNNAMED" "--add-opens=java.base/java.io=ALL-UNNAMED" "--add-opens=java.base/java.net=ALL-UNNAMED" "--add-opens=java.base/java.nio=ALL-UNNAMED" "--add-opens=java.base/java.util=ALL-UNNAMED" "--add-opens=java.base/java.util.concurrent=ALL-UNNAMED" "--add-opens=java.base/java.util.concurrent.atomic=ALL-UNNAMED" "--add-opens=java.base/jdk.internal.ref=ALL-UNNAMED" "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED" "--add-opens=java.base/sun.nio.cs=ALL-UNNAMED" "--add-opens=java.base/sun.security.action=ALL-UNNAMED" "--add-opens=java.base/sun.util.calendar=ALL-UNNAMED" "--add-opens=java.security.jgss/sun.security.krb5=ALL-UNNAMED" "-Djdk.reflect.useDirectMethodHandle=false" "org.apache.spark.executor.CoarseGrainedExecutorBackend" "--driver-url" "spark://CoarseGrainedScheduler@556f599680e2:45621" "--executor-id" "1" "--hostname" "172.23.0.2" "--cores" "8" "--app-id" "app-20240820050053-0003" "--worker-url" "spark://Worker@172.23.0.2:34115" "--resourceProfileId" "0"
+========================================
+
+Using Spark's default log4j profile: org/apache/spark/log4j2-defaults.properties
+24/08/20 05:01:57 INFO CoarseGrainedExecutorBackend: Started daemon with process name: 3011@556f599680e2
+24/08/20 05:01:57 INFO SignalUtils: Registering signal handler for TERM
+24/08/20 05:01:57 INFO SignalUtils: Registering signal handler for HUP
+24/08/20 05:01:57 INFO SignalUtils: Registering signal handler for INT
+24/08/20 05:01:57 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+24/08/20 05:01:57 INFO SecurityManager: Changing view acls to: root
+24/08/20 05:01:57 INFO SecurityManager: Changing modify acls to: root
+24/08/20 05:01:57 INFO SecurityManager: Changing view acls groups to: 
+24/08/20 05:01:57 INFO SecurityManager: Changing modify acls groups to: 
+24/08/20 05:01:57 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+24/08/20 05:01:58 INFO TransportClientFactory: Successfully created connection to 556f599680e2/172.23.0.2:45621 after 70 ms (0 ms spent in bootstraps)
+24/08/20 05:01:58 INFO SecurityManager: Changing view acls to: root
+24/08/20 05:01:58 INFO SecurityManager: Changing modify acls to: root
+24/08/20 05:01:58 INFO SecurityManager: Changing view acls groups to: 
+24/08/20 05:01:58 INFO SecurityManager: Changing modify acls groups to: 
+24/08/20 05:01:58 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users with view permissions: root; groups with view permissions: EMPTY; users with modify permissions: root; groups with modify permissions: EMPTY
+24/08/20 05:01:58 INFO TransportClientFactory: Successfully created connection to 556f599680e2/172.23.0.2:45621 after 3 ms (0 ms spent in bootstraps)
+24/08/20 05:01:58 INFO DiskBlockManager: Created local directory at /tmp/spark-e340b88a-5702-46e2-b7e8-fffa2a8bbef6/executor-68d1a63d-bf09-4811-9ae2-67d9269e84d2/blockmgr-8510c810-5e32-481e-b366-f591132d7fb3
+24/08/20 05:01:58 INFO MemoryStore: MemoryStore started with capacity 434.4 MiB
+24/08/20 05:01:58 INFO WorkerWatcher: Connecting to worker spark://Worker@172.23.0.2:34115
+24/08/20 05:01:58 INFO CoarseGrainedExecutorBackend: Connecting to driver: spark://CoarseGrainedScheduler@556f599680e2:45621
+24/08/20 05:01:58 INFO TransportClientFactory: Successfully created connection to /172.23.0.2:34115 after 7 ms (0 ms spent in bootstraps)
+24/08/20 05:01:58 INFO WorkerWatcher: Successfully connected to spark://Worker@172.23.0.2:34115
+24/08/20 05:01:58 INFO ResourceUtils: ==============================================================
+24/08/20 05:01:58 INFO ResourceUtils: No custom resources configured for spark.executor.
+24/08/20 05:01:58 INFO ResourceUtils: ==============================================================
+24/08/20 05:01:58 INFO CoarseGrainedExecutorBackend: Successfully registered with driver
+24/08/20 05:01:58 INFO Executor: Starting executor ID 1 on host 172.23.0.2
+24/08/20 05:01:58 INFO Executor: OS info Linux, 5.15.0-106-generic, amd64
+24/08/20 05:01:58 INFO Executor: Java version 11.0.22
+24/08/20 05:01:58 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 34595.
+24/08/20 05:01:58 INFO NettyBlockTransferService: Server created on 172.23.0.2:34595
+24/08/20 05:01:58 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+24/08/20 05:01:58 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(1, 172.23.0.2, 34595, None)
+24/08/20 05:01:58 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(1, 172.23.0.2, 34595, None)
+24/08/20 05:01:58 INFO BlockManager: Initialized BlockManager: BlockManagerId(1, 172.23.0.2, 34595, None)
+24/08/20 05:01:58 INFO Executor: Starting executor with user classpath (userClassPathFirst = false): ''
+24/08/20 05:01:58 INFO Executor: Created or updated repl class loader org.apache.spark.util.MutableURLClassLoader@33e2b80e for default.
+24/08/20 05:01:58 INFO CoarseGrainedExecutorBackend: Got assigned task 80
+24/08/20 05:01:58 INFO CoarseGrainedExecutorBackend: Got assigned task 81
+24/08/20 05:01:58 INFO CoarseGrainedExecutorBackend: Got assigned task 82
+24/08/20 05:01:58 INFO CoarseGrainedExecutorBackend: Got assigned task 83
+24/08/20 05:01:58 INFO CoarseGrainedExecutorBackend: Got assigned task 84
+24/08/20 05:01:58 INFO CoarseGrainedExecutorBackend: Got assigned task 85
+24/08/20 05:01:58 INFO CoarseGrainedExecutorBackend: Got assigned task 86
+24/08/20 05:01:58 INFO CoarseGrainedExecutorBackend: Got assigned task 87
+24/08/20 05:01:58 INFO Executor: Running task 4.2 in stage 2.0 (TID 84)
+24/08/20 05:01:58 INFO Executor: Running task 0.2 in stage 2.0 (TID 85)
+24/08/20 05:01:58 INFO Executor: Running task 2.2 in stage 2.0 (TID 82)
+24/08/20 05:01:58 INFO Executor: Running task 3.2 in stage 2.0 (TID 86)
+24/08/20 05:01:58 INFO Executor: Running task 8.1 in stage 2.0 (TID 81)
+24/08/20 05:01:58 INFO Executor: Running task 5.2 in stage 2.0 (TID 83)
+24/08/20 05:01:58 INFO Executor: Running task 6.2 in stage 2.0 (TID 80)
+24/08/20 05:01:58 INFO Executor: Running task 7.2 in stage 2.0 (TID 87)
+24/08/20 05:01:58 INFO MapOutputTrackerWorker: Updating epoch to 1 and clearing cache
+24/08/20 05:01:58 INFO TorrentBroadcast: Started reading broadcast variable 4 with 1 pieces (estimated total size 4.0 MiB)
+24/08/20 05:01:59 INFO TransportClientFactory: Successfully created connection to 556f599680e2/172.23.0.2:37745 after 3 ms (0 ms spent in bootstraps)
+24/08/20 05:01:59 INFO MemoryStore: Block broadcast_4_piece0 stored as bytes in memory (estimated size 6.2 KiB, free 434.4 MiB)
+24/08/20 05:01:59 INFO TorrentBroadcast: Reading broadcast variable 4 took 94 ms
+24/08/20 05:01:59 INFO MemoryStore: Block broadcast_4 stored as values in memory (estimated size 11.9 KiB, free 434.4 MiB)
+24/08/20 05:01:59 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:01:59 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:01:59 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:01:59 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:01:59 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:01:59 INFO MapOutputTrackerWorker: Doing the fetch; tracker endpoint = NettyRpcEndpointRef(spark://MapOutputTracker@556f599680e2:45621)
+24/08/20 05:01:59 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:01:59 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:01:59 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:01:59 INFO MapOutputTrackerWorker: Got the map output locations
+24/08/20 05:01:59 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 198
+24/08/20 05:01:59 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 49
+24/08/20 05:01:59 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 127
+24/08/20 05:01:59 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 101
+24/08/20 05:01:59 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 0
+24/08/20 05:01:59 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 151
+24/08/20 05:01:59 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 175
+24/08/20 05:01:59 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 74
+24/08/20 05:01:59 INFO CoarseGrainedExecutorBackend: Got assigned task 88
+24/08/20 05:01:59 INFO Executor: Running task 1.1 in stage 2.0 (TID 88)
+24/08/20 05:01:59 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:01:59 INFO MapOutputTrackerWorker: Doing the fetch; tracker endpoint = NettyRpcEndpointRef(spark://MapOutputTracker@556f599680e2:45621)
+24/08/20 05:01:59 INFO MapOutputTrackerWorker: Got the map output locations
+24/08/20 05:01:59 ERROR MapOutputTracker: Missing an output location for shuffle 0 partition 26
+24/08/20 05:01:59 INFO CoarseGrainedExecutorBackend: Got assigned task 89
+24/08/20 05:01:59 INFO Executor: Running task 0.0 in stage 1.1 (TID 89)
+24/08/20 05:01:59 INFO CoarseGrainedExecutorBackend: Got assigned task 90
+24/08/20 05:01:59 INFO CoarseGrainedExecutorBackend: Got assigned task 91
+24/08/20 05:01:59 INFO Executor: Running task 1.0 in stage 1.1 (TID 90)
+24/08/20 05:01:59 INFO Executor: Running task 2.0 in stage 1.1 (TID 91)
+24/08/20 05:01:59 INFO CoarseGrainedExecutorBackend: Got assigned task 92
+24/08/20 05:01:59 INFO CoarseGrainedExecutorBackend: Got assigned task 93
+24/08/20 05:01:59 INFO Executor: Running task 4.0 in stage 1.1 (TID 93)
+24/08/20 05:01:59 INFO CoarseGrainedExecutorBackend: Got assigned task 94
+24/08/20 05:01:59 INFO CoarseGrainedExecutorBackend: Got assigned task 95
+24/08/20 05:01:59 INFO CoarseGrainedExecutorBackend: Got assigned task 96
+24/08/20 05:01:59 INFO Executor: Running task 5.0 in stage 1.1 (TID 94)
+24/08/20 05:01:59 INFO Executor: Running task 7.0 in stage 1.1 (TID 96)
+24/08/20 05:01:59 INFO Executor: Running task 3.0 in stage 1.1 (TID 92)
+24/08/20 05:01:59 INFO Executor: Running task 6.0 in stage 1.1 (TID 95)
+24/08/20 05:01:59 INFO MapOutputTrackerWorker: Updating epoch to 2 and clearing cache
+24/08/20 05:01:59 INFO TorrentBroadcast: Started reading broadcast variable 5 with 1 pieces (estimated total size 4.0 MiB)
+24/08/20 05:01:59 INFO MemoryStore: Block broadcast_5_piece0 stored as bytes in memory (estimated size 9.3 KiB, free 434.4 MiB)
+24/08/20 05:01:59 INFO TorrentBroadcast: Reading broadcast variable 5 took 11 ms
+24/08/20 05:01:59 INFO MemoryStore: Block broadcast_5 stored as values in memory (estimated size 30.5 KiB, free 434.3 MiB)
+24/08/20 05:02:00 INFO CodeGenerator: Code generated in 248.75518 ms
+24/08/20 05:02:00 INFO CodeGenerator: Code generated in 22.303752 ms
+24/08/20 05:02:00 INFO TorrentBroadcast: Started reading broadcast variable 1 with 1 pieces (estimated total size 4.0 MiB)
+24/08/20 05:02:00 INFO MemoryStore: Block broadcast_1_piece0 stored as bytes in memory (estimated size 3.7 KiB, free 434.3 MiB)
+24/08/20 05:02:00 INFO TorrentBroadcast: Reading broadcast variable 1 took 15 ms
+24/08/20 05:02:00 INFO MemoryStore: Block broadcast_1 stored as values in memory (estimated size 32.0 KiB, free 434.3 MiB)
+24/08/20 05:02:02 INFO VectorizedSparkParquetReaders: Enabling arrow.enable_unsafe_memory_access
+24/08/20 05:02:02 INFO VectorizedSparkParquetReaders: Disabling arrow.enable_null_check_for_get
+24/08/20 05:02:02 INFO BaseAllocator: Debug mode disabled.
+24/08/20 05:02:02 INFO DefaultAllocationManagerOption: allocation manager type not specified, using netty as the default type
+24/08/20 05:02:02 INFO CheckAllocator: Using DefaultAllocationManager at memory/DefaultAllocationManagerFactory.class
+24/08/20 05:02:02 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:02 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:02 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:02 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:02 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:02 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:02 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:02 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:03 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:03 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:03 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:03 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:03 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:03 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:03 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:03 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:03 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:03 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:03 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:03 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:03 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:04 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:04 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:04 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:04 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:04 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:04 INFO Executor: Finished task 2.0 in stage 1.1 (TID 91). 3414 bytes result sent to driver
+24/08/20 05:02:04 INFO CoarseGrainedExecutorBackend: Got assigned task 97
+24/08/20 05:02:04 INFO Executor: Running task 8.0 in stage 1.1 (TID 97)
+24/08/20 05:02:04 INFO Executor: Finished task 4.0 in stage 1.1 (TID 93). 3414 bytes result sent to driver
+24/08/20 05:02:04 INFO CoarseGrainedExecutorBackend: Got assigned task 98
+24/08/20 05:02:04 INFO Executor: Running task 9.0 in stage 1.1 (TID 98)
+24/08/20 05:02:04 INFO Executor: Finished task 0.0 in stage 1.1 (TID 89). 3414 bytes result sent to driver
+24/08/20 05:02:04 INFO CoarseGrainedExecutorBackend: Got assigned task 99
+24/08/20 05:02:04 INFO Executor: Running task 10.0 in stage 1.1 (TID 99)
+24/08/20 05:02:04 INFO Executor: Finished task 5.0 in stage 1.1 (TID 94). 3414 bytes result sent to driver
+24/08/20 05:02:04 INFO Executor: Finished task 1.0 in stage 1.1 (TID 90). 3414 bytes result sent to driver
+24/08/20 05:02:04 INFO CoarseGrainedExecutorBackend: Got assigned task 100
+24/08/20 05:02:04 INFO Executor: Running task 11.0 in stage 1.1 (TID 100)
+24/08/20 05:02:04 INFO Executor: Finished task 3.0 in stage 1.1 (TID 92). 3371 bytes result sent to driver
+24/08/20 05:02:04 INFO CoarseGrainedExecutorBackend: Got assigned task 101
+24/08/20 05:02:04 INFO CoarseGrainedExecutorBackend: Got assigned task 102
+24/08/20 05:02:04 INFO Executor: Running task 12.0 in stage 1.1 (TID 101)
+24/08/20 05:02:04 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:04 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:04 INFO Executor: Running task 13.0 in stage 1.1 (TID 102)
+24/08/20 05:02:04 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:04 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:04 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:04 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:06 INFO Executor: Finished task 6.0 in stage 1.1 (TID 95). 3371 bytes result sent to driver
+24/08/20 05:02:06 INFO CoarseGrainedExecutorBackend: Got assigned task 103
+24/08/20 05:02:06 INFO Executor: Running task 14.0 in stage 1.1 (TID 103)
+24/08/20 05:02:06 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:07 INFO Executor: Finished task 11.0 in stage 1.1 (TID 100). 3371 bytes result sent to driver
+24/08/20 05:02:07 INFO Executor: Finished task 12.0 in stage 1.1 (TID 101). 3371 bytes result sent to driver
+24/08/20 05:02:07 INFO CoarseGrainedExecutorBackend: Got assigned task 104
+24/08/20 05:02:07 INFO CoarseGrainedExecutorBackend: Got assigned task 105
+24/08/20 05:02:07 INFO Executor: Running task 15.0 in stage 1.1 (TID 104)
+24/08/20 05:02:07 INFO Executor: Finished task 13.0 in stage 1.1 (TID 102). 3414 bytes result sent to driver
+24/08/20 05:02:07 INFO Executor: Running task 16.0 in stage 1.1 (TID 105)
+24/08/20 05:02:07 INFO CoarseGrainedExecutorBackend: Got assigned task 106
+24/08/20 05:02:07 INFO Executor: Running task 17.0 in stage 1.1 (TID 106)
+24/08/20 05:02:07 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:07 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:07 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:07 INFO Executor: Finished task 10.0 in stage 1.1 (TID 99). 3414 bytes result sent to driver
+24/08/20 05:02:07 INFO CoarseGrainedExecutorBackend: Got assigned task 107
+24/08/20 05:02:07 INFO Executor: Running task 18.0 in stage 1.1 (TID 107)
+24/08/20 05:02:07 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:07 INFO Executor: Finished task 7.0 in stage 1.1 (TID 96). 3371 bytes result sent to driver
+24/08/20 05:02:07 INFO CoarseGrainedExecutorBackend: Got assigned task 108
+24/08/20 05:02:07 INFO Executor: Running task 19.0 in stage 1.1 (TID 108)
+24/08/20 05:02:07 INFO Executor: Finished task 9.0 in stage 1.1 (TID 98). 3371 bytes result sent to driver
+24/08/20 05:02:07 INFO CoarseGrainedExecutorBackend: Got assigned task 109
+24/08/20 05:02:07 INFO Executor: Running task 20.0 in stage 1.1 (TID 109)
+24/08/20 05:02:07 INFO Executor: Finished task 8.0 in stage 1.1 (TID 97). 3371 bytes result sent to driver
+24/08/20 05:02:07 INFO CoarseGrainedExecutorBackend: Got assigned task 110
+24/08/20 05:02:07 INFO Executor: Running task 21.0 in stage 1.1 (TID 110)
+24/08/20 05:02:07 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:07 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:07 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:09 INFO Executor: Finished task 14.0 in stage 1.1 (TID 103). 3414 bytes result sent to driver
+24/08/20 05:02:09 INFO CoarseGrainedExecutorBackend: Got assigned task 111
+24/08/20 05:02:09 INFO Executor: Running task 22.0 in stage 1.1 (TID 111)
+24/08/20 05:02:09 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:09 INFO Executor: Finished task 16.0 in stage 1.1 (TID 105). 3371 bytes result sent to driver
+24/08/20 05:02:09 INFO Executor: Finished task 15.0 in stage 1.1 (TID 104). 3414 bytes result sent to driver
+24/08/20 05:02:09 INFO CoarseGrainedExecutorBackend: Got assigned task 112
+24/08/20 05:02:09 INFO CoarseGrainedExecutorBackend: Got assigned task 113
+24/08/20 05:02:09 INFO Executor: Running task 24.0 in stage 1.1 (TID 113)
+24/08/20 05:02:09 INFO Executor: Running task 23.0 in stage 1.1 (TID 112)
+24/08/20 05:02:09 INFO Executor: Finished task 17.0 in stage 1.1 (TID 106). 3371 bytes result sent to driver
+24/08/20 05:02:09 INFO CoarseGrainedExecutorBackend: Got assigned task 114
+24/08/20 05:02:09 INFO Executor: Running task 25.0 in stage 1.1 (TID 114)
+24/08/20 05:02:09 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:09 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:09 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:09 INFO Executor: Finished task 19.0 in stage 1.1 (TID 108). 3414 bytes result sent to driver
+24/08/20 05:02:09 INFO CoarseGrainedExecutorBackend: Got assigned task 115
+24/08/20 05:02:09 INFO Executor: Running task 26.0 in stage 1.1 (TID 115)
+24/08/20 05:02:09 INFO Executor: Finished task 21.0 in stage 1.1 (TID 110). 3371 bytes result sent to driver
+24/08/20 05:02:09 INFO Executor: Finished task 18.0 in stage 1.1 (TID 107). 3371 bytes result sent to driver
+24/08/20 05:02:09 INFO CoarseGrainedExecutorBackend: Got assigned task 116
+24/08/20 05:02:09 INFO Executor: Running task 27.0 in stage 1.1 (TID 116)
+24/08/20 05:02:09 INFO CoarseGrainedExecutorBackend: Got assigned task 117
+24/08/20 05:02:09 INFO Executor: Running task 28.0 in stage 1.1 (TID 117)
+24/08/20 05:02:09 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:09 INFO Executor: Finished task 20.0 in stage 1.1 (TID 109). 3371 bytes result sent to driver
+24/08/20 05:02:09 INFO CoarseGrainedExecutorBackend: Got assigned task 118
+24/08/20 05:02:09 INFO Executor: Running task 29.0 in stage 1.1 (TID 118)
+24/08/20 05:02:09 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:10 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:10 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:10 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:10 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:10 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:10 INFO Executor: Finished task 29.0 in stage 1.1 (TID 118). 3371 bytes result sent to driver
+24/08/20 05:02:10 INFO CoarseGrainedExecutorBackend: Got assigned task 119
+24/08/20 05:02:10 INFO Executor: Running task 30.0 in stage 1.1 (TID 119)
+24/08/20 05:02:10 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:11 INFO Executor: Finished task 22.0 in stage 1.1 (TID 111). 3371 bytes result sent to driver
+24/08/20 05:02:11 INFO CoarseGrainedExecutorBackend: Got assigned task 120
+24/08/20 05:02:11 INFO Executor: Running task 31.0 in stage 1.1 (TID 120)
+24/08/20 05:02:11 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:11 INFO Executor: Finished task 24.0 in stage 1.1 (TID 113). 3371 bytes result sent to driver
+24/08/20 05:02:11 INFO CoarseGrainedExecutorBackend: Got assigned task 121
+24/08/20 05:02:11 INFO Executor: Running task 32.0 in stage 1.1 (TID 121)
+24/08/20 05:02:11 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:11 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO Executor: Finished task 25.0 in stage 1.1 (TID 114). 3371 bytes result sent to driver
+24/08/20 05:02:12 INFO CoarseGrainedExecutorBackend: Got assigned task 122
+24/08/20 05:02:12 INFO Executor: Running task 33.0 in stage 1.1 (TID 122)
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO Executor: Finished task 32.0 in stage 1.1 (TID 121). 3371 bytes result sent to driver
+24/08/20 05:02:12 INFO CoarseGrainedExecutorBackend: Got assigned task 123
+24/08/20 05:02:12 INFO Executor: Running task 34.0 in stage 1.1 (TID 123)
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO Executor: Finished task 33.0 in stage 1.1 (TID 122). 3371 bytes result sent to driver
+24/08/20 05:02:12 INFO CoarseGrainedExecutorBackend: Got assigned task 124
+24/08/20 05:02:12 INFO Executor: Running task 35.0 in stage 1.1 (TID 124)
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO Executor: Finished task 34.0 in stage 1.1 (TID 123). 3371 bytes result sent to driver
+24/08/20 05:02:12 INFO CoarseGrainedExecutorBackend: Got assigned task 125
+24/08/20 05:02:12 INFO Executor: Running task 36.0 in stage 1.1 (TID 125)
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO Executor: Finished task 30.0 in stage 1.1 (TID 119). 3414 bytes result sent to driver
+24/08/20 05:02:12 INFO CoarseGrainedExecutorBackend: Got assigned task 126
+24/08/20 05:02:12 INFO Executor: Running task 37.0 in stage 1.1 (TID 126)
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO Executor: Finished task 35.0 in stage 1.1 (TID 124). 3371 bytes result sent to driver
+24/08/20 05:02:12 INFO CoarseGrainedExecutorBackend: Got assigned task 127
+24/08/20 05:02:12 INFO Executor: Running task 38.0 in stage 1.1 (TID 127)
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO Executor: Finished task 36.0 in stage 1.1 (TID 125). 3371 bytes result sent to driver
+24/08/20 05:02:12 INFO CoarseGrainedExecutorBackend: Got assigned task 128
+24/08/20 05:02:12 INFO Executor: Running task 39.0 in stage 1.1 (TID 128)
+24/08/20 05:02:12 INFO Executor: Finished task 37.0 in stage 1.1 (TID 126). 3371 bytes result sent to driver
+24/08/20 05:02:12 INFO CoarseGrainedExecutorBackend: Got assigned task 129
+24/08/20 05:02:12 INFO Executor: Running task 40.0 in stage 1.1 (TID 129)
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO Executor: Finished task 23.0 in stage 1.1 (TID 112). 3371 bytes result sent to driver
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:12 INFO CoarseGrainedExecutorBackend: Got assigned task 130
+24/08/20 05:02:12 INFO Executor: Running task 41.0 in stage 1.1 (TID 130)
+24/08/20 05:02:12 INFO Executor: Finished task 39.0 in stage 1.1 (TID 128). 3371 bytes result sent to driver
+24/08/20 05:02:12 INFO CoarseGrainedExecutorBackend: Got assigned task 131
+24/08/20 05:02:12 INFO Executor: Running task 42.0 in stage 1.1 (TID 131)
+24/08/20 05:02:12 INFO Executor: Finished task 38.0 in stage 1.1 (TID 127). 3371 bytes result sent to driver
+24/08/20 05:02:12 INFO CoarseGrainedExecutorBackend: Got assigned task 132
+24/08/20 05:02:12 INFO Executor: Running task 43.0 in stage 1.1 (TID 132)
+24/08/20 05:02:12 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO Executor: Finished task 26.0 in stage 1.1 (TID 115). 3371 bytes result sent to driver
+24/08/20 05:02:13 INFO Executor: Finished task 28.0 in stage 1.1 (TID 117). 3371 bytes result sent to driver
+24/08/20 05:02:13 INFO CoarseGrainedExecutorBackend: Got assigned task 133
+24/08/20 05:02:13 INFO CoarseGrainedExecutorBackend: Got assigned task 134
+24/08/20 05:02:13 INFO Executor: Running task 45.0 in stage 1.1 (TID 134)
+24/08/20 05:02:13 INFO Executor: Running task 44.0 in stage 1.1 (TID 133)
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO Executor: Finished task 27.0 in stage 1.1 (TID 116). 3371 bytes result sent to driver
+24/08/20 05:02:13 INFO CoarseGrainedExecutorBackend: Got assigned task 135
+24/08/20 05:02:13 INFO Executor: Running task 46.0 in stage 1.1 (TID 135)
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO Executor: Finished task 43.0 in stage 1.1 (TID 132). 3414 bytes result sent to driver
+24/08/20 05:02:13 INFO CoarseGrainedExecutorBackend: Got assigned task 136
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO Executor: Running task 47.0 in stage 1.1 (TID 136)
+24/08/20 05:02:13 INFO Executor: Finished task 45.0 in stage 1.1 (TID 134). 3371 bytes result sent to driver
+24/08/20 05:02:13 INFO CoarseGrainedExecutorBackend: Got assigned task 137
+24/08/20 05:02:13 INFO Executor: Running task 48.0 in stage 1.1 (TID 137)
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO Executor: Finished task 44.0 in stage 1.1 (TID 133). 3371 bytes result sent to driver
+24/08/20 05:02:13 INFO CoarseGrainedExecutorBackend: Got assigned task 138
+24/08/20 05:02:13 INFO Executor: Running task 49.0 in stage 1.1 (TID 138)
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO Executor: Finished task 46.0 in stage 1.1 (TID 135). 3371 bytes result sent to driver
+24/08/20 05:02:13 INFO CoarseGrainedExecutorBackend: Got assigned task 139
+24/08/20 05:02:13 INFO Executor: Running task 50.0 in stage 1.1 (TID 139)
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO Executor: Finished task 40.0 in stage 1.1 (TID 129). 3371 bytes result sent to driver
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CoarseGrainedExecutorBackend: Got assigned task 140
+24/08/20 05:02:13 INFO Executor: Running task 51.0 in stage 1.1 (TID 140)
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO Executor: Finished task 31.0 in stage 1.1 (TID 120). 3371 bytes result sent to driver
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CoarseGrainedExecutorBackend: Got assigned task 141
+24/08/20 05:02:13 INFO Executor: Running task 52.0 in stage 1.1 (TID 141)
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO Executor: Finished task 47.0 in stage 1.1 (TID 136). 3371 bytes result sent to driver
+24/08/20 05:02:13 INFO CoarseGrainedExecutorBackend: Got assigned task 142
+24/08/20 05:02:13 INFO Executor: Running task 53.0 in stage 1.1 (TID 142)
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO Executor: Finished task 50.0 in stage 1.1 (TID 139). 3414 bytes result sent to driver
+24/08/20 05:02:13 INFO Executor: Finished task 48.0 in stage 1.1 (TID 137). 3371 bytes result sent to driver
+24/08/20 05:02:13 INFO CoarseGrainedExecutorBackend: Got assigned task 143
+24/08/20 05:02:13 INFO CoarseGrainedExecutorBackend: Got assigned task 144
+24/08/20 05:02:13 INFO Executor: Running task 55.0 in stage 1.1 (TID 144)
+24/08/20 05:02:13 INFO Executor: Running task 54.0 in stage 1.1 (TID 143)
+24/08/20 05:02:13 INFO Executor: Finished task 49.0 in stage 1.1 (TID 138). 3414 bytes result sent to driver
+24/08/20 05:02:13 INFO CoarseGrainedExecutorBackend: Got assigned task 145
+24/08/20 05:02:13 INFO Executor: Running task 56.0 in stage 1.1 (TID 145)
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:13 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:14 INFO Executor: Finished task 51.0 in stage 1.1 (TID 140). 3371 bytes result sent to driver
+24/08/20 05:02:14 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:14 INFO CoarseGrainedExecutorBackend: Got assigned task 146
+24/08/20 05:02:14 INFO Executor: Running task 57.0 in stage 1.1 (TID 146)
+24/08/20 05:02:14 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:14 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:14 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:14 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:14 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:14 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:14 INFO Executor: Finished task 52.0 in stage 1.1 (TID 141). 3414 bytes result sent to driver
+24/08/20 05:02:14 INFO CoarseGrainedExecutorBackend: Got assigned task 147
+24/08/20 05:02:14 INFO Executor: Running task 58.0 in stage 1.1 (TID 147)
+24/08/20 05:02:14 INFO Executor: Finished task 53.0 in stage 1.1 (TID 142). 3414 bytes result sent to driver
+24/08/20 05:02:14 INFO CoarseGrainedExecutorBackend: Got assigned task 148
+24/08/20 05:02:14 INFO Executor: Running task 59.0 in stage 1.1 (TID 148)
+24/08/20 05:02:14 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:14 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:15 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:15 INFO Executor: Finished task 41.0 in stage 1.1 (TID 130). 3371 bytes result sent to driver
+24/08/20 05:02:15 INFO CoarseGrainedExecutorBackend: Got assigned task 149
+24/08/20 05:02:15 INFO Executor: Running task 60.0 in stage 1.1 (TID 149)
+24/08/20 05:02:15 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:15 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:15 INFO Executor: Finished task 56.0 in stage 1.1 (TID 145). 3371 bytes result sent to driver
+24/08/20 05:02:15 INFO CoarseGrainedExecutorBackend: Got assigned task 150
+24/08/20 05:02:15 INFO Executor: Running task 61.0 in stage 1.1 (TID 150)
+24/08/20 05:02:15 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:15 INFO Executor: Finished task 54.0 in stage 1.1 (TID 143). 3371 bytes result sent to driver
+24/08/20 05:02:15 INFO CoarseGrainedExecutorBackend: Got assigned task 151
+24/08/20 05:02:15 INFO Executor: Running task 62.0 in stage 1.1 (TID 151)
+24/08/20 05:02:15 INFO Executor: Finished task 55.0 in stage 1.1 (TID 144). 3371 bytes result sent to driver
+24/08/20 05:02:15 INFO Executor: Finished task 57.0 in stage 1.1 (TID 146). 3371 bytes result sent to driver
+24/08/20 05:02:15 INFO CoarseGrainedExecutorBackend: Got assigned task 152
+24/08/20 05:02:15 INFO Executor: Running task 63.0 in stage 1.1 (TID 152)
+24/08/20 05:02:15 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:15 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:15 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:15 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:15 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:15 INFO Executor: Finished task 58.0 in stage 1.1 (TID 147). 3371 bytes result sent to driver
+24/08/20 05:02:15 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:15 INFO CodecPool: Got brand-new decompressor [.gz]
+24/08/20 05:02:15 INFO Executor: Finished task 63.0 in stage 1.1 (TID 152). 3371 bytes result sent to driver
+24/08/20 05:02:16 INFO Executor: Finished task 59.0 in stage 1.1 (TID 148). 3371 bytes result sent to driver
+24/08/20 05:02:16 INFO Executor: Finished task 42.0 in stage 1.1 (TID 131). 3371 bytes result sent to driver
+24/08/20 05:02:16 INFO Executor: Finished task 62.0 in stage 1.1 (TID 151). 3371 bytes result sent to driver
+24/08/20 05:02:16 INFO Executor: Finished task 60.0 in stage 1.1 (TID 149). 3371 bytes result sent to driver
+24/08/20 05:02:16 INFO Executor: Finished task 61.0 in stage 1.1 (TID 150). 3371 bytes result sent to driver
+24/08/20 05:02:16 INFO CoarseGrainedExecutorBackend: Got assigned task 153
+24/08/20 05:02:16 INFO CoarseGrainedExecutorBackend: Got assigned task 154
+24/08/20 05:02:16 INFO Executor: Running task 0.0 in stage 2.1 (TID 153)
+24/08/20 05:02:16 INFO Executor: Running task 1.0 in stage 2.1 (TID 154)
+24/08/20 05:02:16 INFO CoarseGrainedExecutorBackend: Got assigned task 155
+24/08/20 05:02:16 INFO MapOutputTrackerWorker: Updating epoch to 3 and clearing cache
+24/08/20 05:02:16 INFO Executor: Running task 2.0 in stage 2.1 (TID 155)
+24/08/20 05:02:16 INFO CoarseGrainedExecutorBackend: Got assigned task 156
+24/08/20 05:02:16 INFO CoarseGrainedExecutorBackend: Got assigned task 157
+24/08/20 05:02:16 INFO Executor: Running task 3.0 in stage 2.1 (TID 156)
+24/08/20 05:02:16 INFO TorrentBroadcast: Started reading broadcast variable 6 with 1 pieces (estimated total size 4.0 MiB)
+24/08/20 05:02:16 INFO Executor: Running task 4.0 in stage 2.1 (TID 157)
+24/08/20 05:02:16 INFO CoarseGrainedExecutorBackend: Got assigned task 158
+24/08/20 05:02:16 INFO Executor: Running task 5.0 in stage 2.1 (TID 158)
+24/08/20 05:02:16 INFO CoarseGrainedExecutorBackend: Got assigned task 159
+24/08/20 05:02:16 INFO Executor: Running task 6.0 in stage 2.1 (TID 159)
+24/08/20 05:02:16 INFO CoarseGrainedExecutorBackend: Got assigned task 160
+24/08/20 05:02:16 INFO Executor: Running task 7.0 in stage 2.1 (TID 160)
+24/08/20 05:02:16 INFO MemoryStore: Block broadcast_6_piece0 stored as bytes in memory (estimated size 6.2 KiB, free 434.3 MiB)
+24/08/20 05:02:16 INFO TorrentBroadcast: Reading broadcast variable 6 took 13 ms
+24/08/20 05:02:16 INFO MemoryStore: Block broadcast_6 stored as values in memory (estimated size 11.9 KiB, free 434.3 MiB)
+24/08/20 05:02:16 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:16 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:16 INFO MapOutputTrackerWorker: Doing the fetch; tracker endpoint = NettyRpcEndpointRef(spark://MapOutputTracker@556f599680e2:45621)
+24/08/20 05:02:16 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:16 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:16 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:16 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:16 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:16 INFO MapOutputTrackerWorker: Don't have map outputs for shuffle 0, fetching them
+24/08/20 05:02:16 INFO MapOutputTrackerWorker: Got the map output locations
+24/08/20 05:02:16 INFO ShuffleBlockFetcherIterator: Getting 64 (248.2 MiB) non-empty blocks including 64 (248.2 MiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+24/08/20 05:02:16 INFO ShuffleBlockFetcherIterator: Getting 64 (249.6 MiB) non-empty blocks including 64 (249.6 MiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+24/08/20 05:02:16 INFO ShuffleBlockFetcherIterator: Getting 64 (235.2 MiB) non-empty blocks including 64 (235.2 MiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+24/08/20 05:02:16 INFO ShuffleBlockFetcherIterator: Getting 64 (243.8 MiB) non-empty blocks including 64 (243.8 MiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+24/08/20 05:02:16 INFO ShuffleBlockFetcherIterator: Getting 64 (243.8 MiB) non-empty blocks including 64 (243.8 MiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+24/08/20 05:02:16 INFO ShuffleBlockFetcherIterator: Getting 64 (246.0 MiB) non-empty blocks including 64 (246.0 MiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+24/08/20 05:02:16 INFO ShuffleBlockFetcherIterator: Getting 64 (241.1 MiB) non-empty blocks including 64 (241.1 MiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+24/08/20 05:02:16 INFO ShuffleBlockFetcherIterator: Getting 64 (243.5 MiB) non-empty blocks including 64 (243.5 MiB) local and 0 (0.0 B) host-local and 0 (0.0 B) push-merged-local and 0 (0.0 B) remote blocks
+24/08/20 05:02:16 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 29 ms
+24/08/20 05:02:16 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 29 ms
+24/08/20 05:02:16 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 29 ms
+24/08/20 05:02:16 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 29 ms
+24/08/20 05:02:16 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 29 ms
+24/08/20 05:02:16 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 29 ms
+24/08/20 05:02:16 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 29 ms
+24/08/20 05:02:16 INFO ShuffleBlockFetcherIterator: Started 0 remote fetches in 29 ms
+24/08/20 05:02:16 INFO TorrentBroadcast: Started reading broadcast variable 3 with 1 pieces (estimated total size 4.0 MiB)
+24/08/20 05:02:16 INFO MemoryStore: Block broadcast_3_piece0 stored as bytes in memory (estimated size 3.7 KiB, free 434.3 MiB)
+24/08/20 05:02:16 INFO TorrentBroadcast: Reading broadcast variable 3 took 7 ms
+24/08/20 05:02:16 INFO MemoryStore: Block broadcast_3 stored as values in memory (estimated size 32.0 KiB, free 434.3 MiB)
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:17 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 ERROR Utils: Aborting task
+java.lang.OutOfMemoryError: Java heap space
+	at java.base/java.io.ByteArrayOutputStream.<init>(ByteArrayOutputStream.java:79)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory$HeapBytesCompressor.<init>(CodecFactory.java:158)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory.createCompressor(CodecFactory.java:219)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory.getCompressor(CodecFactory.java:202)
+	at org.apache.iceberg.parquet.ParquetWriter.<init>(ParquetWriter.java:90)
+	at org.apache.iceberg.parquet.Parquet$WriteBuilder.build(Parquet.java:337)
+	at org.apache.iceberg.parquet.Parquet$DataWriteBuilder.build(Parquet.java:708)
+	at org.apache.iceberg.data.BaseFileWriterFactory.newDataWriter(BaseFileWriterFactory.java:133)
+	at org.apache.iceberg.io.RollingDataWriter.newWriter(RollingDataWriter.java:52)
+	at org.apache.iceberg.io.RollingDataWriter.newWriter(RollingDataWriter.java:32)
+	at org.apache.iceberg.io.RollingFileWriter.openCurrentWriter(RollingFileWriter.java:108)
+	at org.apache.iceberg.io.RollingDataWriter.<init>(RollingDataWriter.java:47)
+	at org.apache.iceberg.io.FanoutDataWriter.newWriter(FanoutDataWriter.java:53)
+	at org.apache.iceberg.io.FanoutWriter.writer(FanoutWriter.java:64)
+	at org.apache.iceberg.io.FanoutWriter.write(FanoutWriter.java:52)
+	at org.apache.iceberg.io.FanoutDataWriter.write(FanoutDataWriter.java:31)
+	at org.apache.iceberg.spark.source.SparkWrite$PartitionedDataWriter.write(SparkWrite.java:771)
+	at org.apache.iceberg.spark.source.SparkWrite$PartitionedDataWriter.write(SparkWrite.java:741)
+	at org.apache.spark.sql.execution.datasources.v2.DataWritingSparkTask$.write(WriteToDataSourceV2Exec.scala:493)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.$anonfun$run$1(WriteToDataSourceV2Exec.scala:448)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask$$Lambda$2912/0x0000000840934840.apply(Unknown Source)
+	at org.apache.spark.util.Utils$.tryWithSafeFinallyAndFailureCallbacks(Utils.scala:1397)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.run(WriteToDataSourceV2Exec.scala:486)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.run$(WriteToDataSourceV2Exec.scala:425)
+	at org.apache.spark.sql.execution.datasources.v2.DataWritingSparkTask$.run(WriteToDataSourceV2Exec.scala:491)
+	at org.apache.spark.sql.execution.datasources.v2.V2TableWriteExec.$anonfun$writeWithV2$2(WriteToDataSourceV2Exec.scala:388)
+	at org.apache.spark.sql.execution.datasources.v2.V2TableWriteExec$$Lambda$767/0x00000008406a3840.apply(Unknown Source)
+	at org.apache.spark.scheduler.ResultTask.runTask(ResultTask.scala:93)
+	at org.apache.spark.TaskContext.runTaskWithListeners(TaskContext.scala:166)
+	at org.apache.spark.scheduler.Task.run(Task.scala:141)
+	at org.apache.spark.executor.Executor$TaskRunner.$anonfun$run$4(Executor.scala:620)
+	at org.apache.spark.executor.Executor$TaskRunner$$Lambda$577/0x000000084057e440.apply(Unknown Source)
+24/08/20 05:02:18 ERROR DataWritingSparkTask: Aborting commit for partition 2 (task 155, attempt 0, stage 2.1)
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 ERROR Utils: Aborting task
+java.lang.OutOfMemoryError: Java heap space
+24/08/20 05:02:18 ERROR DataWritingSparkTask: Aborting commit for partition 4 (task 157, attempt 0, stage 2.1)
+24/08/20 05:02:18 ERROR Utils: Aborting task
+java.lang.OutOfMemoryError: Java heap space
+	at java.base/java.io.ByteArrayOutputStream.<init>(ByteArrayOutputStream.java:79)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory$HeapBytesCompressor.<init>(CodecFactory.java:158)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory.createCompressor(CodecFactory.java:219)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory.getCompressor(CodecFactory.java:202)
+	at org.apache.iceberg.parquet.ParquetWriter.<init>(ParquetWriter.java:90)
+	at org.apache.iceberg.parquet.Parquet$WriteBuilder.build(Parquet.java:337)
+	at org.apache.iceberg.parquet.Parquet$DataWriteBuilder.build(Parquet.java:708)
+	at org.apache.iceberg.data.BaseFileWriterFactory.newDataWriter(BaseFileWriterFactory.java:133)
+	at org.apache.iceberg.io.RollingDataWriter.newWriter(RollingDataWriter.java:52)
+	at org.apache.iceberg.io.RollingDataWriter.newWriter(RollingDataWriter.java:32)
+	at org.apache.iceberg.io.RollingFileWriter.openCurrentWriter(RollingFileWriter.java:108)
+	at org.apache.iceberg.io.RollingDataWriter.<init>(RollingDataWriter.java:47)
+	at org.apache.iceberg.io.FanoutDataWriter.newWriter(FanoutDataWriter.java:53)
+	at org.apache.iceberg.io.FanoutWriter.writer(FanoutWriter.java:64)
+	at org.apache.iceberg.io.FanoutWriter.write(FanoutWriter.java:52)
+	at org.apache.iceberg.io.FanoutDataWriter.write(FanoutDataWriter.java:31)
+	at org.apache.iceberg.spark.source.SparkWrite$PartitionedDataWriter.write(SparkWrite.java:771)
+	at org.apache.iceberg.spark.source.SparkWrite$PartitionedDataWriter.write(SparkWrite.java:741)
+	at org.apache.spark.sql.execution.datasources.v2.DataWritingSparkTask$.write(WriteToDataSourceV2Exec.scala:493)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.$anonfun$run$1(WriteToDataSourceV2Exec.scala:448)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask$$Lambda$2912/0x0000000840934840.apply(Unknown Source)
+	at org.apache.spark.util.Utils$.tryWithSafeFinallyAndFailureCallbacks(Utils.scala:1397)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.run(WriteToDataSourceV2Exec.scala:486)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.run$(WriteToDataSourceV2Exec.scala:425)
+	at org.apache.spark.sql.execution.datasources.v2.DataWritingSparkTask$.run(WriteToDataSourceV2Exec.scala:491)
+	at org.apache.spark.sql.execution.datasources.v2.V2TableWriteExec.$anonfun$writeWithV2$2(WriteToDataSourceV2Exec.scala:388)
+	at org.apache.spark.sql.execution.datasources.v2.V2TableWriteExec$$Lambda$767/0x00000008406a3840.apply(Unknown Source)
+	at org.apache.spark.scheduler.ResultTask.runTask(ResultTask.scala:93)
+	at org.apache.spark.TaskContext.runTaskWithListeners(TaskContext.scala:166)
+	at org.apache.spark.scheduler.Task.run(Task.scala:141)
+	at org.apache.spark.executor.Executor$TaskRunner.$anonfun$run$4(Executor.scala:620)
+	at org.apache.spark.executor.Executor$TaskRunner$$Lambda$577/0x000000084057e440.apply(Unknown Source)
+24/08/20 05:02:18 ERROR DataWritingSparkTask: Aborting commit for partition 5 (task 158, attempt 0, stage 2.1)
+24/08/20 05:02:18 ERROR Utils: Aborting task
+java.lang.OutOfMemoryError: Java heap space
+24/08/20 05:02:18 ERROR DataWritingSparkTask: Aborting commit for partition 6 (task 159, attempt 0, stage 2.1)
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:18 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:19 ERROR Utils: Aborting task
+java.lang.OutOfMemoryError: Java heap space
+24/08/20 05:02:19 ERROR DataWritingSparkTask: Aborting commit for partition 3 (task 156, attempt 0, stage 2.1)
+24/08/20 05:02:19 ERROR Utils: Aborting task
+java.lang.OutOfMemoryError: Java heap space
+24/08/20 05:02:19 ERROR DataWritingSparkTask: Aborting commit for partition 0 (task 153, attempt 0, stage 2.1)
+24/08/20 05:02:19 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:19 ERROR Utils: Aborting task
+java.lang.OutOfMemoryError: Java heap space
+24/08/20 05:02:19 ERROR DataWritingSparkTask: Aborting commit for partition 1 (task 154, attempt 0, stage 2.1)
+24/08/20 05:02:19 INFO CodecPool: Got brand-new compressor [.gz]
+24/08/20 05:02:19 ERROR Utils: Aborting task
+java.lang.OutOfMemoryError: Java heap space
+24/08/20 05:02:19 ERROR DataWritingSparkTask: Aborting commit for partition 7 (task 160, attempt 0, stage 2.1)
+24/08/20 05:02:22 INFO SparkCleanupUtil: Deleted 46 file(s) using bulk deletes (partition 6 (task 159, attempt 0, stage 2.1))
+24/08/20 05:02:22 INFO SparkCleanupUtil: Deleted 47 file(s) using bulk deletes (partition 5 (task 158, attempt 0, stage 2.1))
+24/08/20 05:02:22 INFO SparkCleanupUtil: Deleted 48 file(s) using bulk deletes (partition 2 (task 155, attempt 0, stage 2.1))
+24/08/20 05:02:22 INFO SparkCleanupUtil: Deleted 46 file(s) using bulk deletes (partition 0 (task 153, attempt 0, stage 2.1))
+24/08/20 05:02:22 INFO SparkCleanupUtil: Deleted 49 file(s) using bulk deletes (partition 7 (task 160, attempt 0, stage 2.1))
+24/08/20 05:02:22 INFO SparkCleanupUtil: Deleted 47 file(s) using bulk deletes (partition 3 (task 156, attempt 0, stage 2.1))
+24/08/20 05:02:22 ERROR DataWritingSparkTask: Aborted commit for partition 0 (task 153, attempt 0, stage 2.1)
+24/08/20 05:02:22 ERROR DataWritingSparkTask: Aborted commit for partition 7 (task 160, attempt 0, stage 2.1)
+24/08/20 05:02:22 ERROR DataWritingSparkTask: Aborted commit for partition 5 (task 158, attempt 0, stage 2.1)
+24/08/20 05:02:22 ERROR DataWritingSparkTask: Aborted commit for partition 3 (task 156, attempt 0, stage 2.1)
+24/08/20 05:02:22 ERROR DataWritingSparkTask: Aborted commit for partition 6 (task 159, attempt 0, stage 2.1)
+24/08/20 05:02:22 ERROR DataWritingSparkTask: Aborted commit for partition 2 (task 155, attempt 0, stage 2.1)
+24/08/20 05:02:22 ERROR Executor: Exception in task 3.0 in stage 2.1 (TID 156)
+java.lang.OutOfMemoryError: Java heap space
+24/08/20 05:02:22 ERROR Executor: Exception in task 6.0 in stage 2.1 (TID 159)
+java.lang.OutOfMemoryError: Java heap space
+24/08/20 05:02:22 ERROR Executor: Exception in task 5.0 in stage 2.1 (TID 158)
+java.lang.OutOfMemoryError: Java heap space
+	at java.base/java.io.ByteArrayOutputStream.<init>(ByteArrayOutputStream.java:79)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory$HeapBytesCompressor.<init>(CodecFactory.java:158)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory.createCompressor(CodecFactory.java:219)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory.getCompressor(CodecFactory.java:202)
+	at org.apache.iceberg.parquet.ParquetWriter.<init>(ParquetWriter.java:90)
+	at org.apache.iceberg.parquet.Parquet$WriteBuilder.build(Parquet.java:337)
+	at org.apache.iceberg.parquet.Parquet$DataWriteBuilder.build(Parquet.java:708)
+	at org.apache.iceberg.data.BaseFileWriterFactory.newDataWriter(BaseFileWriterFactory.java:133)
+	at org.apache.iceberg.io.RollingDataWriter.newWriter(RollingDataWriter.java:52)
+	at org.apache.iceberg.io.RollingDataWriter.newWriter(RollingDataWriter.java:32)
+	at org.apache.iceberg.io.RollingFileWriter.openCurrentWriter(RollingFileWriter.java:108)
+	at org.apache.iceberg.io.RollingDataWriter.<init>(RollingDataWriter.java:47)
+	at org.apache.iceberg.io.FanoutDataWriter.newWriter(FanoutDataWriter.java:53)
+	at org.apache.iceberg.io.FanoutWriter.writer(FanoutWriter.java:64)
+	at org.apache.iceberg.io.FanoutWriter.write(FanoutWriter.java:52)
+	at org.apache.iceberg.io.FanoutDataWriter.write(FanoutDataWriter.java:31)
+	at org.apache.iceberg.spark.source.SparkWrite$PartitionedDataWriter.write(SparkWrite.java:771)
+	at org.apache.iceberg.spark.source.SparkWrite$PartitionedDataWriter.write(SparkWrite.java:741)
+	at org.apache.spark.sql.execution.datasources.v2.DataWritingSparkTask$.write(WriteToDataSourceV2Exec.scala:493)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.$anonfun$run$1(WriteToDataSourceV2Exec.scala:448)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask$$Lambda$2912/0x0000000840934840.apply(Unknown Source)
+	at org.apache.spark.util.Utils$.tryWithSafeFinallyAndFailureCallbacks(Utils.scala:1397)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.run(WriteToDataSourceV2Exec.scala:486)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.run$(WriteToDataSourceV2Exec.scala:425)
+	at org.apache.spark.sql.execution.datasources.v2.DataWritingSparkTask$.run(WriteToDataSourceV2Exec.scala:491)
+	at org.apache.spark.sql.execution.datasources.v2.V2TableWriteExec.$anonfun$writeWithV2$2(WriteToDataSourceV2Exec.scala:388)
+	at org.apache.spark.sql.execution.datasources.v2.V2TableWriteExec$$Lambda$767/0x00000008406a3840.apply(Unknown Source)
+	at org.apache.spark.scheduler.ResultTask.runTask(ResultTask.scala:93)
+	at org.apache.spark.TaskContext.runTaskWithListeners(TaskContext.scala:166)
+	at org.apache.spark.scheduler.Task.run(Task.scala:141)
+	at org.apache.spark.executor.Executor$TaskRunner.$anonfun$run$4(Executor.scala:620)
+	at org.apache.spark.executor.Executor$TaskRunner$$Lambda$577/0x000000084057e440.apply(Unknown Source)
+24/08/20 05:02:22 ERROR Executor: Exception in task 2.0 in stage 2.1 (TID 155)
+java.lang.OutOfMemoryError: Java heap space
+	at java.base/java.io.ByteArrayOutputStream.<init>(ByteArrayOutputStream.java:79)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory$HeapBytesCompressor.<init>(CodecFactory.java:158)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory.createCompressor(CodecFactory.java:219)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory.getCompressor(CodecFactory.java:202)
+	at org.apache.iceberg.parquet.ParquetWriter.<init>(ParquetWriter.java:90)
+	at org.apache.iceberg.parquet.Parquet$WriteBuilder.build(Parquet.java:337)
+	at org.apache.iceberg.parquet.Parquet$DataWriteBuilder.build(Parquet.java:708)
+	at org.apache.iceberg.data.BaseFileWriterFactory.newDataWriter(BaseFileWriterFactory.java:133)
+	at org.apache.iceberg.io.RollingDataWriter.newWriter(RollingDataWriter.java:52)
+	at org.apache.iceberg.io.RollingDataWriter.newWriter(RollingDataWriter.java:32)
+	at org.apache.iceberg.io.RollingFileWriter.openCurrentWriter(RollingFileWriter.java:108)
+	at org.apache.iceberg.io.RollingDataWriter.<init>(RollingDataWriter.java:47)
+	at org.apache.iceberg.io.FanoutDataWriter.newWriter(FanoutDataWriter.java:53)
+	at org.apache.iceberg.io.FanoutWriter.writer(FanoutWriter.java:64)
+	at org.apache.iceberg.io.FanoutWriter.write(FanoutWriter.java:52)
+	at org.apache.iceberg.io.FanoutDataWriter.write(FanoutDataWriter.java:31)
+	at org.apache.iceberg.spark.source.SparkWrite$PartitionedDataWriter.write(SparkWrite.java:771)
+	at org.apache.iceberg.spark.source.SparkWrite$PartitionedDataWriter.write(SparkWrite.java:741)
+	at org.apache.spark.sql.execution.datasources.v2.DataWritingSparkTask$.write(WriteToDataSourceV2Exec.scala:493)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.$anonfun$run$1(WriteToDataSourceV2Exec.scala:448)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask$$Lambda$2912/0x0000000840934840.apply(Unknown Source)
+	at org.apache.spark.util.Utils$.tryWithSafeFinallyAndFailureCallbacks(Utils.scala:1397)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.run(WriteToDataSourceV2Exec.scala:486)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.run$(WriteToDataSourceV2Exec.scala:425)
+	at org.apache.spark.sql.execution.datasources.v2.DataWritingSparkTask$.run(WriteToDataSourceV2Exec.scala:491)
+	at org.apache.spark.sql.execution.datasources.v2.V2TableWriteExec.$anonfun$writeWithV2$2(WriteToDataSourceV2Exec.scala:388)
+	at org.apache.spark.sql.execution.datasources.v2.V2TableWriteExec$$Lambda$767/0x00000008406a3840.apply(Unknown Source)
+	at org.apache.spark.scheduler.ResultTask.runTask(ResultTask.scala:93)
+	at org.apache.spark.TaskContext.runTaskWithListeners(TaskContext.scala:166)
+	at org.apache.spark.scheduler.Task.run(Task.scala:141)
+	at org.apache.spark.executor.Executor$TaskRunner.$anonfun$run$4(Executor.scala:620)
+	at org.apache.spark.executor.Executor$TaskRunner$$Lambda$577/0x000000084057e440.apply(Unknown Source)
+24/08/20 05:02:22 ERROR Executor: Exception in task 0.0 in stage 2.1 (TID 153)
+java.lang.OutOfMemoryError: Java heap space
+24/08/20 05:02:22 ERROR Executor: Exception in task 7.0 in stage 2.1 (TID 160)
+java.lang.OutOfMemoryError: Java heap space
+24/08/20 05:02:22 ERROR SparkUncaughtExceptionHandler: Uncaught exception in thread Thread[Executor task launch worker for task 6.0 in stage 2.1 (TID 159),5,main]
+java.lang.OutOfMemoryError: Java heap space
+24/08/20 05:02:22 ERROR SparkUncaughtExceptionHandler: Uncaught exception in thread Thread[Executor task launch worker for task 2.0 in stage 2.1 (TID 155),5,main]
+java.lang.OutOfMemoryError: Java heap space
+	at java.base/java.io.ByteArrayOutputStream.<init>(ByteArrayOutputStream.java:79)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory$HeapBytesCompressor.<init>(CodecFactory.java:158)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory.createCompressor(CodecFactory.java:219)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory.getCompressor(CodecFactory.java:202)
+	at org.apache.iceberg.parquet.ParquetWriter.<init>(ParquetWriter.java:90)
+	at org.apache.iceberg.parquet.Parquet$WriteBuilder.build(Parquet.java:337)
+	at org.apache.iceberg.parquet.Parquet$DataWriteBuilder.build(Parquet.java:708)
+	at org.apache.iceberg.data.BaseFileWriterFactory.newDataWriter(BaseFileWriterFactory.java:133)
+	at org.apache.iceberg.io.RollingDataWriter.newWriter(RollingDataWriter.java:52)
+	at org.apache.iceberg.io.RollingDataWriter.newWriter(RollingDataWriter.java:32)
+	at org.apache.iceberg.io.RollingFileWriter.openCurrentWriter(RollingFileWriter.java:108)
+	at org.apache.iceberg.io.RollingDataWriter.<init>(RollingDataWriter.java:47)
+	at org.apache.iceberg.io.FanoutDataWriter.newWriter(FanoutDataWriter.java:53)
+	at org.apache.iceberg.io.FanoutWriter.writer(FanoutWriter.java:64)
+	at org.apache.iceberg.io.FanoutWriter.write(FanoutWriter.java:52)
+	at org.apache.iceberg.io.FanoutDataWriter.write(FanoutDataWriter.java:31)
+	at org.apache.iceberg.spark.source.SparkWrite$PartitionedDataWriter.write(SparkWrite.java:771)
+	at org.apache.iceberg.spark.source.SparkWrite$PartitionedDataWriter.write(SparkWrite.java:741)
+	at org.apache.spark.sql.execution.datasources.v2.DataWritingSparkTask$.write(WriteToDataSourceV2Exec.scala:493)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.$anonfun$run$1(WriteToDataSourceV2Exec.scala:448)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask$$Lambda$2912/0x0000000840934840.apply(Unknown Source)
+	at org.apache.spark.util.Utils$.tryWithSafeFinallyAndFailureCallbacks(Utils.scala:1397)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.run(WriteToDataSourceV2Exec.scala:486)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.run$(WriteToDataSourceV2Exec.scala:425)
+	at org.apache.spark.sql.execution.datasources.v2.DataWritingSparkTask$.run(WriteToDataSourceV2Exec.scala:491)
+	at org.apache.spark.sql.execution.datasources.v2.V2TableWriteExec.$anonfun$writeWithV2$2(WriteToDataSourceV2Exec.scala:388)
+	at org.apache.spark.sql.execution.datasources.v2.V2TableWriteExec$$Lambda$767/0x00000008406a3840.apply(Unknown Source)
+	at org.apache.spark.scheduler.ResultTask.runTask(ResultTask.scala:93)
+	at org.apache.spark.TaskContext.runTaskWithListeners(TaskContext.scala:166)
+	at org.apache.spark.scheduler.Task.run(Task.scala:141)
+	at org.apache.spark.executor.Executor$TaskRunner.$anonfun$run$4(Executor.scala:620)
+	at org.apache.spark.executor.Executor$TaskRunner$$Lambda$577/0x000000084057e440.apply(Unknown Source)
+24/08/20 05:02:22 ERROR SparkUncaughtExceptionHandler: Uncaught exception in thread Thread[Executor task launch worker for task 0.0 in stage 2.1 (TID 153),5,main]
+java.lang.OutOfMemoryError: Java heap space
+24/08/20 05:02:22 ERROR SparkUncaughtExceptionHandler: Uncaught exception in thread Thread[Executor task launch worker for task 7.0 in stage 2.1 (TID 160),5,main]
+java.lang.OutOfMemoryError: Java heap space
+24/08/20 05:02:22 ERROR SparkUncaughtExceptionHandler: Uncaught exception in thread Thread[Executor task launch worker for task 5.0 in stage 2.1 (TID 158),5,main]
+java.lang.OutOfMemoryError: Java heap space
+	at java.base/java.io.ByteArrayOutputStream.<init>(ByteArrayOutputStream.java:79)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory$HeapBytesCompressor.<init>(CodecFactory.java:158)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory.createCompressor(CodecFactory.java:219)
+	at org.apache.iceberg.shaded.org.apache.parquet.hadoop.CodecFactory.getCompressor(CodecFactory.java:202)
+	at org.apache.iceberg.parquet.ParquetWriter.<init>(ParquetWriter.java:90)
+	at org.apache.iceberg.parquet.Parquet$WriteBuilder.build(Parquet.java:337)
+	at org.apache.iceberg.parquet.Parquet$DataWriteBuilder.build(Parquet.java:708)
+	at org.apache.iceberg.data.BaseFileWriterFactory.newDataWriter(BaseFileWriterFactory.java:133)
+	at org.apache.iceberg.io.RollingDataWriter.newWriter(RollingDataWriter.java:52)
+	at org.apache.iceberg.io.RollingDataWriter.newWriter(RollingDataWriter.java:32)
+	at org.apache.iceberg.io.RollingFileWriter.openCurrentWriter(RollingFileWriter.java:108)
+	at org.apache.iceberg.io.RollingDataWriter.<init>(RollingDataWriter.java:47)
+	at org.apache.iceberg.io.FanoutDataWriter.newWriter(FanoutDataWriter.java:53)
+	at org.apache.iceberg.io.FanoutWriter.writer(FanoutWriter.java:64)
+	at org.apache.iceberg.io.FanoutWriter.write(FanoutWriter.java:52)
+	at org.apache.iceberg.io.FanoutDataWriter.write(FanoutDataWriter.java:31)
+	at org.apache.iceberg.spark.source.SparkWrite$PartitionedDataWriter.write(SparkWrite.java:771)
+	at org.apache.iceberg.spark.source.SparkWrite$PartitionedDataWriter.write(SparkWrite.java:741)
+	at org.apache.spark.sql.execution.datasources.v2.DataWritingSparkTask$.write(WriteToDataSourceV2Exec.scala:493)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.$anonfun$run$1(WriteToDataSourceV2Exec.scala:448)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask$$Lambda$2912/0x0000000840934840.apply(Unknown Source)
+	at org.apache.spark.util.Utils$.tryWithSafeFinallyAndFailureCallbacks(Utils.scala:1397)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.run(WriteToDataSourceV2Exec.scala:486)
+	at org.apache.spark.sql.execution.datasources.v2.WritingSparkTask.run$(WriteToDataSourceV2Exec.scala:425)
+	at org.apache.spark.sql.execution.datasources.v2.DataWritingSparkTask$.run(WriteToDataSourceV2Exec.scala:491)
+	at org.apache.spark.sql.execution.datasources.v2.V2TableWriteExec.$anonfun$writeWithV2$2(WriteToDataSourceV2Exec.scala:388)
+	at org.apache.spark.sql.execution.datasources.v2.V2TableWriteExec$$Lambda$767/0x00000008406a3840.apply(Unknown Source)
+	at org.apache.spark.scheduler.ResultTask.runTask(ResultTask.scala:93)
+	at org.apache.spark.TaskContext.runTaskWithListeners(TaskContext.scala:166)
+	at org.apache.spark.scheduler.Task.run(Task.scala:141)
+	at org.apache.spark.executor.Executor$TaskRunner.$anonfun$run$4(Executor.scala:620)
+	at org.apache.spark.executor.Executor$TaskRunner$$Lambda$577/0x000000084057e440.apply(Unknown Source)
+24/08/20 05:02:22 INFO CoarseGrainedExecutorBackend: Got assigned task 161
+24/08/20 05:02:22 ERROR SparkUncaughtExceptionHandler: Uncaught exception in thread Thread[Executor task launch worker for task 3.0 in stage 2.1 (TID 156),5,main]
+java.lang.OutOfMemoryError: Java heap space
+24/08/20 05:02:22 ERROR Inbox: Ignoring error
+java.util.concurrent.RejectedExecutionException: Task org.apache.spark.executor.Executor$TaskRunner@71b89875 rejected from java.util.concurrent.ThreadPoolExecutor@2677d2bd[Shutting down, pool size = 4, active threads = 4, queued tasks = 0, completed tasks = 77]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$AbortPolicy.rejectedExecution(ThreadPoolExecutor.java:2055)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.reject(ThreadPoolExecutor.java:825)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.execute(ThreadPoolExecutor.java:1355)
+	at org.apache.spark.executor.Executor.launchTask(Executor.scala:363)
+	at org.apache.spark.executor.CoarseGrainedExecutorBackend$$anonfun$receive$1.applyOrElse(CoarseGrainedExecutorBackend.scala:195)
+	at org.apache.spark.rpc.netty.Inbox.$anonfun$process$1(Inbox.scala:115)
+	at org.apache.spark.rpc.netty.Inbox.safelyCall(Inbox.scala:213)
+	at org.apache.spark.rpc.netty.Inbox.process(Inbox.scala:100)
+	at org.apache.spark.rpc.netty.MessageLoop.org$apache$spark$rpc$netty$MessageLoop$$receiveLoop(MessageLoop.scala:75)
+	at org.apache.spark.rpc.netty.MessageLoop$$anon$1.run(MessageLoop.scala:41)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.lang.Thread.run(Thread.java:829)
+24/08/20 05:02:22 INFO CoarseGrainedExecutorBackend: Got assigned task 162
+24/08/20 05:02:22 ERROR Inbox: Ignoring error
+java.util.concurrent.RejectedExecutionException: Task org.apache.spark.executor.Executor$TaskRunner@6f9aa4c2 rejected from java.util.concurrent.ThreadPoolExecutor@2677d2bd[Shutting down, pool size = 3, active threads = 3, queued tasks = 0, completed tasks = 78]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$AbortPolicy.rejectedExecution(ThreadPoolExecutor.java:2055)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.reject(ThreadPoolExecutor.java:825)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.execute(ThreadPoolExecutor.java:1355)
+	at org.apache.spark.executor.Executor.launchTask(Executor.scala:363)
+	at org.apache.spark.executor.CoarseGrainedExecutorBackend$$anonfun$receive$1.applyOrElse(CoarseGrainedExecutorBackend.scala:195)
+	at org.apache.spark.rpc.netty.Inbox.$anonfun$process$1(Inbox.scala:115)
+	at org.apache.spark.rpc.netty.Inbox.safelyCall(Inbox.scala:213)
+	at org.apache.spark.rpc.netty.Inbox.process(Inbox.scala:100)
+	at org.apache.spark.rpc.netty.MessageLoop.org$apache$spark$rpc$netty$MessageLoop$$receiveLoop(MessageLoop.scala:75)
+	at org.apache.spark.rpc.netty.MessageLoop$$anon$1.run(MessageLoop.scala:41)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.lang.Thread.run(Thread.java:829)
+24/08/20 05:02:22 INFO CoarseGrainedExecutorBackend: Got assigned task 163
+24/08/20 05:02:22 ERROR Inbox: Ignoring error
+java.util.concurrent.RejectedExecutionException: Task org.apache.spark.executor.Executor$TaskRunner@43725b65 rejected from java.util.concurrent.ThreadPoolExecutor@2677d2bd[Shutting down, pool size = 3, active threads = 3, queued tasks = 0, completed tasks = 78]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$AbortPolicy.rejectedExecution(ThreadPoolExecutor.java:2055)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.reject(ThreadPoolExecutor.java:825)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.execute(ThreadPoolExecutor.java:1355)
+	at org.apache.spark.executor.Executor.launchTask(Executor.scala:363)
+	at org.apache.spark.executor.CoarseGrainedExecutorBackend$$anonfun$receive$1.applyOrElse(CoarseGrainedExecutorBackend.scala:195)
+	at org.apache.spark.rpc.netty.Inbox.$anonfun$process$1(Inbox.scala:115)
+	at org.apache.spark.rpc.netty.Inbox.safelyCall(Inbox.scala:213)
+	at org.apache.spark.rpc.netty.Inbox.process(Inbox.scala:100)
+	at org.apache.spark.rpc.netty.MessageLoop.org$apache$spark$rpc$netty$MessageLoop$$receiveLoop(MessageLoop.scala:75)
+	at org.apache.spark.rpc.netty.MessageLoop$$anon$1.run(MessageLoop.scala:41)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.lang.Thread.run(Thread.java:829)
+24/08/20 05:02:22 INFO CoarseGrainedExecutorBackend: Got assigned task 164
+24/08/20 05:02:22 ERROR Inbox: Ignoring error
+java.util.concurrent.RejectedExecutionException: Task org.apache.spark.executor.Executor$TaskRunner@47bb263 rejected from java.util.concurrent.ThreadPoolExecutor@2677d2bd[Shutting down, pool size = 3, active threads = 3, queued tasks = 0, completed tasks = 78]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$AbortPolicy.rejectedExecution(ThreadPoolExecutor.java:2055)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.reject(ThreadPoolExecutor.java:825)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.execute(ThreadPoolExecutor.java:1355)
+	at org.apache.spark.executor.Executor.launchTask(Executor.scala:363)
+	at org.apache.spark.executor.CoarseGrainedExecutorBackend$$anonfun$receive$1.applyOrElse(CoarseGrainedExecutorBackend.scala:195)
+	at org.apache.spark.rpc.netty.Inbox.$anonfun$process$1(Inbox.scala:115)
+	at org.apache.spark.rpc.netty.Inbox.safelyCall(Inbox.scala:213)
+	at org.apache.spark.rpc.netty.Inbox.process(Inbox.scala:100)
+	at org.apache.spark.rpc.netty.MessageLoop.org$apache$spark$rpc$netty$MessageLoop$$receiveLoop(MessageLoop.scala:75)
+	at org.apache.spark.rpc.netty.MessageLoop$$anon$1.run(MessageLoop.scala:41)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.lang.Thread.run(Thread.java:829)
+24/08/20 05:02:22 INFO CoarseGrainedExecutorBackend: Got assigned task 165
+24/08/20 05:02:22 ERROR Inbox: Ignoring error
+java.util.concurrent.RejectedExecutionException: Task org.apache.spark.executor.Executor$TaskRunner@211ada91 rejected from java.util.concurrent.ThreadPoolExecutor@2677d2bd[Shutting down, pool size = 3, active threads = 3, queued tasks = 0, completed tasks = 78]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$AbortPolicy.rejectedExecution(ThreadPoolExecutor.java:2055)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.reject(ThreadPoolExecutor.java:825)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.execute(ThreadPoolExecutor.java:1355)
+	at org.apache.spark.executor.Executor.launchTask(Executor.scala:363)
+	at org.apache.spark.executor.CoarseGrainedExecutorBackend$$anonfun$receive$1.applyOrElse(CoarseGrainedExecutorBackend.scala:195)
+	at org.apache.spark.rpc.netty.Inbox.$anonfun$process$1(Inbox.scala:115)
+	at org.apache.spark.rpc.netty.Inbox.safelyCall(Inbox.scala:213)
+	at org.apache.spark.rpc.netty.Inbox.process(Inbox.scala:100)
+	at org.apache.spark.rpc.netty.MessageLoop.org$apache$spark$rpc$netty$MessageLoop$$receiveLoop(MessageLoop.scala:75)
+	at org.apache.spark.rpc.netty.MessageLoop$$anon$1.run(MessageLoop.scala:41)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.lang.Thread.run(Thread.java:829)
+24/08/20 05:02:22 INFO CoarseGrainedExecutorBackend: Got assigned task 166
+24/08/20 05:02:22 ERROR Inbox: Ignoring error
+java.util.concurrent.RejectedExecutionException: Task org.apache.spark.executor.Executor$TaskRunner@2beb7c87 rejected from java.util.concurrent.ThreadPoolExecutor@2677d2bd[Shutting down, pool size = 3, active threads = 3, queued tasks = 0, completed tasks = 78]
+	at java.base/java.util.concurrent.ThreadPoolExecutor$AbortPolicy.rejectedExecution(ThreadPoolExecutor.java:2055)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.reject(ThreadPoolExecutor.java:825)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.execute(ThreadPoolExecutor.java:1355)
+	at org.apache.spark.executor.Executor.launchTask(Executor.scala:363)
+	at org.apache.spark.executor.CoarseGrainedExecutorBackend$$anonfun$receive$1.applyOrElse(CoarseGrainedExecutorBackend.scala:195)
+	at org.apache.spark.rpc.netty.Inbox.$anonfun$process$1(Inbox.scala:115)
+	at org.apache.spark.rpc.netty.Inbox.safelyCall(Inbox.scala:213)
+	at org.apache.spark.rpc.netty.Inbox.process(Inbox.scala:100)
+	at org.apache.spark.rpc.netty.MessageLoop.org$apache$spark$rpc$netty$MessageLoop$$receiveLoop(MessageLoop.scala:75)
+	at org.apache.spark.rpc.netty.MessageLoop$$anon$1.run(MessageLoop.scala:41)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.lang.Thread.run(Thread.java:829)
+24/08/20 05:02:22 INFO SparkCleanupUtil: Deleted 47 file(s) using bulk deletes (partition 4 (task 157, attempt 0, stage 2.1))
+24/08/20 05:02:22 ERROR DataWritingSparkTask: Aborted commit for partition 4 (task 157, attempt 0, stage 2.1)
+24/08/20 05:02:22 ERROR Executor: Exception in task 4.0 in stage 2.1 (TID 157): Java heap space
+24/08/20 05:02:22 INFO SparkCleanupUtil: Deleted 54 file(s) using bulk deletes (partition 1 (task 154, attempt 0, stage 2.1))
+24/08/20 05:02:22 ERROR DataWritingSparkTask: Aborted commit for partition 1 (task 154, attempt 0, stage 2.1)
+24/08/20 05:02:22 ERROR Executor: Exception in task 1.0 in stage 2.1 (TID 154): Java heap space
+24/08/20 05:02:22 INFO MemoryStore: MemoryStore cleared
+24/08/20 05:02:22 INFO BlockManager: BlockManager stopped
+24/08/20 05:02:22 INFO ShutdownHookManager: Shutdown hook called
