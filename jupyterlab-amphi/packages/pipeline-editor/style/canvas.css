@@ -376,3 +376,32 @@ input:checked+label {
 .component_select__indicator-separator {
   height: 1.25rem;
 }
+
+/* Datagrid */
+
+.lm-DataGrid {
+  min-width: 64px;
+  min-height: 64px;
+  border: 1px solid #F0F0F0 !important;
+  margin: 5px;
+}
+
+.lm-DataGrid-scrollBar {
+  /* Reset custom scrollbar styles */
+  width: auto;
+  height: auto;
+  position: static; /* or remove position if not necessary */
+  overflow: auto;   /* Allow browser to handle scrollbar */
+}
+
+.lm-ScrollBar-thumb {
+  /* Remove custom thumb styles to use browser default */
+  transform: none;
+  top: auto;
+  height: auto;
+}
+
+.lm-ScrollBar-track,
+.lm-ScrollBar-button {
+  display: none; /* Hide custom buttons and tracks */
+}

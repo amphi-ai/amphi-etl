@@ -28,9 +28,9 @@ import { LIB_VERSION } from './version';
 import { Dialog, showDialog } from '@jupyterlab/apputils';
 import { createAboutDialog } from './AboutDialog';
 import { RunService } from './RunService'
-
+import { viewData } from './ViewData'
 import { ComponentManager, CodeGenerator, PipelineService } from '@amphi/pipeline-components-manager';
-import { pipelineCategoryIcon, pipelineBrandIcon, componentIcon } from './icons';
+import { pipelineCategoryIcon, pipelineBrandIcon, componentIcon, gridAltIcon } from './icons';
 import { PipelineEditorFactory, commandIDs } from './PipelineEditorWidget';
 
 import { LabIcon } from '@jupyterlab/ui-components';
@@ -585,6 +585,29 @@ ${code}
           label: 'Save component'
         });
 
+        commands.addCommand('pipeline-editor-component:view-data', {
+          execute: async args => {
+            const current = getCurrent(args);
+            if (!current) {
+              return;
+            }
+        
+            const contextNode: HTMLElement | undefined = app.contextMenuHitTest(
+              node => !!node.dataset.id
+            );
+        
+            if (contextNode) {
+              const nodeId = contextNode.dataset.id; // Extract the node ID
+              await viewData(nodeId, current.context, commands, app);
+            }
+
+            if(current.nodeId) {
+              await viewData(current.nodeId, current.context, commands, app);
+            }
+          },
+          label: 'Browse Data'
+        });
+
         commands.addCommand('pipeline-editor-component:lock-component', {
           execute: async args => {
             const current = getCurrent(args);
@@ -611,58 +634,16 @@ ${code}
         });
 
 
-        commands.addCommand('pipeline-editor-component:copy', {
-          execute: async args => {
-            const contextNode: HTMLElement | undefined = app.contextMenuHitTest(
-              node => !!node.dataset.id
-            );
-            if (contextNode) {
-              const nodeId = contextNode.getAttribute('data-id');
-            }
-          },
-          label: 'Copy'
-        });
-
-        commands.addCommand('pipeline-editor-component:cut', {
-          execute: args => {
-            const contextNode: HTMLElement | undefined = app.contextMenuHitTest(
-              node => !!node.dataset.id
-            );
-            if (contextNode) {
-            }
-          },
-          label: 'Cut'
-        });
-
-        commands.addCommand('pipeline-editor-component:paste', {
-          execute: async args => {
-
-          },
-          label: 'Paste'
-        });
-
         const contextMenuItems = [
-          /*
-          {
-            command: 'pipeline-editor-component:copy',
-            selector: '.component',
-            rank: 1,
-          },
-          {
-            command: 'pipeline-editor-component:cut',
-            selector: '.component',
-            rank: 2,
-          },
-          {
-            command: 'pipeline-editor-component:paste',
-            selector: '.component',
-            rank: 3,
-          },
-          */
           {
             command: 'pipeline-editor-component:save-as-file',
             selector: '.component',
             rank: 3,
+          },
+          {
+            command: 'pipeline-editor-component:view-data',
+            selector: '.component',
+            rank: 4,
           },
         ];
 

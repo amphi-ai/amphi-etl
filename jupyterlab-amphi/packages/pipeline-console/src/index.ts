@@ -24,7 +24,7 @@ namespace CommandIDs {
  */
 const logsconsole: JupyterFrontEndPlugin<IPipelineConsoleManager> = {
   id: '@amphi/pipeline-log-console:extension',
-  requires: [ICommandPalette, ILayoutRestorer, ILabShell, ISettingRegistry],
+  requires: [ICommandPalette, ILayoutRestorer, ILabShell, ISettingRegistry, IPipelineTracker],
   provides: IPipelineConsoleManager,
   autoStart: true,
   activate: (
@@ -32,7 +32,8 @@ const logsconsole: JupyterFrontEndPlugin<IPipelineConsoleManager> = {
     palette: ICommandPalette,
     restorer: ILayoutRestorer,
     labShell: ILabShell,
-    settings: ISettingRegistry
+    settings: ISettingRegistry,
+    pipelines: IWidgetTracker<DocumentWidget>,
   ): IPipelineConsoleManager => {
     const manager = new LogConsoleManager();
 
@@ -64,8 +65,20 @@ const logsconsole: JupyterFrontEndPlugin<IPipelineConsoleManager> = {
          * Create and track a new inspector.
          */
         function newPanel(): PipelineConsolePanel {
-          const panel = new PipelineConsolePanel();
-
+          // Get the current widget from the lab shell
+          const currentWidget = labShell.currentWidget;
+        
+          // Ensure the current widget is a pipeline and has a context
+          if (!currentWidget || !pipelines.has(currentWidget)) {
+            console.warn('No active pipeline to provide context.');
+            return;
+          }
+        
+          const pipelinePanel = currentWidget as DocumentWidget;
+          const context = pipelinePanel.context;
+        
+          const panel = new PipelineConsolePanel(app, app.commands, context);
+        
           panel.id = 'amphi-logConsole';
           panel.title.label = 'Pipeline Console';
           panel.title.icon = listIcon;
@@ -75,12 +88,13 @@ const logsconsole: JupyterFrontEndPlugin<IPipelineConsoleManager> = {
               manager.panel = null;
             }
           });
-
-          //Track the inspector panel
+        
+          // Track the inspector panel
           tracker.add(panel);
-
+        
           return panel;
         }
+        
 
         // Add command to palette
         app.commands.addCommand(command, {
@@ -216,18 +230,17 @@ const pipelines: JupyterFrontEndPlugin<void> = {
             connector.ready.then(async () => {
               session.session.kernel.anyMessage.connect((sender, args) => {
 
-
-
                 if (manager.panel) {
                   if (args.direction === 'recv') {
                     // Filter and process kernel messages here
                     // For example, args.msg.header.msg_type might be 'stream' for log messages
-
                     if (args.msg.header.msg_type === 'execute_result' || args.msg.header.msg_type === 'display_data') {
                       // Assert the message type to IExecuteResultMsg or IDisplayDataMsg to access 'data'
                       const content = args.msg.content as KernelMessage.IExecuteResultMsg['content'] | KernelMessage.IDisplayDataMsg['content'];
                       if (content.data['text/html']) {
-                        manager.panel.onNewLog(formatLogDate(args.msg.header.date), session.name, "data", content.data['text/html'])
+                        console.log("args.msg %o", args.msg)
+
+                        manager.panel.onNewLog(formatLogDate(args.msg.header.date), session.name, "data", content.data['text/html'], content.metadata)
                       }
                     }
 
@@ -250,7 +263,7 @@ const pipelines: JupyterFrontEndPlugin<void> = {
                           // Once the traceback is sanitized and rendered, append it to the errorContainer
                           // Convert the entire structure to HTML string if necessary
                           const streamHTML = streamText.outerHTML;
-                          manager.panel.onNewLog(formatLogDate(args.msg.header.date), session.name, "info", streamHTML);
+                          manager.panel.onNewLog(formatLogDate(args.msg.header.date), session.name, "info", streamHTML, null);
                         });
 
                       }
@@ -288,7 +301,7 @@ const pipelines: JupyterFrontEndPlugin<void> = {
                         // Once the traceback is sanitized and rendered, append it to the errorContainer
                         // Convert the entire structure to HTML string if necessary
                         const errorHTML = errorContainer.outerHTML;
-                        manager.panel.onNewLog(formatLogDate(errorMsg.header.date), session.name, "error", errorHTML);
+                        manager.panel.onNewLog(formatLogDate(errorMsg.header.date), session.name, "error", errorHTML, null);
                       });
                     }
                   }

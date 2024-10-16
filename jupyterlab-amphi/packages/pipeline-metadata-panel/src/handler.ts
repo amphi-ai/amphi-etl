@@ -185,7 +185,7 @@ export class VariableInspectionHandler extends AbstractHandler {
    */
   performMatrixInspection(
     varName: string,
-    maxRows = 100000
+    maxRows = 10000
   ): Promise<DataModel> {
     const request: KernelMessage.IExecuteRequestMsg['content'] = {
       code: this._matrixQueryCommand + '(' + varName + ', ' + maxRows + ')',

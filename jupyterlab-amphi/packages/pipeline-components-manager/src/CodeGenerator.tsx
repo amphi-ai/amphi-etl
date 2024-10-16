@@ -101,7 +101,7 @@ export class CodeGenerator {
                 executedNodes.clear();
                 executedNodes.add(nodeObject.id);
               }
-              displayCode = `\n__amphi_display_pandas_dataframe(${nodeObject.outputName})`;
+              displayCode = `\n__amphi_display_pandas_dataframe(${nodeObject.outputName}, dfName="${nodeObject.outputName}", nodeId="${targetNodeId}")`;
             }
 
             // Append display code to both codeList and the last element of incrementalCodeList

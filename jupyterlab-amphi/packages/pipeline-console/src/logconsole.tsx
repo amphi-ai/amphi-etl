@@ -1,13 +1,17 @@
-import { Widget } from '@lumino/widgets';
+import { Widget, StackedPanel } from '@lumino/widgets';
+import { DataGrid, DataModel } from '@lumino/datagrid';
+import { JupyterFrontEnd } from '@jupyterlab/application';
+import { CommandRegistry } from '@lumino/commands';
+import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { IPipelineConsole } from './tokens';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import DataView from './DataView';
 import DocumentView from './DocumentView';
 import { Alert, Tag, Typography, Divider } from 'antd';
-import { clockIcon, pipelineIcon, gridIcon } from './icons';
+import { clockIcon, pipelineIcon, gridIcon, cpuIcon } from './icons';
 
-const { Text } = Typography;
 
 const TITLE_CLASS = 'amphi-Console-title';
 const PANEL_CLASS = 'amphi-Console';
@@ -22,12 +26,18 @@ const SINGLE_COLUMN_CLASS = 'amphi-Console-single-column'; // New class for sing
 export class PipelineConsolePanel
   extends Widget
   implements IPipelineConsole {
+  private _app: JupyterFrontEnd; // Store the app object
+  private _commands: CommandRegistry;
+  private _context: DocumentRegistry.Context;
   private _source: IPipelineConsole.ILogging | null = null;
   private _console: HTMLTableElement;
   private _title: HTMLElement;
 
-  constructor() {
+  constructor(app: JupyterFrontEnd, commands: CommandRegistry, context: DocumentRegistry.Context) {
     super();
+    this._app = app; // Assign the app object
+    this._commands = commands;
+    this._context = context;
     this.addClass(PANEL_CLASS);
     this._title = Private.createTitle();
     this._title.className = TITLE_CLASS;
@@ -67,7 +77,7 @@ export class PipelineConsolePanel
     super.dispose();
   }
 
-  onNewLog(date: string, pipelineName: string, level: string, content: any): void {
+  onNewLog(date: string, pipelineName: string, level: string, content: any, metadata: any): void {
     if (!this.isAttached) {
       return;
     }
@@ -90,7 +100,10 @@ export class PipelineConsolePanel
     let dateTag;
     let pipelineNameTag = <Tag bordered={false} icon={<pipelineIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{pipelineName}</Tag>;
     let dataframeSizeTag = null;
+    let nodeIdTag = null;
+    let runtimeTag = null;
     let contentComponent;
+    let viewData = null;
 
     switch (level) {
       case "info":
@@ -118,8 +131,22 @@ export class PipelineConsolePanel
         break;
         case "data":
           dateTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size"/>} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{date}</Tag>;
+          
+          nodeIdTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size"/>} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{metadata.nodeId}</Tag>;
+          runtimeTag = <Tag bordered={false} icon={<cpuIcon.react className="anticon amphi-Console-icon-size"/>} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{metadata.runtime}</Tag>;
+          viewData = (
+            <Tag
+              bordered={false}
+              onClick={() => this._commands.execute('pipeline-editor-component:view-data', { nodeId: metadata.nodeId, context: this._context as any })} // Use the command here
+              icon={<clockIcon.react className="anticon amphi-Console-icon-size" />}
+              color="#44776D"
+              style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}
+            >
+              View data
+            </Tag>
+          );
+          
           const parser = new DOMParser();
-    
           const doc = parser.parseFromString(content, 'text/html');
           const firstDiv = doc.querySelector('div');
           if (firstDiv && firstDiv.id === 'documents') {
@@ -153,10 +180,16 @@ export class PipelineConsolePanel
     ReactDOM.render(
       <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
         {/* Tags on the same line */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0px', marginBottom: '2px' }}>
-          {dateTag}
-          {pipelineNameTag}
-          {dataframeSizeTag}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0px', marginBottom: '2px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            {dateTag}
+            {pipelineNameTag}
+            {dataframeSizeTag}
+            {runtimeTag}
+          </div>
+          {/* Aligned to the right */}
+          <div>
+          </div>
         </div>
         {/* Content below the tags */}
         <div>

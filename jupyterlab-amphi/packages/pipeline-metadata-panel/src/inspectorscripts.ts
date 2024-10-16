@@ -248,7 +248,6 @@ def _amphi_metadatapanel_default(o):
     if isinstance(o, __np.number): return int(o)  
     raise TypeError
   
-  
 def _amphi_metadatapanel_deletevariable(x):
     exec("del %s" % x, globals())
 
@@ -259,11 +258,18 @@ def _amphi_metadatapanel_deleteallvariables():
         if not key.startswith('_') and not hasattr(__builtins__, key) and not key in ['exit', 'quit', 'get_ipython', 'In', 'Out'] and not isinstance(value, (type(sys), types.ModuleType)) and camel_case_pattern.match(key):
             exec("del %s" % key, globals())
 
-def __amphi_display_pandas_dataframe(df):
+def __amphi_display_pandas_dataframe(df, dfName=None, nodeId=None, runtime="local (pandas)"):
     df_with_types = df.copy()
     df_with_types.columns = [f"{col} ({df[col].dtype})" for col in df.columns]
+
+    # Use the parameters to define metadata
     metadata = {}
-    metadata['runtime'] = "local (pandas)"
+    metadata['runtime'] = runtime
+    if nodeId:
+        metadata['nodeId'] = nodeId
+    if dfName:
+        metadata['dfName'] = dfName
+
     display(df_with_types, metadata=metadata)
 
 def _amphi_display_documents_as_html(documents):

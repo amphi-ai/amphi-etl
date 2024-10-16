@@ -9,7 +9,7 @@ import pipelineBrandIconSvgStr from '../style/icons/pipeline-brand-16.svg';
 import componentIconSvgStr from '../style/icons/node-24.svg';
 import alignIconSvgStr from '../style/icons/align.svg';
 import exportIconSvgStr from '../style/icons/export-svg.svg';
-
+import gridAltIconSvgStr from '../style/icons/grid-alt-24.svg';
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -60,6 +60,12 @@ export const exportIcon = new LabIcon({
   name: 'amphi:export-svg-icon',
   svgstr: exportIconSvgStr
 });
+
+export const gridAltIcon = new LabIcon({
+  name: 'amphi:grid-alt-icon',
+  svgstr: gridAltIconSvgStr
+});
+
 
 
 
