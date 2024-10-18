@@ -18,6 +18,7 @@ interface NodeObject {
   functions: string[];
   lastUpdated: number;
   lastExecuted: number;
+  runtime: string;
 }
 
 export class CodeGenerator {
@@ -82,6 +83,7 @@ export class CodeGenerator {
 
         // Handle target node
         if (nodeObject.id === targetNodeId) {
+          console.log("nodeObject %o", nodeObject)
           let displayCode = '';
           if (nodeObject.type.includes('processor') || nodeObject.type.includes('input')) {
             if (nodeObject.type.includes('documents')) {
@@ -101,7 +103,7 @@ export class CodeGenerator {
                 executedNodes.clear();
                 executedNodes.add(nodeObject.id);
               }
-              displayCode = `\n__amphi_display_pandas_dataframe(${nodeObject.outputName}, dfName="${nodeObject.outputName}", nodeId="${targetNodeId}")`;
+              displayCode = `\n__amphi_display_pandas_dataframe(${nodeObject.outputName}, dfName="${nodeObject.outputName}", nodeId="${targetNodeId}"${nodeObject.runtime !== "local" ? `, runtime="${nodeObject.runtime === "snowflake" ? "Snowflake (Snowpark pandas API)" : nodeObject.runtime}"` : ''})`;
             }
 
             // Append display code to both codeList and the last element of incrementalCodeList
@@ -274,7 +276,8 @@ export class CodeGenerator {
           outputName,
           functions,
           lastUpdated: config.lastUpdated || 0,
-          lastExecuted: config.lastExecuted || 0
+          lastExecuted: config.lastExecuted || 0,
+          runtime: config.backend?.engine || "local"
         });
       } catch (error) {
         console.error(`Error processing node ${nodeId}:`, error);
