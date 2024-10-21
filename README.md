@@ -1,10 +1,14 @@
 <div align="center">
 
 <img height="60" src="https://amphi.ai/icons/amphi_logo_paths.svg">
+
 <p align="center">
-    <em>Low-code Python-Based ETL for data manipulation and transformation.</em>
+    <br/>
+    Visual Data Transformation based on Python
+    <br/><br/>
+   For data preparation, reporting and ETL.
 </p>
-<hr>
+<br/>
 
 <p align="center">
 <a href="https://github.com/amphi-ai/amphi-etl/stargazers" target="_blank">
@@ -18,7 +22,7 @@
 </a>
 </p>
 
-![Screenshot 2024-05-29 at 3 47 44 PM](https://github.com/amphi-ai/amphi-etl/assets/15718239/3f4793fe-776d-4c08-8fcc-7b8cf27eac1b)
+![amphi-github-banner](https://github.com/user-attachments/assets/e13ac7e9-4c6f-47f6-b48e-f62e098cef82)
 
 
 English · [Try the demo](https://demo.amphi.ai) · [Report Bug](https://github.com/amphi-ai/amphi-etl/issues) · [Request Feature](https://github.com/amphi-ai/amphi-etl/issues)
@@ -43,21 +47,26 @@ English · [Try the demo](https://demo.amphi.ai) · [Report Bug](https://github.
 
 ## 📦 Installation
 
-To install `amphi-etl`, run the following command:
+Amphi is available as both a standalone application or as a JupyterLab extension.
 
-```bash
-pip install amphi-etl
-```
+
+| Amphi ETL (standalone) | Amphi for JupyterLab (extension) |
+|------------------------|----------------------|
+| ![amphi-etl-home-page](https://github.com/user-attachments/assets/3a37e271-7c8d-495a-9caf-2087804305ef) | ![amphi-for-jupyterlab-homepage2](https://github.com/user-attachments/assets/52abe431-e4c3-4cfc-8ed1-71ab24eaabdf) |
+| ```pip install amphi-etl``` | ```pip install jupyterlab-amphi``` |
+| ```pip install --upgrade amphi-etl``` | ```pip install --upgrade jupyterlab-amphi``` |
+
+<br/>
 
 > \[!NOTE]
 >
-> If you prefer to install Amphi's **Jupyterlab extension**, use `pip install jupyterlab-amphi` in your environment. More information [here](./jupyterlab-amphi/).
+> If you prefer to install Amphi's **Jupyterlab extension** through the extension manager, make sure to install `jupyerlab-amphi` package
 
 <br/>
 
 ## 🔨 Usage
 
-To start Amphi, simply run:
+To start Amphi ETL (standalone), simply run:
 
 ```bash
 amphi start
@@ -84,21 +93,17 @@ pip install --upgrade amphi-etl
 
 > \[!NOTE]
 >
-> Amphi focuses on structured and unstructured data manipulation for data and AI pipelines. It aims to empower data scientists and data engineers to easily develop pipelines with an intuitive low-code interface while generating Python code you can deploy anywhere.
+> Amphi focuses on data transformation for data preparation, reporting and ETL. It aims to empower data analysts, scientists and data engineers to easily develop pipelines with an intuitive low-code interface while generating Python code you can deploy anywhere.
 
-![amphi-screenshot-github](https://github.com/amphi-ai/amphi-etl/assets/15718239/de1ccaa5-35ea-40e4-a464-2e498946c43a)
+**Data Transformation solution for the AI age:**
 
-**Modern ETL for the AI age:**
-
-- 🧑‍💻 **Low-code**: Accelerate data and AI pipeline development and reduce maintenance time.
-- 🐍 **Python-code Generation**: Generate native Python code leveraging common libraries such as [pandas](https://github.com/pandas-dev/pandas), [DuckDB](https://github.com/duckdb/duckdb) and [LangChain](https://github.com/langchain-ai/langchain) that you can run anywhere.
+- 🧑‍💻 **Visual Interface / Low-code**: Accelerate data pipeline development and reduce maintenance time.
+- 🐍 **Python-code Generation**: Generate native Python code leveraging common libraries such as [pandas](https://github.com/pandas-dev/pandas), [DuckDB](https://github.com/duckdb/duckdb) that you can run anywhere.
 - 🔒 **Private and Secure**: Self-host Amphi on your laptop or in the cloud for complete privacy and security over your data.
 
-**Structured & Unstructured**
 
-- 🔢 **Structured** - Import data from various sources, including CSV and Parquet files, as well as databases. Transform structured data using aggregation, filters, joins, SQL queries, and more. Export the transformed data into common files or databases.
-- 📝 **Unstructured** - Extract data from PDFs, Word documents, and websites (HTML). Perform parsing, chunking and embedding processing. Load the processed data into vector stores such as Pinecone and ChromaDB.
-- 🔁 **Convert** - Easily convert structured data into unstructured document for vector stores and vice versa for RAG pipelines.
+![generate-python-code-amphi](https://github.com/user-attachments/assets/67410947-caea-45b4-a8fc-4ceb7bb3dbce)
+
 
 <br/>
 
