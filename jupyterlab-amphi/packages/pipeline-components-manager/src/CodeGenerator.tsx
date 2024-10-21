@@ -218,7 +218,12 @@ export class CodeGenerator {
       let inputName = '';
       let outputName = '';
       let code = '';
-
+      if (config.customTitle) {
+          const generatedCode = component.generateComponentCode({ config });
+          const needsNewLine = !generatedCode.startsWith('\n');
+          code += `\n# ${config.customTitle}${needsNewLine ? '\n' : ''}`;
+      }
+      
       try {
         switch (componentType) {
           case 'pandas_df_processor':
@@ -228,7 +233,7 @@ export class CodeGenerator {
             inputName = getInputName(previousNodeId, componentType);
             outputName = getOutputName(node, componentId, variablesAutoNaming)
             nodeOutputs.set(nodeId, outputName);
-            code = component.generateComponentCode({ config, inputName, outputName });
+            code += component.generateComponentCode({ config, inputName, outputName });
             break;
           }
           case 'pandas_df_double_processor': {
@@ -237,7 +242,7 @@ export class CodeGenerator {
             const inputName2 = getInputName(input2Id, componentType);
             outputName = getOutputName(node, componentId, variablesAutoNaming)
             nodeOutputs.set(nodeId, outputName);
-            code = component.generateComponentCode({ config, inputName1, inputName2, outputName });
+            code += component.generateComponentCode({ config, inputName1, inputName2, outputName });
             break;
           }
           case 'pandas_df_multi_processor': {
@@ -245,21 +250,21 @@ export class CodeGenerator {
             const inputNames = inputIds.map(id => getInputName(id, componentType));
             outputName = getOutputName(node, componentId, variablesAutoNaming)
             nodeOutputs.set(nodeId, outputName);
-            code = component.generateComponentCode({ config, inputNames, outputName });
+            code += component.generateComponentCode({ config, inputNames, outputName });
             break;
           }
           case 'pandas_df_input':
           case 'documents_input': {
             outputName = getOutputName(node, componentId, variablesAutoNaming)
             nodeOutputs.set(nodeId, outputName);
-            code = component.generateComponentCode({ config, outputName });
+            code += component.generateComponentCode({ config, outputName });
             break;
           }
           case 'pandas_df_output':
           case 'documents_output': {
             const previousNodeId = PipelineService.findPreviousNodeId(flow, nodeId);
             inputName = getInputName(previousNodeId, componentType);
-            code = component.generateComponentCode({ config, inputName });
+            code += component.generateComponentCode({ config, inputName });
             break;
           }
           default:
@@ -279,6 +284,7 @@ export class CodeGenerator {
           lastExecuted: config.lastExecuted || 0,
           runtime: config.backend?.engine || "local"
         });
+        
       } catch (error) {
         console.error(`Error processing node ${nodeId}:`, error);
         throw error; // Stop and throw error...
