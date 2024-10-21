@@ -17,6 +17,7 @@ export interface IBrowseFileDialogOptions {
   acceptFileOnDblClick?: boolean;
   rootPath?: string;
   startPath?: string;
+  extensions?: string[];
 }
 
 interface IBrowseFileBreadCrumbsOptions extends BreadCrumbs.IOptions {
@@ -89,6 +90,7 @@ class BrowseFileDialog extends Widget
 
     this.directoryListing = new DirListing({
       model: this.model
+      
     });
 
     this.acceptFileOnDblClick = props.acceptFileOnDblClick;
@@ -109,7 +111,29 @@ class BrowseFileDialog extends Widget
   }
 
   static async init(options: any): Promise<BrowseFileDialog> {
-    const browseFileDialog = new BrowseFileDialog(options);
+
+    const filterFunction = options.extensions && options.extensions.length > 0
+    ? (model: any): boolean => {
+        // Always include directories
+        if (model.type === 'directory') {
+          return true;
+        }
+        // Check if the file extension matches any of the specified extensions
+        const fileExtension = `.${model.name.split('.').pop().toLowerCase()}`;
+        return options.extensions.includes(fileExtension);
+      }
+    : options.filter || (() => true); // Default filter that includes everything
+
+    const browseFileDialog = new BrowseFileDialog({
+      manager: options.manager,
+      filter: filterFunction,
+      multiselect: options.multiselect,
+      includeDir: options.includeDir,
+      rootPath: options.rootPath,
+      startPath: options.startPath,
+      acceptFileOnDblClick: options.acceptFileOnDblClick,
+    });
+
     if (options.startPath) {
       if (
         !options.rootPath ||

@@ -81,6 +81,17 @@ Editor components styles
   transition: box-shadow 0.2s;
 }
 
+.component::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px; /* Thickness of the blue border */
+  background-color: #778899; /* Blue top border */
+  border-top-left-radius: 3px; /* Match border radius */
+  border-top-right-radius: 3px; /* Match border radius */
+}
 
 .component .handle-right {
   position: absolute;

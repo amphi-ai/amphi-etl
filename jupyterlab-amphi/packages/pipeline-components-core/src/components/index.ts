@@ -44,6 +44,8 @@ export { GenerateIDColumn } from './transforms/GenerateIDColumn';
 export { Pivot } from './transforms/Pivot';
 export { FormulaRow } from './transforms/FormulaRow';
 export { DateTimeConverter } from './transforms/DateTimeConverter';
+export { Summary } from './transforms/Summary';
+
 
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';

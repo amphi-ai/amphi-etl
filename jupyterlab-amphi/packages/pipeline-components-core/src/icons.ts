@@ -51,6 +51,7 @@ import xIconSvgStr from '../style/icons/x-16.svg';
 import calendarSvgStr from '../style/icons/calendar-24.svg';
 import pivotSvgStr from '../style/icons/corner-up-right-24.svg';
 import transposeSvgStr from '../style/icons/corner-right-down-24.svg';
+import eyeSvgStr from '../style/icons/eye-24.svg';
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -305,4 +306,9 @@ export const xIcon = new LabIcon({
 export const calendarIcon = new LabIcon({
   name: 'amphi:calendar-icon',
   svgstr: calendarSvgStr
+});
+
+export const eyeIcon = new LabIcon({
+  name: 'amphi:eye-icon',
+  svgstr: eyeSvgStr
 });

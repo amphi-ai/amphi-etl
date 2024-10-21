@@ -81,7 +81,8 @@ export class ExcelFileOutput extends BaseCoreComponent {
           id: "csvOptions.storage_options",
           condition: { fileLocation: ["s3"] },
           advanced: true
-        }
+        },
+        
       ],
     };
     const description = "Use Excel File Output to write or append data to an Excel file locally or remotely (S3)."

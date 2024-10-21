@@ -101,47 +101,106 @@ export class RequestService {
 
   };
 
-  static retrieveTableList(
-    event: React.MouseEvent<HTMLElement>,
-    schemaName: string,
-    query: string | undefined,
+  static executePythonCode(
+    code: string,
     context: any,
-    componentService: any,
-    setList: any,
-    setLoadings: any,
-    nodeId: any,
+    setItems: any,
+    setLoading: any
   ): any {
-    setLoadings(true);
+    setLoading(true);
 
-    // Escape and replace schema in the query
-    let escapedQuery = query.replace(/"/g, '\\"');
-    escapedQuery = escapedQuery.replace(/{{schema}}/g, schemaName);
+    // Execute the provided Python code
+    const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
 
-    // Get environment and connection code
-    const envVariableCode = CodeGenerator.getEnvironmentVariableCode(context.model.toString(), componentService);
-    const connectionCode = CodeGenerator.getConnectionCode(context.model.toString(), componentService);
+    future.onIOPub = msg => {
+      if (msg.header.msg_type === 'stream') {
+        // Handle standard output from print statements
+        const streamMsg = msg as KernelMessage.IStreamMsg;
+        const output = streamMsg.content.text;
+        // Assume the output is a comma-separated list
+        const itemsArray = output.split(',').map(item => item.trim());
+        const newItems = itemsArray.map((item: string) => ({
+          value: item,
+          label: item,
+          type: 'python',
+          named: false,
+        }));
 
-    // Get component and data for the node
-    const { component, data } = CodeGenerator.getComponentAndDataForNode(nodeId, componentService, context.model.toString());
+        setItems(newItems);
+        setLoading(false);
+      } else if (msg.header.msg_type === 'execute_result' || msg.header.msg_type === 'display_data') {
+        // Handle output from the last expression in the code cell
+        const dataMsg = msg as KernelMessage.IExecuteResultMsg;
+        const data = dataMsg.content.data['text/plain'] as string;
+        // Clean the data string and parse it
+        const cleanedData = data.replace(/['"\[\]]/g, '');
+        const itemsArray = cleanedData.split(',').map(item => item.trim());
+        const newItems = itemsArray.map((item: string) => ({
+          value: item,
+          label: item,
+          type: 'python',
+          named: false,
+        }));
 
-    if (!component) {
-      console.error("Component or data not found.");
-      setLoadings(false);
-      return;
-    }
+        setItems(newItems);
+        setLoading(false);
+      } else if (msg.header.msg_type === 'error') {
+        // Handle execution errors
+        setLoading(false);
+        const errorMsg = msg as KernelMessage.IErrorMsg;
+        const errorOutput = errorMsg.content;
+        console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
+      }
+    };
 
-    // Get the dependencies and imports from the component
-    const dependencies = component.provideDependencies(data);
-    const imports = component.provideImports(data);
+    future.onReply = reply => {
+      if (reply.content.status !== 'ok') {
+        setLoading(false);
+      }
+    };
+  }
 
-    // Generate the dependencies string
-    const dependencyString = dependencies.join(' ');
+  static retrieveTableList(
+  event: React.MouseEvent<HTMLElement>,
+  schemaName: string,
+  query: string | undefined,
+  context: any,
+  componentService: any,
+  setList: any,
+  setLoadings: any,
+  nodeId: any,
+): any {
+  setLoadings(true);
 
-    // Generate the import statements string (one per line)
-    const importStatements = imports.map((imp: string) => `${imp}`).join('\n');
+  // Escape and replace schema in the query
+  let escapedQuery = query.replace(/"/g, '\\"');
+  escapedQuery = escapedQuery.replace(/{{schema}}/g, schemaName);
 
-    // Build the Python code string
-    let code = `
+  // Get environment and connection code
+  const envVariableCode = CodeGenerator.getEnvironmentVariableCode(context.model.toString(), componentService);
+  const connectionCode = CodeGenerator.getConnectionCode(context.model.toString(), componentService);
+
+  // Get component and data for the node
+  const { component, data } = CodeGenerator.getComponentAndDataForNode(nodeId, componentService, context.model.toString());
+
+  if (!component) {
+    console.error("Component or data not found.");
+    setLoadings(false);
+    return;
+  }
+
+  // Get the dependencies and imports from the component
+  const dependencies = component.provideDependencies(data);
+  const imports = component.provideImports(data);
+
+  // Generate the dependencies string
+  const dependencyString = dependencies.join(' ');
+
+  // Generate the import statements string (one per line)
+  const importStatements = imports.map((imp: string) => `${imp}`).join('\n');
+
+  // Build the Python code string
+  let code = `
 !pip install --quiet ${dependencyString} --disable-pip-version-check
 ${importStatements}
 ${envVariableCode}
@@ -158,115 +217,115 @@ formatted_output = ", ".join(tables.iloc[:, 0].tolist())
 print(formatted_output)
 `;
 
-    // Format any remaining variables in the code
-    code = CodeGenerator.formatVariables(code);
+  // Format any remaining variables in the code
+  code = CodeGenerator.formatVariables(code);
 
-    const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
+  const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
 
-    future.onReply = reply => {
-      if (reply.content.status == "ok") {
-      } else if (reply.content.status == "error") {
-        setLoadings(false)
-      } else if (reply.content.status == "abort") {
-        setLoadings(false)
-      } else {
-        setLoadings(false)
-      }
-    };
-
-    future.onIOPub = msg => {
-      if (msg.header.msg_type === 'stream') {
-        const streamMsg = msg as KernelMessage.IStreamMsg;
-
-        // Check if the stream message is from 'stdout'
-        if (streamMsg.content.name === 'stdout') {
-          const output = streamMsg.content.text;
-
-          const tables = output.split(', ');
-          const newItems = tables.map(tableName => {
-            const trimmedTableName = tableName.trim(); // Trim leading/trailing spaces
-            return {
-              input: {},
-              value: trimmedTableName,
-              key: trimmedTableName,
-              label: trimmedTableName,
-              type: 'table'
-            };
-          });
-
-          setList((items) => {
-            const existingKeys = new Set(items.map((item) => item.key));
-            const uniqueItems = newItems.filter(newItem => !existingKeys.has(newItem.key));
-            return [...items, ...uniqueItems];
-          });
-
-          setLoadings(false);
-        }
-      } else if (msg.header.msg_type === 'error') {
-        setLoadings(false);
-        const errorMsg = msg as KernelMessage.IErrorMsg;
-        const errorOutput = errorMsg.content;
-        console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
-      }
-    };
+  future.onReply = reply => {
+    if (reply.content.status == "ok") {
+    } else if (reply.content.status == "error") {
+      setLoadings(false)
+    } else if (reply.content.status == "abort") {
+      setLoadings(false)
+    } else {
+      setLoadings(false)
+    }
   };
+
+  future.onIOPub = msg => {
+    if (msg.header.msg_type === 'stream') {
+      const streamMsg = msg as KernelMessage.IStreamMsg;
+
+      // Check if the stream message is from 'stdout'
+      if (streamMsg.content.name === 'stdout') {
+        const output = streamMsg.content.text;
+
+        const tables = output.split(', ');
+        const newItems = tables.map(tableName => {
+          const trimmedTableName = tableName.trim(); // Trim leading/trailing spaces
+          return {
+            input: {},
+            value: trimmedTableName,
+            key: trimmedTableName,
+            label: trimmedTableName,
+            type: 'table'
+          };
+        });
+
+        setList((items) => {
+          const existingKeys = new Set(items.map((item) => item.key));
+          const uniqueItems = newItems.filter(newItem => !existingKeys.has(newItem.key));
+          return [...items, ...uniqueItems];
+        });
+
+        setLoadings(false);
+      }
+    } else if (msg.header.msg_type === 'error') {
+      setLoadings(false);
+      const errorMsg = msg as KernelMessage.IErrorMsg;
+      const errorOutput = errorMsg.content;
+      console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
+    }
+  };
+};
 
 
   static retrieveTableColumns(
-    event: React.MouseEvent<HTMLElement>,
-    schemaName: string,
-    tableName: string,
-    query: string | undefined,
-    pythonExtraction: string,
-    context: any,
-    componentService: any,
-    setDataSource: any,
-    setLoadings: any,
-    nodeId: any,
-  ): any {
-    setLoadings(true);
+  event: React.MouseEvent<HTMLElement>,
+  schemaName: string,
+  tableName: string,
+  query: string | undefined,
+  pythonExtraction: string,
+  context: any,
+  componentService: any,
+  setDataSource: any,
+  setLoadings: any,
+  nodeId: any,
+): any {
+  setLoadings(true);
 
-    // Escape and replace schema and table in the query
-    let escapedQuery = query.replace(/"/g, '\\"');
-    escapedQuery = escapedQuery
-      .replace(/{{schema}}/g, schemaName)
-      .replace(/{{table}}/g, tableName);
+  // Escape and replace schema and table in the query
+  let escapedQuery = query.replace(/"/g, '\\"');
+  escapedQuery = escapedQuery
+    .replace(/{{schema}}/g, schemaName)
+    .replace(/{{table}}/g, tableName);
 
-    // Get environment and connection code
-    const envVariableCode = CodeGenerator.getEnvironmentVariableCode(
-      context.model.toString(),
-      componentService
-    );
-    const connectionCode = CodeGenerator.getConnectionCode(
-      context.model.toString(),
-      componentService
-    );
+  // Get environment and connection code
+  const envVariableCode = CodeGenerator.getEnvironmentVariableCode(
+    context.model.toString(),
+    componentService
+  );
+  const connectionCode = CodeGenerator.getConnectionCode(
+    context.model.toString(),
+    componentService
+  );
 
-    // Get the component and data for the node
-    const { component, data } = CodeGenerator.getComponentAndDataForNode(
-      nodeId,
-      componentService,
-      context.model.toString()
-    );
+  // Get the component and data for the node
+  const { component, data } = CodeGenerator.getComponentAndDataForNode(
+    nodeId,
+    componentService,
+    context.model.toString()
+  );
 
-    if (!component) {
-      console.error('Component or data not found.');
-      setLoadings(false);
-      return;
-    }
+  if (!component) {
+    console.error('Component or data not found.');
+    setLoadings(false);
+    return;
+  }
 
-    // Get the dependencies and imports from the component
-    const dependencies = component.provideDependencies(data);
-    const imports = component.provideImports(data);
+  // Get the dependencies and imports from the component
+  const dependencies = component.provideDependencies(data);
+  const imports = component.provideImports(data);
 
-    // Generate the dependencies string
-    const dependencyString = dependencies.join(' ');
+  // Generate the dependencies string
+  const dependencyString = dependencies.join(' ');
 
-    // Generate the import statements string (one per line)
-    const importStatements = imports.map((imp: string) => `${imp}`).join('\n');
+  // Generate the import statements string (one per line)
+  const importStatements = imports.map((imp: string) => `${imp}`).join('\n');
 
-    // Build the Python code string
-    let code = `
+  // Build the Python code string
+  let code = `
 !pip install --quiet ${dependencyString} --disable-pip-version-check
 ${importStatements}
 ${envVariableCode}
@@ -282,76 +341,76 @@ ${pythonExtraction}
 `;
 
 
-    console.log("CODE %o", code)
+  // console.log("CODE %o", code)
 
-    // Format any remaining variables in the code
-    code = CodeGenerator.formatVariables(code);
+  // Format any remaining variables in the code
+  code = CodeGenerator.formatVariables(code);
 
-    const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
+  const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
 
-    future.onReply = (reply) => {
-      if (reply.content.status == 'ok') {
-        // Execution was successful
-      } else {
-        setLoadings(false);
-      }
-    };
+  future.onReply = (reply) => {
+    if (reply.content.status == 'ok') {
+      // Execution was successful
+    } else {
+      setLoadings(false);
+    }
+  };
 
-    future.onIOPub = (msg) => {
-      if (msg.header.msg_type === 'stream') {
-        const streamMsg = msg as KernelMessage.IStreamMsg;
+  future.onIOPub = (msg) => {
+    if (msg.header.msg_type === 'stream') {
+      const streamMsg = msg as KernelMessage.IStreamMsg;
 
-        // Check if the stream message is from 'stdout'
-        if (streamMsg.content.name === 'stdout') {
-          const output = streamMsg.content.text;
+      // Check if the stream message is from 'stdout'
+      if (streamMsg.content.name === 'stdout') {
+        const output = streamMsg.content.text;
 
-          const regex = /([^\s,]+)\s+\(((?:[^()]+|\([^)]*\))*)\)/g;
-          const newItems = [];
+        const regex = /([^\s,]+)\s+\(((?:[^()]+|\([^)]*\))*)\)/g;
+        const newItems = [];
 
-          let match;
-          while ((match = regex.exec(output)) !== null) {
-            const [_, name, type] = match;
-            newItems.push({
-              input: {},
-              value: name,
-              key: name,
-              type: type.toUpperCase(),
-            });
-          }
-
-          setDataSource((items) => {
-            // Create a set of existing item keys
-            const existingKeys = new Set(items.map((item) => item.key));
-
-            // Filter newItems to ensure unique keys
-            const uniqueItems = newItems.filter(
-              (newItem) => !existingKeys.has(newItem.key)
-            );
-
-            return [...items, ...uniqueItems];
+        let match;
+        while ((match = regex.exec(output)) !== null) {
+          const [_, name, type] = match;
+          newItems.push({
+            input: {},
+            value: name,
+            key: name,
+            type: type.toUpperCase(),
           });
-
-          setLoadings(false);
         }
-      } else if (msg.header.msg_type === 'error') {
+
+        setDataSource((items) => {
+          // Create a set of existing item keys
+          const existingKeys = new Set(items.map((item) => item.key));
+
+          // Filter newItems to ensure unique keys
+          const uniqueItems = newItems.filter(
+            (newItem) => !existingKeys.has(newItem.key)
+          );
+
+          return [...items, ...uniqueItems];
+        });
+
         setLoadings(false);
-        const errorMsg = msg as KernelMessage.IErrorMsg;
-        const errorOutput = errorMsg.content;
-        console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
       }
-    };
-  }
+    } else if (msg.header.msg_type === 'error') {
+      setLoadings(false);
+      const errorMsg = msg as KernelMessage.IErrorMsg;
+      const errorOutput = errorMsg.content;
+      console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
+    }
+  };
+}
 
 
   static retrieveEnvVariables(
-    context: any,
-    setDataSource: any,
-    setLoadings: any,
-    nodeId: any,
-  ): any {
-    setLoadings(true);
+  context: any,
+  setDataSource: any,
+  setLoadings: any,
+  nodeId: any,
+): any {
+  setLoadings(true);
 
-    let code = `
+  let code = `
 !pip install --quiet python-dotenv --disable-pip-version-check
 from dotenv import dotenv_values
   
@@ -360,58 +419,58 @@ formatted_output = ", ".join([f"{k} ({v})" for k, v in env_vars.items()])
 print(formatted_output)
 `;
 
-    // Replace connection string
-    code = CodeGenerator.formatVariables(code);
+  // Replace connection string
+  code = CodeGenerator.formatVariables(code);
 
-    const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
+  const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
 
-    future.onReply = reply => {
-      if (reply.content.status == "ok") {
-      } else if (reply.content.status == "error") {
-        setLoadings(false)
-      } else if (reply.content.status == "abort") {
-        setLoadings(false)
-      } else {
-        setLoadings(false)
-      }
-    };
-
-    future.onIOPub = msg => {
-      if (msg.header.msg_type === 'stream') {
-        const streamMsg = msg as KernelMessage.IStreamMsg;
-        const output = streamMsg.content.text;
-
-        const regex = /([^\s,]+)\s+\(((?:[^()]+|\([^)]*\))*)\)/g;
-        const newItems = [];
-
-        let match;
-        while ((match = regex.exec(output)) !== null) {
-          const [_, name, value] = match;
-          newItems.push({
-            input: {},
-            value: name,
-            key: name,
-            type: value
-          });
-        }
-
-        setDataSource((items) => {
-          const existingKeys = new Set(items.map((item) => item.key));
-          const uniqueItems = newItems.filter(
-            (newItem) => !existingKeys.has(newItem.key)
-          );
-
-          return [...items, ...uniqueItems];
-        });
-
-        setLoadings(false)
-      } else if (msg.header.msg_type === 'error') {
-        setLoadings(false)
-        const errorMsg = msg as KernelMessage.IErrorMsg;
-        const errorOutput = errorMsg.content;
-        console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
-      }
-    };
+  future.onReply = reply => {
+    if (reply.content.status == "ok") {
+    } else if (reply.content.status == "error") {
+      setLoadings(false)
+    } else if (reply.content.status == "abort") {
+      setLoadings(false)
+    } else {
+      setLoadings(false)
+    }
   };
+
+  future.onIOPub = msg => {
+    if (msg.header.msg_type === 'stream') {
+      const streamMsg = msg as KernelMessage.IStreamMsg;
+      const output = streamMsg.content.text;
+
+      const regex = /([^\s,]+)\s+\(((?:[^()]+|\([^)]*\))*)\)/g;
+      const newItems = [];
+
+      let match;
+      while ((match = regex.exec(output)) !== null) {
+        const [_, name, value] = match;
+        newItems.push({
+          input: {},
+          value: name,
+          key: name,
+          type: value
+        });
+      }
+
+      setDataSource((items) => {
+        const existingKeys = new Set(items.map((item) => item.key));
+        const uniqueItems = newItems.filter(
+          (newItem) => !existingKeys.has(newItem.key)
+        );
+
+        return [...items, ...uniqueItems];
+      });
+
+      setLoadings(false)
+    } else if (msg.header.msg_type === 'error') {
+      setLoadings(false)
+      const errorMsg = msg as KernelMessage.IErrorMsg;
+      const errorOutput = errorMsg.content;
+      console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
+    }
+  };
+};
 
 }

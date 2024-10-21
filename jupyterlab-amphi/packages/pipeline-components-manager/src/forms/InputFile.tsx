@@ -54,9 +54,6 @@ export const InputFile = ({ field, value, handleChange, context, advanced, manag
       </AutoComplete>
       <Button type="primary" size={advanced ? "middle" : "small"} onClick={async () => {
         // TODO, there is something wrong here
-
-        console.log("PathExt.dirname(context.path) %o", PathExt.dirname(context.path))
-
         const res = await showBrowseFileDialog(
           manager,
           {
