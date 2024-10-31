@@ -84,4 +84,4 @@ export const SelectCustomizable: React.FC<SelectCustomizableProps> = ({
   );
 };
 
-export default SelectCustomizable;
+export default React.memo(SelectCustomizable);

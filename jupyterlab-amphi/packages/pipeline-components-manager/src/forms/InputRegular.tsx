@@ -61,4 +61,4 @@ export const InputRegular = ({ field, value, handleChange, context, advanced }) 
 
 }
 
-export default InputRegular;
+export default React.memo(InputRegular);

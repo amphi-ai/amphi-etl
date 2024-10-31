@@ -55,4 +55,4 @@ import { FieldDescriptor, Option } from '../configUtils';
     );
   };
 
-export default SelectTokenization;
+  export default React.memo(SelectTokenization);

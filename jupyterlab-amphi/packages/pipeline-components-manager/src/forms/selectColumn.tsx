@@ -133,4 +133,4 @@ export const SelectColumn: React.FC<SelectColumnsProps> = ({
   );
 };
 
-export default SelectColumn;
+export default React.memo(SelectColumn);

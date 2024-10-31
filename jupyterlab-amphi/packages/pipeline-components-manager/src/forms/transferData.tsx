@@ -298,4 +298,4 @@ export const TransferData: React.FC<TransferDataProps> = ({
   );
 };
 
-export default TransferData;
+export default React.memo(TransferData);

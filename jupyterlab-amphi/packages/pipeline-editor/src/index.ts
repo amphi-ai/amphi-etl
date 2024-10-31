@@ -127,7 +127,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
         `Settings extension: defaultEngineBackend is set to '${enableDebugMode}'`
       );
     }
-    
+
 
     Promise.all([app.restored, settings.load(EXTENSION_ID)])
       .then(([, settings]) => {
@@ -139,19 +139,20 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
 
         // Set up new widget Factory for .ampln files
         const pipelineEditorFactory = new PipelineEditorFactory({
+          app: app,
           name: PIPELINE_FACTORY,
           fileTypes: [PIPELINE],
           defaultFor: [PIPELINE],
           canStartKernel: true,
           preferKernel: true,
           shutdownOnClose: true,
-          shell: app.shell,
+          // shell: app.shell,
           toolbarRegistry: toolbarRegistry,
-          commands: app.commands,
+          // commands: app.commands,
           rendermime: rendermimeRegistry,
           browserFactory: browserFactory,
           defaultFileBrowser: defaultFileBrowser,
-          serviceManager: app.serviceManager,
+          // serviceManager: app.serviceManager,
           settings: settings,
           componentService: componentService
         });
@@ -322,42 +323,42 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
               } else {
                 RunService.executeCommand(commands, 'pipeline-console:open');
               }
-        
+
               const current = getCurrent(args);
               if (!current) {
                 return;
               }
-        
+
               if (!RunService.checkSessionAndKernel(Notification, current)) {
                 return;
               }
-        
+
               // Install dependencies if needed
               await current.context.sessionContext.ready; // Await the readiness
-        
+
               const code = args.code.toString();
               const packages = RunService.extractDependencies(code);
-        
+
               if (packages.length > 0 && packages[0] !== '') {
-                const pips_code = PipelineService.getInstallCommandsFromPackageNames(packages).join('\n');        
+                const pips_code = PipelineService.getInstallCommandsFromPackageNames(packages).join('\n');
                 const enableDebugMode = settings.get('enableDebugMode').composite as boolean;
                 if (enableDebugMode) {
                   console.log('Dependencies to be installed: %o', pips_code);
                 }
-        
+
                 await RunService.executeKernelCode(
                   current.context.sessionContext.session,
                   pips_code
                 );
               }
-        
+
               // Run pipeline code
               const pythonCodeWithSleep = `
 import time
 time.sleep(0.25)
 ${args.code}
 `;
-        
+
               const notificationOptions = {
                 pending: { message: 'Running...', options: { autoClose: false } },
                 success: {
@@ -383,14 +384,14 @@ ${args.code}
                   }
                 }
               };
-        
+
               await RunService.executeKernelCodeWithNotifications(
                 Notification,
                 current.context.sessionContext.session,
                 pythonCodeWithSleep,
                 notificationOptions
               );
-        
+
             } catch (error) {
               console.error('Error in runPipeline command:', error);
               throw error; // Propagate the error to allow .catch() to handle it
@@ -398,18 +399,18 @@ ${args.code}
           },
           isEnabled
         });
-        
+
 
         commands.addCommand(CommandIDs.runPipelineUntil, {
           label: 'Run pipeline until ...',
-        
+
           execute: async args => {
             try {
               const current = getCurrent(args);
               if (!current) {
                 throw new Error('No current context available.');
               }
-        
+
               const nodeId = args.nodeId.toString();
               const context = args.context;
               const codeList = CodeGenerator.generateCodeUntil(
@@ -421,12 +422,12 @@ ${args.code}
                 false
               );
               const code = codeList.join('\n');
-        
+
               await commands.execute('pipeline-editor:run-pipeline', { code });
-        
+
               // Handle successful pipeline run
               console.log('Pipeline executed successfully');
-        
+
             } catch (reason) {
               console.error(`An error occurred during pipeline execution: ${reason}`);
               throw reason;
@@ -436,23 +437,23 @@ ${args.code}
 
         commands.addCommand(CommandIDs.runIncrementalPipelineUntil, {
           label: 'Run incremental pipeline until ...',
-        
+
           execute: async args => {
-        
+
             const current = getCurrent(args);
             if (!current) {
               return;
             }
-        
+
             const nodeId = args.nodeId.toString();
             const context = args.context;
-        
+
             // Generate the incremental list of code to run
-            const incrementalCodeList  = CodeGenerator.generateCodeUntil(
-              current.context.model.toString(), 
-              commands, 
-              componentService, 
-              nodeId, 
+            const incrementalCodeList = CodeGenerator.generateCodeUntil(
+              current.context.model.toString(),
+              commands,
+              componentService,
+              nodeId,
               true,
               false
             );
@@ -461,20 +462,18 @@ ${args.code}
             const notificationOptions = {
               pending: { message: 'Running incremental code...', options: { autoClose: false } },
               success: { message: 'Code block executed successfully.', options: { autoClose: 3000 } },
-              error: { 
+              error: {
                 message: () => 'Execution failed. Stopping pipeline.',
-                options: { 
+                options: {
                   actions: [{
-                    label: 'Log Console', 
-                    callback: () => RunService.executeCommand(commands, 'pipeline-console:open') 
+                    label: 'Log Console',
+                    callback: () => RunService.executeCommand(commands, 'pipeline-console:open')
                   }],
-                  autoClose: 5000 
+                  autoClose: 5000
                 }
               }
             };
 
-            const flow = PipelineService.filterPipeline(current.context.context.model.toJSON());
-        
             // Iterate over each incremental code block and execute
             for (const codeBlock of incrementalCodeList) {
               const code = codeBlock.code;
@@ -591,6 +590,27 @@ ${code}
             if (!current) {
               return;
             }
+
+            const contextNode: HTMLElement | undefined = app.contextMenuHitTest(
+              node => !!node.dataset.id
+            );
+
+            if (contextNode) {
+              const nodeId = contextNode.dataset.id; // Extract the node ID
+              await viewData(nodeId, current.context, commands, app);
+            }
+
+            if (current.nodeId) {
+              await viewData(current.nodeId, current.context, commands, app);
+            }
+          },
+          label: 'Browse Data'
+        });
+
+
+        /*
+        commands.addCommand('pipeline-editor-component:override', {
+          execute: async args => {
         
             const contextNode: HTMLElement | undefined = app.contextMenuHitTest(
               node => !!node.dataset.id
@@ -598,17 +618,24 @@ ${code}
         
             if (contextNode) {
               const nodeId = contextNode.dataset.id; // Extract the node ID
-              await viewData(nodeId, current.context, commands, app);
-            }
-
-            if(current.nodeId) {
-              await viewData(current.nodeId, current.context, commands, app);
+              const codeList = CodeGenerator.generateCodeUntil(
+                context.model.toString(),
+                commands,
+                componentService,
+                nodeId,
+                false,
+                false
+              );
+    
+              console.log("codeList: %o", codeList)
+              
             }
           },
-          label: 'Browse Data'
+          label: 'Override Code'
         });
+        */
 
-        commands.addCommand('pipeline-editor-component:lock-component', {
+        commands.addCommand('pipeline-editor-component:generate-ibis-code', {
           execute: async args => {
             const current = getCurrent(args);
             if (!current) {
@@ -621,30 +648,69 @@ ${code}
 
             if (contextNode) {
               const nodeId = contextNode.dataset.id; // Extract the node ID
+              console.log("nodeId %o", nodeId)
 
-              // Assuming PipelineService.getNodeById is available
-              const nodeJson = PipelineService.getNodeById(current.context.model.toString(), nodeId);
+              commands.execute('pipeline-editor:run-pipeline-until', { nodeId: nodeId, context: current.context }).then(result => {
 
-              // Extract data and type attributes
-              const { data, type } = nodeJson;
+                const flow = PipelineService.filterPipeline(current.context.model.toString());
 
+                const { nodesToTraverse, nodesMap } = CodeGenerator.computeNodesToTraverse(
+                  flow,
+                  nodeId,
+                  componentService
+                );
+
+                console.log("nodesMap %o", nodesMap)
+                console.log("nodesToTraverse %o", nodesToTraverse)
+
+
+                if (!nodesMap.has(nodeId)) {
+                  console.error(`Node with ID ${nodeId} not found in nodesMap`);
+                } else {
+                  const targetNode = nodesMap[nodeId];
+                  console.log("targetNode %o", targetNode);
+                  // const namedId = targetNode.data.namedId;
+                  // console.log("namedId %o", namedId)
+                }
+
+
+                /*
+                RunService.executeKernelCode(
+                  current.context.sessionContext.session,
+                  `print(sql_code := ${namedId}.compile())`
+                );
+                */
+
+              })
+                .catch(reason => {
+
+                  console.error(
+                    `Error with pipeline, nodes not updated.'.\n${reason}`
+                  );
+                });
             }
-          },
-          label: 'Lock component'
-        });
 
+
+          },
+          label: 'Generate SQL code'
+        });
 
         const contextMenuItems = [
           {
             command: 'pipeline-editor-component:save-as-file',
             selector: '.component',
-            rank: 3,
+            rank: 3
           },
           {
             command: 'pipeline-editor-component:view-data',
             selector: '.component',
-            rank: 4,
+            rank: 4
           },
+          {
+            command: 'pipeline-editor-component:generate-ibis-code',
+            selector: '.ibis',
+            rank: 7
+          }
         ];
 
         // Add each context menu item with the args function

@@ -2,7 +2,7 @@
 
 <img height="60" src="https://amphi.ai/icons/amphi_logo_paths.svg">
 <p align="center">
-    <em>Low-code Python-Based ETL for data manipulation and transformation.</em>
+    <em>Visual Data Transformation based on Python</em>
 </p>
 <hr>
 
@@ -43,7 +43,16 @@ English · [Try the demo](https://demo.amphi.ai) · [Report Bug](https://github.
 
 ## 📦 Installation
 
-To install `amphi-etl`, run the following command:
+Amphi is available as both a standalone applicatiion or as a JupyterLab extension.
+
+
+| Amphi ETL (standalone) | Amphi for JupyterLab (extension) |
+|------------------------|----------------------|
+| ![Standalone Screenshot](./path-to-standalone-screenshot.png) | ![JupyterLab Screenshot](./path-to-jupyterlab-screenshot.png) |
+| ```bash pip install amphi-etl``` | ```bash pip install jupyterlab-amphi``` |
+| ```bash pip install --upgrade amphi-etl``` | ```bash pip install --upgrade jupyterlab-amphi``` |
+
+<br/>
 
 ```bash
 pip install amphi-etl
@@ -84,21 +93,15 @@ pip install --upgrade amphi-etl
 
 > \[!NOTE]
 >
-> Amphi focuses on structured and unstructured data manipulation for data and AI pipelines. It aims to empower data scientists and data engineers to easily develop pipelines with an intuitive low-code interface while generating Python code you can deploy anywhere.
+> Amphi focuses on data transformation for data preparation, reporting and ETL. It aims to empower data analysts, scientists and data engineers to easily develop pipelines with an intuitive low-code interface while generating Python code you can deploy anywhere.
 
 ![amphi-screenshot-github](https://github.com/amphi-ai/amphi-etl/assets/15718239/de1ccaa5-35ea-40e4-a464-2e498946c43a)
 
 **Modern ETL for the AI age:**
 
-- 🧑‍💻 **Low-code**: Accelerate data and AI pipeline development and reduce maintenance time.
-- 🐍 **Python-code Generation**: Generate native Python code leveraging common libraries such as [pandas](https://github.com/pandas-dev/pandas), [DuckDB](https://github.com/duckdb/duckdb) and [LangChain](https://github.com/langchain-ai/langchain) that you can run anywhere.
+- 🧑‍💻 **Visual Interface / Low-code**: Accelerate data pipeline development and reduce maintenance time.
+- 🐍 **Python-code Generation**: Generate native Python code leveraging common libraries such as [pandas](https://github.com/pandas-dev/pandas), [DuckDB](https://github.com/duckdb/duckdb) that you can run anywhere.
 - 🔒 **Private and Secure**: Self-host Amphi on your laptop or in the cloud for complete privacy and security over your data.
-
-**Structured & Unstructured**
-
-- 🔢 **Structured** - Import data from various sources, including CSV and Parquet files, as well as databases. Transform structured data using aggregation, filters, joins, SQL queries, and more. Export the transformed data into common files or databases.
-- 📝 **Unstructured** - Extract data from PDFs, Word documents, and websites (HTML). Perform parsing, chunking and embedding processing. Load the processed data into vector stores such as Pinecone and ChromaDB.
-- 🔁 **Convert** - Easily convert structured data into unstructured document for vector stores and vice versa for RAG pipelines.
 
 <br/>
 

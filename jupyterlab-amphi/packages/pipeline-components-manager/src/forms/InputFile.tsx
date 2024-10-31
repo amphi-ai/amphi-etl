@@ -73,4 +73,4 @@ export const InputFile = ({ field, value, handleChange, context, advanced, manag
 
 }
 
-export default InputFile;
+export default React.memo(InputFile);

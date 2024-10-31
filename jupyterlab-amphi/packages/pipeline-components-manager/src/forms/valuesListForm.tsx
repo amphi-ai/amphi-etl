@@ -63,4 +63,4 @@ export const ValuesListForm: React.FC<ValueFormProps> = ({ field, handleChange, 
   );
 };
 
-export default ValuesListForm;
+export default React.memo(ValuesListForm);

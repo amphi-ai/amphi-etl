@@ -22,7 +22,7 @@ export class PipelineService {
 
     for (const node of flow.nodes) {
       const nodeType = componentService.getComponent(node.type)._type;
-      if (!targetMap.has(node.id) && nodeType === "pandas_df_input") {
+      if (!targetMap.has(node.id) && (nodeType === "pandas_df_input" || nodeType === "ibis_df_input")) {
         return node.id;
       }
     }
@@ -135,16 +135,30 @@ export class PipelineService {
     }).filter((pkgName, index, self) => pkgName && self.indexOf(pkgName) === index); // Removing empty strings, duplicates
   }
 
+  static findNextNodeIds(flow: Flow, nodeId: string): string[] {
+    return flow.edges
+      .filter(edge => edge.source === nodeId)
+      .map(edge => edge.target);
+  }
+
   // Function to generate pip install commands from a list of package names
   static getInstallCommandsFromPackageNames(packageNames: string[]): string[] {
     return packageNames
       .filter(pkgName => pkgName.trim() !== '')
-      .map(pkgName => `
+      .map(pkgName => {
+        if (pkgName.includes('[')) {
+          // Direct pip install for packages with extras (e.g., `ibis-framework[snowflake]`)
+          return `!pip install ${pkgName} -q -q`;
+        } else {
+          // Standard check for regular packages
+          return `
 try:
-    __import__('${pkgName}')
+    __import__("${pkgName}")
     print('${pkgName} is already installed')
 except ImportError:
-    !pip install ${pkgName} -q -q`);
+    !pip install ${pkgName} -q -q`;
+        }
+      });
   }
 
   static extractPythonImportPackages(code: string): string[] {
@@ -180,19 +194,19 @@ except ImportError:
   }
 
   static getComponentIdForFileExtension(
-    fileExtension: string, 
-    componentService: any, 
+    fileExtension: string,
+    componentService: any,
     defaultEngineBackend: string
   ): { id: string | null, default: any | null } {
     // Extract file extension from item.name
     if (!fileExtension) return { id: null, default: null }; // Return nulls if there is no file extension
-  
+
     // Retrieve all components
     const components = componentService.getComponents();
-  
+
     // List to store matching components
     const matchingComponents = [];
-  
+
     // Iterate through all components
     for (const component of components) {
       // Check if the component has the _fileDrop attribute and it contains the file extension
@@ -201,31 +215,31 @@ except ImportError:
         matchingComponents.push(component);
       }
     }
-  
+
     if (matchingComponents.length === 1) {
       const component = matchingComponents[0];
       return { id: component._id, default: component._default || null };
     }
-  
+
     // If multiple matching components are found, check for the one with backend.engine matching defaultEngineBackend
     for (const component of matchingComponents) {
-      console.log("Component._default?.backend?.engine: %o",  component._default?.backend?.engine);
-  
+      console.log("Component._default?.backend?.engine: %o", component._default?.backend?.engine);
+
       if (component._default?.backend?.engine === defaultEngineBackend) {
         return { id: component._id, default: component._default || null };
       }
     }
-  
+
     // If no match is found for defaultEngineBackend, return the first matching component
     if (matchingComponents.length > 0) {
       const component = matchingComponents[0];
       return { id: component._id, default: component._default || null };
     }
-  
+
     // Return nulls if no matching component is found
     return { id: null, default: null };
   }
-  
+
 
   static getLastUpdatedInPath(flow: Flow, targetId: string): string[] {
     const visited = new Set<string>();

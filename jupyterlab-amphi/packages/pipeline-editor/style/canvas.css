@@ -87,10 +87,10 @@ Editor components styles
   top: 0;
   left: 0;
   right: 0;
-  height: 4px; /* Thickness of the blue border */
-  background-color: #778899; /* Blue top border */
-  border-top-left-radius: 3px; /* Match border radius */
-  border-top-right-radius: 3px; /* Match border radius */
+  height: 4px; /* Thickness of the border */
+  background-color: var(--border-color, #778899); /* Default color */
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
 }
 
 .component .handle-right {
@@ -172,16 +172,32 @@ Editor components styles
   background-color: #F2F4F7;
 }
 
-.component--snowflake::before {
+.component--snowflake {
+  --border-color: #00ADEF;
+}
+
+.component--duckdb {
+  --border-color: #EDDF00;
+}
+
+.component--duckdb::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  height: 4px; /* Thickness of the blue border */
-  background-color: #00ADEF; /* Blue top border */
-  border-top-left-radius: 3px; /* Match border radius */
-  border-top-right-radius: 3px; /* Match border radius */
+  height: 4px; /* Total height for two half-height layers */
+  background: linear-gradient(
+    to bottom,
+    var(--border-color, #EDDF00) 50%, /* Top half color */
+    black 50% /* Bottom half color */
+  );
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.component--postgres {
+  --border-color: #336691;
 }
 
 

@@ -156,4 +156,4 @@ export const SelectFromSQLQuery: React.FC<SelectFromSQLQueryProps> = ({
   );
 };
 
-export default SelectFromSQLQuery;
+export default React.memo(SelectFromSQLQuery);

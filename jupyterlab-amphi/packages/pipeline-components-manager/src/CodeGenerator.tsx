@@ -103,7 +103,7 @@ export class CodeGenerator {
                 executedNodes.clear();
                 executedNodes.add(nodeObject.id);
               }
-              displayCode = `\n__amphi_display_pandas_dataframe(${nodeObject.outputName}, dfName="${nodeObject.outputName}", nodeId="${targetNodeId}"${nodeObject.runtime !== "local" ? `, runtime="${nodeObject.runtime === "snowflake" ? "Snowflake (Snowpark pandas API)" : nodeObject.runtime}"` : ''})`;
+              displayCode = `\n__amphi_display_dataframe(${nodeObject.outputName}, dfName="${nodeObject.outputName}", nodeId="${targetNodeId}"${nodeObject.runtime !== "local" ? `, runtime="${nodeObject.runtime === "snowflake" ? "Snowflake" : nodeObject.runtime}"` : ''})`;
             }
 
             // Append display code to both codeList and the last element of incrementalCodeList
@@ -219,15 +219,16 @@ export class CodeGenerator {
       let outputName = '';
       let code = '';
       if (config.customTitle) {
-          const generatedCode = component.generateComponentCode({ config });
-          const needsNewLine = !generatedCode.startsWith('\n');
-          code += `\n# ${config.customTitle}${needsNewLine ? '\n' : ''}`;
+        const generatedCode = component.generateComponentCode({ config });
+        const needsNewLine = !generatedCode.startsWith('\n');
+        code += `\n# ${config.customTitle}${needsNewLine ? '\n' : ''}`;
       }
-      
+
       try {
         switch (componentType) {
           case 'pandas_df_processor':
           case 'pandas_df_to_documents_processor':
+          case 'ibis_df_processor':
           case 'documents_processor': {
             const previousNodeId = PipelineService.findPreviousNodeId(flow, nodeId);
             inputName = getInputName(previousNodeId, componentType);
@@ -236,6 +237,7 @@ export class CodeGenerator {
             code += component.generateComponentCode({ config, inputName, outputName });
             break;
           }
+          case 'ibis_df_double_processor':
           case 'pandas_df_double_processor': {
             const [input1Id, input2Id] = PipelineService.findMultiplePreviousNodeIds(flow, nodeId);
             const inputName1 = getInputName(input1Id, componentType);
@@ -245,6 +247,7 @@ export class CodeGenerator {
             code += component.generateComponentCode({ config, inputName1, inputName2, outputName });
             break;
           }
+          case 'ibis_df_multi_processor':
           case 'pandas_df_multi_processor': {
             const inputIds = PipelineService.findMultiplePreviousNodeIds(flow, nodeId);
             const inputNames = inputIds.map(id => getInputName(id, componentType));
@@ -260,6 +263,44 @@ export class CodeGenerator {
             code += component.generateComponentCode({ config, outputName });
             break;
           }
+          case 'ibis_df_input': {
+            outputName = getOutputName(node, componentId, variablesAutoNaming)
+            nodeOutputs.set(nodeId, outputName);
+          
+            // Find the nodes that follow this input node
+            const nextNodeIds = PipelineService.findNextNodeIds(flow, nodeId);
+            let uniqueEngineName: string | undefined = undefined;
+          
+            for (const nextNodeId of nextNodeIds) {
+              const nextNode = nodesMap.get(nextNodeId);
+              if (nextNode) {
+                const nextComponent = componentService.getComponent(nextNode.type);
+                const nextComponentType = nextComponent._type;
+                if (nextComponentType === 'ibis_df_double_processor') {
+                  // Get previous nodes connected to the join node
+                  const previousNodeIds = PipelineService.findMultiplePreviousNodeIds(flow, nextNodeId);
+                  if (previousNodeIds.length > 1) {
+                    // Find the other input node ID (excluding current node)
+                    const otherNodeId = previousNodeIds.find(id => id !== nodeId);
+                    if (otherNodeId && nodeOutputs.has(otherNodeId)) {
+                      const otherOutputName = getInputName(otherNodeId, 'ibis_df_double_processor');
+                      uniqueEngineName = `${otherOutputName}_backend`;
+                      break; // Stop after finding the first matching join node
+                    }
+                  }
+                }
+              }
+            }
+          
+            // Generate code with or without uniqueEngineName
+            if (uniqueEngineName) {
+              code += component.generateComponentCode({ config, outputName, uniqueEngineName });
+            } else {
+              code += component.generateComponentCode({ config, outputName });
+            }
+            break;
+          }
+          case 'ibis_df_output':
           case 'pandas_df_output':
           case 'documents_output': {
             const previousNodeId = PipelineService.findPreviousNodeId(flow, nodeId);
@@ -284,7 +325,7 @@ export class CodeGenerator {
           lastExecuted: config.lastExecuted || 0,
           runtime: config.backend?.engine || "local"
         });
-        
+
       } catch (error) {
         console.error(`Error processing node ${nodeId}:`, error);
         throw error; // Stop and throw error...
@@ -625,6 +666,3 @@ export class CodeGenerator {
   }
 
 };
-
-
-

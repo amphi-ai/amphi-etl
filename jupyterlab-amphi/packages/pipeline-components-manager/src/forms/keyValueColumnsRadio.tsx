@@ -184,4 +184,4 @@ export const KeyValueColumnsRadio: React.FC<KeyValueFormProps> = ({ field, handl
   );
 };
 
-export default KeyValueColumnsRadio;
+export default React.memo(KeyValueColumnsRadio);

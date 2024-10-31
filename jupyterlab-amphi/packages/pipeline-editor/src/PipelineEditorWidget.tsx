@@ -1,4 +1,8 @@
-import { ILabShell } from '@jupyterlab/application';
+import {
+  ILabShell,
+  JupyterFrontEnd,
+  JupyterFrontEndPlugin
+} from '@jupyterlab/application';
 import { Dialog, IToolbarWidgetRegistry, ReactWidget, Toolbar, ToolbarButton, showDialog } from '@jupyterlab/apputils';
 import {
   ABCWidgetFactory,
@@ -17,7 +21,7 @@ import { useUndoRedo } from './Commands';
 import DownloadImageButton from './ExportToImage';
 import Sidebar from './Sidebar';
 
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useEffect, useCallback, useRef, useState, Profiler } from 'react';
 import ReactFlow, {
   Background,
   Controls,
@@ -65,6 +69,7 @@ export const FitViewOptions = {
  * Initialization: The class extends ReactWidget and initializes the pipeline editor widget. It sets up the initial properties and state for the widget.
  */
 export class PipelineEditorWidget extends ReactWidget {
+  app: JupyterFrontEnd;
   browserFactory: IFileBrowserFactory;
   defaultFileBrowser: IDefaultFileBrowser;
   shell: ILabShell;
@@ -78,6 +83,7 @@ export class PipelineEditorWidget extends ReactWidget {
   // Constructor
   constructor(options: any) {
     super();
+    this.app = options.app;
     this.browserFactory = options.browserFactory;
     this.defaultFileBrowser = options.defaultFileBrowser;
     this.shell = options.shell;
@@ -109,6 +115,7 @@ export class PipelineEditorWidget extends ReactWidget {
 
     return (
       <PipelineWrapper
+        app={this.app}
         context={this.context}
         browserFactory={this.browserFactory}
         defaultFileBrowser={this.defaultFileBrowser}
@@ -130,6 +137,7 @@ export class PipelineEditorWidget extends ReactWidget {
  * that the PipelineEditorWidget component should receive when it's instantiated or used within another component.
  */
 interface IProps {
+  app: JupyterFrontEnd;
   context: DocumentRegistry.Context;
   browserFactory: IFileBrowserFactory;
   defaultFileBrowser: IDefaultFileBrowser;
@@ -143,6 +151,7 @@ interface IProps {
 }
 
 const PipelineWrapper: React.FC<IProps> = ({
+  app,
   context,
   browserFactory,
   defaultFileBrowser,
@@ -198,8 +207,10 @@ const PipelineWrapper: React.FC<IProps> = ({
 
   function PipelineFlow(context) {
 
+    const model = context.context.model;
     const reactFlowWrapper = useRef(null);
     const [pipeline, setPipeline] = useState<any>(context.context.model.toJSON());
+
     const pipelineId = pipeline['id']
     const initialNodes = pipeline['pipelines'][0]['flow']['nodes'].map(node => ({
       ...node,
@@ -218,7 +229,7 @@ const PipelineWrapper: React.FC<IProps> = ({
     const { getViewport, setViewport } = useReactFlow();
     const store = useStoreApi();
 
-
+    
     // Copy paste
     // const { cut, copy, paste, bufferedNodes } = useCopyPaste();
 
@@ -310,6 +321,8 @@ const PipelineWrapper: React.FC<IProps> = ({
         return targetCategory.startsWith("documents");
       } else if (sourceCategory.startsWith("pandas_df")) {
         return targetCategory.startsWith("pandas_df");
+      } else if (sourceCategory.startsWith("ibis_df")) {
+        return targetCategory.startsWith("ibis_df");
       } else {
         return false;
       }
@@ -343,19 +356,19 @@ const PipelineWrapper: React.FC<IProps> = ({
       const existingNodesOfType = nodes.filter(
         node => node.type === type && node.data?.nameId
       );
-    
+
       // Extract numbers from the node names
       const numbers = existingNodesOfType.map(node => {
         const regex = new RegExp(`^${type}(\\d+)$`);
         const match = node.data.nameId.match(regex);
         return match ? parseInt(match[1], 10) : 0;
       });
-    
+
       const maxNumber = numbers.length > 0 ? Math.max(...numbers) : 0;
-    
+
       // Create a new name by incrementing the highest number
       const nameId = `${type}${maxNumber + 1}`;
-    
+
       return nameId;
     }
 
@@ -527,6 +540,7 @@ const PipelineWrapper: React.FC<IProps> = ({
 
     return (
       <div className="reactflow-wrapper" data-id={pipelineId} ref={reactFlowWrapper}>
+
         <Dropzone onDrop={handleFileDrop}>
           <ReactFlow
             id={pipelineId}
@@ -564,6 +578,7 @@ const PipelineWrapper: React.FC<IProps> = ({
             <Background color="#aaa" gap={20} />
           </ReactFlow>
         </Dropzone>
+
       </div >
     );
   }
@@ -589,6 +604,7 @@ const PipelineWrapper: React.FC<IProps> = ({
 }
 
 export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
+  app: JupyterFrontEnd;
   browserFactory: IFileBrowserFactory;
   defaultFileBrowser: IDefaultFileBrowser
   shell: ILabShell;
@@ -599,11 +615,12 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
 
   constructor(options: any) {
     super(options);
+    this.app = options.app;
     this.browserFactory = options.browserFactory;
     this.defaultFileBrowser = options.defaultFileBrowser;
-    this.shell = options.shell;
+    this.shell = options.app.shell;
     this.toolbarRegistry = options.toolbarRegistry;
-    this.commands = options.commands;
+    this.commands = options.app.commands;
     this.settings = options.settings;
     this.componentService = options.componentService;
   }
@@ -612,6 +629,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
 
     // Creates a blank widget with a DocumentWidget wrapper
     const props = {
+      app: this.app,
       shell: this.shell,
       toolbarRegistry: this.toolbarRegistry,
       commands: this.commands,
@@ -689,6 +707,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
     });
     widget.toolbar.addItem('generateCode', generateCodeButton);
 
+
     // Add run button
     const runButton = new ToolbarButton({
       label: 'Run Pipeline',
@@ -747,7 +766,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       enabled: enableExecution
     });
 
-    
+
     widget.toolbar.addItem('openlogconsole', logconsole);
 
     const kernelName = Toolbar.createKernelNameItem(
