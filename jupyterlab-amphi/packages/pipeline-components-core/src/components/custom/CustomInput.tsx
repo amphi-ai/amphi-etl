@@ -40,9 +40,7 @@ export class CustomInput extends BaseCoreComponent {
 
   public provideImports({config}): string[] {
     let imports: string[] = [];
-  
-    console.log("provideImports");
-  
+    
     // Check if config.imports exists and is a string
     if (config.imports && typeof config.imports === 'string') {
       // Split config.imports by lines, filter lines starting with 'import '
@@ -51,8 +49,6 @@ export class CustomInput extends BaseCoreComponent {
       // Push each filtered import line to the imports array
       imports.push(...importLines);
     }
-  
-    console.log("imports %o", imports);
   
     return imports;
   }

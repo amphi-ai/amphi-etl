@@ -233,7 +233,6 @@ export const GenerateUIInputs = React.memo(({
   });
 
   const handleSelectConnection = useCallback((connectionName: string, attributeId: string) => {
-    console.log("handleSelectConnection")
 
     const selectedConnection = connections.find(conn => conn.connectionName === connectionName);
     if (selectedConnection) {
@@ -270,7 +269,6 @@ export const GenerateUIInputs = React.memo(({
   }, {}), [form.fields]);
 
   const renderField = useCallback((field: FieldDescriptor, index: number) => {
-        console.log("handleSelectConnection")
 
     if (!advanced && field.advanced) {
       return null;
