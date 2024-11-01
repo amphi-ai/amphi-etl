@@ -11,8 +11,7 @@ export { HtmlFileInput } from './inputs/files/HtmlFileInput';
 export { PdfFileInput } from './inputs/files/PdfFileInput';
 export { S3FileInput } from './inputs/files/S3FileInput';
 export { LocalFileInput } from './inputs/files/LocalFileInput';
-export { MultiFilesInput } from './inputs/files/MultiFilesInput';
-
+export { CustomInput } from './custom/CustomInput';
 
 
 export { RestInput } from './inputs/cloud/RestInput';
@@ -64,9 +63,10 @@ export { MySQLOutput } from './outputs/databases/MySQLOutput';
 export { SnowflakeOutput } from './outputs/databases/SnowflakeOutput';
 export { SqlServerOutput } from './outputs/databases/SqlServerOutput';
 export { OracleOutput } from './outputs/databases/OracleOutput';
-
 export { RestOutput } from './outputs/cloud/RestOutput';
 export { S3FileOutput } from './outputs/files/S3FileOutput';
+export { CustomOutput } from './custom/CustomOutput';
+
 
 // Settings
 export { EnvFile } from './settings/EnvFile';

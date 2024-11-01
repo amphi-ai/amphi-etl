@@ -191,38 +191,30 @@ export const GenerateUIInputs = React.memo(({
 
   // Function to check if a field should be displayed based on its condition
   const shouldDisplayField = useCallback((field, values) => {
-    console.log("shouldDisplayField called with:", { field, values });
   
     if (!field.condition) {
-      console.log("No condition found, returning true.");
       return true;
     }
   
     const checkCondition = (condition, obj) => {
-      console.log("Checking condition:", { condition, obj });
   
       return Object.keys(condition).every(key => {
         const conditionValue = condition[key];
         const fieldValue = obj[key];
-  
-        console.log(`Checking key: ${key}`, { conditionValue, fieldValue });
-  
+    
         if (typeof conditionValue === "object" && fieldValue !== undefined) {
-          console.log("Recursively checking nested condition...");
           return checkCondition(conditionValue, fieldValue);
         }
   
         const result = Array.isArray(conditionValue)
           ? conditionValue.includes(fieldValue)
           : fieldValue === conditionValue;
-        console.log(`Result for key ${key}:`, result);
   
         return result;
       });
     };
   
     const finalResult = checkCondition(field.condition, values);
-    console.log("Final result:", finalResult);
     return finalResult;
   }, [data]);
 
