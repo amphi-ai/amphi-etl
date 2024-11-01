@@ -10,7 +10,7 @@ import { Form, ConfigProvider, ColorPicker, Row, Col, Slider, Modal, InputNumber
 import { ComponentItem, PipelineComponent, InputFile, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
 import { annotationIcon } from '../../icons';
 
-import { bracesIcon, xIcon, settingsIcon } from '../../icons';
+import { lockIcon, unlockIcon, xIcon, settingsIcon } from '../../icons';
 import { generate, green, presetPalettes, red } from '@ant-design/colors';
 
 type Color = Extract<GetProp<ColorPickerProps, 'value'>, string | { cleared: any }>;
@@ -21,6 +21,7 @@ export type AnnotationData = {
   backgroundColor?: string;
   borderColor?: string;
   borderWidth?: number;
+  isLocked?: boolean;
 };
 
 export class Annotation extends PipelineComponent<ComponentItem>() {
@@ -31,7 +32,7 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
   public _icon = annotationIcon;
   public _category = "documentation";
   public _description = "Annotation";
-  public _default = { content: "# Annotation" };
+  public _default = { content: "# Annotation", isLocked: false };
 
   public static ConfigForm = ({
     nodeId,
@@ -203,6 +204,33 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
       onChange({ evtTargetValue, field, nodeId: id, store, setNodes });
     }, [id, store, setNodes]);
 
+    const toggleLock = useCallback(() => {
+      setNodes((nds) =>
+        nds.map((node) => {
+          if (node.id === id) {
+            const newIsLocked = !node.data.isLocked;
+            node.data = {
+              ...node.data,
+              isLocked: newIsLocked,
+            };
+            node.draggable = !newIsLocked;
+          }
+          return node;
+        })
+      );
+    }, [id, setNodes]);
+
+    useEffect(() => {
+      setNodes((nds) =>
+        nds.map((node) => {
+          if (node.id === id) {
+            node.draggable = !data.isLocked;
+          }
+          return node;
+        })
+      );
+    }, [data.isLocked, id, setNodes]);
+
     const shiftKeyPressed = useKeyPress('Shift');
 
     const [modalOpen, setModalOpen] = useState(false);
@@ -215,54 +243,57 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
 
     return (
       <>
-          {isSelected && (
-            <Popconfirm
-              title="Sure to delete?"
-              placement="right"
-              onConfirm={deleteNode}
-              icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+        {isSelected && (
+          <Popconfirm
+            title="Sure to delete?"
+            placement="right"
+            onConfirm={deleteNode}
+            icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+          >
+            <div
+              className="deletebutton"
+              style={{
+                position: 'absolute',
+                top: '-20px',
+                right: '-20px',
+                cursor: 'pointer',
+                zIndex: 10
+              }}
             >
-              <div
-                className="deletebutton"
-                style={{
-                  position: 'absolute',
-                  top: '-20px',
-                  right: '-20px',
-                  cursor: 'pointer',
-                  zIndex: 10
-                }}
-              >
-                <xIcon.react className="group-hover:text-primary" />
-              </div>
-            </Popconfirm>
-          )}
-          <div style={{
-            height: '100%',
-            backgroundColor: backgroundColorStyle,
-            paddingLeft: '40px',
-            paddingRight: '40px',
-            paddingTop: '20px',
-            paddingBottom: '20px',
-            position: 'relative',
-            zIndex: 0,
-            borderRadius: `${borderRadiusStyle}px`,
-            border: `${borderWidthStyle}px solid ${borderColorStyle}`,
-          }}>
-            <NodeResizer
-              keepAspectRatio={shiftKeyPressed}
-              isVisible={isSelected}
-              color={"#000000"}
-              minWidth={50}
-              minHeight={50}
-            />
-            <div style={{ color: textColorStyle }}>
-              <Remark>{data.content}</Remark>
+              <xIcon.react className="group-hover:text-primary" />
             </div>
-
-            <NodeToolbar isVisible={isSelected} position={Position.Bottom}>
-              <button onClick={() => setModalOpen(true)}><settingsIcon.react /></button>
-            </NodeToolbar>
+          </Popconfirm>
+        )}
+        <div className="annotation" style={{
+          height: '100%',
+          backgroundColor: backgroundColorStyle,
+          paddingLeft: '40px',
+          paddingRight: '40px',
+          paddingTop: '20px',
+          paddingBottom: '20px',
+          position: 'relative',
+          zIndex: 0,
+          borderRadius: `${borderRadiusStyle}px`,
+          border: `${borderWidthStyle}px solid ${borderColorStyle}`,
+        }}>
+          <NodeResizer
+            keepAspectRatio={shiftKeyPressed}
+            isVisible={isSelected}
+            color={"#000000"}
+            minWidth={50}
+            minHeight={50}
+          />
+          <div style={{ color: textColorStyle }}>
+            <Remark>{data.content}</Remark>
           </div>
+
+          <NodeToolbar isVisible={isSelected} position={Position.Bottom}>
+            <button onClick={() => setModalOpen(true)}><settingsIcon.react /></button>
+            <button onClick={toggleLock}>
+              {data.isLocked ? <lockIcon.react /> : <unlockIcon.react />}
+            </button>
+          </NodeToolbar>
+        </div>
 
         <Annotation.ConfigForm
           nodeId={id}

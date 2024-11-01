@@ -78,4 +78,4 @@ export const KeyValueForm: React.FC<KeyValueFormProps> = ({ field, handleChange,
   );
 };
 
-export default KeyValueForm;
+export default React.memo(KeyValueForm);

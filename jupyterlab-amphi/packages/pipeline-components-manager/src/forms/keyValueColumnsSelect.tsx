@@ -189,4 +189,4 @@ export const KeyValueColumnsSelect: React.FC<KeyValueFormProps> = ({ field, hand
   );
 };
 
-export default KeyValueColumnsSelect;
+export default React.memo(KeyValueColumnsSelect);

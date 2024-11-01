@@ -87,4 +87,4 @@ export const ConnectionSelector: React.FC<ConnectionSelectorProps> = ({
   );
 };
 
-export default ConnectionSelector;
+export default React.memo(ConnectionSelector);

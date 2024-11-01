@@ -45,4 +45,4 @@ export const SelectMultiple: React.FC<SelectMultipleProps> = ({
   );
 };
 
-export default SelectMultiple;
+export default React.memo(SelectMultiple);

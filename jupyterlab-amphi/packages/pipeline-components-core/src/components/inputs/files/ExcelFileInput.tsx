@@ -1,6 +1,7 @@
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { fileTextIcon } from '../../../icons';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
+import { FileUtils } from '../../common/FileUtils'; // Import the FileUtils class
 
 export class ExcelFileInput extends BaseCoreComponent {
   constructor() {
@@ -24,9 +25,9 @@ export class ExcelFileInput extends BaseCoreComponent {
           type: "file",
           label: "File path",
           id: "filePath",
-          placeholder: "Type file name",
-          validation: "\\.(xlsx)$",
-          validationMessage: "This field expects a file with a xlsx extension such as input.xlsx."
+          placeholder: "Type file name or use '*' for patterns",
+          validation: "\\.(xlsx)$|^(.*\\*)$",
+          validationMessage: "This field expects a file with an xlsx extension or a wildcard pattern such as input*.xlsx."
         },
         {
           type: "selectCustomizable",
@@ -107,71 +108,60 @@ export class ExcelFileInput extends BaseCoreComponent {
     else {
       deps.push(config.engine);
     }
+    if (FileUtils.isWildcardInput(config.filePath)) {
+      deps.push(config.fileLocation === "s3" ? 's3fs' : 'glob');
+    }
 
     return deps;
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd"];
+    let imports = ["import pandas as pd"];
+    if (FileUtils.isWildcardInput(config.filePath)) {
+      if (config.fileLocation === "s3") {
+        imports.push("import s3fs");
+      } else {
+        imports.push("import glob");
+      }
+    }
+    return imports;
   }
 
   public generateComponentCode({ config, outputName }): string {
+    const excelOptions = { ...config.excelOptions };
+    const storageOptionsString = excelOptions.storage_options ? JSON.stringify(excelOptions.storage_options) : '{}';
+    const optionsString = this.generateOptionsString(excelOptions);
 
-    let listOfDataframes = false;
-    let code = ''
-    let excelOptions = { ...config.excelOptions };
-
-    // Initialize storage_options if not already present
-    let storageOptions = excelOptions.storage_options || {};
-
-    storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
-
-    // Only add storage_options to csvOptions if it's not empty
-    if (Object.keys(storageOptions).length > 0) {
-      excelOptions.storage_options = storageOptions;
+    let code = '';
+    if (config.fileLocation === "s3") {
+      code += FileUtils.getS3FilePaths(config.filePath, storageOptionsString, outputName);
+      code += FileUtils.generateConcatCode(outputName, "read_excel", optionsString, true);
+    } else {
+      code += FileUtils.getLocalFilePaths(config.filePath, outputName);
+      code += FileUtils.generateConcatCode(outputName, "read_excel", optionsString, false);
     }
 
-    let optionsString = Object.entries(excelOptions)
+    return code;
+  }
+
+  private generateOptionsString(excelOptions): string {
+    return Object.entries(excelOptions)
       .filter(([key, value]) => value !== null && value !== '')
       .map(([key, value]) => {
         if (typeof value === 'boolean') {
           return `${key}=${value ? 'True' : 'False'}`;
-        } else if (value === "None") { // Handle None values
-          listOfDataframes = true;
+        } else if (value === "None") {
           return `${key}=None`;
         } else if (key === 'storage_options') {
-          return `${key}=${JSON.stringify(value)}`; 
+          return `${key}=${JSON.stringify(value)}`;
         } else if (/^\d+$/.test(value as string)) {
           return `${key}=${value}`;
-        } else if (typeof value === 'string' && value.startsWith('[') && value.endsWith(']')) { // Check if value is an array-like string
-          listOfDataframes = true;
+        } else if (typeof value === 'string' && value.startsWith('[') && value.endsWith(']')) {
           return `${key}=${value}`;
         } else {
           return `${key}='${value}'`;
         }
       })
       .join(', ');
-
-    const engine = config.engine !== 'None' ? `'${config.engine}'` : config.engine;
-
-    const readExcelcode = optionsString
-      ? `pd.read_excel("${config.filePath}", engine=${engine}, ${optionsString})`
-      : `pd.read_excel("${config.filePath}", engine=${engine})`;
-
-    if (listOfDataframes) {
-      code = `# Read multiple sheets from Excel file
-${outputName}_dict = ${readExcelcode}
-
-# Concatenate the dataframes into a single dataframe
-${outputName} = pd.concat(${outputName}_dict.values(), ignore_index=True).convert_dtypes()
-`
-    } else {
-      code = `# Read Excel sheet
-${outputName} = ${readExcelcode}.convert_dtypes()
-`
-    }
-
-    return code;
   }
-
 }

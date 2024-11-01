@@ -45,12 +45,14 @@ export class SnowflakeInput extends BaseCoreComponent {
           label: "Warehouse",
           id: "warehouse",
           placeholder: "Enter warehouse name",
+          connection: "Snowflake",
           advanced: true
         },
         {
           type: "input",
           label: "Schema",
           id: "schema",
+          connection: "Snowflake",
           placeholder: "Enter schema name",
           advanced: true
         },

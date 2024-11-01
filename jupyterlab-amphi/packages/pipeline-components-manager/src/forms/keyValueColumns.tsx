@@ -181,4 +181,4 @@ export const KeyValueColumns: React.FC<KeyValueFormProps> = ({ field, handleChan
   );
 };
 
-export default KeyValueColumns;
+export default React.memo(KeyValueColumns);

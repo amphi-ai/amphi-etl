@@ -133,7 +133,7 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
         console.error(
           `Error with pipeline, nodes not updated.'.\n${reason}`
         );
-      });;
+      });
 
     };
 

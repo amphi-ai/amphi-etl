@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { renderFormItem } from './formUtils'
 import CodeTextarea from './forms/CodeTextarea';
 import InputFile from './forms/InputFile';
+import InputFiles from './forms/InputFiles';
 import InputQuantity from './forms/InputQuantity';
 import InputRegular from './forms/InputRegular';
 import TextareaRegular from './forms/TextareaRegular';
@@ -24,28 +25,6 @@ import ValuesListForm from './forms/valuesListForm';
 import FormulaColumns from './forms/FormulaColumns'
 import { PipelineService } from './PipelineService';
 
-// Function to check if a field should be displayed based on its condition
-const shouldDisplayField = (field, values) => {
-
-  if (!field.condition) {
-    return true;
-  }
-
-  const conditionKeys = Object.keys(field.condition);
-
-  const result = conditionKeys.every(key => {
-    const fieldConditionValue = field.condition[key];
-    const formValue = values[key];
-
-    const matches = Array.isArray(fieldConditionValue)
-      ? fieldConditionValue.includes(formValue)
-      : formValue === fieldConditionValue;
-
-    return matches;
-  });
-
-  return result;
-};
 
 // Set default options to component if specified
 export const setDefaultConfig = ({
@@ -193,6 +172,8 @@ export const GenerateUIInputs = React.memo(({
   const [optionsConnections, setOptionsConnections] = useState<Record<string, any[]>>({});
 
   const fetchConnections = useCallback(() => {
+    console.log("fetchConnections")
+
     const allConnections = PipelineService.getConnections(context.model.toString());
     setConnections(allConnections);
 
@@ -207,6 +188,35 @@ export const GenerateUIInputs = React.memo(({
 
     setOptionsConnections(connectionsByType);
   }, [context]);
+
+  // Function to check if a field should be displayed based on its condition
+  const shouldDisplayField = useCallback((field, values) => {
+  
+    if (!field.condition) {
+      return true;
+    }
+  
+    const checkCondition = (condition, obj) => {
+  
+      return Object.keys(condition).every(key => {
+        const conditionValue = condition[key];
+        const fieldValue = obj[key];
+    
+        if (typeof conditionValue === "object" && fieldValue !== undefined) {
+          return checkCondition(conditionValue, fieldValue);
+        }
+  
+        const result = Array.isArray(conditionValue)
+          ? conditionValue.includes(fieldValue)
+          : fieldValue === conditionValue;
+  
+        return result;
+      });
+    };
+  
+    const finalResult = checkCondition(field.condition, values);
+    return finalResult;
+  }, [data]);
 
   const renderItem = (title: string) => ({
     value: title,
@@ -259,6 +269,7 @@ export const GenerateUIInputs = React.memo(({
   }, {}), [form.fields]);
 
   const renderField = useCallback((field: FieldDescriptor, index: number) => {
+
     if (!advanced && field.advanced) {
       return null;
     }
@@ -318,6 +329,8 @@ export const GenerateUIInputs = React.memo(({
         ));
       case "file":
         return renderFormItem(field, <InputFile {...commonProps} value={value} manager={manager} />);
+      case "files":
+        return renderFormItem(field, <InputFiles {...commonProps} values={values} manager={manager} />);
       case "columns":
         return renderFormItem(field, <SelectColumns {...commonProps} defaultValues={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "column":
@@ -461,7 +474,7 @@ export default function ConfigModal({
 
   const [fieldsForm] = Form.useForm();
   const [formValues, setFormValues] = useState(fieldsForm.getFieldsValue());
-  
+
   return (
     <>
       <Modal
@@ -573,7 +586,7 @@ export interface Option {
 }
 
 export interface FieldDescriptor {
-  type: 'file' | 'column' | 'columns' | 'table' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio'
+  type: 'file' | 'files' | 'column' | 'columns' | 'table' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio'
   | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect'
   | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable' | 'formulaColumns' | 'keyvalueColumnsRadio';
   label: string;

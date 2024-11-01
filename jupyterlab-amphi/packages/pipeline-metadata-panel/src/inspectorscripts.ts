@@ -38,6 +38,7 @@ _amphi_metadatapanel_Jupyter = get_ipython()
 # _amphi_metadatapanel_nms.shell = _amphi_metadatapanel_Jupyter.kernel.shell  
 __np = None
 __pd = None
+__pl = None
 __pyspark = None
 __tf = None
 __K = None
@@ -115,11 +116,18 @@ def _amphi_metadatapanel_getcontentof(x):
         unnamed_columns = [col for col in df.columns if isinstance(col, int)]
         return unnamed_columns
 
-    # Check if the input is a DataFrame and handle it
+    # Check if the input is a Pandas DataFrame and handle it
     if __pd and isinstance(x, __pd.DataFrame):
         unnamed_cols = check_unnamed_columns(x)
         colnames = ', '.join([f"{col} ({dtype}, {'unnamed' if col in unnamed_cols else 'named'})" for col, dtype in zip(x.columns, x.dtypes)])
         content = "%s" % colnames
+
+    # Check if the input is an Ibis Table and handle it similarly
+    elif "ibis" in globals() and isinstance(x, ibis.expr.types.Table):
+        schema = x.schema()
+        colnames = ', '.join([f"{col} ({dtype}, named)" for col, dtype in schema.items()])
+        content = "%s" % colnames
+
     # Handle other types accordingly
     elif __pd and isinstance(x, __pd.Series):
         content = f"{x.name} ({x.dtype}, {'unnamed' if x.name == '' or isinstance(x.name, int) else 'named'}), " + str(x.values).replace(" ", ", ")[1:-1]
@@ -256,6 +264,37 @@ def _amphi_metadatapanel_deleteallvariables():
     for key, value in list(globals().items()):
         if not key.startswith('_') and not hasattr(__builtins__, key) and not key in ['exit', 'quit', 'get_ipython', 'In', 'Out'] and not isinstance(value, (type(sys), types.ModuleType)) and camel_case_pattern.match(key):
             exec("del %s" % key, globals())
+
+
+def __amphi_display_dataframe(df, dfName=None, nodeId=None, runtime=None):
+    result_df = None  # Initialize result_df
+
+    # Check if the input is a pandas DataFrame
+    if __pd and isinstance(df, __pd.DataFrame):
+        runtime = runtime or "local (pandas)"
+        result_df = df.copy()
+        result_df.columns = [f"{col} ({df[col].dtype})" for col in df.columns]
+
+    # Check if the input is an Ibis Table
+    elif "ibis" in globals() and isinstance(df, ibis.expr.types.Table):
+        runtime = runtime or "ibis"
+        schema = df.schema()
+        result_df = df.execute()
+        result_df.columns = [
+            f"{col} ({dtype})" for col, dtype in schema.items()
+        ]
+
+    # If result_df is set, display with metadata
+    if result_df is not None:
+        metadata = {
+            'runtime': runtime,
+            'nodeId': nodeId if nodeId else None,
+            'dfName': dfName if dfName else None
+        }
+        display(result_df, metadata=metadata)
+    else:
+        raise ValueError("Unsupported dataframe type: The provided dataframe is neither a pandas DataFrame nor an ibis Table.")
+
 
 def __amphi_display_pandas_dataframe(df, dfName=None, nodeId=None, runtime="local (pandas)"):
     df_with_types = df.copy()

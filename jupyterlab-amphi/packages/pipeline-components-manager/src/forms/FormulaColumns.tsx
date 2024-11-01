@@ -93,4 +93,4 @@ export const FormulaColumns: React.FC<FormulaColumnsProps> = ({
   );
 };
 
-export default FormulaColumns;
+export default React.memo(FormulaColumns);

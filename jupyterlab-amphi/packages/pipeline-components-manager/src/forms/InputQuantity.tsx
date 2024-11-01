@@ -38,4 +38,4 @@ export const InputQuantity = ({ field, value, handleChange, context, advanced })
   );
 }
 
-export default InputQuantity;
+export default React.memo(InputQuantity);

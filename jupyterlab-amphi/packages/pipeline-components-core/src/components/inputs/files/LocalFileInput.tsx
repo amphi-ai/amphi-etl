@@ -42,26 +42,28 @@ export class LocalFileInput extends BaseCoreComponent {
         // Conditionally display filtered fields based on selected file type
         ...filteredCsvFields.map(field => ({
           ...field,
-          condition: { fileType: ["csv"], ...(field.condition || {}) }
+          condition: { fileType: "csv", ...(field.condition || {}) }
         })),
         ...filteredJsonFields.map(field => ({
           ...field,
-          condition: { fileType: ["json"], ...(field.condition || {}) }
+          condition: { fileType: "json", ...(field.condition || {}) }
         })),
         ...filteredExcelFields.map(field => ({
           ...field,
-          condition: { fileType: ["excel"], ...(field.condition || {}) }
+          condition: { fileType: "excel", ...(field.condition || {}) }
         })),
         ...filteredParquetFields.map(field => ({
           ...field,
-          condition: { fileType: ["parquet"], ...(field.condition || {}) }
+          condition: { fileType: "parquet", ...(field.condition || {}) }
         })),
         ...filteredXmlFields.map(field => ({
           ...field,
-          condition: { fileType: ["xml"], ...(field.condition || {}) }
+          condition: { fileType: "xml", ...(field.condition || {}) }
         }))
       ]
     };
+
+    console.log("form %o", form)
 
     const description = "Use File Input to read data from a local file. Supports CSV, JSON, Excel, Parquet, and XML formats.";
 

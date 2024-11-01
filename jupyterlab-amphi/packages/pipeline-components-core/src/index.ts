@@ -8,9 +8,9 @@ import {
   Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
   SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join,
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, DateTimeConverter,
-  EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary,
+  EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
-  SnowflakeOutput, SqlServerOutput, OracleOutput
+  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput
 } from './components';
 
 export { CsvFileInput }
@@ -38,7 +38,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(XmlFileInput.getInstance())
     componentService.addComponent(PdfTablesInput.getInstance())
     componentService.addComponent(S3FileInput.getInstance())
-
     componentService.addComponent(RestInput.getInstance())
     componentService.addComponent(GoogleSheetsInput.getInstance())
     componentService.addComponent(MySQLInput.getInstance())
@@ -47,6 +46,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(SqlServerInput.getInstance())
     componentService.addComponent(SnowflakeInput.getInstance())
     componentService.addComponent(ODBCInput.getInstance())
+    componentService.addComponent(CustomInput.getInstance())
 
     // componentService.addComponent(PyGWalker.getInstance())
     // componentService.addComponent(Slider.getInstance())
@@ -89,6 +89,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(SnowflakeOutput.getInstance())
     componentService.addComponent(SqlServerOutput.getInstance())
     componentService.addComponent(OracleOutput.getInstance())
+    componentService.addComponent(CustomOutput.getInstance())
 
 
     // Documentation

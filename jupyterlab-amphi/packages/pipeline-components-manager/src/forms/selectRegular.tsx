@@ -67,4 +67,4 @@ export const SelectRegular: React.FC<SelectCustomizableProps> = ({
   );
 };
 
-export default SelectRegular;
+export default React.memo(SelectRegular);

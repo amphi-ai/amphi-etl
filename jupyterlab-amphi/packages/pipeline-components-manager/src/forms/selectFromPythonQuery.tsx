@@ -161,4 +161,4 @@ export const SelectFromPythonCode: React.FC<SelectFromPythonCodeProps> = ({
   );
 };
 
-export default SelectFromPythonCode;
+export default React.memo(SelectFromPythonCode);

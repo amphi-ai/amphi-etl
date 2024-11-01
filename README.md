@@ -3,6 +3,7 @@
 <img height="60" src="https://amphi.ai/icons/amphi_logo_paths.svg">
 
 <p align="center">
+
     <br/>
     Visual Data Transformation based on Python
     <br/><br/>
@@ -47,8 +48,7 @@ English · [Try the demo](https://demo.amphi.ai) · [Report Bug](https://github.
 
 ## 📦 Installation
 
-Amphi is available as both a standalone application or as a JupyterLab extension.
-
+Amphi is available as both a standalone applicatiion or as a JupyterLab extension.
 
 | Amphi ETL (standalone) | Amphi for JupyterLab (extension) |
 |------------------------|----------------------|
@@ -97,13 +97,13 @@ pip install --upgrade amphi-etl
 
 **Data Transformation solution for the AI age:**
 
+**Modern ETL for the AI age:**
+
 - 🧑‍💻 **Visual Interface / Low-code**: Accelerate data pipeline development and reduce maintenance time.
 - 🐍 **Python-code Generation**: Generate native Python code leveraging common libraries such as [pandas](https://github.com/pandas-dev/pandas), [DuckDB](https://github.com/duckdb/duckdb) that you can run anywhere.
 - 🔒 **Private and Secure**: Self-host Amphi on your laptop or in the cloud for complete privacy and security over your data.
 
-
 ![generate-python-code-amphi](https://github.com/user-attachments/assets/67410947-caea-45b4-a8fc-4ceb7bb3dbce)
-
 
 <br/>
 

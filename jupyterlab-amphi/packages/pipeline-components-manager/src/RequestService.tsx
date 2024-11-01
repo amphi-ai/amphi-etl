@@ -40,7 +40,7 @@ export class RequestService {
 
     const lines = code.split('\n');
     let output_df = lines.pop(); // Extract the last line and store it in output_df
-    const match = output_df.match(/__amphi_display_pandas_dataframe\(([^,]*)/);
+    const match = output_df.match(/__amphi_display_dataframe\(([^,]*)/);
     output_df = match ? match[1] : null;
 
     if (output_df && output_df.trim() && output_df.trim().split(' ').length === 1) {

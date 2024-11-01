@@ -43,4 +43,4 @@ export const TextareaRegular = ({ field, value, handleChange, advanced, rows }) 
   );
 };
 
-export default TextareaRegular;
+export default React.memo(TextareaRegular);

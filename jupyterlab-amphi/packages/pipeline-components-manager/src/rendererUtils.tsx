@@ -6,6 +6,7 @@ import { xIcon } from './icons';
 import React, { useMemo, useState } from 'react';
 import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
+import { Profiler } from 'react';
 
 import { getConnectedEdges, Handle, useNodeId, useStore, NodeToolbar } from 'reactflow';
 import { Popconfirm, Typography, ConfigProvider } from 'antd';
@@ -40,6 +41,7 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
   };
 
   switch (type) {
+    case "ibis_df_input":
     case "pandas_df_input":
     case "documents_input":
       return (
@@ -50,11 +52,13 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
           id="out"
         />
       );
+    case "ibis_df_output":
     case "pandas_df_output":
     case "documents_output":
       return (
         <LimitedInputHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in" />
       );
+    case "ibis_df_processor":
     case "pandas_df_processor":
     case 'pandas_df_to_documents_processor':
     case 'documents_processor':
@@ -69,6 +73,7 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
           />
         </>
       );
+    case 'ibis_df_multi_processor':
     case 'pandas_df_multi_processor':
       return (
         <>
@@ -81,6 +86,7 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
           />
         </>
       );
+    case "ibis_df_double_processor":
     case "pandas_df_double_processor":
       return (
         <>
@@ -124,8 +130,15 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
     event.preventDefault();
   };
 
-  const modifier = data.backend?.engine === "snowflake" ? "--snowflake" : "--default";
-  const colorPrimary = modifier === "--snowflake" ? "#00ADEF" : "#5F9B97";
+  const modifier = data.backend?.engine === "snowflake" ? "--snowflake" :
+                   data.backend?.engine === "duckdb" ? "--duckdb" :
+                   data.backend?.engine === "postgres" ? "--postgres" : "--default";
+
+  const colorPrimary = modifier === "--snowflake" ? "#00ADEF" :
+                       modifier === "--duckdb" ? "#45421D" :
+                       modifier === "--postgres" ? "#336691" : "#5F9B97";
+
+  const isIbis = ["--snowflake", "--duckdb", "--postgres"].includes(modifier);
 
   return (
     <>
@@ -137,12 +150,12 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
           },
         }}
       >
-      <div 
-        className={`component component${modifier}`} 
-        onDoubleClick={handleDoubleClick}
-      >    
-        <div className={`component__header component__header`}>
-        <Text
+        <div
+          className={`component component${modifier} ${isIbis ? "ibis" : ""}`}
+          onDoubleClick={handleDoubleClick}
+        >
+          <div className={`component__header component__header`}>
+            <Text
               onDoubleClick={stopPropagation}
               onDragStart={disableDrag}
               editable={isSelected ? { onChange: onTitleChange, tooltip: false, icon: <EditOutlined style={{ color: '#5F9B97' }} /> } : undefined}
