@@ -9,8 +9,8 @@ interface CodeEditorProps {
   
   const CodeEditor: React.FC<CodeEditorProps> = ({ code }) => (
     <AceEditor
-      width='950px'
-      height='500px'
+      width='100%%'
+      height='100%'
       mode="python"
       theme="xcode"
       name="Code Export"

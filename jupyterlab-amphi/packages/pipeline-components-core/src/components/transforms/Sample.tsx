@@ -64,47 +64,56 @@ export class Sample extends BaseCoreComponent {
     return ["import pandas as pd"];
   }
 
+  private formatGroupByColumns(groupBy: { value: string | number; type: string; named: boolean }[]): string {
+    return groupBy.map(col => (col.named ? `"${col.value}"` : col.value)).join(', ');
+  }
+
   public generateComponentCode({ config, inputName, outputName }): string {
     let sampleCode = "";
 
+    const groupByColumns = config.groupBy && config.groupBy.length > 0 
+      ? `[${this.formatGroupByColumns(config.groupBy)}]` 
+      : null;
+
     if (config.numberType === "number") {
       if (config.mode === "random") {
-        if (config.groupBy.length > 0) {
-          sampleCode = `${outputName} = ${inputName}.groupby([${config.groupBy.map(col => `"${col.value}"`).join(', ')}]).sample(n=${config.rows})`;
+        if (groupByColumns) {
+          sampleCode = `${outputName} = ${inputName}.groupby(${groupByColumns}).sample(n=${config.rows})`;
         } else {
           sampleCode = `${outputName} = ${inputName}.sample(n=${config.rows})`;
         }
       } else if (config.mode === "tail") {
-        if (config.groupBy.length > 0) {
-          sampleCode = `${outputName} = ${inputName}.groupby([${config.groupBy.map(col => `"${col.value}"`).join(', ')}]).tail(${config.rows})`;
+        if (groupByColumns) {
+          sampleCode = `${outputName} = ${inputName}.groupby(${groupByColumns}).tail(${config.rows})`;
         } else {
           sampleCode = `${outputName} = ${inputName}.tail(${config.rows})`;
         }
       } else if (config.mode === "head") {
-        if (config.groupBy.length > 0) {
-          sampleCode = `${outputName} = ${inputName}.groupby([${config.groupBy.map(col => `"${col.value}"`).join(', ')}]).head(${config.rows})`;
+        if (groupByColumns) {
+          sampleCode = `${outputName} = ${inputName}.groupby(${groupByColumns}).head(${config.rows})`;
         } else {
           sampleCode = `${outputName} = ${inputName}.head(${config.rows})`;
         }
       }
     } else if (config.numberType === "percentage") {
+      const frac = config.percentage / 100;
       if (config.mode === "random") {
-        if (config.groupBy.length > 0) {
-          sampleCode = `${outputName} = ${inputName}.groupby([${config.groupBy.map(col => `"${col.value}"`).join(', ')}]).sample(frac=${config.percentage / 100})`;
+        if (groupByColumns) {
+          sampleCode = `${outputName} = ${inputName}.groupby(${groupByColumns}).sample(frac=${frac})`;
         } else {
-          sampleCode = `${outputName} = ${inputName}.sample(frac=${config.percentage / 100})`;
+          sampleCode = `${outputName} = ${inputName}.sample(frac=${frac})`;
         }
       } else if (config.mode === "tail") {
-        if (config.groupBy.length > 0) {
-          sampleCode = `${outputName} = ${inputName}.groupby([${config.groupBy.map(col => `"${col.value}"`).join(', ')}]).apply(lambda x: x.tail(int(len(x) * ${config.percentage / 100}))).reset_index(drop=True)`;
+        if (groupByColumns) {
+          sampleCode = `${outputName} = ${inputName}.groupby(${groupByColumns}).apply(lambda x: x.tail(int(len(x) * ${frac}))).reset_index(drop=True)`;
         } else {
-          sampleCode = `${outputName} = ${inputName}.iloc[-int(len(${inputName}) * ${config.percentage / 100}):]`;
+          sampleCode = `${outputName} = ${inputName}.iloc[-int(len(${inputName}) * ${frac}):]`;
         }
       } else if (config.mode === "head") {
-        if (config.groupBy.length > 0) {
-          sampleCode = `${outputName} = ${inputName}.groupby([${config.groupBy.map(col => `"${col.value}"`).join(', ')}]).apply(lambda x: x.head(int(len(x) * ${config.percentage / 100}))).reset_index(drop=True)`;
+        if (groupByColumns) {
+          sampleCode = `${outputName} = ${inputName}.groupby(${groupByColumns}).apply(lambda x: x.head(int(len(x) * ${frac}))).reset_index(drop=True)`;
         } else {
-          sampleCode = `${outputName} = ${inputName}.iloc[:int(len(${inputName}) * ${config.percentage / 100})]`;
+          sampleCode = `${outputName} = ${inputName}.iloc[:int(len(${inputName}) * ${frac})]`;
         }
       }
     }
