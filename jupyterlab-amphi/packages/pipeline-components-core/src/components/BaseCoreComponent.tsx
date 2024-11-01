@@ -175,7 +175,7 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
           handleChange,
           isSelected
         })}
-        {showContent && (
+        {(showContent || isSelected) && (
           <NodeToolbar isVisible position={Position.Bottom}>
             <button onClick={() => setModalOpen(true)}><settingsIcon.react /></button>
             {(this._type.includes('input') || this._type.includes('processor') || this._type.includes('output')) && (

@@ -666,8 +666,8 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
 
     async function showCodeModal(code: string, commands) {
       const editorDiv = document.createElement('div');
-      editorDiv.style.width = '100%';
-      editorDiv.style.height = '500px';
+      editorDiv.style.width = '900px';
+      editorDiv.style.height = '1000px';
 
       const widget = new Widget({ node: editorDiv });
       ReactDOM.render(<CodeEditor code={code} />, editorDiv);

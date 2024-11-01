@@ -156,7 +156,8 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
                                                         id: 'formula',
                                                         label: "Python Formula",
                                                         placeholder: "row['column1'] + row['column2']",
-                                                        height: "80px"
+                                                        height: "80px",
+                                                        mode: 'python'
                                                     }}
                                                     handleChange={(value) => handleFormulaChange(value, index, 'formula')}
                                                     value={formula.formula}

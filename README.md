@@ -3,11 +3,9 @@
 <img height="60" src="https://amphi.ai/icons/amphi_logo_paths.svg">
 
 <p align="center">
-
-    <br/>
-    Visual Data Transformation based on Python
+    Visual Data Transformation Powered by Python
     <br/><br/>
-   For data preparation, reporting and ETL.
+    Designed for data preparation, reporting, and ETL.
 </p>
 <br/>
 
