@@ -4,6 +4,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { renderFormItem } from './formUtils'
 import CodeTextarea from './forms/CodeTextarea';
 import InputFile from './forms/InputFile';
+import InputFiles from './forms/InputFiles';
 import InputQuantity from './forms/InputQuantity';
 import InputRegular from './forms/InputRegular';
 import TextareaRegular from './forms/TextareaRegular';
@@ -190,30 +191,40 @@ export const GenerateUIInputs = React.memo(({
 
   // Function to check if a field should be displayed based on its condition
   const shouldDisplayField = useCallback((field, values) => {
-    console.log("shouldDisplayField")
-
+    console.log("shouldDisplayField called with:", { field, values });
+  
     if (!field.condition) {
+      console.log("No condition found, returning true.");
       return true;
     }
-
+  
     const checkCondition = (condition, obj) => {
+      console.log("Checking condition:", { condition, obj });
+  
       return Object.keys(condition).every(key => {
         const conditionValue = condition[key];
         const fieldValue = obj[key];
-
+  
+        console.log(`Checking key: ${key}`, { conditionValue, fieldValue });
+  
         if (typeof conditionValue === "object" && fieldValue !== undefined) {
-          // Recursively check nested conditions
+          console.log("Recursively checking nested condition...");
           return checkCondition(conditionValue, fieldValue);
         }
-
-        return Array.isArray(conditionValue)
+  
+        const result = Array.isArray(conditionValue)
           ? conditionValue.includes(fieldValue)
           : fieldValue === conditionValue;
+        console.log(`Result for key ${key}:`, result);
+  
+        return result;
       });
     };
-
-    return checkCondition(field.condition, values);
-  }, []);
+  
+    const finalResult = checkCondition(field.condition, values);
+    console.log("Final result:", finalResult);
+    return finalResult;
+  }, [data]);
 
   const renderItem = (title: string) => ({
     value: title,
@@ -328,6 +339,8 @@ export const GenerateUIInputs = React.memo(({
         ));
       case "file":
         return renderFormItem(field, <InputFile {...commonProps} value={value} manager={manager} />);
+      case "files":
+        return renderFormItem(field, <InputFiles {...commonProps} values={values} manager={manager} />);
       case "columns":
         return renderFormItem(field, <SelectColumns {...commonProps} defaultValues={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "column":
@@ -583,7 +596,7 @@ export interface Option {
 }
 
 export interface FieldDescriptor {
-  type: 'file' | 'column' | 'columns' | 'table' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio'
+  type: 'file' | 'files' | 'column' | 'columns' | 'table' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio'
   | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect'
   | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable' | 'formulaColumns' | 'keyvalueColumnsRadio';
   label: string;

@@ -1,10 +1,17 @@
 import { fileTextIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
+import { FileUtils } from '../../common/FileUtils'; // Import the FileUtils class
 
 export class CsvFileInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { fileLocation: "local", connectionMethod: "env", csvOptions: { sep: "," } };
+    const defaultConfig = {
+      fileLocation: "local",
+      connectionMethod: "env",
+      csvOptions: {
+        sep: ","
+      }
+    };
     const form = {
       idPrefix: "component__form",
       fields: [
@@ -24,9 +31,9 @@ export class CsvFileInput extends BaseCoreComponent {
           type: "file",
           label: "File path",
           id: "filePath",
-          placeholder: "Type file name",
-          tooltip: "This field expects a file path with a csv, tsv or txt extension such as input.csv.",
-          validation: "\\.(csv|tsv|txt)$",
+          placeholder: "Type file name or use '*' for patterns",
+          tooltip: "Provide a single CSV file path or use '*' for matching multiple files. Extensions accepted: .csv, .tsv, .txt.",
+          validation: "^(.*(\\.csv|\\.tsv|\\.txt))$|^(.*\\*)$"
         },
         {
           type: "selectCustomizable",
@@ -38,7 +45,7 @@ export class CsvFileInput extends BaseCoreComponent {
             { value: ",", label: "comma (,)" },
             { value: ";", label: "semicolon (;)" },
             { value: " ", label: "space" },
-            { value: "  ", label: "tab" },
+            { value: "\\t", label: "tab" },
             { value: "|", label: "pipe (|)" },
             { value: "infer", label: "infer (tries to auto detect)" }
           ],
@@ -49,15 +56,6 @@ export class CsvFileInput extends BaseCoreComponent {
           label: "Rows number",
           id: "csvOptions.nrows",
           placeholder: "Default: all",
-          advanced: true
-        },
-        {
-          type: "selectTokenization",
-          tooltip: "Sequence of column labels to apply.",
-          label: "Column names",
-          id: "csvOptions.names",
-          placeholder: "Type header fields (ordered and comma-separated)",
-          options: [],
           advanced: true
         },
         {
@@ -102,59 +100,81 @@ export class CsvFileInput extends BaseCoreComponent {
         }
       ],
     };
-    const description = "Use CSV File Input to access data from a CSV file locally or remotely (via HTTP or S3)."
+    const description = "Use CSV File Input to access data from a CSV file or multiple CSV files using a wildcard, locally or remotely (via HTTP or S3)."
 
     super("CSV File Input", "csvFileInput", description, "pandas_df_input", ["csv", "tsv"], "inputs", fileTextIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {
     let deps: string[] = [];
-    if (config.csvOptions.engine == "pyarrow") {
+    if (config.csvOptions.engine === "pyarrow") {
       deps.push('pyarrow');
     }
-    if (config.fileLocation == "s3") {
+    if (config.fileLocation === "s3") {
       deps.push('s3fs');
+    }
+    if (FileUtils.isWildcardInput(config.filePath)) {
+      deps.push(config.fileLocation === "s3" ? 's3fs' : 'glob');
     }
     return deps;
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd"];
+    let imports = ["import pandas as pd"];
+    if (FileUtils.isWildcardInput(config.filePath)) {
+      if (config.fileLocation === "s3") {
+        imports.push("import s3fs");
+      } else {
+        imports.push("import glob");
+      }
+    }
+    return imports;
   }
+
+  // Utility method to determine if input uses a wildcard
+
 
   // Main generation method
   public generateComponentCode({ config, outputName }): string {
     const optionsString = this.generateOptionsCode({ config });
+    const storageOptionsString = config.csvOptions.storage_options ? JSON.stringify(config.csvOptions.storage_options) : '{}';
 
-    const code = `
+    let code = '';
+    if (FileUtils.isWildcardInput(config.filePath)) {
+      if (config.fileLocation === "s3") {
+        code += FileUtils.getS3FilePaths(config.filePath, storageOptionsString, outputName);
+        code += FileUtils.generateConcatCode(outputName, "read_csv", optionsString, true);
+      } else {
+        code += FileUtils.getLocalFilePaths(config.filePath, outputName);
+        code += FileUtils.generateConcatCode(outputName, "read_csv", optionsString, false);
+      }
+    } else {
+      code = `
 # Reading data from ${config.filePath}
-${outputName} = pd.read_csv("${config.filePath}"${optionsString ? `, ${optionsString}` : ''}).convert_dtypes()
-`;
+${outputName} = pd.read_csv("${config.filePath}", ${optionsString}).convert_dtypes()
+      `;
+    }
 
-    return code;
+    return code.trim();
   }
 
   public generateOptionsCode({ config }): string {
-    // Initialize an object to modify without affecting the original config
     let csvOptions = { ...config.csvOptions };
 
-    // Handle 'infer' option
     if (csvOptions.sep === 'infer') {
-      csvOptions.sep = 'None'; // Set sep to Python's None for code generation
-      csvOptions.engine = 'python'; // Ensure engine is set to 'python'
+      csvOptions.sep = 'None';
+      csvOptions.engine = 'python';
     }
 
-    // Adjust handling for 'header' and 'names'
     if (config.header === '0' || config.header === '1' || config.header === 'None') {
       csvOptions.header = config.header;
     }
 
     if (csvOptions.names && csvOptions.names.length > 0) {
-      csvOptions.names = `['${csvOptions.names.join("', '")}'], index_col=False`;
+      csvOptions.names = `['${csvOptions.names.join("', '")}']`;
       csvOptions.header = 0;
     }
 
-    // Initialize storage_options if not already present
     let storageOptions = csvOptions.storage_options || {};
     storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
 
@@ -162,9 +182,13 @@ ${outputName} = pd.read_csv("${config.filePath}"${optionsString ? `, ${optionsSt
       csvOptions.storage_options = storageOptions;
     }
 
-    // Prepare options string for pd.read_csv
-    let optionsString = Object.entries(csvOptions)
-      .filter(([key, value]) => value !== null && value !== '' && !(key === 'sep' && value === 'infer') && (Array.isArray(value) ? value.length > 0 : true))
+    let optionsEntries = Object.entries(csvOptions)
+      .filter(([key, value]) =>
+        value !== null &&
+        value !== '' &&
+        !(key === 'sep' && value === 'None') &&
+        (Array.isArray(value) ? value.length > 0 : true)
+      )
       .map(([key, value]) => {
         if (key === 'header' && (value === '0' || value === '1' || value === 'None')) {
           return `${key}=${value}`;
@@ -177,10 +201,9 @@ ${outputName} = pd.read_csv("${config.filePath}"${optionsString ? `, ${optionsSt
         } else {
           return `${key}=${value}`;
         }
-      })
-      .join(', ');
+      });
 
-    return optionsString;
+    return optionsEntries.join(', ');
   }
 
   public generateSampledComponentCode({ config, outputName, nrows }): string {

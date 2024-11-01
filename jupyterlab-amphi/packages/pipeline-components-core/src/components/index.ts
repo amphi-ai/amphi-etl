@@ -11,6 +11,9 @@ export { HtmlFileInput } from './inputs/files/HtmlFileInput';
 export { PdfFileInput } from './inputs/files/PdfFileInput';
 export { S3FileInput } from './inputs/files/S3FileInput';
 export { LocalFileInput } from './inputs/files/LocalFileInput';
+export { MultiFilesInput } from './inputs/files/MultiFilesInput';
+
+
 
 export { RestInput } from './inputs/cloud/RestInput';
 export { GoogleSheetsInput } from './inputs/cloud/GoogleSheetsInput';
