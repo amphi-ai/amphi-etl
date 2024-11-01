@@ -35,11 +35,13 @@ export class SQLQuery extends BaseCoreComponent {
   }
 
   public generateComponentCode({config, inputName, outputName}): string {
- 
-    // Template for the pandas query code, with backticks around column names
+    // Escape triple quotes in the query to prevent syntax errors
+    const escapedQuery = config.query.replace(/"""/g, '\\"""');
+
+    // Template for the pandas query code using triple quotes for multi-line SQL queries
     const code = `
 # Execute SQL Query using DuckDB
-${outputName} = duckdb.query("${config.query.replace('input_df1', inputName)}").to_df().convert_dtypes()\n
+${outputName} = duckdb.query("""${escapedQuery.replace('input_df1', inputName)}""").to_df().convert_dtypes()
 `;
     return code;
 }

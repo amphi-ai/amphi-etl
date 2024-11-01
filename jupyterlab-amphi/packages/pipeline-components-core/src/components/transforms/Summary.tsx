@@ -3,7 +3,10 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class Summary extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { statisticsType: "numerical" };
+    const defaultConfig = { 
+      statisticsType: "numerical",
+      pivot: "rows" // Set default pivot to 'columns'
+    };
     const form = {
       idPrefix: "component__form",
       fields: [
@@ -13,9 +16,19 @@ export class Summary extends BaseCoreComponent {
           id: "statisticsType",
           placeholder: "Select statistics type",
           options: [
-            { value: "all", label: "All types",  },
+            { value: "all", label: "All types" },
             { value: "numerical", label: "Numerical only", tooltip: "Limit the result to numeric types" },
-            { value: "categorical", label: "Categorical only", toolip: "Limit the result to categorical types" },
+            { value: "categorical", label: "Categorical only", tooltip: "Limit the result to categorical types" }, // Fixed 'toolip' to 'tooltip'
+          ],
+        },
+        {
+          type: "radio",
+          label: "Resulting Table Columns",
+          id: "pivot",
+          placeholder: "Select how should the resulting table be formatted",
+          options: [
+            { value: "rows", label: "As rows" },
+            { value: "columns", label: "As columns" }
           ],
         }
       ],
@@ -23,7 +36,7 @@ export class Summary extends BaseCoreComponent {
 
     const description = "Use Summary Component to provide a statistical summary of the incoming data.";
 
-    super("Summary", "summary", description, "pandas_df_processor", [], "transforms", eyeIcon, defaultConfig, form);
+    super("Summary", "summary", description, "pandas_df_processor", [], "Data Exploration", eyeIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {
@@ -32,23 +45,29 @@ export class Summary extends BaseCoreComponent {
 
   public generateComponentCode({ config, inputName, outputName }: { config: any; inputName: string; outputName: string }): string {
     const statisticsType = config.statisticsType;
+    const pivot = config.pivot;
     let code = `
 # Generate summary statistics
 `;
 
     switch (statisticsType) {
       case "all":
-        code += `${outputName} = ${inputName}.describe(include='all')`;
+        code += `${outputName} = ${inputName}.describe(include='all')\n`;
         break;
       case "numerical":
-        code += `${outputName} = ${inputName}.describe()`;
+        code += `${outputName} = ${inputName}.describe()\n`;
         break;
       case "categorical":
-        code += `${outputName} = ${inputName}.describe(include=['object', 'category'])`;
+        code += `${outputName} = ${inputName}.describe(include=['object', 'category'])\n`;
         break;
       default:
-        code += `${outputName} = ${inputName}.describe()`;
+        code += `${outputName} = ${inputName}.describe()\n`;
         break;
+    }
+
+    // Apply pivot if specified
+    if (pivot === "rows") {
+      code += `${outputName} = ${outputName}.transpose()\n`;
     }
 
     return code + '\n';

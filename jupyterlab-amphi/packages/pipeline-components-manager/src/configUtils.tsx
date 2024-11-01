@@ -24,6 +24,7 @@ import TransferData from './forms/transferData';
 import ValuesListForm from './forms/valuesListForm';
 import FormulaColumns from './forms/FormulaColumns'
 import { PipelineService } from './PipelineService';
+import { ThemeConsumer } from 'styled-components';
 
 
 // Set default options to component if specified
@@ -475,6 +476,9 @@ export default function ConfigModal({
   const [fieldsForm] = Form.useForm();
   const [formValues, setFormValues] = useState(fieldsForm.getFieldsValue());
 
+  const width = form["fields"].some(field => field.type === 'codeTextarea') ? '80%' : 800;
+  const height = form["fields"].some(field => field.type === 'codeTextarea') ? '80%' : '1200px';
+
   return (
     <>
       <Modal
@@ -483,7 +487,8 @@ export default function ConfigModal({
         open={modalOpen}
         onOk={() => setModalOpen(false)}
         onCancel={() => setModalOpen(false)}
-        width={800}
+        width={width}
+        style={{ height }}
         footer={(_, { OkBtn }) => (
           <>
             <OkBtn />

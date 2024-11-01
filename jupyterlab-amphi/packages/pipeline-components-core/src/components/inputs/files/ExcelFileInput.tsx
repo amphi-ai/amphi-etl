@@ -131,18 +131,30 @@ export class ExcelFileInput extends BaseCoreComponent {
     const excelOptions = { ...config.excelOptions };
     const storageOptionsString = excelOptions.storage_options ? JSON.stringify(excelOptions.storage_options) : '{}';
     const optionsString = this.generateOptionsString(excelOptions);
-
+  
     let code = '';
-    if (config.fileLocation === "s3") {
-      code += FileUtils.getS3FilePaths(config.filePath, storageOptionsString, outputName);
-      code += FileUtils.generateConcatCode(outputName, "read_excel", optionsString, true);
+    
+    // Check for wildcard input and generate appropriate code
+    if (FileUtils.isWildcardInput(config.filePath)) {
+      if (config.fileLocation === "s3") {
+        code += FileUtils.getS3FilePaths(config.filePath, storageOptionsString, outputName);
+        code += FileUtils.generateConcatCode(outputName, "read_excel", optionsString, true);
+      } else {
+        code += FileUtils.getLocalFilePaths(config.filePath, outputName);
+        code += FileUtils.generateConcatCode(outputName, "read_excel", optionsString, false);
+      }
     } else {
-      code += FileUtils.getLocalFilePaths(config.filePath, outputName);
-      code += FileUtils.generateConcatCode(outputName, "read_excel", optionsString, false);
+      // Simple file reading without wildcard
+      if (config.fileLocation === "s3") {
+        code += `${outputName} = pd.read_excel("s3://${config.filePath}", storage_options=${storageOptionsString}, ${optionsString}).convert_dtypes()\n`;
+      } else {
+        code += `${outputName} = pd.read_excel("${config.filePath}", ${optionsString}).convert_dtypes()\n`;
+      }
     }
-
+  
     return code;
   }
+  
 
   private generateOptionsString(excelOptions): string {
     return Object.entries(excelOptions)
