@@ -3,6 +3,7 @@ import { LabIcon } from '@jupyterlab/ui-components';
 import redditIconSvgStr from '../style/icons/reddit.svg';
 import trinoIconSvgStr from '../style/icons/trino.svg'
 import chromaSvgStr from '../style/icons/chroma.svg'
+import ollamaIconSvgStr from '../style/icons/ollama.svg'
 import pineconeIconSvgStr from '../style/icons/pinecone.svg';
 import changeCircleIconSvgStr from '../style/icons/change-circle-24.svg';
 import sortIconSvgStr from '../style/icons/sort-desc-24.svg';
@@ -93,6 +94,11 @@ export const trinoIcon = new LabIcon({
 export const engineIcon = new LabIcon({
   name: 'amphi:engine-icon',
   svgstr: engineIconSvgStr
+});
+
+export const ollamaIcon = new LabIcon({
+  name: 'amphi:ollama-icon',
+  svgstr: ollamaIconSvgStr
 });
 
 

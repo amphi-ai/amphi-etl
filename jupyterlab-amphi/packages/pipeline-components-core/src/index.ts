@@ -8,7 +8,7 @@ import {
   Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
   SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join,
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, DateTimeConverter,
-  EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput,
+  EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
   SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput
 } from './components';
@@ -60,6 +60,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(SplitColumn.getInstance());
     componentService.addComponent(Extract.getInstance());
     componentService.addComponent(ExpandList.getInstance());
+    componentService.addComponent(FlattenJSON.getInstance());
     componentService.addComponent(FormulaRow.getInstance());
     componentService.addComponent(Join.getInstance());
     componentService.addComponent(Unite.getInstance());
