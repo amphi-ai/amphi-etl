@@ -8,6 +8,7 @@ export { SemanticChunking } from './transforms/SemanticChunking';
 export { RecursiveChunking } from './transforms/RecursiveChunking';
 export { SQLQuery } from './transforms/SqlQuery';
 export { OpenAILookUp } from './transforms/OpenAILookUp';
+export { OllamaLookUp } from './transforms/OllamaLookUp';
 export { ConvertToDocuments } from './transforms/ConvertToDocuments';
 export { HtmlToMarkdown } from './transforms/HtmlToMarkdown';
 export { ParseHTML } from './transforms/ParseHTML';

@@ -244,7 +244,7 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
                     handleChange,
                     isSelected
                 })}
-                {showContent && (
+                {(showContent || isSelected) && (
                     <NodeToolbar isVisible position={Position.Bottom}>
                         <button onClick={() => setModalOpen(true)}><settingsIcon.react /></button>
                         {(FormulaRow.Type.includes('input') || FormulaRow.Type.includes('processor') || FormulaRow.Type.includes('output')) && (

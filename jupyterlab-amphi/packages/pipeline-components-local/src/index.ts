@@ -5,7 +5,7 @@ import {
 
 import { ComponentManager } from "@amphi/pipeline-components-manager";
 import {
-   SQLQuery, OpenAILookUp,
+   SQLQuery, OpenAILookUp, OllamaLookUp
 } from './components';
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -21,6 +21,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
     componentService.addComponent(SQLQuery.getInstance());
     componentService.addComponent(OpenAILookUp.getInstance());
+    componentService.addComponent(OllamaLookUp.getInstance());
+
 
   }
 };

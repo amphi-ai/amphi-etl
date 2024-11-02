@@ -30,7 +30,9 @@ export { Aggregate } from './transforms/Aggregate';
 export { CustomTransformations } from './custom/CustomTransformations';
 export { SplitColumn } from './transforms/SplitColumn';
 export { Deduplicate } from './transforms/Deduplicate';
-export { ExpandList } from './transforms/ExpandList';
+export { ExpandList } from './transforms/JSON/ExpandList';
+export { FlattenJSON } from './transforms/JSON/FlattenJSON';
+
 export { Sample } from './transforms/Sample';
 export { Sort } from './transforms/Sort';
 export { RenameColumns } from './transforms/RenameColumns';

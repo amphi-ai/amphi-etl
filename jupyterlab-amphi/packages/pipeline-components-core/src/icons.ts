@@ -54,6 +54,12 @@ import transposeSvgStr from '../style/icons/corner-right-down-24.svg';
 import eyeSvgStr from '../style/icons/eye-24.svg';
 import lockSvgStr from '../style/icons/lock-16.svg';
 import unlockSvgStr from '../style/icons/unlock-16.svg';
+import expandSvgStr from '../style/icons/sidebar-show-24.svg';
+
+export const expandJsonIcon = new LabIcon({
+  name: 'amphi:expand-icon',
+  svgstr: expandSvgStr
+});
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
