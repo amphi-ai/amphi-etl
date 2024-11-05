@@ -25,12 +25,6 @@ export class OllamaLookUp extends BaseCoreComponent {
           id: "columns"
         },
         {
-          type: "textarea",
-          label: "System Prompt",
-          id: "systemPrompt",
-          advanced: true
-        },
-        {
           type: "input",
           label: "Ollama Endpoint",
           id: "ollamaEndpoint",
@@ -54,6 +48,13 @@ export class OllamaLookUp extends BaseCoreComponent {
             { value: "mistral-nemo:12b", label: "mistral-nemo:12b" },
             { value: "phi3.5:3.8b", label: "phi3.5:3.8b" }
           ],
+          advanced: true
+        },
+        {
+          type: "input",
+          label: "New column name",
+          id: "newColumnName",
+          placeholder: "Type new column name",
           advanced: true
         }
       ],
@@ -80,7 +81,6 @@ def generate_ollama_response(
   row,  # The data row containing the values
   column_data,  # The list of column names to include in the prompt
   user_prompt,  # The initial user prompt text
-  system_prompt,  # The system-level instruction
   model  # The Ollama model to use
 ):
   # Create a dynamic prompt by including the user prompt and the corresponding data from the specified columns
@@ -104,20 +104,20 @@ def generate_ollama_response(
     // Extract the column names from the config object
     const columnNames = config.columns.map((col) => col.value);
 
+    // Determine the column name to use
+    const newColumnName = config.newColumnName && config.newColumnName.trim() ? config.newColumnName : `llama_${outputName}`;
+
     // Generate Python code to configure Ollama API and process data
     const code = `
 # Ollama request parameters
 ${outputName}_user_prompt = "${config.prompt}"
-${outputName}_system_prompt = "${config.systemPrompt}"
 ${outputName}_model = "${config.model}"  # Model to use for generating responses
 
-
 # Apply the function to generate output for each row
-${inputName}['llama_${outputName}'] = ${inputName}.apply(lambda row: generate_ollama_response(
+${inputName}['${newColumnName}'] = ${inputName}.apply(lambda row: generate_ollama_response(
   row, 
   ["${columnNames.join('", "')}"], 
   ${outputName}_user_prompt,
-  ${outputName}_system_prompt, 
   ${outputName}_model
 ), axis=1)
 ${outputName} = ${inputName}  # Set the modified DataFrame to the output variable

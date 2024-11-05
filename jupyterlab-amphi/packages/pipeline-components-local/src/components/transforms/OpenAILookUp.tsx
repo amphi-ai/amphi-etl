@@ -70,11 +70,18 @@ export class OpenAILookUp extends BaseCoreComponent {
           min: 0,
           max: 1,
           advanced: true
+        },
+        {
+          type: "input",
+          label: "New column name",
+          id: "newColumnName",
+          placeholder: "Type new column name",
+          advanced: true
         }
       ],
     };
     const description = "Use OpenAI Lookup to prompt OpenAI based on column values and create a new column with the response.";
-    
+
     super("OpenAI Prompt", "openAiLookup", description, "pandas_df_processor", [], "transforms.AI Prompt", openAiIcon, defaultConfig, form);
   }
 
@@ -130,6 +137,9 @@ def generate_gpt_response(
     // Extract the column names from the config object
     const columnNames = config.columns.map((col) => col.value);
 
+    // Determine the column name to use
+    const newColumnName = config.newColumnName && config.newColumnName.trim() ? config.newColumnName : `gpt_${outputName}`;
+
     // Generate Python code to configure OpenAI API and process data
     const code = `
 # Set the OpenAI API key for authentication
@@ -146,7 +156,7 @@ ${outputName}_max_tokens = ${config.maxToken}  # Maximum number of tokens for th
 ${outputName}_temperature = ${config.temperature}  # Response variability based on the specified temperature
 
 # Apply the function to generate output for each row
-${inputName}['gpt_${outputName}'] = ${inputName}.apply(lambda row: generate_gpt_response(
+${inputName}['${newColumnName}'] = ${inputName}.apply(lambda row: generate_gpt_response(
   row, 
   ["${columnNames.join('", "')}"], 
   ${outputName}_client,
@@ -160,5 +170,6 @@ ${outputName} = ${inputName}  # Set the modified DataFrame to the output variabl
 `;
     return code;
   }
+
 
 }

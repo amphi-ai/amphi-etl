@@ -85,6 +85,14 @@ export class DateTimeConverter extends BaseCoreComponent {
                     label: "New Column",
                     id: "newColumn",
                     advanced: true
+                },
+                {
+                    type: "input",
+                    label: "New column name",
+                    id: "newColumnName",
+                    placeholder: "Type new column name",
+                    condition: { newColumn: true },
+                    advanced: true
                 }
             ],
         };
@@ -109,7 +117,7 @@ export class DateTimeConverter extends BaseCoreComponent {
         // Determine the output column reference
         let outputColumnReference = inputColumnReference;
         if (newColumn) {
-            const newColumnName = config.newColumnName || `${columnName}_converted`;
+            const newColumnName = config.newColumnName && config.newColumnName.trim() ? config.newColumnName : `${columnName}_converted`;
             outputColumnReference = `'${newColumnName}'`;
         }
 

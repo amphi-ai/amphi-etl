@@ -275,6 +275,11 @@ def __amphi_display_dataframe(df, dfName=None, nodeId=None, runtime=None):
         result_df = df.copy()
         result_df.columns = [f"{col} ({df[col].dtype})" for col in df.columns]
 
+    elif mpd and isinstance(x, mpd.DataFrame):
+        runtime = runtime or "Snowflake (Snowpark pandas API)"
+        result_df = df.copy()
+        result_df.columns = [f"{col} ({df[col].dtype})" for col in df.columns]
+
     # Check if the input is an Ibis Table
     elif "ibis" in globals() and isinstance(df, ibis.expr.types.Table):
         runtime = runtime or "ibis"
