@@ -103,7 +103,7 @@ export class CodeGenerator {
                 executedNodes.clear();
                 executedNodes.add(nodeObject.id);
               }
-              displayCode = `\n__amphi_display_dataframe(${nodeObject.outputName}, dfName="${nodeObject.outputName}", nodeId="${targetNodeId}"${nodeObject.runtime !== "local" ? `, runtime="${nodeObject.runtime === "snowflake" ? "Snowflake" : nodeObject.runtime}"` : ''})`;
+              displayCode = `\n__amphi_display_dataframe(${nodeObject.outputName}, dfName="${nodeObject.outputName}", nodeId="${targetNodeId}"${nodeObject.runtime !== "local" ? `, runtime="${nodeObject.runtime}"` : ''})`;
             }
 
             // Append display code to both codeList and the last element of incrementalCodeList

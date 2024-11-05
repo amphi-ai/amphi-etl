@@ -192,18 +192,16 @@ export const GenerateUIInputs = React.memo(({
 
   // Function to check if a field should be displayed based on its condition
   const shouldDisplayField = useCallback((field, values) => {
-  
     if (!field.condition) {
       return true;
     }
   
     const checkCondition = (condition, obj) => {
-  
       return Object.keys(condition).every(key => {
         const conditionValue = condition[key];
         const fieldValue = obj[key];
-    
-        if (typeof conditionValue === "object" && fieldValue !== undefined) {
+  
+        if (typeof conditionValue === "object" && !Array.isArray(conditionValue) && fieldValue !== undefined) {
           return checkCondition(conditionValue, fieldValue);
         }
   
@@ -218,7 +216,7 @@ export const GenerateUIInputs = React.memo(({
     const finalResult = checkCondition(field.condition, values);
     return finalResult;
   }, [data]);
-
+  
   const renderItem = (title: string) => ({
     value: title,
     label: (
