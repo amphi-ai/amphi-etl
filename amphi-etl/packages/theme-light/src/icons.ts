@@ -17,6 +17,7 @@ import fileJsonIconSvgStr from '../style/icons/file-json-24.svg';
 import fileNotebookIconSvgStr from '../style/icons/file-ipynb-24.svg';
 import terminalIconSvgStr from '../style/icons/terminal-screen-24.svg';
 import homeIconSvgStr from '../style/icons/home-24.svg';
+import searchIconSvgStr from '../style/icons/search-24.svg';
 
 
 export const terminalIcon = new LabIcon({
@@ -102,4 +103,9 @@ export const fileNotebookIcon = new LabIcon({
 export const homeAmphiIcon = new LabIcon({
   name: 'amphi:home-icon',
   svgstr: homeIconSvgStr
+});
+
+export const searchAmphiIcon = new LabIcon({
+  name: 'amphi:search-icon',
+  svgstr: searchIconSvgStr
 });

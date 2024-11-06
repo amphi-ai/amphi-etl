@@ -2,8 +2,8 @@ import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
-import { folderIcon, saveIcon, runIcon, newFolderIcon, fileUploadIcon, refreshIcon, codeIcon, fileIcon, pdfIcon, spreadsheetIcon, jsonIcon, notebookIcon, listIcon, homeIcon } from '@jupyterlab/ui-components';
-import { folderAmphiIcon, saveAmphiIcon, playAmphiIcon, folderPlusAmphiIcon, uploadAmphiIcon, reloadAmphiIcon, fileSourceAmphiIcon, fileAmphiIcon, filePdfAmphiIcon, fileCsvAmphiIcon, fileJsonAmphiIcon, fileNotebookIcon, terminalIcon, homeAmphiIcon, fileParquetAmphiIcon, fileExcelAmphiIcon } from './icons'
+import { folderIcon, saveIcon, runIcon, newFolderIcon, fileUploadIcon, filterIcon, refreshIcon, codeIcon, fileIcon, pdfIcon, spreadsheetIcon, jsonIcon, notebookIcon, listIcon, homeIcon } from '@jupyterlab/ui-components';
+import { folderAmphiIcon, searchAmphiIcon, saveAmphiIcon, playAmphiIcon, folderPlusAmphiIcon, uploadAmphiIcon, reloadAmphiIcon, fileSourceAmphiIcon, fileAmphiIcon, filePdfAmphiIcon, fileCsvAmphiIcon, fileJsonAmphiIcon, fileNotebookIcon, terminalIcon, homeAmphiIcon, fileParquetAmphiIcon, fileExcelAmphiIcon } from './icons'
 import { IThemeManager } from '@jupyterlab/apputils';
 
 /**
@@ -58,6 +58,8 @@ const extension: JupyterFrontEndPlugin<void> = {
     notebookIcon.svgstr = fileNotebookIcon.svgstr;
     listIcon.svgstr = terminalIcon.svgstr;
     homeIcon.svgstr = homeAmphiIcon.svgstr;
+    filterIcon.svgstr = searchAmphiIcon.svgstr;
+
   }
 };
 
