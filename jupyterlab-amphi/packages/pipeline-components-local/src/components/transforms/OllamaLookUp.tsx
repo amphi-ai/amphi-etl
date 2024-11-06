@@ -71,7 +71,7 @@ export class OllamaLookUp extends BaseCoreComponent {
   }
 
   public provideImports(): string[] {
-    return ["import pandas as pd", "import ollama"];
+    return ["import pandas as pd", "from ollama import Client"];
   }
 
   public provideFunctions(): string[] {
@@ -80,6 +80,7 @@ export class OllamaLookUp extends BaseCoreComponent {
 def generate_ollama_response(
   row,  # The data row containing the values
   column_data,  # The list of column names to include in the prompt
+  client, # Ollama client
   user_prompt,  # The initial user prompt text
   model  # The Ollama model to use
 ):
@@ -88,7 +89,7 @@ def generate_ollama_response(
   dynamic_prompt = f"{user_prompt}: {column_values}"  # Combine user prompt with column values
 
   # Call Ollama's API to generate the response
-  response = ollama.generate(
+  response = client.generate(
       model=model,  # Llama model used for response generation
       prompt=dynamic_prompt,  # Include system and user prompts
   )
@@ -110,13 +111,15 @@ def generate_ollama_response(
     // Generate Python code to configure Ollama API and process data
     const code = `
 # Ollama request parameters
+${outputName}_client = Client(host='${config.ollamaEndpoint}')
 ${outputName}_user_prompt = "${config.prompt}"
 ${outputName}_model = "${config.model}"  # Model to use for generating responses
 
 # Apply the function to generate output for each row
 ${inputName}['${newColumnName}'] = ${inputName}.apply(lambda row: generate_ollama_response(
   row, 
-  ["${columnNames.join('", "')}"], 
+  ["${columnNames.join('", "')}"],
+  ${outputName}_client,
   ${outputName}_user_prompt,
   ${outputName}_model
 ), axis=1)
