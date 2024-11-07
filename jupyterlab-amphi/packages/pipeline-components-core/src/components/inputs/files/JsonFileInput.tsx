@@ -4,7 +4,7 @@ import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class JsonFileInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { fileLocation: "local", connectionMethod: "env",  jsonOptions: {} };
+    const defaultConfig = { fileLocation: "local", connectionMethod: "env", jsonOptions: {} };
     const form = {
       idPrefix: "component__form",
       fields: [
@@ -82,38 +82,60 @@ export class JsonFileInput extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, outputName }): string {
-    // Assuming the JSON options are nested under a jsonOptions key in the config object
+    // Generate the JSON options string using the separate function
+    const optionsString = this.generateJsonOptionsCode({ config });
 
+    // Prepare the options code segment
+    const optionsCode = optionsString ? `, ${optionsString}` : '';
+
+    // Generate the final Python code for reading JSON
+    const code = `
+${outputName} = pd.read_json("${config.filePath}"${optionsCode}).convert_dtypes()
+  `;
+
+    return code.trim();
+  }
+
+  public generateJsonOptionsCode({ config }): string {
     let jsonOptions = { ...config.jsonOptions };
-
+  
     // Initialize storage_options if not already present
     let storageOptions = jsonOptions.storage_options || {};
-
+  
+    // Handle S3-specific options
     storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
-
-    // Only add storage_options to csvOptions if it's not empty
+  
+    // Only add storage_options to jsonOptions if it's not empty
     if (Object.keys(storageOptions).length > 0) {
       jsonOptions.storage_options = storageOptions;
     }
-
-    let optionsString = Object.entries(jsonOptions || {})
+  
+    // Helper function to convert JavaScript values to Python literals
+    const toPythonLiteral = (value: any): string => {
+      if (typeof value === 'boolean') {
+        return value ? 'True' : 'False';
+      } else if (typeof value === 'string') {
+        return `"${value}"`; // Handle strings with quotes
+      } else if (Array.isArray(value)) {
+        return JSON.stringify(value); // Convert arrays to JSON strings
+      } else if (typeof value === 'object' && value !== null) {
+        return JSON.stringify(value); // Convert objects to JSON strings
+      } else {
+        return String(value); // Handle numbers and other types
+      }
+    };
+  
+    // Process jsonOptions into a string
+    let optionsEntries = Object.entries(jsonOptions)
       .filter(([key, value]) => value !== null && value !== '')
       .map(([key, value]) => {
         if (key === 'storage_options') {
-          return `${key}=${JSON.stringify(value)}`; 
+          return `${key}=${toPythonLiteral(value)}`;
         } else {
-          return `${key}="${value}"`; // Handle numbers and Python's None without quotes
+          return `${key}=${toPythonLiteral(value)}`;
         }
-      })      
-      .join(', ');
-
-    const optionsCode = optionsString ? `, ${optionsString}` : ''; // Only add optionsString if it exists
-    // const jsonPathCode = config.jsonPath ? `${outputName} = ${outputName}["${config.jsonPath}"]\n` : '';
-
-
-    const code = `
-${outputName} = pd.read_json("${config.filePath}"${optionsCode}).convert_dtypes()
-`;
-    return code;
+      });
+  
+    return optionsEntries.join(', ');
   }
 }

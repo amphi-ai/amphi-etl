@@ -181,11 +181,11 @@ button.jp-mod-styled.jp-mod-warn:active {
   color: var(--amphi-text-03)
 }
 
-/*
+
 .lm-MenuBar.lm-mod-active .lm-MenuBar-item .lm-mod-active {
-  background: var(--amphi-ui-02)
+  background-color: transparent;
 }
-  */
+
 
 body {
   background-color: var(--amphi-ui-background, #ffffff)

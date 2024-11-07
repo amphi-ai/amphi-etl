@@ -41,8 +41,8 @@ export class CustomCodeDocuments extends BaseCoreComponent {
 
     // Check if config.imports exists and is a string
     if (config.imports && typeof config.imports === 'string') {
-      // Split config.imports by lines, filter lines starting with 'import '
-      const importLines = config.imports.split('\n').filter(line => line.trim().startsWith('import ') || line.trim().startsWith('from '));
+      // Split config.imports by lines, filter lines starting with 'import ' or 'from ' (allowing for leading whitespace)
+      const importLines = config.imports.split('\n').filter(line => line.trim().startsWith('import') || line.trim().startsWith('from'));
 
       // Push each filtered import line to the imports array
       imports.push(...importLines);

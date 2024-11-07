@@ -316,7 +316,7 @@
 
   /* Menu
   */
-  --jp-private-menubar-height: 47px;
+  --jp-private-menubar-height: 47px !important;
   --jp-private-menu-item-height: 34px;
 
   /* sidebar
