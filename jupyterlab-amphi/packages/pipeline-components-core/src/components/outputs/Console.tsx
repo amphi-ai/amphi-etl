@@ -3,7 +3,7 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class Console extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = {};
+    const defaultConfig = { type: "Data", dataFormat: "text"};
     const form = {
       idPrefix: "component__form",
       fields: [
@@ -16,7 +16,7 @@ export class Console extends BaseCoreComponent {
             { value: "Info", label: "Info", tooltip: "Display a regular message in console." },
             // { value: "Warning", label: "Warning", tooltip: "Display a warning message in the console." },
             { value: "Error", label: "Error", tooltip: "Raise an error and display error message in console." },
-            // { value: "Data", label: "Data", tooltip: "Display data from input component." },
+            { value: "Data", label: "Data", tooltip: "Display data from input component." },
             // { value: "Markdown", label: "Markdown", tooltip: "Display Markdown in the console. The markdown might not be rendered outside Amphi console." },
             // { value: "HTML", label: "HTML", tooltip: "Display HTML in the console. The markdown might not be rendered outside HTML console." }
           ],
@@ -25,8 +25,9 @@ export class Console extends BaseCoreComponent {
           type: "textarea",
           label: "Message",
           id: "message",
-          placeholder: "Write body in JSON",
-          advanced: true
+          placeholder: "Write text message",
+          advanced: true,
+          condition: { type: ["Info", "Error"] }
         },
         {
           type: "inputNumber",
@@ -34,6 +35,18 @@ export class Console extends BaseCoreComponent {
           id: "limit",
           placeholder: "Number of records to print in console",
           min: 0,
+          condition: { type: "Data" },
+          advanced: true
+        },
+        {
+          type: "select",
+          label: "Data Format",
+          id: "dataFormat",
+          options: [
+            { value: "text", label: "Text", tooltip: "Display data as text in console." },
+            { value: "csv", label: "CSV", tooltip: "Display data as a csv in console." }
+          ],
+          condition: { type: "Data" },
           advanced: true
         },
       ],
@@ -41,6 +54,12 @@ export class Console extends BaseCoreComponent {
     const description = "Use Console Message to display a message (info, warning, error) or data into the Pipeline Console.";
 
     super("Console Message", "console", description, "pandas_df_output", [], "outputs", monitorIcon, defaultConfig, form);
+  }
+
+  public provideDependencies({ config }): string[] {
+    let deps: string[] = [];
+
+    return deps;
   }
 
   public provideImports({ config }): string[] {
@@ -74,7 +93,17 @@ export class Console extends BaseCoreComponent {
         if (config.limit) {
           inputName += `.head(${config.limit})`;
         }
-        code += `print(${inputName})\n`;
+        // Handle different data formats
+        switch (config.dataFormat) {
+          case "text":
+            code += `print(${inputName}.to_string(index=False))\n`;
+            break;
+          case "csv":
+            code += `print(${inputName}.to_csv(index=False))\n`;
+            break;
+          default:
+            code += `print(${inputName}.to_string(index=False))\n`;  // Default to text output if format is not specified
+        }
         break;
       case "Markdown":
         code += `display(Markdown("${config.message || ''}"))\n`;

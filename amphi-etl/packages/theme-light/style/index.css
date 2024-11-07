@@ -153,7 +153,9 @@ button.jp-mod-styled.jp-mod-warn:active {
 }
 
 .lm-MenuBar-item {
-  padding: 0 16px
+  padding: 0 16px;
+  background-color: transparent; /* Reset background after hover */
+  transition: background-color 0.2s ease; /* Smooth transition for hover state */
 }
 
 .lm-MenuBar-item:hover {
@@ -179,9 +181,11 @@ button.jp-mod-styled.jp-mod-warn:active {
   color: var(--amphi-text-03)
 }
 
-.lm-MenuBar.lm-mod-active .lm-MenuBar-item.lm-mod-active {
+/*
+.lm-MenuBar.lm-mod-active .lm-MenuBar-item .lm-mod-active {
   background: var(--amphi-ui-02)
 }
+  */
 
 body {
   background-color: var(--amphi-ui-background, #ffffff)

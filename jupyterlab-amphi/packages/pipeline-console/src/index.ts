@@ -244,26 +244,19 @@ const pipelines: JupyterFrontEndPlugin<void> = {
 
                     else if (args.msg.header.msg_type === 'stream') {
                       const streamMsg = args.msg as KernelMessage.IStreamMsg;
-
+                    
                       if (streamMsg.content.text && streamMsg.content.text !== '\n') {
-                        // Wrap the text in a <pre> tag to preserve formatting
+                        // Create a container div for the content
                         const streamText = document.createElement('div');
-                        // manager.panel.onNewLog(formatLogDate(args.msg.header.date), "info", formattedText);
-
-                        // Use the sanitizer to safely render the traceback
-                        const options = {
-                          host: streamText, // The container for the rendered content
-                          source: streamMsg.content.text, // The ANSI encoded string you want to render
-                          sanitizer: new Sanitizer(), // Use the default sanitizer
-                        };
-
-                        renderText(options).then(() => {
-                          // Once the traceback is sanitized and rendered, append it to the errorContainer
-                          // Convert the entire structure to HTML string if necessary
-                          const streamHTML = streamText.outerHTML;
-                          manager.panel.onNewLog(formatLogDate(args.msg.header.date), session.name, "info", streamHTML, null);
-                        });
-
+                    
+                        console.log("streamMsg.content.text %o", streamMsg.content.text);
+                    
+                        // Directly set innerHTML with replaced newlines, avoiding renderText to prevent duplication
+                        streamText.innerHTML = streamMsg.content.text.replace(/\n/g, '<br>');
+                    
+                        // Convert the entire structure to HTML string if necessary
+                        const streamHTML = streamText.outerHTML;
+                        manager.panel.onNewLog(formatLogDate(args.msg.header.date), session.name, "info", streamHTML, null);
                       }
                     }
                     else if (args.msg.header.msg_type === 'error') {
