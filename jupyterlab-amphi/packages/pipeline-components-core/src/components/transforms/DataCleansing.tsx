@@ -6,7 +6,7 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class DataCleansing extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { method: "value", value: 0, forward: false, backward: false };
+    const defaultConfig = { method: "value", removeRowsHow: "all", removeColumnsHow: "all", value: 0, forward: false, backward: false };
     const form = {
       idPrefix: "component__form",
       fields: [
@@ -49,8 +49,7 @@ export class DataCleansing extends BaseCoreComponent {
           label: "Apply cleansing to columns",
           id: "columns",
           tooltip: "Select the columns to apply the cleansing rules. If left blank, all columns will be selected by default.",
-          placeholder: "Default: All columns",
-          advanced: true
+          placeholder: "Default: All columns"
         },
         {
           type: "select",
@@ -64,13 +63,15 @@ export class DataCleansing extends BaseCoreComponent {
             { value: "ffill", label: "Forward fill" },
             { value: "bfill", label: "Backward fill" },
           ],
+          advanced: true
         },
         {
           type: "input",
           label: "Value",
           id: "value",
           condition: { replaceMethod: "custom" },
-          placeholder: "Enter value"
+          placeholder: "Enter value",
+          advanced: true
         },
         {
           type: "selectMultipleCustomizable",
@@ -85,7 +86,9 @@ export class DataCleansing extends BaseCoreComponent {
             { value: "numbers", label: "All Numbers" },
             { value: "punctuation", label: "Punctuation" }
           ],
+          advanced: true
         },
+        /*
         {
           type: "select",
           label: "Modify Case",
@@ -97,12 +100,14 @@ export class DataCleansing extends BaseCoreComponent {
             { value: "swapcase", label: "Swap Case", tooltip: "Swap uppercase characters to lowercase and vice versa." },
             { value: "camelcase", label: "Camel Case", tooltip: "Convert to camel case, where the first letter is lowercase and subsequent words are capitalized without spaces." },
             { value: "snakecase", label: "Snake Case", tooltip: "Replace spaces with underscores and convert all characters to lowercase." },
-          ]
+          ],
+          advanced: true
         },
+        */
       ],
     };
 
-    super("Data Cleansing", "cleanDataCLeansing", "no desc", "pandas_df_processor", [], "transforms", checkDiamondIcon, defaultConfig, form);
+    super("Data Cleansing", "cleanDataCLeansing", "Data Cleansing is a versatile component to cleanse data including character removal, string manipilation, null value handling, etc...", "pandas_df_processor", [], "transforms", checkDiamondIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {
@@ -110,7 +115,7 @@ export class DataCleansing extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    const code = [];
+    const code = ["\n"];
 
     const columns = config.columns;
 
@@ -126,6 +131,7 @@ export class DataCleansing extends BaseCoreComponent {
     // Handle missing value replacement
     if (config.replaceMethod) {
       let value;
+      code.push(`# Replace missing values`);
       if (config.replaceMethod === 'blanks') {
         value = "''";
       } else if (config.replaceMethod === '0') {
@@ -176,91 +182,23 @@ export class DataCleansing extends BaseCoreComponent {
       }
     });
 
-    const caseMapping = {
-      'lower': {
-        columns: '.str.lower()',
-        elements: 'x.lower() if isinstance(x, str) else x'
-      },
-      'upper': {
-        columns: '.str.upper()',
-        elements: 'x.upper() if isinstance(x, str) else x'
-      },
-      'capitalize': {
-        columns: '.str.capitalize()',
-        elements: 'x.capitalize() if isinstance(x, str) else x'
-      },
-      'swapcase': {
-        columns: '.str.swapcase()',
-        elements: 'x.swapcase() if isinstance(x, str) else x'
-      },
-      'camelcase': {
-        columns: ".str.title().str.replace(' ', '')",
-        elements: "x.title().replace(' ', '') if isinstance(x, str) else x"
-      },
-      'snakecase': {
-        columns: ".str.replace(' ', '_').str.lower()",
-        elements: "x.replace(' ', '_').lower() if isinstance(x, str) else x"
-      }
-    };
-
-    // Determine case transformation
-    const caseOption = config.case;
-    const caseTransform = caseOption ? caseMapping[caseOption] : null;
-
-    if (Object.keys(replaceDict).length > 0 || caseTransform) {
-      if (columnsList) {
-        code.push(`${outputName}[${columnsList}] = (`);
-        code.push(`    ${outputName}[${columnsList}]`);
-      } else {
-        code.push(`${outputName} = (`);
-        code.push(`    ${outputName}`);
-      }
-
-      if (Object.keys(replaceDict).length > 0) {
-        const regexFlag = 'regex=True';
-        const replaceStr = JSON.stringify(replaceDict).replace(/"/g, '\'');
-        code.push(`    .astype(str).replace(${replaceStr}, ${regexFlag})`);
-      } else {
-        code.push(`    .astype(str)`);
-      }
-
-      if (columnsList) {
-        if (caseTransform) {
-          code.push(`    .apply(lambda col: col${caseTransform.columns})`);
-        } else {
-          code.push(`    .apply(lambda col: col)`);
-        }
-      } else {
-        if (caseTransform) {
-          code.push(`    .applymap(lambda x: ${caseTransform.elements})`);
-        } else {
-          code.push(`    .applymap(lambda x: x)`);
-        }
-      }
-
-      code.push(`)`);
-    }
-
     // Handle removal of null rows
+    
     if (config.removeNullRows) {
       if (columnsList) {
+        code.push(`# Remove rows with null values in provided columns`);
         code.push(`${outputName} = ${outputName}.dropna(axis=0, how='${config.removeRowsHow}', subset=${columnsList})`);
       } else {
+        code.push(`# Remove rows with null values`);
         code.push(`${outputName} = ${outputName}.dropna(axis=0, how='${config.removeRowsHow}')`);
       }
     }
 
     // Handle removal of null columns
     if (config.removeNullColumns) {
-      if (columnsList) {
-        code.push(`${outputName} = ${outputName}.dropna(axis=1, how='${config.removeColumnsHow}', subset=${columnsList})`);
-      } else {
+        code.push(`# Remove columns with null values`);
+        code.push(`${outputName} = ${outputName}.dropna(axis=1, how='${config.removeColumnsHow}'`);
         code.push(`${outputName} = ${outputName}.dropna(axis=1, how='${config.removeColumnsHow}')`);
-      }
-    }
-
-    if (code.some(line => line.includes('re.'))) {
-      code.unshift('import re');
     }
 
     return code.join('\n');
