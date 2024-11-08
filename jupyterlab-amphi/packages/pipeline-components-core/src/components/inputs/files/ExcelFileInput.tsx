@@ -130,7 +130,7 @@ export class ExcelFileInput extends BaseCoreComponent {
   public generateComponentCode({ config, outputName }): string {
     const excelOptions = { ...config.excelOptions };
     const storageOptionsString = excelOptions.storage_options ? JSON.stringify(excelOptions.storage_options) : '{}';
-    const optionsString = this.generateOptionsString(excelOptions);
+    const optionsString = this.generateOptionsCode(excelOptions);
   
     let code = '';
     
@@ -156,7 +156,7 @@ export class ExcelFileInput extends BaseCoreComponent {
   }
   
 
-  private generateOptionsString(excelOptions): string {
+  public generateOptionsCode(excelOptions): string {
     return Object.entries(excelOptions)
       .filter(([key, value]) => value !== null && value !== '')
       .map(([key, value]) => {
