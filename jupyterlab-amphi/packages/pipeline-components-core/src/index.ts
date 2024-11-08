@@ -13,7 +13,7 @@ import {
   SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils
 } from './components';
 
-export { CsvFileInput, ExcelFileInput, ParquetFileInput, JsonFileInput, FileUtils }
+export { CsvFileInput, ExcelFileInput, ParquetFileInput, JsonFileInput, FileUtils, CsvFileOutput, ExcelFileOutput, ParquetFileOutput, JsonFileOutput }
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-components-core',
