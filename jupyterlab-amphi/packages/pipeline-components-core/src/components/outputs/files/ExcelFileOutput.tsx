@@ -112,57 +112,56 @@ export class ExcelFileOutput extends BaseCoreComponent {
     return imports;
   }
 
-  public generateComponentCode({config, inputName}): string {
+  public generateComponentCode({ config, inputName }): string {
+    const optionsString = this.generateOptionsCode(config);
+    const createFoldersCode = config.createFoldersIfNotExist 
+      ? `os.makedirs(os.path.dirname("${config.filePath}"), exist_ok=True)\n`
+      : '';
+    const engine = config.engine !== 'None' ? `'${config.engine}'` : config.engine;
 
+    let code = '';
+    if (config.excelOptions.mode === 'append') {
+      code = `
+# Exporting to Excel (append mode)
+with pd.ExcelWriter("${config.filePath}", mode="a", engine=${engine}) as writer:
+    ${inputName}.to_excel(writer${optionsString})
+`;
+    } else {
+      code = `
+# Exporting to Excel
+${inputName}.to_excel("${config.filePath}", engine=${engine}${optionsString})
+`;
+    }
 
+    return `${createFoldersCode}${code.trim()}`;
+  }
+
+  public generateOptionsCode(config): string {
     let excelOptions = { ...config.excelOptions };
 
-    // Initialize storage_options if not already present
+    // Handle storage options
     let storageOptions = excelOptions.storage_options || {};
-
     storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
 
-    // Only add storage_options to csvOptions if it's not empty
     if (Object.keys(storageOptions).length > 0) {
       excelOptions.storage_options = storageOptions;
     }
 
-    let excelWriterNeeded = config.excelOptions.mode === 'a';
-    let options = {...config.excelOptions};
-  
-    // Remove mode from options as it's handled separately
-    delete options.mode;
-    
-    let optionsString = Object.entries(excelOptions)
-    .filter(([key, value]) => value !== null && value !== '')
-    .map(([key, value]) => {
-      if (typeof value === 'boolean') {
-        return `${key}=${value ? 'True' : 'False'}`;
-      } else if (key === 'storage_options') {
-        return `${key}=${JSON.stringify(value)}`; 
-      } else if (value === "None") { // Handle None values
-        return `${key}=None`;
-      }
-      return `${key}='${value}'`;
-    })
-    .join(', ');
-  
-    optionsString = optionsString ? `, ${optionsString}` : '';
-  
-    const createFoldersCode = config.createFoldersIfNotExist ? `os.makedirs(os.path.dirname("${config.filePath}"), exist_ok=True)\n` : '';
-    const engine = config.engine !== 'None' ? `'${config.engine}'` : config.engine;
+    // Generate options string
+    let optionsEntries = Object.entries(excelOptions)
+      .filter(([key, value]) => value !== null && value !== '')
+      .map(([key, value]) => {
+        if (typeof value === 'boolean') {
+          return `${key}=${value ? 'True' : 'False'}`;
+        } else if (key === 'storage_options') {
+          return `${key}=${JSON.stringify(value)}`;
+        } else if (value === "None") {
+          return `${key}=None`;
+        }
+        return `${key}='${value}'`;
+      });
 
-    let code = '';
-    if (excelWriterNeeded) {
-      code = `with pd.ExcelWriter("${config.filePath}", mode="a") as writer:\n` +
-             `    ${inputName}.to_excel(writer${optionsString})
-  `;
-    } else {
-      code = `
-${inputName}.to_excel("${config.filePath}", engine=${engine}${optionsString})
-  `;
-    }
-
-    return `${createFoldersCode}${code}`;
+    const optionsString = optionsEntries.join(', ');
+    return optionsString ? `, ${optionsString}` : '';
   }
 }

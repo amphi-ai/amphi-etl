@@ -95,40 +95,42 @@ export class CsvFileOutput extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName }): string {
-
-    let csvOptions = { ...config.csvOptions };
-
-    // Initialize storage_options if not already present
-    let storageOptions = csvOptions.storage_options || {};
-
-    storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
-
-    // Only add storage_options to csvOptions if it's not empty
-    if (Object.keys(storageOptions).length > 0) {
-      csvOptions.storage_options = storageOptions;
-    }
-
-    let optionsString = Object.entries(csvOptions)
-    .filter(([key, value]) => value !== null && value !== '')
-    .map(([key, value]) => {
-      if (typeof value === 'boolean') {
-        return `${key}=${value ? 'True' : 'False'}`;
-      } else if (key === 'storage_options') {
-        return `${key}=${JSON.stringify(value)}`; 
-      }
-      return `${key}='${value}'`;
-    })
-    .join(', ');
-
-    // Add comma only if optionsString is not empty
-    optionsString = optionsString ? `, ${optionsString}` : '';
-
-    const createFoldersCode = config.createFoldersIfNotExist ? `os.makedirs(os.path.dirname("${config.filePath}"), exist_ok=True)\n` : '';
+    const optionsString = this.generateOptionsCode(config);
+    const createFoldersCode = config.createFoldersIfNotExist 
+      ? `os.makedirs(os.path.dirname("${config.filePath}"), exist_ok=True)\n`
+      : '';
 
     const code = `
 # Export to CSV file
 ${createFoldersCode}${inputName}.to_csv("${config.filePath}"${optionsString})
 `;
-    return code;
+    return code.trim();
+  }
+
+  public generateOptionsCode(config): string {
+    let csvOptions = { ...config.csvOptions };
+
+    // Handle storage options
+    let storageOptions = csvOptions.storage_options || {};
+    storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
+
+    if (Object.keys(storageOptions).length > 0) {
+      csvOptions.storage_options = storageOptions;
+    }
+
+    // Generate options string
+    let optionsEntries = Object.entries(csvOptions)
+      .filter(([key, value]) => value !== null && value !== '')
+      .map(([key, value]) => {
+        if (typeof value === 'boolean') {
+          return `${key}=${value ? 'True' : 'False'}`;
+        } else if (key === 'storage_options') {
+          return `${key}=${JSON.stringify(value)}`;
+        }
+        return `${key}='${value}'`;
+      });
+
+    const optionsString = optionsEntries.join(', ');
+    return optionsString ? `, ${optionsString}` : '';
   }
 }

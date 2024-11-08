@@ -12,7 +12,7 @@ export { PdfFileInput } from './inputs/files/PdfFileInput';
 export { S3FileInput } from './inputs/files/S3FileInput';
 export { LocalFileInput } from './inputs/files/LocalFileInput';
 export { CustomInput } from './custom/CustomInput';
-
+export { FileUtils } from './common/FileUtils'; // Import the FileUtils class
 
 export { RestInput } from './inputs/cloud/RestInput';
 export { GoogleSheetsInput } from './inputs/cloud/GoogleSheetsInput';

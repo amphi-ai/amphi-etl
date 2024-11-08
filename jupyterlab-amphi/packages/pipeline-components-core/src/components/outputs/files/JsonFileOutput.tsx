@@ -71,41 +71,42 @@ export class JsonFileOutput extends BaseCoreComponent {
     return imports;
   }
 
-  public generateComponentCode({config, inputName}): string {
+  public generateComponentCode({ config, inputName }): string {
+    const optionsString = this.generateOptionsCode(config);
+    const createFoldersCode = config.createFoldersIfNotExist 
+      ? `os.makedirs(os.path.dirname("${config.filePath}"), exist_ok=True)\n`
+      : '';
 
+    const code = `
+# Export to JSON file
+${createFoldersCode}${inputName}.to_json("${config.filePath}"${optionsString})
+`;
+    return code.trim();
+  }
+
+  public generateOptionsCode(config): string {
     let jsonOptions = { ...config.jsonOptions };
 
-    // Initialize storage_options if not already present
+    // Handle storage options
     let storageOptions = jsonOptions.storage_options || {};
-
     storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
 
-    // Only add storage_options to csvOptions if it's not empty
     if (Object.keys(storageOptions).length > 0) {
       jsonOptions.storage_options = storageOptions;
     }
 
-    let optionsString = Object.entries(jsonOptions || {})
+    // Generate options string
+    let optionsEntries = Object.entries(jsonOptions)
       .filter(([key, value]) => value !== null && value !== '')
       .map(([key, value]) => {
         if (key === 'storage_options') {
-          return `${key}=${JSON.stringify(value)}`; 
-        } else {
-          return `${key}="${value}"`; // Handle numbers and Python's None without quotes
+          return `${key}=${JSON.stringify(value)}`;
         }
-      })      
-      .join(', ');
+        return `${key}="${value}"`;
+      });
 
-    const optionsCode = optionsString ? `, ${optionsString}` : ''; // Only add optionsString if it exists
-
-    const createFoldersCode = config.createFoldersIfNotExist ? `os.makedirs(os.path.dirname("${config.filePath}"), exist_ok=True)\n` : '';
-
-    const code = `
-# Export to JSON file
-${createFoldersCode}${inputName}.to_json("${config.filePath}"${optionsCode})
-`;
-    return code;
-  }  
-
+    const optionsString = optionsEntries.join(', ');
+    return optionsString ? `, ${optionsString}` : '';
+  }
 
 }
