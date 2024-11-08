@@ -156,6 +156,7 @@ button.jp-mod-styled.jp-mod-warn:active {
   padding: 0 16px;
   background-color: transparent; /* Reset background after hover */
   transition: background-color 0.2s ease; /* Smooth transition for hover state */
+  line-height: 46px;
 }
 
 .lm-MenuBar-item:hover {
@@ -186,6 +187,9 @@ button.jp-mod-styled.jp-mod-warn:active {
   background-color: transparent;
 }
 
+.lm-MenuBar-item.lm-mod-active {
+  background-color: white;
+}
 
 body {
   background-color: var(--amphi-ui-background, #ffffff)
@@ -347,10 +351,18 @@ body ::-webkit-scrollbar-thumb {
   height: 24px
 }
 
+.lm-DockPanel-handle {
+  height: 0px;
+  width: 0px;
+}
+
 .lm-DockPanel-handle[data-orientation='vertical'] {
   border-bottom: 1px solid var(--amphi-skeleton-01);
-  background-color: transparent;
+  background-color: #F1F4F7;
+}
 
+.lm-DockPanel-handle[data-orientation='horizontal'] {
+  background-color: #F1F4F7;
 }
 
 .lm-CommandPalette-itemLabel {
