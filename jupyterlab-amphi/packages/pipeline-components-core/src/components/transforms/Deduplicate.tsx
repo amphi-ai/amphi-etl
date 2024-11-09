@@ -34,10 +34,11 @@ export class Deduplicate extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd"];
+    return [];
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
+    
     // Initializing code string
     let code = `
   # Deduplicate rows\n`;

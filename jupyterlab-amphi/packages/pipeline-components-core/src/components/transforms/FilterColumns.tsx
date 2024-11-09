@@ -23,7 +23,7 @@ export class FilterColumns extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd"];
+    return [];
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {

@@ -286,7 +286,8 @@ const PipelineWrapper: React.FC<IProps> = ({
                       ...node.data,
                       backend: {
                         ...node.data.backend,
-                        engine: sourceBackend.engine
+                        engine: sourceBackend.engine,
+                        prefix: sourceBackend.prefix
                       }
                     }
                   }

@@ -54,6 +54,7 @@ export class Join extends BaseCoreComponent {
 
   public generateComponentCode({ config, inputName1, inputName2, outputName }): string {
 
+    const prefix = config?.backend?.prefix ?? "pd";
     // Extract and map leftKeyColumn and rightKeyColumn arrays
     const leftKeys = config.leftKeyColumn.map(column => column.named ? `"${column.value}"` : column.value);
     const rightKeys = config.rightKeyColumn.map(column => column.named ? `"${column.value}"` : column.value);
@@ -65,14 +66,14 @@ export class Join extends BaseCoreComponent {
     let code = `# Join ${inputName1} and ${inputName2}\n`;
 
     if (config.how === "anti-left") {
-      code += `${outputName} = pd.merge(${inputName1}, ${inputName2}, left_on=${leftKeysStr}, right_on=${rightKeysStr}, how="left", indicator=True)\n`;
+      code += `${outputName} = ${prefix}.merge(${inputName1}, ${inputName2}, left_on=${leftKeysStr}, right_on=${rightKeysStr}, how="left", indicator=True)\n`;
       code += `${outputName} = ${outputName}[${outputName}["_merge"] == "left_only"].drop(columns=["_merge"])\n`;
     } else if (config.how === "anti-right") {
-      code += `${outputName} = pd.merge(${inputName1}, ${inputName2}, left_on=${leftKeysStr}, right_on=${rightKeysStr}, how="right", indicator=True)\n`;
+      code += `${outputName} = ${prefix}.merge(${inputName1}, ${inputName2}, left_on=${leftKeysStr}, right_on=${rightKeysStr}, how="right", indicator=True)\n`;
       code += `${outputName} = ${outputName}[${outputName}["_merge"] == "right_only"].drop(columns=["_merge"])\n`;
     } else {
       const joinType = config.how ? `, how="${config.how}"` : '';
-      code += `${outputName} = pd.merge(${inputName1}, ${inputName2}, left_on=${leftKeysStr}, right_on=${rightKeysStr}${joinType})\n`;
+      code += `${outputName} = ${prefix}.merge(${inputName1}, ${inputName2}, left_on=${leftKeysStr}, right_on=${rightKeysStr}${joinType})\n`;
     }
 
     return code;

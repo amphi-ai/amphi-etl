@@ -105,7 +105,8 @@ export class TypeConverter extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    const columnName = config.column.value;
+
+    const prefix = config?.backend?.prefix ?? "pd";    const columnName = config.column.value;
     const columnType = config.column.type;
     const columnNamed = config.column.named;
     const dataType = config.dataType[config.dataType.length - 1];
@@ -115,12 +116,13 @@ export class TypeConverter extends BaseCoreComponent {
     code += `${outputName} = ${inputName}.copy()\n`;
     code += `# Convert ${columnName} from ${columnType} to ${dataType}\n`;
 
-    code += this.generateConversionCode(inputName, outputName, columnName, columnType, dataType, columnNamed, errorManagement);
+    code += this.generateConversionCode(inputName, outputName, columnName, columnType, dataType, columnNamed, errorManagement, prefix);
 
     return code;
   }
 
-  private generateConversionCode(inputName: string, outputName: string, columnName: string, columnType: string, dataType: string, columnNamed: boolean, errorManagement: string): string {
+  private generateConversionCode(inputName: string, outputName: string, columnName: string, columnType: string, dataType: string, columnNamed: boolean, errorManagement: string, prefix: string): string {
+
     let code = '';
     let conversionFunction: string;
     let additionalParams = "";
@@ -140,16 +142,16 @@ export class TypeConverter extends BaseCoreComponent {
         const unit = dataType.split("[")[1].split("]")[0];
         additionalParams = `, unit="${unit}"`;
       }
-      conversionFunction = `pd.to_datetime(${inputName}["${columnName}"]${additionalParams}, errors='${errorsParam}')`;
+      conversionFunction = `${prefix}.to_datetime(${inputName}["${columnName}"]${additionalParams}, errors='${errorsParam}')`;
       if (columnNamed) {
         code += `${outputName}["${columnName}"] = ${conversionFunction}\n`;
       } else {
         code += `${outputName}.iloc[:, ${columnName}] = ${conversionFunction}\n`;
       }
     } else if (dataType.startsWith('int') || dataType.startsWith('float') || dataType.startsWith('uint')) {
-      // Use pd.to_numeric for numeric types
+      // Use ${prefix}.to_numeric for numeric types
 
-      conversionFunction = `pd.to_numeric(${inputName}["${columnName}"], errors='${errorsParam}')`;
+      conversionFunction = `${prefix}.to_numeric(${inputName}["${columnName}"], errors='${errorsParam}')`;
 
       if (columnNamed) {
         code += `${outputName}["${columnName}"] = ${conversionFunction}\n`;

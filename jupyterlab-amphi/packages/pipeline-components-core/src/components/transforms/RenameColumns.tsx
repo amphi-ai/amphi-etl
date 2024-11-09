@@ -24,7 +24,7 @@ export class RenameColumns extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd"];
+    return [];
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {

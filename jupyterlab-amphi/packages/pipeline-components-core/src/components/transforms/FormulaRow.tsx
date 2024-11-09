@@ -260,7 +260,7 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
     }
 
     public provideImports({ config }): string[] {
-        return ["import pandas as pd"];
+        return [];
     }
 
 

@@ -70,6 +70,7 @@ export class SplitColumn extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
+    const prefix = config?.backend?.prefix ?? "pd";
     const columnName = config.column.value; // name of the column
     const columnType = config.column.type; // current type of the column (e.g., 'int', 'string')
     const columnNamed = config.column.named; // boolean, true if column is named, false if index is used
@@ -106,7 +107,7 @@ export class SplitColumn extends BaseCoreComponent {
       }
   
       // Combine the original DataFrame with the new columns
-      code += `${outputName} = pd.concat([${inputName}, ${uniqueSplitVar}], axis=1)\n`;
+      code += `${outputName} = ${prefix}.concat([${inputName}, ${uniqueSplitVar}], axis=1)\n`;
   
       // Check if the original column should be kept
       if (!config.keepOriginalColumn) {

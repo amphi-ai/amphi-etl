@@ -56,7 +56,7 @@ export class Extract extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "import re"];
+    return ["import re"];
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {

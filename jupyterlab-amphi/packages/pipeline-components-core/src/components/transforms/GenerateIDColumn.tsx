@@ -45,6 +45,8 @@ export class GenerateIDColumn extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
+
+    const prefix = config?.backend?.prefix ?? "pd";
     const startingValue = config.startingValue || 0;
     const columnType = config.columnType || "int64";
     const insertPosition = config.insertPosition || "last";
@@ -56,7 +58,7 @@ export class GenerateIDColumn extends BaseCoreComponent {
     const code = `
 # Generate ID column
 ${outputName} = ${inputName}.copy()
-${outputName}['ID'] = pd.Series(${idColumn}, dtype='${columnType}')
+${outputName}['ID'] = ${prefix}.Series(${idColumn}, dtype='${columnType}')
 ${outputName} = ${outputName}.reindex(columns=${insertPosition === "first" ? idColumnFirst : idColumnLast})
 `;
 

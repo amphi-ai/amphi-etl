@@ -39,6 +39,7 @@ export class Transpose extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
+    
     const keyColumns = this.formatColumns(config.key);
     const dataColumns = this.formatColumns(config.columns);
 

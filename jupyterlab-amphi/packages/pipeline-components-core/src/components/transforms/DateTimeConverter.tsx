@@ -102,11 +102,11 @@ export class DateTimeConverter extends BaseCoreComponent {
     }
 
     public provideImports({ config }): string[] {
-        return ["import pandas as pd", "from datetime import datetime", "import locale"];
+        return ["from datetime import datetime", "import locale"];
     }
 
     public generateComponentCode({ config, inputName, outputName }) {
-        const { conversionType, dateTimeField, language, dateTimeFormat, newColumn } = config;
+        const prefix = config?.backend?.prefix ?? "pd";        const { conversionType, dateTimeField, language, dateTimeFormat, newColumn } = config;
 
         // Extract column details
         const columnName = dateTimeField.value;
@@ -181,7 +181,7 @@ ${outputName}[${outputColumnReference}] = ${outputName}[${inputColumnReference}]
         } else if (conversionType === 'stringToDate') {
             code += `
 # Convert string column to datetime with specified format
-${outputName}[${outputColumnReference}] = pd.to_datetime(${outputName}[${inputColumnReference}], format='${dateTimeFormat}')
+${outputName}[${outputColumnReference}] = ${prefix}.to_datetime(${outputName}[${inputColumnReference}], format='${dateTimeFormat}')
 `;
         }
 

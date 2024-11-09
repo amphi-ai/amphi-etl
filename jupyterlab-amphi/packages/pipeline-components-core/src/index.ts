@@ -92,7 +92,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(OracleOutput.getInstance())
     componentService.addComponent(CustomOutput.getInstance())
 
-
     // Documentation
     componentService.addComponent(Annotation.getInstance())
   }

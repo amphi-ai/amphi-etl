@@ -106,7 +106,7 @@ export class DataCleansing extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    const imports = ["import pandas as pd"];
+    const imports = [];
     // Import 're' only if unwanted characters are specified
     if (config.removeUnwantedCharacters && config.removeUnwantedCharacters.length > 0) {
       imports.push("import re");

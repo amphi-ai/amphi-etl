@@ -46,8 +46,8 @@ export class Unite extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputNames, outputName }): string {
-
-    const ignoreIndex = config.ignoreIndex !== undefined ? `, ignore_index=${config.ignoreIndex ? 'True' : 'False'}` : '';
+    
+    const prefix = config?.backend?.prefix ?? "pd";    const ignoreIndex = config.ignoreIndex !== undefined ? `, ignore_index=${config.ignoreIndex ? 'True' : 'False'}` : '';
     const sort = config.sort !== undefined ? `, sort=${config.sort ? 'True' : 'False'}` : '';
     const concatDirection = config.concatDirection === "horizontal" 
     ? ", axis=1" 
@@ -59,7 +59,7 @@ export class Unite extends BaseCoreComponent {
 
     const code = `
 # Concatenate dataframes
-${outputName} = pd.concat([${dataframesList}]${ignoreIndex}${sort}${concatDirection})
+${outputName} = ${prefix}.concat([${dataframesList}]${ignoreIndex}${sort}${concatDirection})
 `;
     return code;
   }
