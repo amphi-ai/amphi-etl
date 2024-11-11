@@ -1,5 +1,5 @@
 
-import { fileTextIcon } from '../../../icons';
+import { filePdfIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class PdfFileInput extends BaseCoreComponent {
@@ -29,7 +29,7 @@ export class PdfFileInput extends BaseCoreComponent {
       ],
     };
 
-    super("PDF File Input", "pdfInput", "documents_input", "no desc", ["pdf"], "inputs.Unstructured", fileTextIcon, defaultConfig, form);
+    super("PDF File Input", "pdfInput", "documents_input", "no desc", ["pdf"], "inputs.Unstructured", filePdfIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

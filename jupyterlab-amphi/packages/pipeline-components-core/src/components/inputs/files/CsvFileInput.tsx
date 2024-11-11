@@ -1,4 +1,4 @@
-import { fileTextIcon } from '../../../icons';
+import { fileCsvIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 import { FileUtils } from '../../common/FileUtils'; // Import the FileUtils class
@@ -102,7 +102,7 @@ export class CsvFileInput extends BaseCoreComponent {
     };
     const description = "Use CSV File Input to access data from a CSV file or multiple CSV files using a wildcard, locally or remotely (via HTTP or S3)."
 
-    super("CSV File Input", "csvFileInput", description, "pandas_df_input", ["csv", "tsv"], "inputs", fileTextIcon, defaultConfig, form);
+    super("CSV File Input", "csvFileInput", description, "pandas_df_input", ["csv", "tsv"], "inputs", fileCsvIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

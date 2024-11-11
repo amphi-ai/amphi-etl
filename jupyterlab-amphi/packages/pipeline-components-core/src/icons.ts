@@ -55,6 +55,11 @@ import eyeSvgStr from '../style/icons/eye-24.svg';
 import lockSvgStr from '../style/icons/lock-16.svg';
 import unlockSvgStr from '../style/icons/unlock-16.svg';
 import expandSvgStr from '../style/icons/sidebar-show-24.svg';
+import fileCsvIconSvgStr from '../style/icons/file-csv-24.svg';
+import filePdfIconSvgStr from '../style/icons/file-pdf-24.svg';
+import fileExcelIconSvgStr from '../style/icons/file-excel-24.svg';
+import fileParquetIconSvgStr from '../style/icons/file-parquet-24.svg';
+import fileJsonIconSvgStr from '../style/icons/file-json-24.svg';
 
 export const expandJsonIcon = new LabIcon({
   name: 'amphi:expand-icon',
@@ -329,4 +334,30 @@ export const lockIcon = new LabIcon({
 export const unlockIcon = new LabIcon({
   name: 'amphi:unlock-icon',
   svgstr: unlockSvgStr
+});
+
+// Files
+export const fileCsvIcon = new LabIcon({
+  name: 'amphi:file-csv-icon',
+  svgstr: fileCsvIconSvgStr
+});
+
+export const filePdfIcon = new LabIcon({
+  name: 'amphi:file-pdf-icon',
+  svgstr: filePdfIconSvgStr
+});
+
+export const fileJsonIcon = new LabIcon({
+  name: 'amphi:file-json-icon',
+  svgstr: fileJsonIconSvgStr
+});
+
+export const fileExcelIcon = new LabIcon({
+  name: 'amphi:file-excel-icon',
+  svgstr: fileExcelIconSvgStr
+});
+
+export const fileParquetIcon = new LabIcon({
+  name: 'amphi:file-parquet-icon',
+  svgstr: fileParquetIconSvgStr
 });

@@ -124,7 +124,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
       );
       defaultEngineBackend = setting.get('defaultEngineBackend').composite as string;
       console.log(
-        `Settings extension: defaultEngineBackend is set to '${enableDebugMode}'`
+        `Settings extension: defaultEngineBackend is set to '${defaultEngineBackend}'`
       );
     }
 

@@ -1,5 +1,5 @@
 import { BaseCoreComponent } from '../../BaseCoreComponent';
-import { fileTextIcon } from '../../../icons';
+import { fileJsonIcon } from '../../../icons';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class JsonFileInput extends BaseCoreComponent {
@@ -74,7 +74,7 @@ export class JsonFileInput extends BaseCoreComponent {
 
     const description = "Use JSON File Input to access data from a JSON file locally or remotely (via HTTP or S3)."
 
-    super("JSON File Input", "jsonFileInput", description, "pandas_df_input", ["json", "jsonl"], "inputs", fileTextIcon, defaultConfig, form);
+    super("JSON File Input", "jsonFileInput", description, "pandas_df_input", ["json", "jsonl"], "inputs", fileJsonIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

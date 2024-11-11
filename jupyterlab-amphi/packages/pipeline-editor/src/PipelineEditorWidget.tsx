@@ -458,7 +458,6 @@ const PipelineWrapper: React.FC<IProps> = ({
                   lastUpdated: Date.now(),
                   customTitle: fileName,
                   ...(nodeDefaults || {}), // Merge nodeDefaults into the data field
-                  ...(defaultEngineBackend ? { backend: { engine: defaultEngineBackend } } : {}) // Store defaultEngineBackend in backend.engine
                 }
               };
 

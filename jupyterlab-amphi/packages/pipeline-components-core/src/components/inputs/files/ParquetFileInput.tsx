@@ -1,5 +1,5 @@
 
-import { fileTextIcon } from '../../../icons';
+import { fileParquetIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
@@ -51,7 +51,7 @@ export class ParquetFileInput extends BaseCoreComponent {
     };
     const description = "Use Parquet File Input to access data from a Parquet file locally or remotely (via HTTP or S3)."
 
-    super("Parquet File Input", "parquetFileInput", description, "pandas_df_input", ["parquet"], "inputs", fileTextIcon, defaultConfig, form);
+    super("Parquet File Input", "parquetFileInput", description, "pandas_df_input", ["parquet"], "inputs", fileParquetIcon, defaultConfig, form);
   }
 
   public provideDependencies({config}): string[] {

@@ -1,5 +1,5 @@
 import { BaseCoreComponent } from '../../BaseCoreComponent';
-import { fileTextIcon } from '../../../icons';
+import { fileExcelIcon } from '../../../icons';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 import { FileUtils } from '../../common/FileUtils'; // Import the FileUtils class
 
@@ -86,7 +86,7 @@ export class ExcelFileInput extends BaseCoreComponent {
     };
     const description = "Use Excel File Input to access data from Excel files (e.g., xlsx, xls, ods) locally or remotely (via HTTP or S3)."
 
-    super("Excel File Input", "excelfileInput", description, "pandas_df_input", ["xlsx", "xls", "ods", "xlsb"], "inputs", fileTextIcon, defaultConfig, form);
+    super("Excel/ODS File Input", "excelfileInput", description, "pandas_df_input", ["xlsx", "xls", "ods", "xlsb"], "inputs", fileExcelIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

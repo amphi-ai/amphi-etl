@@ -130,13 +130,14 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
     event.preventDefault();
   };
 
-  const modifier = data.backend?.engine === "snowflake" ? "--snowflake" :
-                   data.backend?.engine === "duckdb" ? "--duckdb" :
-                   data.backend?.engine === "postgres" ? "--postgres" : "--default";
+  const modifier = data.backend?.engine?.toLowerCase().includes("snowflake") ? "--snowflake" :
+                    data.backend?.engine?.toLowerCase().includes("duckdb") ? "--duckdb" :
+                    data.backend?.engine?.toLowerCase().includes("postgres") ? "--postgres" : 
+                    "--default";
 
   const colorPrimary = modifier === "--snowflake" ? "#00ADEF" :
-                       modifier === "--duckdb" ? "#45421D" :
-                       modifier === "--postgres" ? "#336691" : "#5F9B97";
+    modifier === "--duckdb" ? "#45421D" :
+      modifier === "--postgres" ? "#336691" : "#5F9B97";
 
   const isIbis = ["--snowflake", "--duckdb", "--postgres"].includes(modifier);
 

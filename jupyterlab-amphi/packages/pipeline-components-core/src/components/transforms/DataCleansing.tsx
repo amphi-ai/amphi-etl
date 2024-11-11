@@ -102,7 +102,9 @@ export class DataCleansing extends BaseCoreComponent {
       ],
     };
 
-    super("Data Cleansing", "cleanDataCLeansing", "no desc", "pandas_df_processor", [], "transforms", checkDiamondIcon, defaultConfig, form);
+    const description = "Use Data Cleansing to clean and preprocess your data. It provides options to handle missing values, drop null rows or columns, modify string cases, and remove unwanted characters. You can apply these transformations to specific columns or the entire dataset.";
+
+    super("Data Cleansing", "cleanDataCLeansing", description, "pandas_df_processor", [], "transforms", checkDiamondIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {
