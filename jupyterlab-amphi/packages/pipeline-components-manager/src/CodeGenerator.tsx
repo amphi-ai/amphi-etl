@@ -111,6 +111,23 @@ export class CodeGenerator {
             if (incrementalCodeList.length > 0) {
               incrementalCodeList[incrementalCodeList.length - 1].code += displayCode;
             }
+          } else if (nodeObject.type.includes('output')) {
+            // Add try block and indent existing code
+            // Combine all the code from codeList into one string
+            const combinedCode = codeList.join('\n');
+
+            // Indent the combined code
+            const indentedCode = combinedCode.split('\n').map(line => '    ' + line).join('\n');
+
+            // Clear the existing codeList to replace with the new structure
+            codeList.length = 0;
+
+            // Wrap the indented code with try-except block and append it to codeList
+            codeList.push('try:\n' + indentedCode);
+            codeList.push('    print("Execution has been successful")\n');
+            codeList.push('except Exception as e:\n');
+            codeList.push('    print(f"Execution failed with error {e}")\n');
+            codeList.push('    raise\n');
           }
         }
       }
@@ -266,11 +283,11 @@ export class CodeGenerator {
           case 'ibis_df_input': {
             outputName = getOutputName(node, componentId, variablesAutoNaming)
             nodeOutputs.set(nodeId, outputName);
-          
+
             // Find the nodes that follow this input node
             const nextNodeIds = PipelineService.findNextNodeIds(flow, nodeId);
             let uniqueEngineName: string | undefined = undefined;
-          
+
             for (const nextNodeId of nextNodeIds) {
               const nextNode = nodesMap.get(nextNodeId);
               if (nextNode) {
@@ -291,7 +308,7 @@ export class CodeGenerator {
                 }
               }
             }
-          
+
             // Generate code with or without uniqueEngineName
             if (uniqueEngineName) {
               code += component.generateComponentCode({ config, outputName, uniqueEngineName });

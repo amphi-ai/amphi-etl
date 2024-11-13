@@ -32,7 +32,6 @@ from IPython.display import display, HTML
 !pip install --quiet sqlalchemy==2.0.4 --disable-pip-version-check
 !pip install --quiet python-dotenv --disable-pip-version-check
 
-
 _amphi_metadatapanel_nms = NamespaceMagics()
 _amphi_metadatapanel_Jupyter = get_ipython()
 # _amphi_metadatapanel_nms.shell = _amphi_metadatapanel_Jupyter.kernel.shell  
@@ -262,7 +261,7 @@ def _amphi_metadatapanel_deleteallvariables():
     camel_case_pattern = re.compile(r'^[a-z]+(?:[A-Z][a-z]+)*(?:\\d+)?$')
     variable_names = []
     for key, value in list(globals().items()):
-        if not key.startswith('_') and not hasattr(__builtins__, key) and not key in ['exit', 'quit', 'get_ipython', 'In', 'Out', 'Session', 'session', 'warehouse'] and not isinstance(value, (type(sys), types.ModuleType)) and camel_case_pattern.match(key):
+        if not key.startswith('_') and not hasattr(__builtins__, key) and not key in ['exit', 'quit', 'get_ipython', 'In', 'Out', 'Session', 'session', 'warehouse', 'mpd'] and not isinstance(value, (type(sys), types.ModuleType)) and camel_case_pattern.match(key):
             exec("del %s" % key, globals())
 
 def __amphi_display_dataframe(df, dfName=None, nodeId=None, runtime=None):

@@ -20,9 +20,70 @@ export class RequestService {
     const flow = PipelineService.filterPipeline(context.model.toString());
     let codeList: any[];
     let code: string = '';
-
+  
     try {
+      // Determine the reference node to use
       let refNodeId = previousNodes ? PipelineService.findMultiplePreviousNodeIds(flow, nodeId)[inputNb] : nodeId;
+      const nodesMap = new Map(flow.nodes.map(node => [node.id, node]));
+  
+      // Check if the previous node has already been executed recently
+      const refNode = nodesMap.get(refNodeId);
+      console.log("refNode %o", refNode)
+      if (refNode) {
+        const { lastUpdated, lastExecuted, nameId } = refNode.data || {};
+        console.log("nameId %o", nameId)
+
+        // If the node has been executed after its last update, skip code generation
+        // console.log("lastExecuted %o, type: %s", lastExecuted, typeof lastExecuted);
+        // console.log("lastUpdated %o, type: %s", lastUpdated, typeof lastUpdated);
+
+        if (lastExecuted >= lastUpdated) {
+          console.log("Skip generation")
+          const dataframeVar = nameId || refNodeId;
+          const codeToFetchContent = `print(_amphi_metadatapanel_getcontentof(${dataframeVar}))`;
+          console.log("codeToFetchContent %o", codeToFetchContent)
+
+          const future = context.sessionContext.session.kernel!.requestExecute({ code: codeToFetchContent });
+          future.onIOPub = msg => {
+            if (msg.header.msg_type === 'stream') {
+              const streamMsg = msg as KernelMessage.IStreamMsg;
+              const output = streamMsg.content.text;
+              console.log("output %o", output)
+
+              const regex = /([^,]+)\s+\(([^,]+),\s*(named|unnamed)\)/g;
+              const newItems = [];
+  
+              let match;
+              while ((match = regex.exec(output)) !== null) {
+                const [_, name, type, namedStatus] = match;
+                newItems.push({
+                  value: name.trim(),
+                  label: name.trim(),
+                  type: type.trim(),
+                  named: namedStatus.trim() === 'named'
+                });
+              }
+  
+              setItems(items => {
+                const itemSet = new Set(items.map(item => item.value));
+                const uniqueItems = newItems.filter(newItem => !itemSet.has(newItem.value));
+                return [...items, ...uniqueItems];
+              });
+  
+              setLoadings(false);
+            } else if (msg.header.msg_type === 'error') {
+              setLoadings(false);
+              const errorMsg = msg as KernelMessage.IErrorMsg;
+              console.error(`Received error: ${errorMsg.content.ename}: ${errorMsg.content.evalue}`);
+            }
+          };
+          console.log("return");
+
+          return; // Skip further processing since data was fetched from cache
+        }
+      }
+  
+      // If not recently executed, generate code
       codeList = CodeGenerator.generateCodeUntil(
         context.model.toString(),
         commands,
@@ -34,30 +95,29 @@ export class RequestService {
       code = codeList.join('\n');
     } catch (error) {
       console.error("Error generating code.", error);
-      code = null; // Or handle error appropriately
+      code = null;
       setLoadings(false);
     }
-
+  
     const lines = code.split('\n');
-    let output_df = lines.pop(); // Extract the last line and store it in output_df
+    let output_df = lines.pop();
     const match = output_df.match(/__amphi_display_dataframe\(([^,]*)/);
     output_df = match ? match[1] : null;
-
+  
     if (output_df && output_df.trim() && output_df.trim().split(' ').length === 1) {
-
-      code = lines.join('\n'); // Rejoin the remaining lines back into code
+      code = lines.join('\n');
       const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
-
+  
       future.onReply = reply => {
         if (reply.content.status == "ok") {
-          const future2 = context.sessionContext.session.kernel!.requestExecute({ code: "print(_amphi_metadatapanel_getcontentof(" + output_df + "))" });
+          const future2 = context.sessionContext.session.kernel!.requestExecute({ code: `print(_amphi_metadatapanel_getcontentof(${output_df}))` });
           future2.onIOPub = msg => {
             if (msg.header.msg_type === 'stream') {
               const streamMsg = msg as KernelMessage.IStreamMsg;
               const output = streamMsg.content.text;
               const regex = /([^,]+)\s+\(([^,]+),\s*(named|unnamed)\)/g;
               const newItems = [];
-
+  
               let match;
               while ((match = regex.exec(output)) !== null) {
                 const [_, name, type, namedStatus] = match;
@@ -65,42 +125,32 @@ export class RequestService {
                   value: name.trim(),
                   label: name.trim(),
                   type: type.trim(),
-                  named: namedStatus.trim() === 'named' // true if 'named', false if 'unnamed'
+                  named: namedStatus.trim() === 'named'
                 });
               }
-
-              // Update the items array with the new items, ensuring no duplicates
+  
               setItems(items => {
-                const itemSet = new Set(items.map(item => item.value)); // Create a set of existing item values
+                const itemSet = new Set(items.map(item => item.value));
                 const uniqueItems = newItems.filter(newItem => !itemSet.has(newItem.value));
-
                 return [...items, ...uniqueItems];
               });
-
-              setLoadings(false)
+  
+              setLoadings(false);
             } else if (msg.header.msg_type === 'error') {
-              setLoadings(false)
+              setLoadings(false);
               const errorMsg = msg as KernelMessage.IErrorMsg;
-              const errorOutput = errorMsg.content;
-              console.error(`Received error: ${errorOutput.ename}: ${errorOutput.evalue}`);
+              console.error(`Received error: ${errorMsg.content.ename}: ${errorMsg.content.evalue}`);
             }
           };
-        } else if (reply.content.status == "error") {
-          setLoadings(false)
-        } else if (reply.content.status == "abort") {
-          setLoadings(false)
         } else {
-          setLoadings(false)
+          setLoadings(false);
         }
       };
-
     } else {
       setLoadings(false);
     }
-
-
   };
-
+  
   static executePythonCode(
     code: string,
     context: any,

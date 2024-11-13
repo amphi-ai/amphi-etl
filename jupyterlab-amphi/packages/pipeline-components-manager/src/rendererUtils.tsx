@@ -155,7 +155,7 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
           className={`component component${modifier} ${isIbis ? "ibis" : ""}`}
           onDoubleClick={handleDoubleClick}
         >
-          <div className={`component__header component__header`}>
+          <div className={`component__header`}>
             <Text
               onDoubleClick={stopPropagation}
               onDragStart={disableDrag}
@@ -172,11 +172,13 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
           </div>
           <div className="component__body">
             <form>
-              {showContent ? (
-                ConfigForm
-              ) : (
+              {/* Always render ConfigForm but control its visibility */}
+              <div style={{ display: showContent ? 'block' : 'none' }}>
+                {ConfigForm}
+              </div>
+              {!showContent && (
                 <div className="placeholder">
-                  <Icon.react height="42px" width="42px;" color={`${colorPrimary}`} verticalAlign="middle" />
+                  <Icon.react height="42px" width="42px" color={`${colorPrimary}`} verticalAlign="middle" />
                 </div>
               )}
             </form>
