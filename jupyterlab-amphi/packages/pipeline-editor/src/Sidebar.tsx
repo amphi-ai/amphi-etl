@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Tree, Input, Space, Tooltip } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
+import { NONAME } from 'dns';
 
 const { DirectoryTree } = Tree;
 const { Search } = Input;
@@ -50,6 +51,27 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
         });
         return result;
     }, [components]);
+
+
+    const getCategoryBackgroundColor = (category: string) => {
+        switch (category.toLowerCase()) {
+            case 'inputs':
+                return 'rgba(68, 121, 111, 0.5)'; // 50% opacity background
+            case 'transforms':
+                return 'rgba(22, 96, 130, 0.5)'; // 50% opacity background
+            case 'outputs':
+                return 'rgba(122, 195, 198, 0.3)'; // 50% opacity background
+            case 'data exploration':
+                return 'rgba(245, 240, 187, 0.5)'; // 50% opacity background
+            case 'configuration':
+                return 'rgba(219, 223, 234, 0.5)'; // 50% opacity background
+            case 'documentation':
+                return 'rgba(205, 193, 255, 0.5)'; // 50% opacity background
+            default:
+                return 'rgba(255, 255, 255, 0.5)'; // Default 50% opacity
+        }
+    };
+
 
     const getTreeData = () => {
         return Object.keys(categorizedComponents).map((category, index) => {
@@ -117,9 +139,14 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
             });
 
             return {
-                title: <span className="palette-component-category">{category.charAt(0).toUpperCase() + category.slice(1)}</span>,
+                title: <span className="palette-component-category" >{category.charAt(0).toUpperCase() + category.slice(1)}</span>,
                 key: `category-${index}`,
-                children: children
+                children: children,
+                style: {
+                    backgroundColor: '#F1F4F7',
+                    padding: '0px 0px 0px 0px',
+                    marginBottom: 'Opx'
+                },
             };
         });
     };
@@ -128,16 +155,16 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
         const filteredData = data
             .map((item) => {
                 const newItem = { ...item };
-    
+
                 // Check if newItem.title.props.children is an object or a string
-                const childrenText = typeof newItem.title.props.children === 'object' 
-                    ? newItem.title.props.children.props.children 
+                const childrenText = typeof newItem.title.props.children === 'object'
+                    ? newItem.title.props.children.props.children
                     : newItem.title.props.children;
-        
+
                 if (newItem.children) {
                     newItem.children = filterTree(newItem.children, searchValue);
                 }
-                
+
                 if (
                     childrenText.toLowerCase().includes(searchValue.toLowerCase()) ||
                     (newItem.children && newItem.children.length > 0)
@@ -149,7 +176,7 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
             .filter(item => item !== null);
         return filteredData;
     };
-    
+
 
     const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;

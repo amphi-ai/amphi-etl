@@ -10,7 +10,7 @@ import {
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, DateTimeConverter,
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
-  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils
+  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis
 } from './components';
 
 export { CsvFileInput, ExcelFileInput, ParquetFileInput, JsonFileInput, FileUtils, CsvFileOutput, ExcelFileOutput, ParquetFileOutput, JsonFileOutput }
@@ -75,7 +75,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(CustomTransformations.getInstance());
     componentService.addComponent(GenerateIDColumn.getInstance());
     componentService.addComponent(Summary.getInstance());
-
+    componentService.addComponent(FrequencyAnalysis.getInstance());
+    
     // Outputs
     componentService.addComponent(CsvFileOutput.getInstance())
     componentService.addComponent(JsonFileOutput.getInstance())

@@ -12,6 +12,11 @@
       "@jupyterlab/theme-dark-extension": true,
       "@jupyterlab/theme-light-extension": true,
       "@jupyterlab/extensionmanager-extension": true,
-      "@jupyterlab/application-extension:logo": true   
+      "@jupyterlab/application-extension:logo": true,
+      "@jupyterlab/metadataform-extension:metadataforms": true,
+      "@jupyterlab/celltags-extension:plugin": true,
+      "@jupyterlab/tooltip-extension:notebooks": true,
+      "@jupyterlab/workspaces-extension:sidebar": true,
+      "@jupyterlab/apputils-extension:announcements": true
     }
 }

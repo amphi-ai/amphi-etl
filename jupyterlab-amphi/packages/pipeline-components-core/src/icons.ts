@@ -60,6 +60,7 @@ import filePdfIconSvgStr from '../style/icons/file-pdf-24.svg';
 import fileExcelIconSvgStr from '../style/icons/file-excel-24.svg';
 import fileParquetIconSvgStr from '../style/icons/file-parquet-24.svg';
 import fileJsonIconSvgStr from '../style/icons/file-json-24.svg';
+import activityIconSvgStr from '../style/icons/activity-24.svg'
 
 export const expandJsonIcon = new LabIcon({
   name: 'amphi:expand-icon',
@@ -360,4 +361,9 @@ export const fileExcelIcon = new LabIcon({
 export const fileParquetIcon = new LabIcon({
   name: 'amphi:file-parquet-icon',
   svgstr: fileParquetIconSvgStr
+});
+
+export const activityIcon = new LabIcon({
+  name: 'amphi:activity-icon',
+  svgstr: activityIconSvgStr
 });
