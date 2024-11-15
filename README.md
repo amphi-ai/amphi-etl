@@ -70,10 +70,23 @@ To start Amphi ETL (standalone), simply run:
 amphi start
 ```
 
-Use the following parameters to specify your workspace (where you can access files and create pipelines on your system) and port to use:
+Use the following parameters to specify your:
+- workspace (where you can access files and create pipelines on your system), 
+- IP address to expose
+- port to use
+
+### Deploy on your local machine
 
 ```bash
-amphi start -w /your/workspace/path -p 8888
+amphi start -w /your/workspace/path
+```
+
+### Deploy on a server
+
+For deploying on a server, you need to specify `-i 0.0.0.0` to expose Amphi and access it through the internet. Optionaly specify a different port.
+
+```bash
+amphi start -w /your/workspace/path -i 0.0.0.0 -p 8888 
 ```
 
  - 📚 [Documentation](https://docs.amphi.ai)
