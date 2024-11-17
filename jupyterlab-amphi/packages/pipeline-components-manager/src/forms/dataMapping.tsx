@@ -354,7 +354,7 @@ const FieldValueInput: React.FC<FieldValueProps> = ({ field, value = {}, onChang
 
   const addItem = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
     e.preventDefault();
-    setItems([...items, { value: name, label: name}]);
+    setItems([...items, { value: nameType, label: nameType}]);
     setName('');
     setTimeout(() => {
       inputRef.current?.focus();

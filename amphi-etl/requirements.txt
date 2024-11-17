@@ -1,5 +1,5 @@
 jupyterlab==4.2.5
-jupyterlab-amphi==0.8.17
+jupyterlab-amphi==0.8.18
 pandas==2.2.1
 # ../jupyterlab-amphi
 .

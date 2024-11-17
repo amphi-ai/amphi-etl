@@ -228,7 +228,7 @@ export class EnvFile extends PipelineComponent<ComponentItem>() {
             const uniqueItems = newItems.filter(
               (newItem) => !filteredItems.some((item) => item.key === newItem.key)
             );
-    
+
             return [...filteredItems, ...uniqueItems];
           });
 
@@ -392,7 +392,20 @@ export class EnvFile extends PipelineComponent<ComponentItem>() {
           manager: manager,
           commands: commands,
           name: EnvFile.Name,
-          ConfigForm: EnvFile.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes, handleChange, modalOpen, setModalOpen }),
+          ConfigForm: EnvFile.ConfigForm, // Pass the component itself
+          configFormProps: { // Provide props separately
+            nodeId: id,
+            data,
+            context,
+            componentService,
+            manager,
+            commands,
+            store,
+            setNodes,
+            handleChange,
+            modalOpen,
+            setModalOpen
+          },
           Icon: EnvFile.Icon,
           showContent: showContent,
           handle: handleElement,

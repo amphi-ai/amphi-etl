@@ -1,2 +1,2 @@
 """source of truth for ``amphi``` version."""
-__version__ = "0.8.17"
+__version__ = "0.8.18"

@@ -44,7 +44,7 @@ English · [Try the demo](https://demo.amphi.ai) · [Report Bug](https://github.
 
 </details>
 
-## 📦 Installation
+## 📦 Installation & Update
 
 Amphi is available as both a standalone applicatiion or as a JupyterLab extension.
 

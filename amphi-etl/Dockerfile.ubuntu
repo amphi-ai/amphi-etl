@@ -1,0 +1,51 @@
+# Use the Jupyter Docker Stacks base image
+FROM quay.io/jupyter/base-notebook:x86_64-python-3.11.10
+
+LABEL maintainer="Amphi Labs <tgourdel@amphi.ai>"
+
+# Switch to root user to install dependencies
+USER root
+
+# Create a work directory and set permissions
+RUN mkdir -p /home/amphi \
+    && chown -R $NB_UID:$NB_GID /home/amphi
+
+# Add .local/bin to PATH to avoid warnings
+ENV PATH="/home/amphi/.local/bin:$PATH"
+
+# Set environment variables
+ENV JUPYTER_ENABLE_LAB=yes
+
+# Set the working directory
+WORKDIR /home/amphi
+
+# Ensure the user has full access to this directory
+RUN chown -R $NB_UID:$NB_GID /home/amphi
+
+# Install required Python packages
+# Consolidate installations into a single RUN command
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    && python3 -m pip install --upgrade pip setuptools wheel \
+    && python3 -m pip install --no-cache-dir pandas==2.2.1 numpy \
+    jupyterlab==4.2.5 jupyterlab-amphi==0.8.18  \
+    sqlalchemy==2.0.4 python-dotenv \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Clean up caches to reduce image size
+RUN apt-get autoremove -y && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /root/.cache /home/amphi/.cache
+
+
+# Copy additional extensions and configurations
+COPY amphi/theme-light /usr/local/share/jupyter/labextensions/@amphi/theme-light
+COPY amphi/ui-component /usr/local/share/jupyter/labextensions/@amphi/ui-component
+COPY config/labconfig/page_config.json /etc/jupyter/labconfig/page_config.json
+COPY config/settings/overrides.json /opt/conda/share/jupyter/lab/settings/overrides.json
+
+# Switch back to the default user
+USER $NB_UID
+
+# Set the default command to start JupyterLab
+ENTRYPOINT ["jupyter", "lab", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", \
+            "--NotebookApp.token=''", "--NotebookApp.password=''", "--notebook-dir=/home/amphi/data", \
+            "--ContentManager.allow_hidden=True"]

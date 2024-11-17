@@ -21,7 +21,7 @@ import { useUndoRedo } from './Commands';
 import DownloadImageButton from './ExportToImage';
 import Sidebar from './Sidebar';
 
-import React, { useEffect, useCallback, useRef, useState, Profiler } from 'react';
+import React, { useCallback, useRef, useState, Profiler } from 'react';
 import ReactFlow, {
   Background,
   Controls,
@@ -229,7 +229,7 @@ const PipelineWrapper: React.FC<IProps> = ({
     const { getViewport, setViewport } = useReactFlow();
     const store = useStoreApi();
 
-    
+
     // Copy paste
     // const { cut, copy, paste, bufferedNodes } = useCopyPaste();
 
@@ -540,45 +540,47 @@ const PipelineWrapper: React.FC<IProps> = ({
 
     return (
       <div className="reactflow-wrapper" data-id={pipelineId} ref={reactFlowWrapper}>
-
-        <Dropzone onDrop={handleFileDrop}>
-          <ReactFlow
-            id={pipelineId}
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onNodesDelete={onNodesDelete}
-            onEdgesDelete={onEdgesDelete}
-            onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
-            onNodeDragStart={onNodeDragStart}
-            onSelectionDragStart={onSelectionDragStart}
-            isValidConnection={isValidConnection}
-            onDrop={onDrop}
-            onDragOver={onDragOver}
-            // onNodeDrag={onNodeDrag}
-            // onNodeDragStop={onNodeDragStop}
-            onInit={setRfInstance}
-            edgeTypes={edgeTypes}
-            nodeTypes={nodeTypes}
-            snapToGrid={true}
-            snapGrid={[15, 15]}
-            fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0, padding: 0.4 }}
-            defaultViewport={initialViewport}
-            // viewport={initialViewport}
-            // onViewportChange={onViewportChange}
-            deleteKeyCode={["Delete", "Backspace"]}
-            proOptions={proOptions}
-          >
-            <Panel position="top-right">
-            </Panel>
-            <Controls>
-              <DownloadImageButton pipelineName={context.context.sessionContext.path} pipelineId={pipelineId} />
-            </Controls>
-            <Background color="#aaa" gap={20} />
-          </ReactFlow>
-        </Dropzone>
-
+        <Profiler id={pipelineId} onRender={(id, phase, actualDuration) => {
+          console.log({ id, phase, actualDuration });
+        }}>
+          <Dropzone onDrop={handleFileDrop}>
+            <ReactFlow
+              id={pipelineId}
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onNodesDelete={onNodesDelete}
+              onEdgesDelete={onEdgesDelete}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onNodeDragStart={onNodeDragStart}
+              onSelectionDragStart={onSelectionDragStart}
+              isValidConnection={isValidConnection}
+              onDrop={onDrop}
+              onDragOver={onDragOver}
+              // onNodeDrag={onNodeDrag}
+              // onNodeDragStop={onNodeDragStop}
+              onInit={setRfInstance}
+              edgeTypes={edgeTypes}
+              nodeTypes={nodeTypes}
+              snapToGrid={true}
+              snapGrid={[15, 15]}
+              fitViewOptions={{ minZoom: 0.5, maxZoom: 1.0, padding: 0.4 }}
+              defaultViewport={initialViewport}
+              // viewport={initialViewport}
+              // onViewportChange={onViewportChange}
+              deleteKeyCode={["Delete", "Backspace"]}
+              proOptions={proOptions}
+            >
+              <Panel position="top-right">
+              </Panel>
+              <Controls>
+                <DownloadImageButton pipelineName={context.context.sessionContext.path} pipelineId={pipelineId} />
+              </Controls>
+              <Background color="#aaa" gap={20} />
+            </ReactFlow>
+          </Dropzone>
+        </Profiler>
       </div >
     );
   }

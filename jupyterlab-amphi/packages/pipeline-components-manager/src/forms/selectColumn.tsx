@@ -22,6 +22,7 @@ interface SelectColumnsProps {
 export const SelectColumn: React.FC<SelectColumnsProps> = ({
   field, handleChange, defaultValue, context, componentService, commands, nodeId, advanced
 }) => {
+  console.log("SelectColumn");
 
   const findOptionByValue = (value: any) => {
     if (value === undefined) {

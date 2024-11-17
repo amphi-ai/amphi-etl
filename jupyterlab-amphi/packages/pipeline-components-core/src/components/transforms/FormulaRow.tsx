@@ -235,7 +235,20 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
                     manager: manager,
                     commands: commands,
                     name: FormulaRow.Name,
-                    ConfigForm: FormulaRow.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes, handleChange, modalOpen, setModalOpen }),
+                    ConfigForm: FormulaRow.ConfigForm, // Pass the component itself
+                    configFormProps: { // Provide props separately
+                        nodeId: id,
+                        data,
+                        context,
+                        componentService,
+                        manager,
+                        commands,
+                        store,
+                        setNodes,
+                        handleChange,
+                        modalOpen,
+                        setModalOpen
+                    },
                     Icon: FormulaRow.Icon,
                     showContent: showContent,
                     handle: handleElement,

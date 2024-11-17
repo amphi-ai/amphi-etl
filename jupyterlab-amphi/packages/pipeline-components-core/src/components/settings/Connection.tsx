@@ -288,7 +288,7 @@ export class Connection extends PipelineComponent<ComponentItem>() {
         key: field.id,
         name: field.label.includes('_')
           ? field.label
-          : PipelineService.formatVarName(value.value + '_' + field.label), 
+          : PipelineService.formatVarName(value.value + '_' + field.label),
         value: '',
         default: '',
       })));
@@ -501,7 +501,20 @@ export class Connection extends PipelineComponent<ComponentItem>() {
           manager: manager,
           commands: commands,
           name: Connection.Name,
-          ConfigForm: Connection.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes, handleChange, modalOpen, setModalOpen }),
+          ConfigForm: Connection.ConfigForm, // Pass the component itself
+          configFormProps: { // Provide props separately
+            nodeId: id,
+            data,
+            context,
+            componentService,
+            manager,
+            commands,
+            store,
+            setNodes,
+            handleChange,
+            modalOpen,
+            setModalOpen
+          },
           Icon: Connection.Icon,
           showContent: showContent,
           handle: handleElement,

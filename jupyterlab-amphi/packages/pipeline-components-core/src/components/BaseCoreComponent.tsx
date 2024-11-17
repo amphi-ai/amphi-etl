@@ -150,7 +150,8 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
           manager: manager,
           commands: commands,
           name: this._name,
-          ConfigForm: BaseCoreComponent.ConfigForm({
+          ConfigForm: BaseCoreComponent.ConfigForm, // Pass the component
+          configFormProps: {
             nodeId: id,
             data,
             context,
@@ -166,7 +167,7 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
             handleChange,
             modalOpen,
             setModalOpen
-          }),
+          },
           Icon: this._icon,
           showContent: showContent,
           handle: handleElement,

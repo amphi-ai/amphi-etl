@@ -14,15 +14,12 @@ import {
 } from '@jupyterlab/apputils';
 import { DocumentWidget } from '@jupyterlab/docregistry';
 import { IMainMenu } from '@jupyterlab/mainmenu';
-import { KernelMessage } from '@jupyterlab/services';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { ILauncher } from '@jupyterlab/launcher';
 import { IDefaultFileBrowser, IFileBrowserFactory } from '@jupyterlab/filebrowser';
 import { IRenderMimeRegistry } from '@jupyterlab/rendermime';
 import { IStatusBar } from '@jupyterlab/statusbar';
-import { PromiseDelegate, ReadonlyJSONValue, ReadonlyPartialJSONObject, Token } from '@lumino/coreutils';
-import { JSONObject } from '@lumino/coreutils';
-import { useCopyPaste } from './Commands';
+import { ReadonlyPartialJSONObject, Token } from '@lumino/coreutils';
 import { IDocumentManager } from '@jupyterlab/docmanager';
 import { LIB_VERSION } from './version';
 import { Dialog, showDialog } from '@jupyterlab/apputils';
@@ -127,7 +124,6 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
         `Settings extension: defaultEngineBackend is set to '${defaultEngineBackend}'`
       );
     }
-
 
     Promise.all([app.restored, settings.load(EXTENSION_ID)])
       .then(([, settings]) => {

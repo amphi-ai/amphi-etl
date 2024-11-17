@@ -358,7 +358,20 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
           manager: manager,
           commands: commands,
           name: EnvVariables.Name,
-          ConfigForm: EnvVariables.ConfigForm({ nodeId: id, data, context, componentService, manager, commands, store, setNodes, handleChange, modalOpen, setModalOpen }),
+          ConfigForm: EnvVariables.ConfigForm, // Pass the component itself
+          configFormProps: { // Provide props separately
+            nodeId: id,
+            data,
+            context,
+            componentService,
+            manager,
+            commands,
+            store,
+            setNodes,
+            handleChange,
+            modalOpen,
+            setModalOpen
+          },
           Icon: EnvVariables.Icon,
           showContent: showContent,
           handle: handleElement,

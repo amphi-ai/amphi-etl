@@ -6,7 +6,7 @@ import { xIcon } from './icons';
 import React, { useMemo, useState } from 'react';
 import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
-import { Profiler } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import { getConnectedEdges, Handle, useNodeId, useStore, NodeToolbar } from 'reactflow';
 import { Popconfirm, Typography, ConfigProvider } from 'antd';
@@ -105,80 +105,144 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
   }
 };
 
-export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, context, manager, commands, name, ConfigForm, Icon, showContent, handle, deleteNode, setViewport, handleChange, isSelected }) => {
+const MemoizedComponentUI = React.memo(
+  ({
+    id,
+    data,
+    context,
+    manager,
+    commands,
+    name,
+    ConfigForm,
+    configFormProps,
+    Icon,
+    showContent,
+    handle,
+    deleteNode,
+    setViewport,
+    handleChange,
+    isSelected
+  }: UIComponentProps) => {
+    // Track form values and updates
+    const [formState, setFormState] = useState(data);
 
-  const handleDoubleClick = () => {
-    // Example: Zoom in 1.2 times the current zoom level
-    setViewport({ zoom: 1.1, duration: 500 });
-  };
+    // Update formState when data changes
+    useEffect(() => {
+      setFormState(data);
+    }, [data]);
 
-  const { Text } = Typography;
-  const initialTitleName = data?.customTitle || name;
-  const [titleName, setTitleName] = useState(initialTitleName);
+    const modifier = useMemo(() => {
+      const engine = data.backend?.engine?.toLowerCase() || '';
+      if (engine.includes("snowflake")) return "--snowflake";
+      if (engine.includes("duckdb")) return "--duckdb";
+      if (engine.includes("postgres")) return "--postgres";
+      return "--default";
+    }, [data.backend?.engine]);
 
-  const onTitleChange = (newTitle: string) => {
-    setTitleName(newTitle);
-    handleChange(newTitle, 'customTitle');
-  };
+    const colorPrimary = useMemo(() => {
+      switch (modifier) {
+        case "--snowflake": return "#00ADEF";
+        case "--duckdb": return "#45421D";
+        case "--postgres": return "#336691";
+        default: return "#5F9B97";
+      }
+    }, [modifier]);
 
-  const stopPropagation = (event: React.MouseEvent) => {
-    event.stopPropagation();
-  };
+    const isIbis = useMemo(() => {
+      return ["--snowflake", "--duckdb", "--postgres"].includes(modifier);
+    }, [modifier]);
 
-  // Disable dragging
-  const disableDrag = (event: React.DragEvent) => {
-    event.preventDefault();
-  };
+    const handleDoubleClick = useCallback(() => {
+      setViewport({ zoom: 1.1, duration: 500 });
+    }, [setViewport]);
 
-  const modifier = data.backend?.engine?.toLowerCase().includes("snowflake") ? "--snowflake" :
-                    data.backend?.engine?.toLowerCase().includes("duckdb") ? "--duckdb" :
-                    data.backend?.engine?.toLowerCase().includes("postgres") ? "--postgres" : 
-                    "--default";
+    const stopPropagation = useCallback((event: React.MouseEvent) => {
+      event.stopPropagation();
+    }, []);
 
-  const colorPrimary = modifier === "--snowflake" ? "#00ADEF" :
-    modifier === "--duckdb" ? "#45421D" :
-      modifier === "--postgres" ? "#336691" : "#5F9B97";
+    const disableDrag = useCallback((event: React.DragEvent) => {
+      event.preventDefault();
+    }, []);
 
-  const isIbis = ["--snowflake", "--duckdb", "--postgres"].includes(modifier);
+    const [titleName, setTitleName] = useState(data?.customTitle || name);
 
-  return (
-    <>
-      <ConfigProvider
-        theme={{
-          token: {
-            // Seed Token
-            colorPrimary: colorPrimary,
-          },
-        }}
-      >
-        <div
-          className={`component component${modifier} ${isIbis ? "ibis" : ""}`}
-          onDoubleClick={handleDoubleClick}
-        >
-          <div className={`component__header`}>
+    const onTitleChange = useCallback((newTitle: string) => {
+      setTitleName(newTitle);
+      handleChange(newTitle, 'customTitle');
+    }, [handleChange]);
+
+    // Modified ConfigForm props to include formState and update handler
+    const enhancedConfigFormProps = {
+      ...configFormProps,
+      data: formState,
+      onValueChange: (newValue: any, fieldId: string) => {
+        setFormState(prev => {
+          const newState = {
+            ...prev,
+            [fieldId]: newValue
+          };
+          handleChange(newValue, fieldId);
+          return newState;
+        });
+      }
+    };
+
+    const theme = useMemo(() => ({
+      token: {
+        colorPrimary: colorPrimary,
+      },
+    }), [colorPrimary]);
+
+    const componentClassName = useMemo(() => {
+      return `component component${modifier} ${isIbis ? "ibis" : ""}`;
+    }, [modifier, isIbis]);
+
+    const { Text } = Typography;
+
+    return (
+      <ConfigProvider theme={theme}>
+        <div className={componentClassName} onDoubleClick={handleDoubleClick}>
+          <div className="component__header">
             <Text
               onDoubleClick={stopPropagation}
               onDragStart={disableDrag}
-              editable={isSelected ? { onChange: onTitleChange, tooltip: false, icon: <EditOutlined style={{ color: '#5F9B97' }} /> } : undefined}
-              className='ant-select-sm'
+              editable={
+                isSelected
+                  ? {
+                    onChange: onTitleChange,
+                    tooltip: false,
+                    icon: <EditOutlined style={{ color: '#5F9B97' }} />
+                  }
+                  : undefined
+              }
+              className="ant-select-sm"
             >
               {titleName}
             </Text>
-            <Popconfirm title="Sure to delete?" placement="right" onConfirm={() => deleteNode()} icon={<QuestionCircleOutlined style={{ color: 'red' }} />}>
-              <div className='deletebutton'>
+            <Popconfirm
+              title="Sure to delete?"
+              placement="right"
+              onConfirm={deleteNode}
+              icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+            >
+              <div className="deletebutton">
                 <xIcon.react className="group-hover:text-primary" />
               </div>
             </Popconfirm>
           </div>
           <div className="component__body">
             <form>
-              {/* Always render ConfigForm but control its visibility */}
               <div style={{ display: showContent ? 'block' : 'none' }}>
-                {ConfigForm}
+                <ConfigForm {...enhancedConfigFormProps} />
               </div>
               {!showContent && (
                 <div className="placeholder">
-                  <Icon.react height="42px" width="42px" color={`${colorPrimary}`} verticalAlign="middle" />
+                  <Icon.react
+                    height="42px"
+                    width="42px"
+                    color={colorPrimary}
+                    verticalAlign="middle"
+                  />
                 </div>
               )}
             </form>
@@ -186,8 +250,24 @@ export const renderComponentUI: React.FC<UIComponentProps> = ({ id, data, contex
           {handle}
         </div>
       </ConfigProvider>
-    </>
-  );
+    );
+  },
+  (prevProps, nextProps) => {
+    // Enhanced comparison function that includes form data changes
+    return (
+      prevProps.id === nextProps.id &&
+      prevProps.showContent === nextProps.showContent &&
+      prevProps.isSelected === nextProps.isSelected &&
+      JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data) &&
+      prevProps.name === nextProps.name &&
+      prevProps.configFormProps.modalOpen === nextProps.configFormProps.modalOpen
+    );
+  }
+);
+
+// Export the function that creates the memoized component
+export const renderComponentUI = (props: UIComponentProps) => {
+  return <MemoizedComponentUI {...props} />;
 };
 
 export const createZoomSelector = () => {
@@ -196,12 +276,13 @@ export const createZoomSelector = () => {
 
 export interface UIComponentProps {
   id: string;
-  data: any; // Replace 'any' with a more specific type if possible
+  data: any;
   context: any;
-  manager: any; // Replace 'any' with a more specific type if possible
+  manager: any;
   commands: any;
   name: string;
-  ConfigForm: any;
+  ConfigForm: React.ComponentType<any>; // Update the type
+  configFormProps: any; // Add configFormProps
   Icon: LabIcon;
   showContent: boolean;
   handle: React.JSX.Element;
@@ -209,7 +290,7 @@ export interface UIComponentProps {
   setViewport: any;
   handleChange: any;
   isSelected: boolean;
-};
+}
 
 interface ICustomHandleProps {
   props: any;

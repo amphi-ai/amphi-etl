@@ -101,7 +101,7 @@ export const GenerateUIFormComponent = React.memo(({
   modalOpen,
   setModalOpen
 }: FormComponentProps) => {
-
+  console.log("GenerateUIFormComponent")
   const stopPropagation = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
   }, []);
@@ -168,6 +168,7 @@ export const GenerateUIInputs = React.memo(({
   advanced,
   formValues
 }: UIInputsProps) => {
+  console.log("GenerateUIInputs")
 
   const [connections, setConnections] = useState([]);
   const [optionsConnections, setOptionsConnections] = useState<Record<string, any[]>>({});
@@ -192,6 +193,7 @@ export const GenerateUIInputs = React.memo(({
 
   // Function to check if a field should be displayed based on its condition
   const shouldDisplayField = useCallback((field, values) => {
+    console.log("shouldDisplay")
     if (!field.condition) {
       return true;
     }
@@ -269,6 +271,7 @@ export const GenerateUIInputs = React.memo(({
 
   const renderField = useCallback((field: FieldDescriptor, index: number) => {
 
+    console.log("renderField")
     if (!advanced && field.advanced) {
       return null;
     }
@@ -523,7 +526,6 @@ export default function ConfigModal({
 }
 
 // Define interfaces for the parameters used in the functions
-
 interface StoreApi {
   getState: () => { nodeInternals: Map<string, any> };
   // ... other necessary methods and properties
