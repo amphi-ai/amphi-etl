@@ -36,7 +36,6 @@ English · [Try the demo](https://demo.amphi.ai) · [Report Bug](https://github.
 - [📦 Installation](#-installation)
 - [🔨 Usage](#-usage)
 - [✨ Features](#-features)
-- [👀 Showcase](#-showcase)
 - [🤝 Contributing](#-contributing)
 - [🛣️ Ecosystem](#️-ecosystem)
 

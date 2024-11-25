@@ -51,8 +51,6 @@ export { DateTimeConverter } from './transforms/DateTimeConverter';
 export { Summary } from './transforms/Summary';
 export { FrequencyAnalysis } from './transforms/FrequencyAnalysis';
 
-
-
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';
 export { CsvFileOutput } from './outputs/files/CsvFileOutput';
@@ -61,6 +59,7 @@ export { JsonFileOutput } from './outputs/files/JsonFileOutput';
 export { GoogleSheetsOutput } from './outputs/cloud/GoogleSheetsOutput';
 export { ParquetFileOutput } from './outputs/files/ParquetFileOutput';
 export { XmlFileOutput } from './outputs/files/XmlFileOutput';
+
 // Outputs Database
 export { PostgresOutput } from './outputs/databases/PostgresOutput';
 export { MySQLOutput } from './outputs/databases/MySQLOutput';
@@ -70,7 +69,6 @@ export { OracleOutput } from './outputs/databases/OracleOutput';
 export { RestOutput } from './outputs/cloud/RestOutput';
 export { S3FileOutput } from './outputs/files/S3FileOutput';
 export { CustomOutput } from './custom/CustomOutput';
-
 
 // Settings
 export { EnvFile } from './settings/EnvFile';

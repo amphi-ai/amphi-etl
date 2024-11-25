@@ -1,7 +1,7 @@
-
 import { fileParquetIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
+import { FileUtils } from '../../common/FileUtils'; // Import the FileUtils class
 
 export class ParquetFileInput extends BaseCoreComponent {
   constructor() {
@@ -25,9 +25,9 @@ export class ParquetFileInput extends BaseCoreComponent {
           type: "file",
           label: "File path",
           id: "filePath",
-          placeholder: "Type file name",
-          validation: "\\.(parquet)$",
-          validationMessage: "This field expects a file with a .parquet extension such as input.parquet."
+          placeholder: "Type file name or use '*' for patterns",
+          validation: "\\.(parquet)$|^(.*\\*)$",
+          tooltip: "This field expects a file with a .parquet extension or a wildcard pattern such as input*.parquet."
         },
         {
           type: "select",
@@ -45,75 +45,91 @@ export class ParquetFileInput extends BaseCoreComponent {
           type: "keyvalue",
           label: "Storage Options",
           id: "parquetOptions.storage_options",
+          condition: { fileLocation: ["http", "s3"] },
           advanced: true
         }
       ],
     };
-    const description = "Use Parquet File Input to access data from a Parquet file locally or remotely (via HTTP or S3)."
+    const description = "Use Parquet File Input to access data from Parquet files locally or remotely (via HTTP or S3).";
 
     super("Parquet File Input", "parquetFileInput", description, "pandas_df_input", ["parquet"], "inputs", fileParquetIcon, defaultConfig, form);
   }
 
-  public provideDependencies({config}): string[] {
-    let deps: string[] = [];
-    deps.push('pyarrow');
+  public provideDependencies({ config }): string[] {
+    let deps: string[] = ['pyarrow'];
+    if (config.parquetOptions?.engine === "fastparquet") {
+      deps.push('fastparquet');
+    }
+    if (FileUtils.isWildcardInput(config.filePath)) {
+      deps.push(config.fileLocation === "s3" ? 's3fs' : 'glob');
+    }
     return deps;
   }
 
-
   public provideImports({ config }): string[] {
-    const imports = ["import pandas as pd", "import pyarrow"];
-  
+    const imports = ["import pandas as pd"];
     if (config.parquetOptions?.engine === "fastparquet") {
       imports.push("import fastparquet");
     }
-  
+    if (FileUtils.isWildcardInput(config.filePath)) {
+      if (config.fileLocation === "s3") {
+        imports.push("import s3fs");
+      } else {
+        imports.push("import glob");
+      }
+    }
     return imports;
   }
 
   public generateComponentCode({ config, outputName }): string {
-    // Generate the Parquet options string using the separate function
+    const parquetOptions = { ...config.parquetOptions };
+    const storageOptionsString = parquetOptions.storage_options ? JSON.stringify(parquetOptions.storage_options) : '{}';
     const optionsString = this.generateParquetOptionsCode({ config });
 
-    // Prepare the options code segment
-    const optionsCode = optionsString ? `, ${optionsString}` : '';
+    let code = '';
 
-    // Generate the final Python code for reading Parquet
-    const code = `
-# Reading data from ${config.filePath}
-${outputName} = pd.read_parquet("${config.filePath}"${optionsCode}).convert_dtypes()
-  `;
+    // Check for wildcard input and generate appropriate code
+    if (FileUtils.isWildcardInput(config.filePath)) {
+      if (config.fileLocation === "s3") {
+        code += FileUtils.getS3FilePaths(config.filePath, storageOptionsString, outputName);
+        code += FileUtils.generateConcatCode(outputName, "read_parquet", optionsString, true);
+      } else {
+        code += FileUtils.getLocalFilePaths(config.filePath, outputName);
+        code += FileUtils.generateConcatCode(outputName, "read_parquet", optionsString, false);
+      }
+    } else {
+      // Simple file reading without wildcard
+      if (config.fileLocation === "s3") {
+        code += `${outputName} = pd.read_parquet("s3://${config.filePath}", storage_options=${storageOptionsString}, ${optionsString}).convert_dtypes()\n`;
+      } else {
+        code += `${outputName} = pd.read_parquet("${config.filePath}", ${optionsString}).convert_dtypes()\n`;
+      }
+    }
+
     return code.trim();
   }
 
   public generateParquetOptionsCode({ config }): string {
     let parquetOptions = { ...config.parquetOptions };
-
-    // Initialize storage_options if not already present
     let storageOptions = parquetOptions.storage_options || {};
 
-    // Handle S3-specific options
     storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
 
-    // Only add storage_options to parquetOptions if it's not empty
     if (Object.keys(storageOptions).length > 0) {
       parquetOptions.storage_options = storageOptions;
     }
 
-    // Process parquetOptions into a string
-    let optionsEntries = Object.entries(parquetOptions)
+    return Object.entries(parquetOptions)
       .filter(([key, value]) => value !== null && value !== '')
       .map(([key, value]) => {
         if (key === 'storage_options') {
           return `${key}=${JSON.stringify(value)}`;
         } else if (typeof value === 'string') {
-          return `${key}="${value}"`; // Handle strings with quotes
+          return `${key}="${value}"`;
         } else {
-          return `${key}=${value}`; // Handle numbers, booleans, etc.
+          return `${key}=${value}`;
         }
-      });
-
-    return optionsEntries.join(', ');
+      })
+      .join(', ');
   }
-
 }

@@ -27,7 +27,7 @@ export class ExcelFileInput extends BaseCoreComponent {
           id: "filePath",
           placeholder: "Type file name or use '*' for patterns",
           validation: "\\.(xlsx)$|^(.*\\*)$",
-          validationMessage: "This field expects a file with an xlsx extension or a wildcard pattern such as input*.xlsx."
+          tooltip: "This field expects a file with an xlsx extension or a wildcard pattern such as input*.xlsx."
         },
         {
           type: "selectCustomizable",

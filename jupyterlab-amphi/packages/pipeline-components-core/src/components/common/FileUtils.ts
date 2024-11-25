@@ -12,7 +12,7 @@ if not ${outputName}_file_paths:
   static getS3FilePaths(filePath: string, storageOptionsString: string, outputName: string): string {
     return `
 ${outputName}_fs = s3fs.S3FileSystem(**${storageOptionsString})
-${outputName}_file_paths = fs.glob("${filePath}")
+${outputName}_file_paths = ${outputName}_fs.glob("${filePath}")
 if not ${outputName}_file_paths:
     raise FileNotFoundError("No files found matching the pattern.")
 `;
@@ -21,7 +21,7 @@ if not ${outputName}_file_paths:
   // Static method to generate the concatenation code
   static generateConcatCode(outputName: string, readMethod: string, optionsString: string, isS3: boolean): string {
     const readFunction = isS3
-      ? `pd.${readMethod}(fs.open(file, 'rb'), ${optionsString})`
+      ? `pd.${readMethod}(${outputName}_fs.open(file, 'rb'), ${optionsString})`
       : `pd.${readMethod}(file, ${optionsString})`;
 
     return `
