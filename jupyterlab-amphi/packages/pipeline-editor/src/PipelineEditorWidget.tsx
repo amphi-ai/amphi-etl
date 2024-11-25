@@ -270,13 +270,12 @@ const PipelineWrapper: React.FC<IProps> = ({
         // Find source and target nodes
         const sourceNode = nodes.find(node => node.id === connection.source);
         const targetNode = nodes.find(node => node.id === connection.target);
-
+        
         // Check if both sourceNode and targetNode exist
         if (sourceNode && targetNode) {
           // Check if source node has data.backend.engine
           const sourceBackend = sourceNode.data?.backend;
           if (sourceBackend?.engine) {
-            // Update the target node's backend and engine to match the source
             setNodes((nds) =>
               nds.map((node) =>
                 node.id === targetNode.id
@@ -286,8 +285,16 @@ const PipelineWrapper: React.FC<IProps> = ({
                       ...node.data,
                       backend: {
                         ...node.data.backend,
-                        engine: sourceBackend.engine,
-                        prefix: sourceBackend.prefix
+                        engine:
+                          node.data?.backend?.prefix &&
+                            node.data.backend.prefix !== sourceBackend.prefix
+                            ? node.data.backend.engine
+                            : sourceBackend.engine,
+                        prefix:
+                          node.data?.backend?.prefix &&
+                            node.data.backend.prefix !== sourceBackend.prefix
+                            ? node.data.backend.prefix
+                            : sourceBackend.prefix
                       }
                     }
                   }
