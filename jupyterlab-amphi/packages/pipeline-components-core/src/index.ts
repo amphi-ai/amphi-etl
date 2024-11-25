@@ -13,16 +13,22 @@ import {
   SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis
 } from './components';
 
-export { CsvFileInput, ExcelFileInput, ParquetFileInput, JsonFileInput, FileUtils, CsvFileOutput, ExcelFileOutput, ParquetFileOutput, JsonFileOutput }
+export { Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
+  SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join,
+  ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, DateTimeConverter,
+  EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON,
+  DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
+  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis
+ }
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-components-core',
-  description: 'Adds a step counter/button (1 of 3 related examples). This extension holds the UI/interface',
+  description: 'Add components to Amphi',
   autoStart: true,
   requires: [ComponentManager],
 
   activate: (app: JupyterFrontEnd, componentService: any) => {
-    console.log('JupyterLab extension pipeline-components-core is activated!');
+    console.log('Amphi extension pipeline-components-core is activated!');
 
     // Settings
     componentService.addComponent(EnvVariables.getInstance())
@@ -47,10 +53,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(SnowflakeInput.getInstance())
     componentService.addComponent(ODBCInput.getInstance())
     componentService.addComponent(CustomInput.getInstance())
-
     // componentService.addComponent(PyGWalker.getInstance())
     // componentService.addComponent(Slider.getInstance())
-
 
     // Processors
     componentService.addComponent(RenameColumns.getInstance());
