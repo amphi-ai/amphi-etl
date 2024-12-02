@@ -25,6 +25,7 @@ import ValuesListForm from './forms/valuesListForm';
 import FormulaColumns from './forms/FormulaColumns'
 import { PipelineService } from './PipelineService';
 import { ThemeConsumer } from 'styled-components';
+import SelectSheetFromExcel from './forms/selectSheetFromExcel';
 
 
 // Set default options to component if specified
@@ -197,28 +198,28 @@ export const GenerateUIInputs = React.memo(({
     if (!field.condition) {
       return true;
     }
-  
+
     const checkCondition = (condition, obj) => {
       return Object.keys(condition).every(key => {
         const conditionValue = condition[key];
         const fieldValue = obj[key];
-  
+
         if (typeof conditionValue === "object" && !Array.isArray(conditionValue) && fieldValue !== undefined) {
           return checkCondition(conditionValue, fieldValue);
         }
-  
+
         const result = Array.isArray(conditionValue)
           ? conditionValue.includes(fieldValue)
           : fieldValue === conditionValue;
-  
+
         return result;
       });
     };
-  
+
     const finalResult = checkCondition(field.condition, values);
     return finalResult;
   }, [data]);
-  
+
   const renderItem = (title: string) => ({
     value: title,
     label: (
@@ -271,7 +272,6 @@ export const GenerateUIInputs = React.memo(({
 
   const renderField = useCallback((field: FieldDescriptor, index: number) => {
 
-    console.log("renderField")
     if (!advanced && field.advanced) {
       return null;
     }
@@ -339,6 +339,8 @@ export const GenerateUIInputs = React.memo(({
         return renderFormItem(field, <SelectColumn {...commonProps} defaultValue={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "table":
         return renderFormItem(field, <SelectFromSQLQuery {...commonProps} data={data} defaultValue={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
+      case "sheets":
+        return renderFormItem(field, <SelectSheetFromExcel {...commonProps} data={data} defaultValue={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "selectCustomizable":
         return renderFormItem(field, <SelectCustomizable {...commonProps} defaultValue={value} />);
       case "selectMultipleCustomizable":
@@ -592,7 +594,7 @@ export interface Option {
 
 export interface FieldDescriptor {
   type: 'file' | 'files' | 'column' | 'columns' | 'table' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio'
-  | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect'
+  | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'sheets'
   | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable' | 'formulaColumns' | 'keyvalueColumnsRadio';
   label: string;
   id: string;

@@ -32,4 +32,6 @@ ${outputName} = pd.concat([${readFunction} for file in ${outputName}_file_paths]
   static isWildcardInput(filePath: string): boolean {
     return filePath.includes('*');
   }
+
+  
 }

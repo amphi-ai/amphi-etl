@@ -661,7 +661,11 @@ export class CodeGenerator {
     }
   }
 
-  static getComponentAndDataForNode(nodeId: string, componentService: any, pipelineJson: string): { component: any, data: any } | null {
+  static getComponentAndDataForNode(
+    nodeId: string,
+    componentService: any,
+    pipelineJson: string
+  ): { component: any; data: any } | null {
     const flow = PipelineService.filterPipeline(pipelineJson);
 
     // Find the node by nodeId
@@ -673,8 +677,8 @@ export class CodeGenerator {
 
     // Get the component type and the component instance
     const component = componentService.getComponent(node.type);
-    if (!component || typeof component.generateDatabaseConnectionCode !== 'function') {
-      console.error(`Component for node type ${node.type} does not have a generateDatabaseConnectionCode method.`);
+    if (!component) {
+      console.error(`Component for node type ${node.type} not found.`);
       return null;
     }
 

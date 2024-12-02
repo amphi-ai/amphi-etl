@@ -5,7 +5,7 @@ import { FileUtils } from '../../common/FileUtils'; // Import the FileUtils clas
 
 export class ExcelFileInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { fileLocation: "local", connectionMethod: "env", excelOptions: { sheet_name: 0 }, engine: "None" };
+    const defaultConfig = { fileLocation: "local", connectionMethod: "env", excelOptions: {engine: "None" } };
     const form = {
       idPrefix: "component__form",
       fields: [
@@ -30,16 +30,11 @@ export class ExcelFileInput extends BaseCoreComponent {
           tooltip: "This field expects a file with an xlsx extension or a wildcard pattern such as input*.xlsx."
         },
         {
-          type: "selectCustomizable",
+          type: "sheets",
           label: "Sheets",
           id: "excelOptions.sheet_name",
           placeholder: "Default: 0 (first sheet)",
-          tooltip: "Select the sheet number or all of them. Use custom number to select a specific sheet. You can also select multiple sheets if they have the same structure with [0, 1, 'Sheet5'] for example.",
-          options: [
-            { value: "0", label: "0 (First sheet)" },
-            { value: "1", label: "1 (Second sheet)" },
-            { value: "None", label: "All worksheets (multiple)" }
-          ],
+          tooltip: "Select the sheet number or all of them. Use custom number to select a specific sheet. You can also select multiple sheets if they have the same structure with [0, 1, 'Sheet5'] for example."
         },
         {
           type: "selectCustomizable",
@@ -54,9 +49,36 @@ export class ExcelFileInput extends BaseCoreComponent {
           advanced: true
         },
         {
+          type: "inputNumber",
+          tooltip: "Number of rows of file to read. Useful for reading pieces of large files.",
+          label: "Rows number",
+          id: "excelOptions.nrows",
+          placeholder: "Default: all",
+          advanced: true
+        },
+        {
+          type: "inputNumber",
+          tooltip: "Number of rows to skip at the start of the file.",
+          label: "Skip rows at the start",
+          id: "excelOptions.skiprows",
+          advanced: true
+        },
+        {
+          type: "selectCustomizable",
+          label: "Decimal separator",
+          id: "excelOptions.decimal",
+          placeholder: "Default: .",
+          tooltip: "Character to recognize as decimal point for parsing string columns to numeric. Note that this parameter is only necessary for columns stored as TEXT in Excel, any numeric columns will automatically be parsed, regardless of display format.(e.g. use , for European data).",
+          options: [
+            { value: ".", label: "." },
+            { value: ",", label: "," }
+          ],
+          advanced: true
+        },
+        {
           type: "select",
           label: "Engine",
-          id: "engine",
+          id: "excelOptions.engine",
           tooltip: "Depending on the file format, different engines might be used.\nopenpyxl supports newer Excel file formats.\n calamine supports Excel (.xls, .xlsx, .xlsm, .xlsb) and OpenDocument (.ods) file formats.\n odf supports OpenDocument file formats (.odf, .ods, .odt).\n pyxlsb supports Binary Excel files.\n xlrd supports old-style Excel files (.xls).",
           options: [
             { value: "openpyxl", label: "openpyxl" },
@@ -66,13 +88,6 @@ export class ExcelFileInput extends BaseCoreComponent {
             { value: "xlrd", label: "xlrd (for *.xls)" },
             { value: "None", label: "Default" }
           ],
-          advanced: true
-        },
-        {
-          type: "boolean",
-          label: "Verbose",
-          id: "excelOptions.verbose",
-          placeholder: "false",
           advanced: true
         },
         {
@@ -92,7 +107,9 @@ export class ExcelFileInput extends BaseCoreComponent {
   public provideDependencies({ config }): string[] {
     let deps: string[] = [];
 
-    const engine = config.engine;
+    console.log("config/data %o", config)
+
+    const engine = config.excelOptions.engine;
 
     if (engine === 'None' || engine === 'openpyxl') {
       deps.push('openpyxl');
@@ -130,10 +147,19 @@ export class ExcelFileInput extends BaseCoreComponent {
   public generateComponentCode({ config, outputName }): string {
     const excelOptions = { ...config.excelOptions };
     const storageOptionsString = excelOptions.storage_options ? JSON.stringify(excelOptions.storage_options) : '{}';
-    const optionsString = this.generateOptionsCode(excelOptions);
+    let optionsString = this.generateOptionsCode(excelOptions);
   
     let code = '';
-    
+  
+    // Handle sheet_name dynamically
+    if (excelOptions.sheet_name && excelOptions.sheet_name.length > 0) {
+      if (excelOptions.sheet_name.length === 1) {
+        optionsString += `, sheet_name='${excelOptions.sheet_name[0]}'`;
+      } else {
+        optionsString += `, sheet_name=${JSON.stringify(excelOptions.sheet_name)}`;
+      }
+    }
+  
     // Check for wildcard input and generate appropriate code
     if (FileUtils.isWildcardInput(config.filePath)) {
       if (config.fileLocation === "s3") {
@@ -145,20 +171,23 @@ export class ExcelFileInput extends BaseCoreComponent {
       }
     } else {
       // Simple file reading without wildcard
-      if (config.fileLocation === "s3") {
-        code += `${outputName} = pd.read_excel("s3://${config.filePath}", storage_options=${storageOptionsString}, ${optionsString}).convert_dtypes()\n`;
+      if (excelOptions.sheet_name && excelOptions.sheet_name.length > 1) {
+        // Multiple sheets: Concatenate DataFrames into a single output
+        code += `${outputName}_dict = pd.read_excel("${config.filePath}"${optionsString})\n`;
+        code += `${outputName} = pd.concat(${outputName}_dict.values(), ignore_index=True).convert_dtypes()\n`;
       } else {
-        code += `${outputName} = pd.read_excel("${config.filePath}", ${optionsString}).convert_dtypes()\n`;
+        // Single sheet or no sheet_name specified
+        code += `${outputName} = pd.read_excel("${config.filePath}"${optionsString}).convert_dtypes()\n`;
       }
     }
   
     return code;
   }
-  
 
+  
   public generateOptionsCode(excelOptions): string {
-    return Object.entries(excelOptions)
-      .filter(([key, value]) => value !== null && value !== '')
+    const options = Object.entries(excelOptions)
+      .filter(([key, value]) => value !== null && value !== '' && key !== 'sheet_name') // Ignore sheet_name since it's handled separately
       .map(([key, value]) => {
         if (typeof value === 'boolean') {
           return `${key}=${value ? 'True' : 'False'}`;
@@ -173,7 +202,9 @@ export class ExcelFileInput extends BaseCoreComponent {
         } else {
           return `${key}='${value}'`;
         }
-      })
-      .join(', ');
+      });
+  
+    // Prepend a comma if there are options
+    return options.length > 0 ? `, ${options.join(', ')}` : '';
   }
 }
