@@ -99,11 +99,7 @@ export class ParquetFileInput extends BaseCoreComponent {
       }
     } else {
       // Simple file reading without wildcard
-      if (config.fileLocation === "s3") {
-        code += `${outputName} = pd.read_parquet("s3://${config.filePath}", storage_options=${storageOptionsString}, ${optionsString}).convert_dtypes()\n`;
-      } else {
-        code += `${outputName} = pd.read_parquet("${config.filePath}", ${optionsString}).convert_dtypes()\n`;
-      }
+      code += `${outputName} = pd.read_parquet("${config.filePath}"${optionsString}).convert_dtypes()\n`;
     }
 
     return code.trim();
@@ -112,14 +108,14 @@ export class ParquetFileInput extends BaseCoreComponent {
   public generateParquetOptionsCode({ config }): string {
     let parquetOptions = { ...config.parquetOptions };
     let storageOptions = parquetOptions.storage_options || {};
-
+  
     storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
-
+  
     if (Object.keys(storageOptions).length > 0) {
       parquetOptions.storage_options = storageOptions;
     }
-
-    return Object.entries(parquetOptions)
+  
+    const options = Object.entries(parquetOptions)
       .filter(([key, value]) => value !== null && value !== '')
       .map(([key, value]) => {
         if (key === 'storage_options') {
@@ -129,7 +125,9 @@ export class ParquetFileInput extends BaseCoreComponent {
         } else {
           return `${key}=${value}`;
         }
-      })
-      .join(', ');
+      });
+  
+    // Prepend a comma if there are options
+    return options.length > 0 ? `, ${options.join(', ')}` : '';
   }
 }

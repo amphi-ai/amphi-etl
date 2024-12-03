@@ -56,6 +56,7 @@ export class CsvFileInput extends BaseCoreComponent {
           label: "Rows number",
           id: "csvOptions.nrows",
           placeholder: "Default: all",
+          min: 0,
           advanced: true
         },
         {
@@ -151,7 +152,7 @@ export class CsvFileInput extends BaseCoreComponent {
     } else {
       code = `
 # Reading data from ${config.filePath}
-${outputName} = pd.read_csv("${config.filePath}", ${optionsString}).convert_dtypes()
+${outputName} = pd.read_csv("${config.filePath}"${optionsString}).convert_dtypes()
       `;
     }
 
@@ -160,29 +161,29 @@ ${outputName} = pd.read_csv("${config.filePath}", ${optionsString}).convert_dtyp
 
   public generateOptionsCode({ config }): string {
     let csvOptions = { ...config.csvOptions };
-
+  
     if (csvOptions.sep === 'infer') {
       csvOptions.sep = 'None';
       csvOptions.engine = 'python';
     }
-
+  
     if (config.header === '0' || config.header === '1' || config.header === 'None') {
       csvOptions.header = config.header;
     }
-
+  
     if (csvOptions.names && csvOptions.names.length > 0) {
       csvOptions.names = `['${csvOptions.names.join("', '")}']`;
       csvOptions.header = 0;
     }
-
+  
     let storageOptions = csvOptions.storage_options || {};
     storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
-
+  
     if (Object.keys(storageOptions).length > 0) {
       csvOptions.storage_options = storageOptions;
     }
-
-    let optionsEntries = Object.entries(csvOptions)
+  
+    const optionsEntries = Object.entries(csvOptions)
       .filter(([key, value]) =>
         value !== null &&
         value !== '' &&
@@ -202,8 +203,9 @@ ${outputName} = pd.read_csv("${config.filePath}", ${optionsString}).convert_dtyp
           return `${key}=${value}`;
         }
       });
-
-    return optionsEntries.join(', ');
+  
+    // Prepend a comma if there are options
+    return optionsEntries.length > 0 ? `, ${optionsEntries.join(', ')}` : '';
   }
 
   public generateSampledComponentCode({ config, outputName, nrows }): string {

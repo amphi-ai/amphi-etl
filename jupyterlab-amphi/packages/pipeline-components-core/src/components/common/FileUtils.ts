@@ -21,8 +21,8 @@ if not ${outputName}_file_paths:
   // Static method to generate the concatenation code
   static generateConcatCode(outputName: string, readMethod: string, optionsString: string, isS3: boolean): string {
     const readFunction = isS3
-      ? `pd.${readMethod}(${outputName}_fs.open(file, 'rb'), ${optionsString})`
-      : `pd.${readMethod}(file, ${optionsString})`;
+      ? `pd.${readMethod}(${outputName}_fs.open(file, 'rb')${optionsString})`
+      : `pd.${readMethod}(file${optionsString})`;
 
     return `
 ${outputName} = pd.concat([${readFunction} for file in ${outputName}_file_paths], ignore_index=True).convert_dtypes()

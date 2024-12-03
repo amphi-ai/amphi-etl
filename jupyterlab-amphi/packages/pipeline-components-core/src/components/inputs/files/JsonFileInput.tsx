@@ -136,6 +136,6 @@ ${outputName} = pd.read_json("${config.filePath}"${optionsCode}).convert_dtypes(
         }
       });
   
-    return optionsEntries.join(', ');
+      return optionsEntries.length > 0 ? `, ${optionsEntries.join(', ')}` : '';
   }
 }

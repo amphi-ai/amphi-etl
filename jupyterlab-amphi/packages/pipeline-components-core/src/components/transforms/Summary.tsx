@@ -4,7 +4,7 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 export class Summary extends BaseCoreComponent {
   constructor() {
     const defaultConfig = { 
-      statisticsType: "numerical",
+      statisticsType: "all",
       pivot: "rows" // Set default pivot to 'columns'
     };
     const form = {

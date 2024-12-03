@@ -521,7 +521,6 @@ export default function ConfigModal({
             />
           </Form>
         </div>
-
       </Modal>
     </>
   )

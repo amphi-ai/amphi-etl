@@ -34,7 +34,17 @@ export class ExcelFileInput extends BaseCoreComponent {
           label: "Sheets",
           id: "excelOptions.sheet_name",
           placeholder: "Default: 0 (first sheet)",
-          tooltip: "Select the sheet number or all of them. Use custom number to select a specific sheet. You can also select multiple sheets if they have the same structure with [0, 1, 'Sheet5'] for example."
+          tooltip: "Select one or multiple sheets. If multiple sheets are selected, the sheets are concatenated to output a single dataset.",
+          condition: { fileLocation: "local"}
+        },
+        {
+          type: "selectTokenization",
+          label: "Sheets",
+          id: "excelOptions.sheet_name",
+          placeholder: "Default: 0 (first sheet)",
+          tooltip: "Type the sheet names to read data from. If multiple sheets are provided, the sheets are concatenated to output a single dataset.",
+          options: [],
+          condition: { fileLocation: ["http", "s3"] }
         },
         {
           type: "selectCustomizable",
@@ -52,6 +62,7 @@ export class ExcelFileInput extends BaseCoreComponent {
           type: "inputNumber",
           tooltip: "Number of rows of file to read. Useful for reading pieces of large files.",
           label: "Rows number",
+          min: 0,
           id: "excelOptions.nrows",
           placeholder: "Default: all",
           advanced: true
@@ -61,6 +72,7 @@ export class ExcelFileInput extends BaseCoreComponent {
           tooltip: "Number of rows to skip at the start of the file.",
           label: "Skip rows at the start",
           id: "excelOptions.skiprows",
+          min: 0,
           advanced: true
         },
         {
@@ -126,7 +138,7 @@ export class ExcelFileInput extends BaseCoreComponent {
       deps.push(config.engine);
     }
     if (FileUtils.isWildcardInput(config.filePath)) {
-      deps.push(config.fileLocation === "s3" ? 's3fs' : 'glob');
+      deps.push(config.fileLocation === "s3" ? 's3fs' : '');
     }
 
     return deps;

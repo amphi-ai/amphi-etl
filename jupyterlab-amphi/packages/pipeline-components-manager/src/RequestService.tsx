@@ -533,6 +533,7 @@ print(", ".join(sheet_names))
         if (reply.content.status !== "ok") {
           setLoadings(false);
           console.error("Execution failed:", reply.content);
+          return;
         }
       };
 
