@@ -60,12 +60,38 @@ export class CsvFileInput extends BaseCoreComponent {
           advanced: true
         },
         {
+          type: "selectCustomizable",
+          label: "Decimal separator",
+          id: "csvOptions.decimal",
+          placeholder: "Default: .",
+          tooltip: "Character to recognize as decimal point for parsing string columns to numeric. Note that this parameter is only necessary for columns stored as TEXT in Excel, any numeric columns will automatically be parsed, regardless of display format.(e.g. use , for European data).",
+          options: [
+            { value: ".", label: "." },
+            { value: ",", label: "," }
+          ],
+          advanced: true
+        },
+        {
           type: "selectTokenization",
           tooltip: "Sequence of column labels to apply.",
           label: "Column names",
           id: "csvOptions.names",
           placeholder: "Type header fields (ordered and comma-separated)",
           options: [],
+          advanced: true
+        },
+        {
+          type: "input",
+          label: "Wrapper Character",
+          id: "csvOptions.quotechar",
+          tooltip: "Defines the character used to wrap fields containing special characters like the delimiter or newline.",
+          advanced: true
+        },
+        {
+          type: "input",
+          label: "Escaped character",
+          id: "csvOptions.escapechar",
+          tooltip: "Character used to escape other characters.",
           advanced: true
         },
         {
@@ -197,6 +223,8 @@ ${outputName} = pd.read_csv("${config.filePath}"${optionsString}).convert_dtypes
           return `${key}=${value}`;
         } else if (key === 'storage_options') {
           return `${key}=${JSON.stringify(value)}`;
+        } else if (value == '"') {
+          return `${key}='${value}'`;
         } else if (typeof value === 'string' && value !== 'None') {
           return `${key}="${value}"`;
         } else {

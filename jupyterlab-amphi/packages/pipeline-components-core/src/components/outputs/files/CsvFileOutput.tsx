@@ -60,6 +60,20 @@ export class CsvFileOutput extends BaseCoreComponent {
           advanced: true
         },
         {
+          type: "selectCustomizable",
+          label: "Quoting",
+          id: "csvOptions.quoting",
+          placeholder: "Default: 0 (Minimal Quoting)",
+          tooltip: "Controls how special characters like commas, quotes, or newlines are handled in text fields when writing to or reading from a CSV file.",
+          options: [
+            { value: "0", label: "Minimal quoting", tooltip: "Quotes only fields that contain special characters (commas, quotes, newlines)." },
+            { value: "1", label: "Quote All", tooltip: "Quotes all fields, regardless of content." },
+            { value: "2", label: "Quote All Non-Numeric", tooltip: "Quotes all non-numeric fields. Numeric fields are written without quotes." },
+            { value: "3", label: "Quote None", tooltip: "Disables quoting entirely. You should use an escape character for special characters." }
+          ],
+          advanced: true
+        },
+        {
           type: "boolean",
           label: "Header",
           id: "csvOptions.header",
@@ -126,7 +140,9 @@ ${createFoldersCode}${inputName}.to_csv("${config.filePath}"${optionsString})
           return `${key}=${value ? 'True' : 'False'}`;
         } else if (key === 'storage_options') {
           return `${key}=${JSON.stringify(value)}`;
-        }
+        }  else if (key === 'quoting') {
+          return `${key}=${value}`;
+        } 
         return `${key}='${value}'`;
       });
 
