@@ -108,17 +108,33 @@ export class ParquetFileInput extends BaseCoreComponent {
   public generateParquetOptionsCode({ config }): string {
     let parquetOptions = { ...config.parquetOptions };
     let storageOptions = parquetOptions.storage_options || {};
-  
-    storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
-  
+    
+    // Transform storage_options array into the correct format
+    if (Array.isArray(storageOptions)) {
+      const transformedStorageOptions = storageOptions.reduce((acc, item: { key: string; value: any }) => {
+        acc[item.key] = item.value;
+        return acc;
+      }, {});
+
+      // Merge transformed options with the S3-specific options
+      const s3Options = S3OptionsHandler.handleS3SpecificOptions(config, {});
+      storageOptions = { ...transformedStorageOptions, ...s3Options };
+    } else {
+      // Ensure S3-specific options are handled when storageOptions is not an array
+      storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
+    }
+
+    // Update the storage_options in parquetOptions
     if (Object.keys(storageOptions).length > 0) {
       parquetOptions.storage_options = storageOptions;
     }
-  
+
     const options = Object.entries(parquetOptions)
       .filter(([key, value]) => value !== null && value !== '')
       .map(([key, value]) => {
-        if (key === 'storage_options') {
+        console.log("key ??? %o", key)
+        console.log("value rhhh %o", value)
+        if (key === 'storage_options' && typeof value === 'object') {
           return `${key}=${JSON.stringify(value)}`;
         } else if (typeof value === 'string') {
           return `${key}="${value}"`;
@@ -126,7 +142,7 @@ export class ParquetFileInput extends BaseCoreComponent {
           return `${key}=${value}`;
         }
       });
-  
+
     // Prepend a comma if there are options
     return options.length > 0 ? `, ${options.join(', ')}` : '';
   }

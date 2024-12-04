@@ -159,7 +159,7 @@ export class ExcelFileInput extends BaseCoreComponent {
   public generateComponentCode({ config, outputName }): string {
     const excelOptions = { ...config.excelOptions };
     const storageOptionsString = excelOptions.storage_options ? JSON.stringify(excelOptions.storage_options) : '{}';
-    let optionsString = this.generateOptionsCode(excelOptions);
+    let optionsString = this.generateOptionsCode(config);
   
     let code = '';
   
@@ -197,7 +197,30 @@ export class ExcelFileInput extends BaseCoreComponent {
   }
 
   
-  public generateOptionsCode(excelOptions): string {
+  public generateOptionsCode(config): string {
+    let excelOptions = { ...config.excelOptions };
+    let storageOptions = excelOptions.storage_options || {};
+    
+    // Transform storage_options array into the correct format
+    if (Array.isArray(storageOptions)) {
+      const transformedStorageOptions = storageOptions.reduce((acc, item: { key: string; value: any }) => {
+        acc[item.key] = item.value;
+        return acc;
+      }, {});
+
+      // Merge transformed options with the S3-specific options
+      const s3Options = S3OptionsHandler.handleS3SpecificOptions(config, {});
+      storageOptions = { ...transformedStorageOptions, ...s3Options };
+    } else {
+      // Ensure S3-specific options are handled when storageOptions is not an array
+      storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
+    }
+
+    // Update the storage_options in excelOptions
+    if (Object.keys(storageOptions).length > 0) {
+      excelOptions.storage_options = storageOptions;
+    }
+    
     const options = Object.entries(excelOptions)
       .filter(([key, value]) => value !== null && value !== '' && key !== 'sheet_name') // Ignore sheet_name since it's handled separately
       .map(([key, value]) => {

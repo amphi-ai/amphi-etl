@@ -203,12 +203,27 @@ ${outputName} = pd.read_csv("${config.filePath}"${optionsString}).convert_dtypes
     }
   
     let storageOptions = csvOptions.storage_options || {};
-    storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
-  
+
+    // Transform storage_options array into the correct format
+    if (Array.isArray(storageOptions)) {
+      const transformedStorageOptions = storageOptions.reduce((acc, item: { key: string; value: any }) => {
+        acc[item.key] = item.value;
+        return acc;
+      }, {});
+
+      // Merge transformed options with the S3-specific options
+      const s3Options = S3OptionsHandler.handleS3SpecificOptions(config, {});
+      storageOptions = { ...transformedStorageOptions, ...s3Options };
+    } else {
+      // Ensure S3-specific options are handled when storageOptions is not an array
+      storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
+    }
+
+    // Update the storage_options in csvOptions
     if (Object.keys(storageOptions).length > 0) {
       csvOptions.storage_options = storageOptions;
     }
-  
+
     const optionsEntries = Object.entries(csvOptions)
       .filter(([key, value]) =>
         value !== null &&

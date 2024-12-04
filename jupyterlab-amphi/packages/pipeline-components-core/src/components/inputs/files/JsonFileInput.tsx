@@ -65,7 +65,7 @@ export class JsonFileInput extends BaseCoreComponent {
         {
           type: "keyvalue",
           label: "Storage Options",
-          id: "excelOptions.storage_options",
+          id: "jsonOptions.storage_options",
           condition: { fileLocation: ["http", "s3"] },
           advanced: true
         }
@@ -85,12 +85,9 @@ export class JsonFileInput extends BaseCoreComponent {
     // Generate the JSON options string using the separate function
     const optionsString = this.generateJsonOptionsCode({ config });
 
-    // Prepare the options code segment
-    const optionsCode = optionsString ? `, ${optionsString}` : '';
-
     // Generate the final Python code for reading JSON
     const code = `
-${outputName} = pd.read_json("${config.filePath}"${optionsCode}).convert_dtypes()
+${outputName} = pd.read_json("${config.filePath}"${optionsString}).convert_dtypes()
   `;
 
     return code.trim();
@@ -102,10 +99,22 @@ ${outputName} = pd.read_json("${config.filePath}"${optionsCode}).convert_dtypes(
     // Initialize storage_options if not already present
     let storageOptions = jsonOptions.storage_options || {};
   
-    // Handle S3-specific options
-    storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
-  
-    // Only add storage_options to jsonOptions if it's not empty
+    // Transform storage_options array into the correct format
+    if (Array.isArray(storageOptions)) {
+      const transformedStorageOptions = storageOptions.reduce((acc, item: { key: string; value: any }) => {
+        acc[item.key] = item.value;
+        return acc;
+      }, {});
+
+      // Merge transformed options with the S3-specific options
+      const s3Options = S3OptionsHandler.handleS3SpecificOptions(config, {});
+      storageOptions = { ...transformedStorageOptions, ...s3Options };
+    } else {
+      // Ensure S3-specific options are handled when storageOptions is not an array
+      storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
+    }
+
+    // Update the storage_options in csvOptions
     if (Object.keys(storageOptions).length > 0) {
       jsonOptions.storage_options = storageOptions;
     }
