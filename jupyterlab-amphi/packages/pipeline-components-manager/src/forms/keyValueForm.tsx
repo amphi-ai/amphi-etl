@@ -37,7 +37,6 @@ export const KeyValueForm: React.FC<KeyValueFormProps> = ({ field, handleChange,
 
     setKeyValuePairs(updatedKeyValuePairs);
     handleChange(updatedKeyValuePairs, field.id);
-
   };
 
   return (

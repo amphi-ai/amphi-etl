@@ -32,7 +32,7 @@ export class CsvFileInput extends BaseCoreComponent {
           label: "File path",
           id: "filePath",
           placeholder: "Type file name or use '*' for patterns",
-          tooltip: "Provide a single CSV file path or use '*' for matching multiple files. Extensions accepted: .csv, .tsv, .txt.",
+          tooltip: "Provide a single CSV file path or use '*' for matching multiple files. Extensions accepted: .csv, .tsv, .txt. Can also read CSV files compressed as .gz, .bz2, .zip, .xz, .zst.",
           validation: "^(.*(\\.csv|\\.tsv|\\.txt))$|^(.*\\*)$"
         },
         {
