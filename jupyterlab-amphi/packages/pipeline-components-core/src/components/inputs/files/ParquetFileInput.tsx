@@ -132,8 +132,6 @@ export class ParquetFileInput extends BaseCoreComponent {
     const options = Object.entries(parquetOptions)
       .filter(([key, value]) => value !== null && value !== '')
       .map(([key, value]) => {
-        console.log("key ??? %o", key)
-        console.log("value rhhh %o", value)
         if (key === 'storage_options' && typeof value === 'object') {
           return `${key}=${JSON.stringify(value)}`;
         } else if (typeof value === 'string') {

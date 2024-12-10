@@ -37,7 +37,6 @@ export async function viewData(
 
         // Get the node information
         const nodeJson = PipelineService.getNodeById(context.model.toString(), nodeId);
-        console.log("nodeJson %o", nodeJson)
         // Assume that the node's output variable name is stored in nodeJson.data.varName
         const varName = nodeJson.data.nameId;
 

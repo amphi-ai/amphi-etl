@@ -2,7 +2,6 @@ import { Form } from 'antd';
 import React from 'react';
 
 export const renderFormItem = (field: any, content: any) => {
-  console.log("renderFormItem");
   
   return (
     <Form.Item

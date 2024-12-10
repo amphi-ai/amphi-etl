@@ -16,6 +16,12 @@
       "description": "Enable debug mode provide additional messages in the console.",
       "default": false
     },
+    "enableTelemetry": {
+      "type": "boolean",
+      "title": "Enable Telemetry",
+      "description": "Enable telemetry used to improve user experience and product performance.",
+      "default": true
+    },
     "defaultEngineBackend": {
       "type": "string",
       "title": "Default Engine for File Browser files",

@@ -63,8 +63,6 @@ export class LocalFileInput extends BaseCoreComponent {
       ]
     };
 
-    console.log("form %o", form)
-
     const description = "Use File Input to read data from a local file. Supports CSV, JSON, Excel, Parquet, and XML formats.";
 
     super("File Input", "localFileInput", description, "pandas_df_input", [], "inputs", fileTextIcon, defaultConfig, form);

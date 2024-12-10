@@ -144,6 +144,10 @@ Every contribution, big or small, is celebrated. Join us in our mission to refin
 
 <br/>
 
+## Telemetry
+
+Amphi collects **anonymous telemetry data** to help us understand users and their use-cases better to improve the product. You can of course **opt out** in the settings and disable any telemetry collection.
+
 ## 🛣️ Ecosystem
 
 Amphi is available as an extension for Jupyterlab, and Amphi ETL is based on Jupyterlab. Therefore Jupyterlab extensions can be installed on Amphi ETL.

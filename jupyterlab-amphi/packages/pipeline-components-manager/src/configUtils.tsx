@@ -102,7 +102,6 @@ export const GenerateUIFormComponent = React.memo(({
   modalOpen,
   setModalOpen
 }: FormComponentProps) => {
-  console.log("GenerateUIFormComponent")
   const stopPropagation = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
   }, []);
@@ -169,13 +168,11 @@ export const GenerateUIInputs = React.memo(({
   advanced,
   formValues
 }: UIInputsProps) => {
-  console.log("GenerateUIInputs")
 
   const [connections, setConnections] = useState([]);
   const [optionsConnections, setOptionsConnections] = useState<Record<string, any[]>>({});
 
   const fetchConnections = useCallback(() => {
-    console.log("fetchConnections")
 
     const allConnections = PipelineService.getConnections(context.model.toString());
     setConnections(allConnections);
@@ -194,7 +191,6 @@ export const GenerateUIInputs = React.memo(({
 
   // Function to check if a field should be displayed based on its condition
   const shouldDisplayField = useCallback((field, values) => {
-    console.log("shouldDisplay")
     if (!field.condition) {
       return true;
     }

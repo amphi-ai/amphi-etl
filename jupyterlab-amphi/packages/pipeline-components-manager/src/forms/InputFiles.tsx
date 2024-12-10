@@ -54,8 +54,6 @@ export const InputFiles = ({ field, values, handleChange, context, advanced, man
         filter: (model) => model.path !== context.path,
       });
 
-      console.log("res %o", res);
-
       if (res.value && res.value.length > 0) {
         const relativePaths = res.value.map(file => PipelineService.getRelativePath(context.path, file.path));
         const newSelectedFiles = relativePaths.map(path => ({ label: path, value: path }));

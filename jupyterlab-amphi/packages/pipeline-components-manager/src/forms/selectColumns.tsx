@@ -24,7 +24,6 @@ interface SelectColumnsProps {
 export const SelectColumns: React.FC<SelectColumnsProps> = ({
   field, handleChange, defaultValues, context, componentService, commands, nodeId, advanced
 }) => {
-  console.log("SelectColumns");
 
   const [items, setItems] = useState(field.options || []);
   const [selectedOptions, setSelectedOptions] = useState(defaultValues);

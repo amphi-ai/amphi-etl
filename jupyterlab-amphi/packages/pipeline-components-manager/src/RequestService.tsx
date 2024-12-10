@@ -28,10 +28,8 @@ export class RequestService {
 
       // Check if the previous node has already been executed recently
       const refNode = nodesMap.get(refNodeId);
-      console.log("refNode %o", refNode)
       if (refNode) {
         const { lastUpdated, lastExecuted, nameId } = refNode.data || {};
-        console.log("nameId %o", nameId)
 
         // If the node has been executed after its last update, skip code generation
         // console.log("lastExecuted %o, type: %s", lastExecuted, typeof lastExecuted);
@@ -41,16 +39,14 @@ export class RequestService {
           console.log("Skip generation")
           const dataframeVar = nameId || refNodeId;
           const codeToFetchContent = `print(_amphi_metadatapanel_getcontentof(${dataframeVar}))`;
-          console.log("codeToFetchContent %o", codeToFetchContent)
 
           const future = context.sessionContext.session.kernel!.requestExecute({ code: codeToFetchContent });
           future.onIOPub = msg => {
             if (msg.header.msg_type === 'stream') {
               const streamMsg = msg as KernelMessage.IStreamMsg;
               const output = streamMsg.content.text;
-              console.log("output %o", output)
 
-              const regex = /([^,]+)\s+\(([^,]+),\s*(named|unnamed)\)/g;
+              const regex = /([^,]+)\s+\(([^,]+(?:\[[^\]]+\])?),\s*(named|unnamed)\)/g;
               const newItems = [];
 
               let match;
@@ -390,8 +386,6 @@ ${pythonExtraction}
 `;
 
 
-    // console.log("CODE %o", code)
-
     // Format any remaining variables in the code
     code = CodeGenerator.formatVariables(code);
 
@@ -468,18 +462,12 @@ ${pythonExtraction}
         componentService
       );
 
-      console.log("nodeId %o", nodeId);
-      console.log("componentService %o", componentService);
-      console.log("context.model.toString() %o", context.model.toString());
-
       // Get component and data for the node
       const { component, data } = CodeGenerator.getComponentAndDataForNode(
         nodeId,
         componentService,
         context.model.toString()
       );
-
-      console.log("data %o", data)
 
 
       if (!component) {
@@ -522,7 +510,6 @@ sheet_names = excel_obj.sheet_names
 print(", ".join(sheet_names))
 `;
 
-      console.log("code %o", code)
       // Format variables in the code
       code = CodeGenerator.formatVariables(code);
 
@@ -544,9 +531,7 @@ print(", ".join(sheet_names))
 
           if (streamMsg.content.name === "stdout") {
             const output = streamMsg.content.text;
-            console.log("output %o", output)
             const sheets = output.split(", ");
-            console.log("sheets %o", sheets)
 
             const newItems = sheets.map((sheetName) => ({
               input: {},

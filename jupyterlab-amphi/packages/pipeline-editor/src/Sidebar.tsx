@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Tree, Input, Space, Tooltip } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
+import posthog from 'posthog-js'
 import { NONAME } from 'dns';
 
 const { DirectoryTree } = Tree;

@@ -40,6 +40,8 @@ import ReactFlow, {
   useReactFlow,
   useStoreApi
 } from 'reactflow';
+import posthog from 'posthog-js'
+import { PostHogProvider } from 'posthog-js/react'
 
 
 import { ConfigProvider } from 'antd';
@@ -59,6 +61,8 @@ export const commandIDs = {
   newDocManager: 'docmanager:new-untitled',
   saveDocManager: 'docmanager:save',
 };
+
+
 
 export const FitViewOptions = {
   padding: 10,
@@ -205,6 +209,40 @@ const PipelineWrapper: React.FC<IProps> = ({
     `Settings extension in PipelineEditor: defaultEngineBackend is set to '${defaultEngineBackend}'`
   );
 
+  let enableTelemetry = settings.get('enableTelemetry').composite as boolean;
+  if (enableTelemetry) {
+
+    function maskedSensitiveParams(url) {
+      try {
+        const parsedUrl = new URL(url);
+        return `${parsedUrl.protocol}//${parsedUrl.host}`;
+      } catch (error) {
+        // Return original URL if parsing fails
+        return url;
+      }
+    }
+    
+
+    posthog.init('phc_V56mYhYAQdzJl5tMM2RFedJWbXlbyxDnSj2KMbUX8x3', {
+      api_host: 'https://us.i.posthog.com',
+      autocapture: false,
+      person_profiles: 'always',
+      sanitize_properties: function (properties, _event) {
+        // Sanitize current url
+        if (properties[`$current_url`]) {
+          properties[`$current_url`] = maskedSensitiveParams(properties[`$current_url`]);
+        }
+
+        // Remove path name
+        if (properties[`$path_name`]) {
+          properties[`$path_name`] = '';
+        }
+        return properties;
+      }
+        
+    })
+  }
+
   function PipelineFlow(context) {
 
     const model = context.context.model;
@@ -270,7 +308,7 @@ const PipelineWrapper: React.FC<IProps> = ({
         // Find source and target nodes
         const sourceNode = nodes.find(node => node.id === connection.source);
         const targetNode = nodes.find(node => node.id === connection.target);
-        
+
         // Check if both sourceNode and targetNode exist
         if (sourceNode && targetNode) {
           // Check if source node has data.backend.engine
@@ -468,6 +506,14 @@ const PipelineWrapper: React.FC<IProps> = ({
                 }
               };
 
+              // Anonymous telemetry
+              if (enableTelemetry) {
+                posthog.capture('component_drop', {
+                  drag_type: "file browser",
+                  node_type: nodeType
+                })
+              }
+
               // Add the new node to the pipeline
               setNodes((nds) => nds.concat(newNode));
             } else {
@@ -530,6 +576,14 @@ const PipelineWrapper: React.FC<IProps> = ({
         };
 
         setNodes((nds) => nds.concat(newNode));
+
+        // Anonymous telemetry
+        if (enableTelemetry) {
+          posthog.capture('component_drop', {
+            drag_type: "palette",
+            node_type: type
+          })
+        }
       },
       [reactFlowInstance, nodes]
     );

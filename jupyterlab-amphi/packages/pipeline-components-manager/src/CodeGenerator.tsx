@@ -83,7 +83,6 @@ export class CodeGenerator {
 
         // Handle target node
         if (nodeObject.id === targetNodeId) {
-          console.log("nodeObject %o", nodeObject)
           let displayCode = '';
           if (nodeObject.type.includes('processor') || nodeObject.type.includes('input')) {
             if (nodeObject.type.includes('documents')) {

@@ -106,6 +106,7 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
 
     let enableExecution: boolean;
     let enableDebugMode: boolean;
+    let enableTelemetry: boolean;
     let defaultEngineBackend: string;
 
     // Fetch the initial state of the settings.
@@ -122,6 +123,10 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
       defaultEngineBackend = setting.get('defaultEngineBackend').composite as string;
       console.log(
         `Settings extension: defaultEngineBackend is set to '${defaultEngineBackend}'`
+      );
+      enableTelemetry = setting.get('enableTelemetry').composite as boolean;
+      console.log(
+        `Settings extension: enableTelemetry is set to '${enableTelemetry}'`
       );
     }
 
@@ -622,9 +627,7 @@ ${code}
                 false,
                 false
               );
-    
-              console.log("codeList: %o", codeList)
-              
+                  
             }
           },
           label: 'Override Code'
@@ -644,7 +647,6 @@ ${code}
 
             if (contextNode) {
               const nodeId = contextNode.dataset.id; // Extract the node ID
-              console.log("nodeId %o", nodeId)
 
               commands.execute('pipeline-editor:run-pipeline-until', { nodeId: nodeId, context: current.context }).then(result => {
 
@@ -656,17 +658,11 @@ ${code}
                   componentService
                 );
 
-                console.log("nodesMap %o", nodesMap)
-                console.log("nodesToTraverse %o", nodesToTraverse)
-
-
                 if (!nodesMap.has(nodeId)) {
                   console.error(`Node with ID ${nodeId} not found in nodesMap`);
                 } else {
                   const targetNode = nodesMap[nodeId];
-                  console.log("targetNode %o", targetNode);
                   // const namedId = targetNode.data.namedId;
-                  // console.log("namedId %o", namedId)
                 }
 
 

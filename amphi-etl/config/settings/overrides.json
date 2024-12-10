@@ -3,6 +3,9 @@
     "theme": "Amphi Light",
     "theme-scrollbars": true
   },
+  "@jupyterlab/statusbar-extension:plugin": {
+    "visible": false
+  },
   "@jupyterlab/mainmenu-extension:plugin": {
     "menus": [
       {

@@ -119,8 +119,6 @@ export class ExcelFileInput extends BaseCoreComponent {
   public provideDependencies({ config }): string[] {
     let deps: string[] = [];
 
-    console.log("config/data %o", config)
-
     const engine = config.excelOptions.engine;
 
     if (engine === 'None' || engine === 'openpyxl') {
