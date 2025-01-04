@@ -29,7 +29,7 @@ setup(
     author_email='tgourdel@amphi.ai',
     license='ELv2',
     install_requires=[
-        'jupyterlab==4.3.2',
+        'jupyterlab==4.3.3',
         'jupyterlab-amphi==0.8.22',
         'pandas==2.2.1'
     ],

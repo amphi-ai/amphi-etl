@@ -9,6 +9,7 @@
 </p>
 <br/>
 
+
 <p align="center">
 <a href="https://github.com/amphi-ai/amphi-etl/stargazers" target="_blank">
     <img src="https://img.shields.io/github/stars/amphi-ai/amphi-etl?style=social&label=Star&maxAge=2592000" alt="Test">
@@ -19,10 +20,11 @@
 <a href="https://github.com/amphi-ai/amphi-etl/blob/main/LICENSE" target="_blank">
     <img src="https://img.shields.io/static/v1?label=license&message=ELv2&color=white" alt="License">
 </a>
+<a href="https://badge.fury.io/py/amphi-etl"><img src="https://badge.fury.io/py/amphi-etl.svg" alt="PyPI version"></a>
+<a href="https://pepy.tech/projects/amphi-etl"><img src="https://static.pepy.tech/badge/amphi-etl" alt="PyPI Downloads"></a>
 </p>
 
 ![amphi-github-banner](https://github.com/user-attachments/assets/e13ac7e9-4c6f-47f6-b48e-f62e098cef82)
-
 
 English · [Try the demo](https://demo.amphi.ai) · [Report Bug](https://github.com/amphi-ai/amphi-etl/issues) · [Request Feature](https://github.com/amphi-ai/amphi-etl/issues)
 
@@ -45,7 +47,7 @@ English · [Try the demo](https://demo.amphi.ai) · [Report Bug](https://github.
 
 ## 📦 Installation & Update
 
-Amphi is available as both a standalone applicatiion or as a JupyterLab extension.
+Amphi is available as both a standalone application or as a JupyterLab extension.
 
 | Amphi ETL (standalone) | Amphi for JupyterLab (extension) |
 |------------------------|----------------------|
@@ -117,15 +119,6 @@ pip install --upgrade amphi-etl
 
 <br/>
 
-**Features In Progress**
-
-- [ ] **Custom components** - Add the ability to develop your own component and wrap configured ones
-- [x] **Implement connections** - ~Add the ability to securely create connections to reuse in components~
-- [ ] **Developer documentation** - Write comprehensive documentation to allow extensions
-- [x] **Save Components** - ~Save components and reuse them in other pipelines~
-
-<br/>
-
 <!--
 ## 👀 Showcase
 
@@ -144,9 +137,11 @@ Every contribution, big or small, is celebrated. Join us in our mission to refin
 
 <br/>
 
-## Telemetry
+## 📡 Telemetry
 
-Amphi collects **anonymous telemetry data** to help us understand users and their use-cases better to improve the product. You can of course **opt out** in the settings and disable any telemetry collection.
+Amphi collects **anonymous telemetry data** to help us understand users and their use-cases better to improve the product. You can of course **opt out** in the settings and disable any telemetry data collection.
+
+<br/>
 
 ## 🛣️ Ecosystem
 
