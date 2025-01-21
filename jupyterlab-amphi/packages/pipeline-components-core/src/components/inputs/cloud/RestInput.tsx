@@ -21,7 +21,8 @@ export class RestInput extends BaseCoreComponent {
             { value: "GET", label: "GET" },
             { value: "PUT", label: "PUT" },
             { value: "POST", label: "POST" },
-            { value: "DELETE", label: "DELETE" }
+            { value: "DELETE", label: "DELETE" },
+            { value: "SUP", label: "SUP" }
           ],
           advanced: true
         },
@@ -70,9 +71,9 @@ export class RestInput extends BaseCoreComponent {
 
     let jsonPathParam = '';
     if (config.jsonPath && config.jsonPath.trim() !== '') {
-      jsonPathParam = `${outputName}_jsonpath_expr = parse('${config.jsonPath}')\nselected_data = [match.value for match in ${outputName}_jsonpath_expr.find(data)] if ${outputName}_jsonpath_expr.find(data) else []\n${outputName} = pd.DataFrame(selected_data).convert_dtypes() if selected_data else pd.DataFrame()\n`;
+      jsonPathParam = `${outputName}_jsonpath_expr = parse('${config.jsonPath}')\nselected_data = [match.value for match in ${outputName}_jsonpath_expr.find(${outputName}_data)] if ${outputName}_jsonpath_expr.find(${outputName}_data) else []\n${outputName} = pd.DataFrame(selected_data).convert_dtypes() if selected_data else pd.DataFrame()\n`;
     } else {
-      jsonPathParam = `${outputName} = pd.DataFrame([data]).convert_dtypes() if isinstance(data, dict) else pd.DataFrame(data).convert_dtypes()\n`;
+      jsonPathParam = `${outputName} = pd.DataFrame([${outputName}_data]).convert_dtypes() if isinstance(data, dict) else pd.DataFrame(${outputName}_data).convert_dtypes()\n`;
     }
 
     const params = `${headersParam}${bodyParam}`;
