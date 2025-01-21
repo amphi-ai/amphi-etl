@@ -21,8 +21,7 @@ export class RestInput extends BaseCoreComponent {
             { value: "GET", label: "GET" },
             { value: "PUT", label: "PUT" },
             { value: "POST", label: "POST" },
-            { value: "DELETE", label: "DELETE" },
-            { value: "SUP", label: "SUP" }
+            { value: "DELETE", label: "DELETE" }
           ],
           advanced: true
         },
