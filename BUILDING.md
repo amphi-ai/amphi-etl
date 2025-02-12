@@ -11,12 +11,22 @@ Before starting the build process, we strongly recommend setting up a Python vir
 ### Creating a Virtual Environment
 
 Using venv:
-```bash
+
 # On Windows
+```bash
 python -m venv venv
 .\venv\Scripts\activate
+```
+another example
+```bash
+python -m venv C:\Users\yourusername\building_amphi
+cd C:\Users\yourusername\building_amphi
+Scripts\activate
+```
+on cmd, you must see the name of your virtual environment on the left.
 
 # On macOS/Linux
+```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
@@ -122,3 +132,18 @@ For more detailed information about:
 - JupyterLab extensions: [JupyterLab Documentation](https://jupyterlab.readthedocs.io/)
 - Python virtual environments: [Python venv documentation](https://docs.python.org/3/library/venv.html)
 - Conda environments: [Conda documentation](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
+
+## Adding a new component
+1. a component is stored as a .tsx file in the amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\components repository, within a sub-folder related to its category.
+Note there is a  amphi-etl\jupyterlab-amphi\packages\pipeline-components-local for components that are not packaged with amphi for snowflake (Snowpark pandas).
+ 
+2. component is mainly composed of two parts : the form and the code generator. you can have some form examples in developer\FormExample.tsx
+ 
+3. component must be registered in two indexes files:
+amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\index.ts
+amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\components\index.ts
+ 
+4. icons are stored in  amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\style\icons\ 
+it must me registered  in amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\icon.ts and the icon is a svg square of 24.
+
+5. Component categories are created on the fly, with the super{} function, you don’t need to create a category.
