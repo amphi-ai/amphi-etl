@@ -12,7 +12,7 @@ Before starting the build process, we strongly recommend setting up a Python vir
 
 Using venv:
 
-# On Windows
+#### On Windows
 ```bash
 python -m venv venv
 .\venv\Scripts\activate
@@ -25,7 +25,7 @@ Scripts\activate
 ```
 on cmd, you must see the name of your virtual environment on the left.
 
-# On macOS/Linux
+#### On macOS/Linux
 ```bash
 python3 -m venv venv
 source venv/bin/activate
