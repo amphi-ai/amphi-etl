@@ -111,13 +111,13 @@ jupyter lab --notebook-dir=/path/to/your/workspace
 ```
 (Use appropriate path format for Windows as shown above)
 
-## Component Overview
+## 👓 Component Overview 👓
 
 - **jupyterlab-amphi**: This is the core extension that contains the main application logic. It can be run independently within JupyterLab for development and testing purposes.
   
 - **amphi-etl**: This is the complete Amphi ETL application. It incorporates the `jupyterlab-amphi` extension and adds Amphi's custom theme, styling, and additional features to create a standalone application experience.
 
-## Troubleshooting
+## 🐛 Troubleshooting 🐛
 
 If you encounter any issues:
 
