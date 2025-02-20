@@ -91,7 +91,7 @@ export class OracleInput extends BaseCoreComponent {
           tooltip: "",
           id: "dbapi",
           options: [
-            { value: "cx_oracle", label: "cx-Oracle" },
+            { value: "cx_Oracle", label: "cx-Oracle" },
             { value: "oracledb", label: "python-oracledb" }
           ],
           advanced: true
@@ -105,7 +105,7 @@ export class OracleInput extends BaseCoreComponent {
 
   public provideDependencies({ config }): string[] {
     let deps: string[] = [];
-    if (config.dbapi === 'cx_oracle') {
+    if (config.dbapi === 'cx_Oracle') {
       deps.push("cx_Oracle");
     } else if (config.dbapi === 'oracledb') {
       deps.push("oracledb");
@@ -116,7 +116,7 @@ export class OracleInput extends BaseCoreComponent {
   public provideImports({ config }): string[] {
     const imports = ["import pandas as pd", "import sqlalchemy"];
 
-    if (config.dbapi === 'cx_oracle') {
+    if (config.dbapi === 'cx_Oracle') {
       imports.push("import cx_Oracle");
     } else if (config.dbapi === 'oracledb') {
       imports.push("import oracledb");
