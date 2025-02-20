@@ -31,22 +31,22 @@ import bracesIconSvgStr from '../style/icons/braces.svg';
 import htmlIconSvgStr from '../style/icons/html.svg';
 import MarkdownSvgStr from '../style/icons/markdown-fill.svg';
 import htmlLineSvgStr from '../style/icons/html-line.svg';
-import chromaSvgStr from '../style/icons/chroma.svg'
-import checkDiamondSvgStr from '../style/icons/check-diamond-24.svg'
-import plusCircleSvgStr from '../style/icons/plus-circle-24.svg'
-import hashSvgStr from '../style/icons/hash-24.svg'
-import oracleIconSvgStr from '../style/icons/oracle.svg'
-import sqlServerIconSvgStr from '../style/icons/sql-server.svg'
+import chromaSvgStr from '../style/icons/chroma.svg';
+import checkDiamondSvgStr from '../style/icons/check-diamond-24.svg';
+import plusCircleSvgStr from '../style/icons/plus-circle-24.svg';
+import hashSvgStr from '../style/icons/hash-24.svg';
+import oracleIconSvgStr from '../style/icons/oracle.svg';
+import sqlServerIconSvgStr from '../style/icons/sql-server.svg';
 import playCircleIconSvgStr from '../style/icons/play-circle-16.svg';
 import settingsIconSvgStr from '../style/icons/settings-16.svg';
-import keyIconSvgStr from '../style/icons/key-24.svg'
-import snowflakeIconSvgStr from '../style/icons/snowflake.svg'
-import trinoIconSvgStr from '../style/icons/trino.svg'
-import sumIconSvgStr from '../style/icons/sum.svg'
-import engineIconSvgStr from '../style/icons/service-16.svg'
-import s3IconSvgStr from '../style/icons/s3.svg'
-import bigQueryIconSvgStr from '../style/icons/bigquery.svg'
-import databaseIconSvgStr from '../style/icons/database-24.svg'
+import keyIconSvgStr from '../style/icons/key-24.svg';
+import snowflakeIconSvgStr from '../style/icons/snowflake.svg';
+import trinoIconSvgStr from '../style/icons/trino.svg';
+import sumIconSvgStr from '../style/icons/sum.svg';
+import engineIconSvgStr from '../style/icons/service-16.svg';
+import s3IconSvgStr from '../style/icons/s3.svg';
+import bigQueryIconSvgStr from '../style/icons/bigquery.svg';
+import databaseIconSvgStr from '../style/icons/database-24.svg';
 import xIconSvgStr from '../style/icons/x-16.svg';
 import calendarSvgStr from '../style/icons/calendar-24.svg';
 import pivotSvgStr from '../style/icons/corner-up-right-24.svg';
@@ -60,7 +60,9 @@ import filePdfIconSvgStr from '../style/icons/file-pdf-24.svg';
 import fileExcelIconSvgStr from '../style/icons/file-excel-24.svg';
 import fileParquetIconSvgStr from '../style/icons/file-parquet-24.svg';
 import fileJsonIconSvgStr from '../style/icons/file-json-24.svg';
-import activityIconSvgStr from '../style/icons/activity-24.svg'
+import activityIconSvgStr from '../style/icons/activity-24.svg';
+import formexampletypescriptIconSvgStr from '../style/icons/form-example-typescript-24.svg';
+
 
 export const expandJsonIcon = new LabIcon({
   name: 'amphi:expand-icon',
@@ -366,4 +368,9 @@ export const fileParquetIcon = new LabIcon({
 export const activityIcon = new LabIcon({
   name: 'amphi:activity-icon',
   svgstr: activityIconSvgStr
+});
+
+export const formexampletypescriptIcon = new LabIcon({
+  name: 'amphi:form-example-typescript-icon',
+  svgstr: formexampletypescriptIconSvgStr
 });
