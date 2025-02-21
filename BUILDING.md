@@ -53,6 +53,7 @@ cd jupyterlab-amphi
 
 **On macOS/Linux:**
 ```bash
+pip install jupyterlab
 jlpm install
 jlpm run build
 python3 -m pip install .
@@ -60,10 +61,10 @@ python3 -m pip install .
 
 **On Windows:**
 ```bash
+pip install jupyterlab
 jlpm install
 jlpm run build
 python -m pip install .
-pip install jupyterlab
 ```
 check that the extension is really installed with
 ```bash
