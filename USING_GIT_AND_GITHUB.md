@@ -64,12 +64,12 @@ git commit -m "Pushing Only Single file to git" config/local.js
 
 In case you're adding a file or modifying a file that wasn't tracked by git, you have to add it with the following cmd 
 ```bash
-git add {file_path}"
+git add {file_path}
 ```
 
 e.g. :
 ```bash
-git add jupyterlab-amphi/packages/pipeline-components-core/src/icons.ts"
+git add jupyterlab-amphi/packages/pipeline-components-core/src/icons.ts
 ```
 
 and then commit
