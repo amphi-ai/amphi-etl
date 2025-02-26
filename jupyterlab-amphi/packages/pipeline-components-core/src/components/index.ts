@@ -70,6 +70,9 @@ export { RestOutput } from './outputs/cloud/RestOutput';
 export { S3FileOutput } from './outputs/files/S3FileOutput';
 export { CustomOutput } from './custom/CustomOutput';
 
+// Outputs Database
+export { FormExample } from './developer/FormExample';
+
 // Settings
 export { EnvFile } from './settings/EnvFile';
 export { EnvVariables } from './settings/EnvVariables';
