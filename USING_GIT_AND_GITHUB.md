@@ -52,6 +52,7 @@ git status
 5. Do your modifications and build the projet following BUILDING.md
 
 6. Once the project is built and you're good, you will have to commit (i.e. validate your change in the Git meaning).
+go the top of folder (id amphi-etl, not amphi-etl-amphi-etl with the cd command)
 For that use the command (m is for the message)
 ```bash
 git commit -m "Comment on your commit"
