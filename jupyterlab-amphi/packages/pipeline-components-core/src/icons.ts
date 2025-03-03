@@ -62,7 +62,6 @@ import fileParquetIconSvgStr from '../style/icons/file-parquet-24.svg';
 import fileJsonIconSvgStr from '../style/icons/file-json-24.svg';
 import activityIconSvgStr from '../style/icons/activity-24.svg';
 import formexampletypescriptIconSvgStr from '../style/icons/form-example-typescript-24.svg';
-import systeminformationsIconSvgStr from '../style/icons/system-informations-24.svg';
 
 export const expandJsonIcon = new LabIcon({
   name: 'amphi:expand-icon',
@@ -375,7 +374,3 @@ export const formexampletypescriptIcon = new LabIcon({
   svgstr: formexampletypescriptIconSvgStr
 });
 
-export const systeminformationsIcon = new LabIcon({
-  name: 'amphi:system-informations-icon',
-  svgstr: systeminformationsIconSvgStr
-});

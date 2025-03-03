@@ -70,14 +70,11 @@ export { RestOutput } from './outputs/cloud/RestOutput';
 export { S3FileOutput } from './outputs/files/S3FileOutput';
 export { CustomOutput } from './custom/CustomOutput';
 
-// Developer
-export { FormExample } from './developer/FormExample';
-
-// System
-export { SystemInformations } from './inputs/system/SystemInformations';
-
 // Settings
 export { EnvFile } from './settings/EnvFile';
 export { EnvVariables } from './settings/EnvVariables';
 export { Connection } from './settings/Connection';
 export { Annotation } from './annotations/Annotation';
+
+// Developer
+export { FormExample } from './developer/FormExample';

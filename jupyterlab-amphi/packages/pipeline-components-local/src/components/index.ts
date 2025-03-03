@@ -1,8 +1,8 @@
 // Inputs
 export { RedditInput } from './inputs/cloud/RedditInput';
+export { SystemInformation } from './inputs/system/SystemInformation';
 
 // Transforms
-
 export { FixedSizeChunking } from './transforms/FixedSizeChunking';
 export { SemanticChunking } from './transforms/SemanticChunking';
 export { RecursiveChunking } from './transforms/RecursiveChunking';

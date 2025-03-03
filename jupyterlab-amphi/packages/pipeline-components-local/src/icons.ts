@@ -16,6 +16,7 @@ import boxIconSvgStr from '../style/icons/box-16.svg';
 import engineIconSvgStr from '../style/icons/service-16.svg'
 import settingsIconSvgStr from '../style/icons/settings-16.svg';
 import playCircleIconSvgStr from '../style/icons/play-circle-16.svg';
+import systemInformationIconSvgStr from '../style/icons/monitor-24.svg';
 
 
 export const apiIcon = new LabIcon({
@@ -101,5 +102,8 @@ export const ollamaIcon = new LabIcon({
   svgstr: ollamaIconSvgStr
 });
 
-
+export const systemInformationIcon = new LabIcon({
+  name: 'amphi:system-information-icon',
+  svgstr: systemInformationIconSvgStr
+});
 
