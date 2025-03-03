@@ -1,0 +1,9 @@
+<svg width="24px" height="24px"  fill="none" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+<!-- Computer (base + screen) -->
+    <path fill="currentColor" fill-rule="evenodd" d="M5 10 h40 a3 3 0 0 1 3 3 v22 a3 3 0 0 1 -3 3 h-40 a3 3 0 0 1 -3 -3 v-22 a3 3 0 0 1 3 -3 z"/>
+    <path d="M8 13 h34 v18 h-34 z" fill="#1E90FF"/>
+    <!-- Stand -->
+    <path fill="currentColor" fill-rule="evenodd" d="M18 35 h14 v3 h-14 z M15 38 h20 v3 h-20 z"/>
+    <!-- Info Icon (circle and 'i') -->
+    <path d="M25 20 a5 5 0 1 1 -0.1 0 z M24.5 21.5 h1 v3.5 h-1 z M25 18.5 a1 1 0 1 1 -0.1 0 z" fill="white" stroke="none"/>
+</svg>

@@ -1,4 +1,4 @@
-//import of icons and BaseCoreComponent
+//import of icons and BaseCoreComponent.  Do not forget to edit according to folder hierarchy (e.g. : input/xx/yy...)
 import { formexampletypescriptIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
@@ -342,9 +342,9 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
           
     };
 	//tooltip of the component in the menu
-    const description = "Use Rename Columns to rename one or more columns.";
+    const description = "Form examples";
 	//amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\components\BaseCoreComponent.tsx for the super function
-	//(name (in the list),id,description,type (cf??),filedrop(??),category (not the label in the list, not the folder name.. but),icon,defaultConfig,form) 
+	//(name (in the tool list in UI),id,description (cf above),type (cf?? but it's pandas_df_processor if the tools has input and input, pandas_df_input if it's an input tool and pandas_df_output if it's an output tool),filedrop(??),category (not the label in the list, not the folder name.. but),icon,defaultConfig,form) 
     super("Form Example", "form_example", description, "pandas_df_processor", [], "developer", formexampletypescriptIcon, defaultConfig, form);
   }
 //end of form//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
