@@ -12,7 +12,7 @@ import networkIconSvgStr from '../style/icons/network-24.svg';
 import bugIconSvgStr from '../style/icons/bug-16.svg';
 
 import githubIconSvgStr from '../style/icons/github.svg';
-import slackIconSvgStr from '../style/icons/slack.svg';
+import discourseIconSvgStr from '../style/icons/discourse.svg';
 import alertCircleFillSvgStr from '../style/icons/alert-circle-fill-24.svg';
 import alertDiamondSvgStr from '../style/icons/alert-diamond-24.svg';
 
@@ -86,7 +86,7 @@ export const githubIcon = new LabIcon({
   svgstr: githubIconSvgStr
 });
 
-export const slackIcon = new LabIcon({
-  name: 'amphi:slack-icon',
-  svgstr: slackIconSvgStr
+export const discourseIcon = new LabIcon({
+  name: 'amphi:discourse-icon',
+  svgstr: discourseIconSvgStr
 });

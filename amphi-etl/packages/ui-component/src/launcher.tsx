@@ -5,7 +5,7 @@ import {
 } from '@jupyterlab/launcher';
 import { LabIcon } from '@jupyterlab/ui-components';
 import { CommandRegistry } from '@lumino/commands';
-import { githubIcon, pipelineIcon, slackIcon, alertDiamondIcon } from './icons';
+import { githubIcon, pipelineIcon, discourseIcon, alertDiamondIcon } from './icons';
 
 import { each } from '@lumino/algorithm';
 
@@ -152,6 +152,8 @@ export class Launcher extends JupyterlabLauncher {
       this.myCommands.execute('ui-components:file-upload');
     };
 
+    
+
     const AlertBox = () => {
       const [isVisible, setIsVisible] = useState(false);
 
@@ -200,7 +202,6 @@ export class Launcher extends JupyterlabLauncher {
       <div className="launcher-body">
         <div className="launcher-content">
           <h1 className="launcher-title">Amphi</h1>
-
           <div className="launcher-grid">
             <div className="launcher-card">
               <div className="launcher-card-header">
@@ -228,6 +229,17 @@ export class Launcher extends JupyterlabLauncher {
               </div>
 
               <ul className="launcher-card-list">
+                  <li>
+                    <a href="https://community.amphi.ai/" target="_blank" className="launcher-card-item">
+                      <div className="launcher-icon">
+                        <discourseIcon.react />
+                      </div>
+                      <div>
+                        <strong>Join the Community</strong>
+                        <p>Access Amphi's forum, read documentation, get support, ask questions, and share your experience.</p>
+                      </div>
+                    </a>
+                  </li>
                 <li>
                   <a href="https://github.com/amphi-ai/amphi-etl" target="_blank" className="launcher-card-item">
                     <div className="launcher-icon">
@@ -239,17 +251,7 @@ export class Launcher extends JupyterlabLauncher {
                     </div>
                   </a>
                 </li>
-                  <li>
-                    <a href="https://join.slack.com/t/amphi-ai/shared_invite/zt-2ci2ptvoy-FENw8AW4ISDXUmz8wcd3bw" target="_blank" className="launcher-card-item">
-                      <div className="launcher-icon">
-                        <slackIcon.react />
-                      </div>
-                      <div>
-                        <strong>Join the Community</strong>
-                        <p>Join Amphi's community on Slack: seek help, ask questions and share your experience.</p>
-                      </div>
-                    </a>
-                  </li>
+
               </ul>
             </div>
           </div>
