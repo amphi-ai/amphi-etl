@@ -1,29 +1,34 @@
-//import of icons and BaseCoreComponent.  Do not forget to edit according to folder hierarchy (e.g. : input/xx/yy...)
+// Import necessary icons and the BaseCoreComponent class.
+// Ensure the correct folder hierarchy is used (e.g., input/xx/yy...)
 import { formexampletypescriptIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
-//main part
+// Main class definition
 export class FormExample extends BaseCoreComponent {
-//Typescript for form///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Constructor initializes the form structure
   constructor() {
     const defaultConfig = {};
+    
     const form = {
       idPrefix: "component__form",
       fields: [
-	  //one type, label.... by part of the form, separated by comma. The available forms are in amphi-etl\jupyterlab-amphi\packages\pipeline-components-manager\src\forms
-	  //forms are displayed sequentially
-	  //type : identification of the form. ⚠ it can be different of the file name. where is the good name?
-	  //label : label that will be displayed on the top of the form
-	  //tooltip : tooltip at the right 
-	  //id : ?
-	  //placeholders : ??
-	  //advanced : you can develop/reduce the component (gear icon). default : true
+        // Form fields are displayed sequentially.
+        // Each form has a type, label, tooltip, and additional properties.
+        // Available form types are defined in:
+        // amphi-etl\jupyterlab-amphi\packages\pipeline-components-manager\src\forms
+        
+        // Informational sections
         {
           type: "info",
-          label: "1. Instructions (info)",
+          id: "description",
+          text: "This component serves as an example showcasing all types of data entry forms available with Amphi. ⚠️ It is not intended for use as part of a pipeline.",
+          advanced: false
+        },
+        {
+          type: "info",
           id: "instructions",
-          text: "1.(Almost exhaustive) Examples of form, available in amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\components\developer For new category, you must register in...  do not forget to add the icon in amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\icons.ts and in amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\style\icons.",
-		  advanced: false
+          text: "1. Informational text to show in the component.",
+		      advanced: true
         },
         {
           type: "radio",
@@ -341,28 +346,27 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
       ]
           
     };
-	//tooltip of the component in the menu
+    // Component description for tooltips in the menu
     const description = "Form examples";
-	//amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\components\BaseCoreComponent.tsx for the super function
-	//(name (in the tool list in UI),id,description (cf above),type (cf?? but it's pandas_df_processor if the tools has input and input, pandas_df_input if it's an input tool and pandas_df_output if it's an output tool),filedrop(??),category (not the label in the list, not the folder name.. but),icon,defaultConfig,form) 
+    
+    // Super constructor call with necessary parameters
+    // 1. Do not forget to add the icon in amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\icons.ts and in amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\style\icons.
     super("Form Example", "form_example", description, "pandas_df_processor", [], "developer", formexampletypescriptIcon, defaultConfig, form);
   }
-//end of form//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-//list of additionnal python package we need to import
+  // List of additional Python packages required (if any)
   public provideImports({ config }): string[] {
     return [];
   }
-//python part. we can also have something like { config, inputName1, inputName2, outputName }
+
+  // Generates the Python code for processing the form input
   public generateComponentCode({ config, inputName, outputName }): string {
     let columnsParam = "{";
     if (config.columns && config.columns.length > 0) {
       columnsParam += config.columns.map(column => {
         if (column.key.named) {
-          // Handle named columns as strings
           return `"${column.key.value}": "${column.value}"`;
         } else {
-          // Handle unnamed (numeric index) columns, converting them to strings
           return `${column.key.value}: "${column.value}"`;
         }
       }).join(", ");
@@ -371,14 +375,10 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
       columnsParam = "{}"; // Ensure columnsParam is always initialized
     }
 
-    // Template for the pandas rename columns code, explicitly setting axis='columns'
+    // Template for outputting the input data
     const code = `
-# Rename columns
-${outputName} = ${inputName}.rename(columns=${columnsParam})
+${outputName} = ${inputName}
 `;
     return code;
   }
-
-
-
 }
