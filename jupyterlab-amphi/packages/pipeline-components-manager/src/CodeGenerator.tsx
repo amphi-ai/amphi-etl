@@ -576,55 +576,15 @@ export class CodeGenerator {
 
   static formatVariables(code: string): string {
     const lines = code.split('\n');
-    let insideTripleQuotes = false;
-    let tripleQuoteBuffer: string[] = [];
-    let transformedLines: string[] = [];
-  
-    for (const line of lines) {
-      // Handle multiline triple-quoted strings
-      if (/f?("""|''')/.test(line)) {
-        // Check if entering or exiting triple quotes
-        if (insideTripleQuotes) {
-          tripleQuoteBuffer.push(line);
-          const multilineString = tripleQuoteBuffer.join('\n');
-          
-          // Check if the multiline string contains variables
-          if (/\{.*?\}/.test(multilineString)) {
-            const updatedString = multilineString.replace(/("""|''')(.*?\{.*?\}.*?)("""|''')/s, 'f$1$2$3');
-            transformedLines.push(updatedString);
-          } else {
-            transformedLines.push(multilineString);
-          }
-  
-          tripleQuoteBuffer = [];
-          insideTripleQuotes = false;
-        } else {
-          insideTripleQuotes = true;
-          tripleQuoteBuffer.push(line);
-        }
-      } else if (insideTripleQuotes) {
-        tripleQuoteBuffer.push(line);
-      } else {
-        // Handle single-line strings
-        if (/r(['"]).*\1/.test(line) || /f(['"]).*\1/.test(line)) {
-          transformedLines.push(line); // Raw or f-strings remain unchanged
-        } else {
-          const transformedLine = line
-            .replace(/(['"])\{(\w+)\}\1/g, '$2') // Remove quotes for standalone variables
-            .replace(/(['"])(.*\{.*\}.*)\1/g, 'f$1$2$1') // Convert to f-string for multiple variables
-            .replace(/(f?"""\s*)(.*\{.*\}.*)(\s*""")/g, 'f"""$2"""'); // Convert triple quotes to f-strings
-          transformedLines.push(transformedLine);
-        }
+    const transformedLines = lines.map(line => {
+      if (/r(['"]).*\1/.test(line) || /f(['"])/.test(line) || /f("""|''')/.test(line)) {
+        return line; // Return the line as-is if it's an actual raw string or an f-string
       }
-    }
-  
-    // Flush any remaining triple-quoted buffer (incomplete block)
-    if (insideTripleQuotes && tripleQuoteBuffer.length > 0) {
-      const multilineString = tripleQuoteBuffer.join('\n');
-      transformedLines.push(multilineString);
-    }
-  
-    // Return all transformed lines
+      return line
+        .replace(/(['"])\{(\w+)\}\1/g, '$2')  // Remove quotes for standalone variables
+        .replace(/(['"])(.*\{.*\}.*)\1/g, 'f$1$2$1')  // Convert to f-string for multiple variables
+        .replace(/(f?"""\s*)(.*\{.*\}.*)(\s*""")/g, 'f"""$2"""');  // Convert triple quotes to f-strings, avoid double f
+    });
     return transformedLines.join('\n');
   }
   
