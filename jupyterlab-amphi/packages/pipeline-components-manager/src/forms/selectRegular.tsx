@@ -16,7 +16,8 @@ export const SelectRegular: React.FC<SelectCustomizableProps> = ({
 }) => {
 
   const findOptionByValue = (value: any) => {
-    return field.options.find(option => option.value === value) || { value: value, label: value };
+    if (!value) return undefined; // Fix: return undefined instead of an object
+    return field.options.find(option => option.value === value) || { value, label: value };
   };
 
   const [items, setItems] = useState(field.options);

@@ -31,21 +31,23 @@ export class Extract extends BaseCoreComponent {
             { value: "(\\b\\d{1,3}(\\.\\d{1,2})?%\\b)", label: "Percentage" },
             { value: "(\"([^\"\\\\]*(\\\\.[^\"\\\\]*)*))", label: "JSON String" },
             { value: "(\\b\\d{3}-\\d{10}\\b)", label: "ISBN" }
-          ]
+          ],
+          addItemLabel: "Add RegEx"
         },
         {
           type: "select",
           label: "Flags",
           id: "flags",
           placeholder: "Type or select",
+          tooltip: "Choose a flag to modify how the regular expression behaves when parsing data in pandas. These flags control case sensitivity, multiline handling, Unicode matching, and more.",
           options: [
-            { value: "IGNORECASE", label: "Makes the match case-insensitive. For example, it will match both 'abc' and 'ABC'." },
-            { value: "MULTILINE", label: "Changes the behavior of ^ and $ to match the start and end of each line, not just the start and end of the whole string." },
-            { value: "DOTALL", label: "Makes the . match any character at all, including a newline; without this flag, . will match anything except a newline." },
-            { value: "UNICODE", label: "Makes \\w, \\W, \\b, \\B, \\d, \\D, \\s, and \\S sequences dependent on the Unicode character properties database. This is the default behavior in Python 3 for strings." },
-            { value: "ASCII", label: "Makes \\w, \\W, \\b, \\B, \\d, \\D, \\s, and \\S perform ASCII-only matching instead of full Unicode matching." },
-            { value: "VERBOSE", label: "Allows you to write regular expressions that are more readable by permitting whitespace and comments within the pattern string." }
-          ],
+            { value: "IGNORECASE", label: "Ignore Case", tooltip: "Makes the match case-insensitive. For example, it will match both 'abc' and 'ABC'." },
+            { value: "MULTILINE", label: "Multiline", tooltip: "Changes the behavior of ^ and $ to match the start and end of each line, not just the start and end of the whole string." },
+            { value: "DOTALL", label: "Dot All", tooltip: "Makes the . match any character at all, including a newline; without this flag, . will match anything except a newline." },
+            { value: "UNICODE", label: "Unicode", tooltip: "Makes \\w, \\W, \\b, \\B, \\d, \\D, \\s, and \\S sequences dependent on the Unicode character properties database. This is the default behavior in Python 3 for strings." },
+            { value: "ASCII", label: "ASCII", tooltip: "Makes \\w, \\W, \\b, \\B, \\d, \\D, \\s, and \\S perform ASCII-only matching instead of full Unicode matching." },
+            { value: "VERBOSE", label: "Verbose", tooltip: "Allows you to write regular expressions that are more readable by permitting whitespace and comments within the pattern string." }
+          ],          
           advanced: true
         }
       ],

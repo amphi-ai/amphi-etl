@@ -25,7 +25,7 @@ export const SelectColumn: React.FC<SelectColumnsProps> = ({
 
   const findOptionByValue = (value: any) => {
     if (value === undefined) {
-      return {};
+      return undefined;
     }
     else {
       return items.find(option => option.value === value.value) || { value: value.value, label: value.value };

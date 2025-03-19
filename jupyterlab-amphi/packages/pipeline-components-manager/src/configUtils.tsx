@@ -620,6 +620,7 @@ export interface FieldDescriptor {
   connectionVariableName?: string;
   condition?: Record<string, any>;
   connectionString?: string;
+  addItemLabel?: string;
 }
 
 interface ConfigModalProps {

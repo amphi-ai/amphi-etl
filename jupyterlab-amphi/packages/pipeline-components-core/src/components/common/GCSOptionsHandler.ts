@@ -19,11 +19,11 @@ export class GCSOptionsHandler {
                 label: "Connection Method",
                 id: "connectionMethod",
                 options: [
-                    { value: "env", label: "Default", tooltip: "This uses the default credentials set in the environment (like Application Default Credentials or gcloud config). If no credentials are found, " },
-                    { value: "storage_options", label: "Service Account (storage_options)", tooltip: "Provide a service account directly via the storage_options parameter." }
+                    { value: "storage_options", label: "Service Account (storage_options)", tooltip: "Use GOOGLE_APPLICATION_CREDENTIALS variable pointed to /path/to/your-service-account.json, using an Env. Variable File is recommended." },
+                    { value: "env", label: "Default", tooltip: "This uses the default credentials set in the environment (like Application Default Credentials or gcloud config)." }
                 ],
                 condition: { fileLocation: "gcs" },
-                connection: "GCS",
+                connection: "Google Cloud",
                 ignoreConnection: true,
                 advanced: true
             },
@@ -34,7 +34,7 @@ export class GCSOptionsHandler {
                 placeholder: "Type file name",
                 validation: "\\.(json)$",
                 validationMessage: "This field expects a file with a .json extension such as your-service-account-file.json.",
-                connection: "GCS",
+                connection: "Google Cloud",
                 condition: { fileLocation: "gcs", connectionMethod: "storage_options" },
                 advanced: true
             },

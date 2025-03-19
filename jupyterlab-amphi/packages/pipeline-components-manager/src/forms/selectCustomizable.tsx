@@ -17,7 +17,8 @@ export const SelectCustomizable: React.FC<SelectCustomizableProps> = ({
 }) => {
     
   const findOptionByValue = (value: any) => {
-    return field.options.find(option => option.value === value) || { value: value, label: value };
+    if (!value) return undefined; // Fix: return undefined instead of an object
+    return field.options.find(option => option.value === value) || { value, label: value };
   };
 
   useEffect(() => {
@@ -33,7 +34,8 @@ export const SelectCustomizable: React.FC<SelectCustomizableProps> = ({
 
   const addItem = (e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
     e.preventDefault();
-    setItems([...items, { value: name, label: name}]);
+    if (!name.trim()) return; // Prevent adding empty or whitespace-only values
+    setItems([...items, { value: name, label: name }]);
     setName('');
     setTimeout(() => {
       inputRef.current?.focus();
@@ -73,9 +75,9 @@ export const SelectCustomizable: React.FC<SelectCustomizableProps> = ({
             onChange={onNameChange}
             onKeyDown={(e: any) => e.stopPropagation()}
           />
-          <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
-            Add item
-          </Button>
+            <Button type="text" icon={<PlusOutlined />} onClick={addItem}>
+              {field.addItemLabel || "Add item"} 
+            </Button>
         </Space>
       </>
     )}

@@ -1,7 +1,8 @@
 import { filePlusIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
-
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
+import { GCSOptionsHandler } from '../../common/GCSOptionsHandler';
+import { FTPOptionsHandler } from '../../common/FTPOptionsHandler';
 
 export class CsvFileOutput extends BaseCoreComponent {
   constructor() {
@@ -15,11 +16,13 @@ export class CsvFileOutput extends BaseCoreComponent {
           id: "fileLocation",
           options: [
             { value: "local", label: "Local" },
-            { value: "s3", label: "S3" }
+            { value: "s3", label: "S3" },
+            { value: "ftp", label: "FTP" }
           ],
           advanced: true
         },
         ...S3OptionsHandler.getAWSFields(),
+        ...FTPOptionsHandler.getFTPFields(),
         {
           type: "file",
           label: "File path",
@@ -127,6 +130,7 @@ ${createFoldersCode}${inputName}.to_csv("${config.filePath}"${optionsString})
     // Handle storage options
     let storageOptions = csvOptions.storage_options || {};
     storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
+    storageOptions = FTPOptionsHandler.handleFTPSpecificOptions(config, storageOptions);
 
     if (Object.keys(storageOptions).length > 0) {
       csvOptions.storage_options = storageOptions;

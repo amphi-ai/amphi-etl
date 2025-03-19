@@ -25,12 +25,12 @@
      inkscape:deskcolor="#505050"
      inkscape:document-units="mm"
      inkscape:zoom="6.1387102"
-     inkscape:cx="40.399366"
+     inkscape:cx="40.480816"
      inkscape:cy="10.751444"
      inkscape:window-width="1312"
      inkscape:window-height="713"
      inkscape:window-x="73"
-     inkscape:window-y="186"
+     inkscape:window-y="490"
      inkscape:window-maximized="0"
      inkscape:current-layer="layer1" />
   <defs
@@ -80,9 +80,9 @@
        xml:space="preserve"
        transform="matrix(0.26458333,0,0,0.26458333,10.421939,-14.074989)"
        id="text1"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:26.6667px;font-family:'Heiti SC';-inkscape-font-specification:'Heiti SC, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect1);fill:#5a8f7b;fill-opacity:1;fill-rule:nonzero"><tspan
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:26.6667px;font-family:'Heiti SC';-inkscape-font-specification:'Heiti SC, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect1);fill:#2ecc71;fill-opacity:1;fill-rule:nonzero"><tspan
          x="123.66797"
          y="287.87022"
-         id="tspan1">amphi</tspan></text>
+         id="tspan2">amphi</tspan></text>
   </g>
 </svg>

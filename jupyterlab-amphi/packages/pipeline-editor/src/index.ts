@@ -609,14 +609,17 @@ ${code}
         });
 
 
-        /*
+        
         commands.addCommand('pipeline-editor-component:override', {
           execute: async args => {
         
             const contextNode: HTMLElement | undefined = app.contextMenuHitTest(
               node => !!node.dataset.id
+              
             );
         
+            console.log("contextNode: %o", contextNode)
+            /*
             if (contextNode) {
               const nodeId = contextNode.dataset.id; // Extract the node ID
               const codeList = CodeGenerator.generateCodeUntil(
@@ -629,10 +632,11 @@ ${code}
               );
                   
             }
+            */
           },
           label: 'Override Code'
         });
-        */
+        
 
         commands.addCommand('pipeline-editor-component:generate-ibis-code', {
           execute: async args => {

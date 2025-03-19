@@ -2,6 +2,7 @@ import { fileCsvIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 import { FileUtils } from '../../common/FileUtils'; // Import the FileUtils class
+import { FTPOptionsHandler } from '../../common/FTPOptionsHandler';
 
 export class CsvFileInput extends BaseCoreComponent {
   constructor() {
@@ -22,11 +23,13 @@ export class CsvFileInput extends BaseCoreComponent {
           options: [
             { value: "local", label: "Local" },
             { value: "http", label: "HTTP" },
-            { value: "s3", label: "S3" }
+            { value: "s3", label: "S3" },
+            { value: "ftp", label: "FTP" }
           ],
           advanced: true
         },
-        ...S3OptionsHandler.getAWSFields(),
+        ...S3OptionsHandler.getAWSFields(),        
+        ...FTPOptionsHandler.getFTPFields(),
         {
           type: "file",
           label: "File path",
@@ -122,7 +125,7 @@ export class CsvFileInput extends BaseCoreComponent {
           type: "keyvalue",
           label: "Storage Options",
           id: "csvOptions.storage_options",
-          condition: { fileLocation: ["http", "s3"] },
+          condition: { fileLocation: ["http", "s3", "ftp"] },
           advanced: true
         }
       ],
@@ -171,6 +174,9 @@ export class CsvFileInput extends BaseCoreComponent {
       if (config.fileLocation === "s3") {
         code += FileUtils.getS3FilePaths(config.filePath, storageOptionsString, outputName);
         code += FileUtils.generateConcatCode(outputName, "read_csv", optionsString, true);
+      } else if (config.fileLocation === "ftp") {
+        code += FileUtils.getFTPFilePaths(config.filePath, storageOptionsString, outputName);
+        code += FileUtils.generateConcatCode(outputName, "read_csv", optionsString, true);
       } else {
         code += FileUtils.getLocalFilePaths(config.filePath, outputName);
         code += FileUtils.generateConcatCode(outputName, "read_csv", optionsString, false);
@@ -214,9 +220,15 @@ ${outputName} = pd.read_csv("${config.filePath}"${optionsString}).convert_dtypes
       // Merge transformed options with the S3-specific options
       const s3Options = S3OptionsHandler.handleS3SpecificOptions(config, {});
       storageOptions = { ...transformedStorageOptions, ...s3Options };
+
+      // Merge transformed options with the FTP-specific options
+      const ftpOptions = FTPOptionsHandler.handleFTPSpecificOptions(config, {});
+      storageOptions = { ...transformedStorageOptions, ...ftpOptions };
     } else {
       // Ensure S3-specific options are handled when storageOptions is not an array
       storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
+      // Ensure FTP-specific options are handled when storageOptions is not an array
+      storageOptions = FTPOptionsHandler.handleFTPSpecificOptions(config, storageOptions);
     }
 
     // Update the storage_options in csvOptions
