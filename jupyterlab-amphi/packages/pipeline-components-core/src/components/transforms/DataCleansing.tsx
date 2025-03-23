@@ -64,6 +64,7 @@ export class DataCleansing extends BaseCoreComponent {
             { value: "ffill", label: "Forward fill" },
             { value: "bfill", label: "Backward fill" },
           ],
+          selectionRemovable: true
         },
         {
           type: "input",
@@ -97,7 +98,8 @@ export class DataCleansing extends BaseCoreComponent {
             { value: "swapcase", label: "Swap Case", tooltip: "Swap uppercase characters to lowercase and vice versa." },
             { value: "camelcase", label: "Camel Case", tooltip: "Convert to camel case, where the first letter is lowercase and subsequent words are capitalized without spaces." },
             { value: "snakecase", label: "Snake Case", tooltip: "Replace spaces with underscores and convert all characters to lowercase." },
-          ]
+          ],
+          selectionRemovable: true
         },
       ],
     };

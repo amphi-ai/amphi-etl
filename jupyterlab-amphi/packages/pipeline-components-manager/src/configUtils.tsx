@@ -621,6 +621,7 @@ export interface FieldDescriptor {
   condition?: Record<string, any>;
   connectionString?: string;
   addItemLabel?: string;
+  selectionRemovable?: boolean;
 }
 
 interface ConfigModalProps {

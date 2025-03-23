@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Select, Space, Tag, Tooltip } from 'antd';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Select, Space, Tooltip, Divider, Button } from 'antd';
 import { FieldDescriptor, Option } from '../configUtils';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
 
 
 interface SelectCustomizableProps {
@@ -29,7 +29,11 @@ export const SelectRegular: React.FC<SelectCustomizableProps> = ({
     setSelectedOption(findOptionByValue(defaultValue));
   }, [defaultValue, field.options]);
 
-
+  // If "field.selectionRemovable" is true, remove selection on button click
+  const handleRemoveSelection = useCallback(() => {
+    setSelectedOption(undefined);
+    handleChange('', field.id);
+  }, [handleChange, field.id]);
 
   const handleSelectChange = (option: { value: string; label: React.ReactNode }) => {
     setSelectedOption(option);
@@ -64,6 +68,26 @@ export const SelectRegular: React.FC<SelectCustomizableProps> = ({
         tooltip: item.tooltip
       }))}
       optionRender={optionRenderItems}
+      // Conditionally render a "Remove Selection" button in the dropdown footer
+      dropdownRender={(menu) =>
+        field.selectionRemovable ? (
+          <>
+            {menu}
+            <Divider style={{ margin: '8px 0' }} />
+            <Space style={{ padding: '0 4px 4px' }}>
+              <Button
+                type="text"
+                icon={<CloseOutlined />}
+                onClick={handleRemoveSelection}
+              >
+                Remove Selection
+              </Button>
+            </Space>
+          </>
+        ) : (
+          menu
+        )
+      }
     />
   );
 };
