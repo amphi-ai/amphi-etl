@@ -47,7 +47,8 @@ export class Aggregate extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }) {
-    const groupColumns = config.groupByColumns.map(col => col.value);
+    //conditional because can be empty
+    const groupColumns = config.groupByColumns?.map(col => col.value) || [];
 
     // Start constructing the aggregation arguments dynamically
     let aggArgs = "";
@@ -72,19 +73,27 @@ export class Aggregate extends BaseCoreComponent {
     }
 
     // Generate groupby code
-    let code = `
+    let code = "";
+
+    if (groupColumns.length > 0) {
+      code += `
 ${outputName} = ${inputName}.groupby([`;
 
-    // Add group columns
-    groupColumns.forEach((col, index) => {
-      code += `"${col}"`;
-      if (index < groupColumns.length - 1) { // Avoid trailing comma
-        code += ",";
-      }
-    });
+      // Add group columns
+      groupColumns.forEach((col, index) => {
+        code += `"${col}"`;
+        if (index < groupColumns.length - 1) { // Avoid trailing comma
+          code += ",";
+        }
+      });
 
-    // Complete the aggregation function call
-    code += `]).agg(${aggArgs}).reset_index()\n`;
+      // Complete the aggregation function call
+      code += `]).agg(${aggArgs}).reset_index()\n`;
+    } else {
+      // No grouping, apply aggregation directly
+      code += `
+${outputName} = ${inputName}.agg(${aggArgs}).reset_index(drop=True)\n`;
+    }
 
     return code;
   }

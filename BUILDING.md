@@ -156,5 +156,6 @@ amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\components\inde
  
 4. icons are stored in  amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\style\icons\ 
 it must me registered  in amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\icon.ts and the icon is a svg square of 24.
+The privileged icon library is https://helios.hashicorp.design/icons/library
 
 5. Component categories are created on the fly, with the super{} function, you don’t need to create a category.
