@@ -73,15 +73,15 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
                     open={modalOpen}
                     onOk={() => setModalOpen(false)}
                     onCancel={() => setModalOpen(false)}
-                    width={900}
+                    width={1200}
                     footer={(_, { OkBtn }) => (
                         <>
                             <OkBtn />
                         </>
                     )}>
                     <Form
-                        labelCol={{ span: 6 }}
-                        wrapperCol={{ span: 18 }}
+                        labelCol={{ span: 3 }}
+                        wrapperCol={{ span: 21 }}
                         name="dynamic_form_complex"
                         autoComplete="off"
                         initialValues={{ items: formulas }}>
@@ -156,12 +156,19 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
                                                         id: 'formula',
                                                         label: "Python Formula",
                                                         placeholder: "row['column1'] + row['column2']",
-                                                        height: "80px",
+                                                        aiInstructions: "Use a Python expression referencing the `row` object to compute the new value. For example: row['column1'].upper(). Use the data sample to understand the schema of the incoming data.",
+                                                        aiGeneration: false,
+                                                        aiPromptExamples: ["Convert column in upper case"],
+                                                        height: "200px",
                                                         mode: 'python'
                                                     }}
                                                     handleChange={(value) => handleFormulaChange(value, index, 'formula')}
                                                     value={formula.formula}
                                                     advanced={true}
+                                                    context={context}
+                                                    commands={commands}
+                                                    componentService={componentService}
+                                                    nodeId={nodeId}
                                                 />
                                             </Form.Item>
                                         </Card>

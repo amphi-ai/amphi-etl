@@ -21,6 +21,15 @@ Sarah,Wilson,30`;
                     id: "inlineData",
                     placeholder: "Enter your CSV data here",
                     tooltip: "Type your CSV-like data directly. First line is header. For example:\nID,brand,criteria,assesement\n123,abc,Q9,Y\n145,abc,Q9,Y",
+                    aiInstructions: "Generate mock CSV-like data for demonstration purposes.\nIMPORTANT: Output only raw CSV text. Limit to 20 rows unless specified otherwise by the user.",
+                    aiGeneration: true,
+                    aiDataSample: false,
+                    aiPromptExamples: [
+                      "Generate fake user data with columns: id, name, email, signup_date.",
+                      "Create product inventory with fields: sku, name, category, price, in_stock.",
+                      "Mock order data with: order_id, customer_id, product_id, quantity, order_date.",
+                      "Generate survey results with: respondent_id, age, gender, Q1, Q2, Q3."
+                    ],
                     advanced: true
                 }
             ],

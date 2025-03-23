@@ -348,7 +348,7 @@ export const GenerateUIInputs = React.memo(({
       case "textarea":
         return renderFormItem(field, <TextareaRegular {...commonProps} value={value} rows={field.rows} />);
       case "codeTextarea":
-        return renderFormItem(field, <CodeTextarea {...commonProps} value={value} />);
+        return renderFormItem(field, <CodeTextarea {...commonProps} value={value} componentService={componentService} commands={commands} nodeId={nodeId}/>);
       case "boolean":
         return renderFormItem(field, (
           <Switch

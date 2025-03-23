@@ -147,6 +147,117 @@ export class RequestService {
     }
   };
 
+  static retrieveDataSample(
+    context: any,
+    setLoadings: any,
+    commands: any,
+    setSample: any,
+    componentService: any,
+    nodeId: any,
+    inputNb: number,
+    previousNodes: boolean
+  ): void {
+    setLoadings(true);
+    const flow = PipelineService.filterPipeline(context.model.toString());
+    let codeList: any[];
+    let code: string = '';
+  
+    // Retrieve the previous nodes
+    const prevNodesList = PipelineService.findMultiplePreviousNodeIds(flow, nodeId);
+    const prevNodes = prevNodesList[inputNb];
+  
+    if (prevNodes == null) {
+      console.log("No previous nodes found.");
+      setSample('No inputs');
+      setLoadings(false);
+      return;
+    }
+  
+    try {
+      let refNodeId = previousNodes ? prevNodes : nodeId;
+      codeList = CodeGenerator.generateCodeUntil(
+        context.model.toString(),
+        commands,
+        componentService,
+        refNodeId,
+        false,
+        false
+      );
+      code = codeList.join('\n');
+      console.log("Generated code:", code);
+    } catch (error) {
+      console.error('Error generating code.', error);
+      setSample("No sample available.");
+      setLoadings(false);
+      return;
+    }
+  
+    // Helper function to convert HTML table to CSV
+    const tableToCSV = (tableElement: HTMLTableElement) => {
+      const rows = tableElement.querySelectorAll('tr');
+      const csvRows: string[] = [];
+  
+      rows.forEach((row) => {
+        const cells = row.querySelectorAll('th, td');
+        const rowData: string[] = [];
+        cells.forEach((cell) => {
+          rowData.push((cell.textContent || '').trim().replace(/\r?\n|\r/g, ''));
+        });
+        csvRows.push(rowData.join(','));
+      });
+  
+      return csvRows.join('\n');
+    };
+  
+    console.log("Executing code in Jupyter Kernel...");
+    const future = context.sessionContext.session.kernel!.requestExecute({ code });
+  
+    future.onIOPub = (msg: any) => {
+      if (msg.header.msg_type === 'stream') {
+        console.log("Stream output received");
+      } else if (msg.header.msg_type === 'execute_result' || msg.header.msg_type === 'display_data') {
+        const content = msg.content as KernelMessage.IExecuteResultMsg['content'] | KernelMessage.IDisplayDataMsg['content'];
+  
+        if (content.data['text/html']) {
+          let htmlContent: string;
+  
+          if (Array.isArray(content.data['text/html'])) {
+            htmlContent = content.data['text/html'].join('');
+          } else if (typeof content.data['text/html'] === 'string') {
+            htmlContent = content.data['text/html'];
+          } else {
+            console.error('Invalid content format received.');
+            setSample("No sample available.");
+            return;
+          }
+  
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(htmlContent, 'text/html');
+          const tableElement = doc.querySelector('table') as HTMLTableElement | null;
+  
+          if (tableElement) {
+            const csvData = tableToCSV(tableElement);
+            setSample(csvData);
+            console.log("Retrieved Data Sample (CSV):", csvData);
+          } else {
+            setSample("No sample available.");
+          }
+        } else {
+          setSample("No sample available.");
+        }
+      } else if (msg.header.msg_type === 'error') {
+        const errorMsg = msg as KernelMessage.IErrorMsg;
+        console.error(`Execution error: ${errorMsg.content.ename}: ${errorMsg.content.evalue}`);
+        setSample("Error retrieving data sample.");
+      }
+    };
+  
+    future.onDone = () => {
+      setLoadings(false);
+    };
+  }
+  
+
   static executePythonCode(
     code: string,
     context: any,
@@ -567,8 +678,6 @@ print(", ".join(sheet_names))
       setLoadings(false);
     }
   }
-
-
 
   static retrieveEnvVariables(
     context: any,

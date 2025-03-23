@@ -9,10 +9,12 @@ import playIconSvgStr from '../style/icons/play-16.svg';
 import playCircleIconSvgStr from '../style/icons/play-circle-16.svg';
 import settingsIconSvgStr from '../style/icons/settings-16.svg';
 import bracesIconSvgStr from '../style/icons/braces.svg';
-
 import warningIconSvgStr from '../style/icons/alert-triangle-fill-16.svg';
+import wandIconSvgStr from '../style/icons/wand-16.svg';
 
-
+import openaiIconSvgStr from '../style/icons/openai.svg';
+import claudeIconSvgStr from '../style/icons/claude.svg';
+import mistralIconSvgStr from '../style/icons/mistral.svg';
 
 export const trashIcon = new LabIcon({
   name: 'amphi:trash-icon',
@@ -67,4 +69,24 @@ export const warningIcon = new LabIcon({
 export const bracesIcon = new LabIcon({
   name: 'amphi:braces-icon',
   svgstr: bracesIconSvgStr
+});
+
+export const wandIcon = new LabIcon({
+  name: 'amphi:wand-icon',
+  svgstr: wandIconSvgStr
+});
+
+export const openaiIcon = new LabIcon({
+  name: 'amphi:openai-icon',
+  svgstr: openaiIconSvgStr
+});
+
+export const claudeIcon = new LabIcon({
+  name: 'amphi:claude-icon',
+  svgstr: claudeIconSvgStr
+});
+
+export const mistralIcon = new LabIcon({
+  name: 'amphi:mistral-icon',
+  svgstr: mistralIconSvgStr
 });

@@ -183,31 +183,37 @@ export const DataMapping: React.FC<DataMappingProps> = ({
         dataIndex: 'value',
         width: '50%',
         editable: false,
-        render: (_, record) => (
-          <>
-          <Space>
-          <span>{record.value}</span>
-            <Tag>{record.type}</Tag>
-          </Space>
-          </>
-        )
+        render: (_, record) => {
+          const typedRecord = record as DataType; // ✅ Type assertion
+          return (
+            <>
+              <Space>
+                <span>{typedRecord.value}</span>
+                <Tag>{typedRecord.type}</Tag>
+              </Space>
+            </>
+          );
+        }
       },
       {
         title: '',
         dataIndex: 'operation',
-        render: (_, record) =>
-          dataSource.length >= 1 ? (
-            <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+        render: (_, record) => {
+          const typedRecord = record as DataType; // ✅ Type assertion
+          return dataSource.length >= 1 ? (
+            <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(typedRecord.key)}>
               <DeleteOutlined />
             </Popconfirm>
-          ) : null,
+          ) : null;
+        },
       }
     ];
+    
 
     const [form] = Form.useForm(); // Step 1: Create form instance
 
     const handleAdd = () => {
-      const values = form.getFieldsValue(); // Step 2: Get values from the form
+      const values = form.getFieldsValue() as { field: { name: string; type: string } };
       console.log(values); // Do something with the form data
       console.log('Received values from form: ', values);
       const newData: DataType = {
@@ -221,7 +227,7 @@ export const DataMapping: React.FC<DataMappingProps> = ({
 
     const handleSave = (row: DataType) => {
       const newData = [...dataSource];
-      const index = newData.findIndex((item) => row.key === item.key);
+      const index = newData.findIndex((item: DataType) => row.key === item.key);
       const item = newData[index];
       newData.splice(index, 1, {
         ...item,

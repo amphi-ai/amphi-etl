@@ -3,7 +3,6 @@ import { PlusOutlined } from '@ant-design/icons';
 
 import { ConfigProvider, Cascader, Divider, Input, Select, Space, Button, Tag, Empty } from 'antd';
 import type { InputRef, CascaderProps, GetProp } from 'antd';
-import type { SingleCascaderProps } from 'antd/es/cascader';
 import { FieldDescriptor, Option } from '../configUtils';
 import { RequestService } from '../RequestService';
 
@@ -64,7 +63,7 @@ export const ConnectionSelector: React.FC<ConnectionSelectorProps> = ({
   };
   
   
-  const onChange: SingleCascaderProps<Option>['onChange'] = (value, selectedOptions) => {
+  const onChange: CascaderProps<Option>['onChange'] = (value, selectedOptions) => {
     console.log(value, selectedOptions);
   };
   

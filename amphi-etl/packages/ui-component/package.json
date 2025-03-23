@@ -54,7 +54,7 @@
     "@jupyterlab/launcher": "^4.0.9",
     "@jupyterlab/mainmenu": "^4.0.9",
     "@jupyterlab/ui-components": "^4.0.9",
-    "antd": "5.16.4"
+    "antd": "5.24.4"
   },
   "resolutions": {
     "@jupyterlab/rendermime-interfaces": "^4.0.9",

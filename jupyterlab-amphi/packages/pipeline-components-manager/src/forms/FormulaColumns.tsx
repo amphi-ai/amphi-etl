@@ -79,6 +79,10 @@ export const FormulaColumns: React.FC<FormulaColumnsProps> = ({
                     handleChange={null}
                     advanced={true}
                     value={""}
+                    context={context}   // Add missing prop
+                    commands={commands} // Add missing prop
+                    componentService={componentService} // Add missing prop
+                    nodeId={nodeId} // Add missing prop
                   />
                 </Form.Item>
               </Card>

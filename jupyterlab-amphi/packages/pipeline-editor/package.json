@@ -66,7 +66,7 @@
     "@jupyterlab/settingregistry": "^4.2.2",
     "@jupyterlab/ui-components": "^4.2.2",
     "@lumino/dragdrop": "^2.0.0",
-    "antd": "5.16.4",
+    "antd": "5.24.4",
     "html-to-image": "^1.11.11",
     "posthog-js": "^1.194.3",
     "reactflow": "^11.11.4"

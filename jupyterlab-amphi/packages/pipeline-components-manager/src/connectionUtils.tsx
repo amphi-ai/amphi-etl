@@ -159,14 +159,17 @@ export default function ConnectionsTable({
       {
         title: 'operation',
         dataIndex: 'operation',
-        render: (_, record) =>
-          dataSource.length >= 1 ? (
-            <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+        render: (_, record) => {
+          const typedRecord = record as DataType; // ✅ Ensure TypeScript recognizes `key`
+          return dataSource.length >= 1 ? (
+            <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(typedRecord.key)}>
               <a>Delete</a>
             </Popconfirm>
-          ) : null,
+          ) : null;
+        },
       },
     ];
+    
   
     const handleAdd = () => {
       const newData: DataType = {

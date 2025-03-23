@@ -13,7 +13,7 @@ export class Aggregate extends BaseCoreComponent {
           type: "columns",
           label: "Group by",
           id: "groupByColumns",
-          placeholder: "Select columns"
+          placeholder: "Default: all columns"
         },
         {
           type: "keyvalueColumnsSelect",
@@ -90,9 +90,13 @@ ${outputName} = ${inputName}.groupby([`;
       // Complete the aggregation function call
       code += `]).agg(${aggArgs}).reset_index()\n`;
     } else {
-      // No grouping, apply aggregation directly
+      // No grouping, apply named aggregations directly, then stack and reshape
       code += `
-${outputName} = ${inputName}.agg(${aggArgs}).reset_index(drop=True)\n`;
+${outputName} = ${inputName}.agg(${aggArgs})
+${outputName} = ${outputName}.stack()
+${outputName}.index = [idx[0] for idx in ${outputName}.index]
+${outputName} = ${outputName}.to_frame().T.reset_index(drop=True)
+`;
     }
 
     return code;

@@ -57,7 +57,7 @@
     "@lumino/widgets": "^2.0.0",
     "@uiw/react-codemirror": "^4.22.0",
     "ace-builds": "^1.33.1",
-    "antd": "5.16.4",
+    "antd": "5.24.4",
     "html-react-parser": "^5.1.12",
     "react-ace": "^11.0.1",
     "react-dnd": "^16.0.1",
@@ -70,7 +70,7 @@
     "styled-components": "^6.1.8"
   },
   "resolutions": {
-    "antd": "5.16.4",
+    "antd": "5.24.4",
     "@jupyterlab/rendermime-interfaces": "^3.8.9",
     "@lumino/widgets": "^2.0.0",
     "@types/react": "^18.2.7"
@@ -79,7 +79,7 @@
     "@jupyterlab/builder": "^4.1.5",
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
-    "antd": "5.16.4",
+    "antd": "5.24.4",
     "eslint": "^7.14.0",
     "eslint-config-prettier": "^6.15.0",
     "eslint-plugin-prettier": "^3.1.4",

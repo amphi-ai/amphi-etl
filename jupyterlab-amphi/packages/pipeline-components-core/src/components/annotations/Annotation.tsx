@@ -176,12 +176,24 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
                 </Row>
               </Form.Item>
               <Form.Item label="Markdown Content">
-                <CodeTextarea field={{
-                  type: "code", label: "Markdown Content", id: "content", placeholder: "Markdown",
-                }} handleChange={(value) => {
-                  handleChange(value, 'content');
-                  setContent(value);
-                }} advanced={false} value={content} />
+                <CodeTextarea
+                  field={{
+                    type: "code",
+                    label: "Markdown Content",
+                    id: "content",
+                    placeholder: "Markdown",
+                  }}
+                  handleChange={(value) => {
+                    handleChange(value, 'content');
+                    setContent(value);
+                  }}
+                  advanced={false}
+                  value={content}
+                  context={context}  
+                  commands={commands} 
+                  componentService={componentService} 
+                  nodeId={nodeId} 
+                />
               </Form.Item>
             </Form>
           </Modal>

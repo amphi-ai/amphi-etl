@@ -189,14 +189,17 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
       {
         title: '',
         dataIndex: 'operation',
-        render: (_, record) =>
-          dataSource.length >= 1 ? (
-            <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+        render: (_, record) => {
+          const typedRecord = record as DataType; // ✅ Ensure TypeScript recognizes `key`
+          return dataSource.length >= 1 ? (
+            <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(typedRecord.key)}>
               <DeleteOutlined />
             </Popconfirm>
-          ) : null,
+          ) : null;
+        },
       }
     ];
+    
 
     const handleAdd = () => {
       const newData: DataType = {
