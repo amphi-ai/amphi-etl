@@ -116,7 +116,8 @@ export class SplitColumn extends BaseCoreComponent {
       }
     } else if (config.splitType === "rows") {
       // Split to rows
-      code += `${uniqueSplitVar} = ${inputName}.assign(${columnAccess}=${inputName}[${columnAccess}].str.split("${config.delimiter}"${regexOption}))\n`;
+      const assignKeyword = columnNamed ? columnName : columnAccess; // Added to fix https://github.com/amphi-ai/amphi-etl/issues/235
+      code += `${uniqueSplitVar} = ${inputName}.assign(${assignKeyword}=${inputName}[${columnAccess}].str.split("${config.delimiter}"${regexOption}))\n`;
       code += `${uniqueSplitVar} = ${uniqueSplitVar}.explode(${columnAccess})\n`;
       code += `${outputName} = ${uniqueSplitVar}\n`;
     }

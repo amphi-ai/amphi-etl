@@ -50,7 +50,8 @@ Sarah,Wilson,30`;
         }
 
         const code = `
-${outputName}_data = """${inlineData}"""
+${outputName}_data = """${inlineData}
+"""
 ${outputName} = pd.read_csv(StringIO(${outputName}_data)).convert_dtypes()
 `;
         return code;
