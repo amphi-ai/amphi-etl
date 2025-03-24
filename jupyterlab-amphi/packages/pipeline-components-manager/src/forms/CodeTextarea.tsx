@@ -234,9 +234,9 @@ ${instructions || 'No specific instructions provided'}
                 marginRight: 'auto',
               }}
             >
-              {field.aiPromptExamples?.map((ex, idx) => (
-                <Button key={idx} size="small" onClick={() => setInstructions(ex)}>
-                  {ex} ↑
+              {field.aiPromptExamples?.map((example, idx) => (
+                <Button key={idx} size="small" onClick={() => setInstructions(example.value)}>
+                  {example.label} <span style={{ color: '#43766C' }}>↑</span>
                 </Button>
               ))}
             </Space>

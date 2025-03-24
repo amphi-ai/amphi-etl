@@ -18,11 +18,10 @@ export class SQLQuery extends BaseCoreComponent {
           aiInstructions: "Generate a DuckDB SQL script that processes an input table named 'input_df1'.\nIMPORTANT: Ensure the SQL is valid for DuckDB and does not include any display or print statements. Include short comments for clarity.",
           aiGeneration: true,
           aiPromptExamples: [
-            "Select all columns but filter rows where 'status' is 'active'.",
-            "Create a new column 'total' as the sum of 'price' and 'tax'.",
-            "Group by 'category' and calculate average 'sales'.",
-            "Rename column 'user_id' to 'id'.",
-            "Extract year from 'order_date' as 'order_year'."],
+            { label: "Filter amount > 100", value: "Select/filter rows where the amount is more than 100." },
+            { label: "Extract year from date", value: "Extract the year from the column 'date'." },
+            { label: "Sort by order_date", value: "Sort rows based on column 'order_date' from the latest to the oldest and keep the first 10." }
+          ],
           advanced: true
         }
       ],

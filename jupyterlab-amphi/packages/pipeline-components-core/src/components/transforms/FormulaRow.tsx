@@ -158,7 +158,9 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
                                                         placeholder: "row['column1'] + row['column2']",
                                                         aiInstructions: "Use a Python expression referencing the `row` object to compute the new value. For example: row['column1'].upper(). Use the data sample to understand the schema of the incoming data.",
                                                         aiGeneration: false,
-                                                        aiPromptExamples: ["Convert column in upper case"],
+                                                        aiPromptExamples: [
+                                                            { label: "Uppercase column", value: "Convert column in upper case" }
+                                                        ],
                                                         height: "200px",
                                                         mode: 'python'
                                                     }}

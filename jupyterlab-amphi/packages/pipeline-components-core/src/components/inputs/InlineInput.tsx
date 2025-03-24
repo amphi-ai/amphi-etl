@@ -25,10 +25,10 @@ Sarah,Wilson,30`;
                     aiGeneration: true,
                     aiDataSample: false,
                     aiPromptExamples: [
-                      "Generate fake user data with columns: id, name, email, signup_date.",
-                      "Create product inventory with fields: sku, name, category, price, in_stock.",
-                      "Mock order data with: order_id, customer_id, product_id, quantity, order_date.",
-                      "Generate survey results with: respondent_id, age, gender, Q1, Q2, Q3."
+                        { label: "Fake user data", value: "Generate fake user data with columns: id, name, email, signup_date." },
+                        { label: "Product inventory", value: "Create product inventory with columns like product_id, name, quantity, and price." },
+                        { label: "Mock order data", value: "Generate mock order data including order_id, user_id, product_id, quantity, and order_date." },
+                        { label: "Survey results", value: "Generate fake survey results with respondent_id, question_id, and response." }
                     ],
                     advanced: true
                 }
