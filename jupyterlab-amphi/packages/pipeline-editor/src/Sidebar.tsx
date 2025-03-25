@@ -222,14 +222,24 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
 
     return (
         <aside className="sidebar" title={'Components'} >
-            <Space direction="vertical" style={{ marginTop: '10px', marginLeft: '10px', width: '90%', textAlign: 'center' }}>
-                <Input
-                    placeholder="Search components"
-                    onChange={onSearch}
-                    style={{ marginBottom: 8 }}
-                    suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
-                />
-            </Space>
+            <div
+                style={{
+                    position: 'sticky',
+                    top: 0,
+                    zIndex: 999,
+                    backgroundColor: 'white',
+                    // padding: '10px'
+                }}
+            >
+                <Space direction="vertical" style={{ marginTop: '10px', marginLeft: '10px', width: '90%', textAlign: 'center' }}>
+                    <Input
+                        placeholder="Search components"
+                        onChange={onSearch}
+                        style={{ marginBottom: 8 }}
+                        suffix={<SearchOutlined style={{ color: 'rgba(0,0,0,.25)' }} />}
+                    />
+                </Space>
+            </div>
             <DirectoryTree
                 selectable={false}
                 multiple

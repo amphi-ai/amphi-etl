@@ -44,7 +44,7 @@ import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
 
 
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, Flex, Splitter } from 'antd';
 import { CodeGenerator, PipelineService } from '@amphi/pipeline-components-manager';
 import ReactDOM from 'react-dom';
 import 'reactflow/dist/style.css';
@@ -221,7 +221,7 @@ const PipelineWrapper: React.FC<IProps> = ({
         return url;
       }
     }
-    
+
 
     posthog.init('phc_V56mYhYAQdzJl5tMM2RFedJWbXlbyxDnSj2KMbUX8x3', {
       api_host: 'https://us.i.posthog.com',
@@ -239,7 +239,7 @@ const PipelineWrapper: React.FC<IProps> = ({
         }
         return properties;
       }
-        
+
     })
   }
 
@@ -658,8 +658,14 @@ const PipelineWrapper: React.FC<IProps> = ({
         }}
       >
         <ReactFlowProvider>
-          <PipelineFlow context={context} />
-          <Sidebar componentService={componentService} />
+            <Splitter>
+              <Splitter.Panel min="50%">
+                  <PipelineFlow context={context} />
+              </Splitter.Panel>
+              <Splitter.Panel collapsible defaultSize={220} min={220}>
+                <Sidebar componentService={componentService} />
+              </Splitter.Panel>
+            </Splitter>
         </ReactFlowProvider>
       </ConfigProvider>
     </div>

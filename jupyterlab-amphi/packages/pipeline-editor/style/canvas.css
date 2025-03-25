@@ -309,17 +309,16 @@ Components palette sidebar
     top: 0;
     right: 0;
     height: 100%;
-    width: 220px;
+    /* width: 220px; */
     z-index: 10;
     overflow-x: hidden;
     overflow-y: auto;
   }
 }
 
-
 .palette-component {
   position: relative;
-  z-index: 1000;
+  z-index: 300;
   /* Ensure the draggable elements are always on top */
   cursor: move;
   /* fallback if grab cursor is unsupported */

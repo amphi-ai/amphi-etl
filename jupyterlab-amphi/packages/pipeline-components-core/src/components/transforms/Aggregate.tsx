@@ -1,8 +1,6 @@
 import { aggregateIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
-
-
 export class Aggregate extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {};

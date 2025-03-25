@@ -19,7 +19,7 @@ export class Extract extends BaseCoreComponent {
           type: "selectCustomizable",
           label: "Regular Expression",
           id: "regex",
-          tooltip: "Select a type of data or add a custom regex",
+          tooltip: "Select a type of data or add a custom regex (PCRE: Perl Compatible Regular Expressions)",
           placeholder: "Select type or type regex",
           options: [
             { value: "(\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b)", label: "Email" },
