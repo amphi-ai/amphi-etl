@@ -52,7 +52,7 @@ def detect_unique_key(df, fields=None, max_combination=0):
     #fields (list): List of fields to test for uniqueness.
     #max_combination (int): Maximum number of fields to combine (0 = no limit).
     #Returns:
-    #result: A DataFrame with columns ['choice', 'number_of_fields', 'field_combination'].
+    #result: A DataFrame with columns ['number_of_fields', 'field_combination'].
     if fields is None or len(fields) == 0:
         fields = list(df.columns)
 
@@ -71,22 +71,14 @@ def detect_unique_key(df, fields=None, max_combination=0):
                 if found_minimum is None:
                     found_minimum = r
 
-                if r == found_minimum:
-                    choice = "very good"
-                elif r == found_minimum + 1:
-                    choice = "average"
-                else:
-                    choice = "bad"
 
                 result.append({
-                    "choice": choice,
                     "number_of_fields": r,
                     "field_combination": combo
                 })
     #dataframe (no list) even if empty, and well typed
-    result = pd.DataFrame(result, columns=["choice", "number_of_fields", "field_combination"])
+    result = pd.DataFrame(result, columns=["number_of_fields", "field_combination"])
     result = result.astype({
-        "choice": "string",  # String type
         "number_of_fields": "int",  # Integer type
         "field_combination": "object"  # Object (tuples)
     })
@@ -101,8 +93,14 @@ def detect_unique_key(df, fields=None, max_combination=0):
 public generateComponentCode({ config, inputName, outputName }: { config: any; inputName: string; outputName: string }): string {
     console.log("Generated outputName:", outputName);  // Debugging output
     const combination_nfield = config.combination_nfield ?? 1;
-    //const combination_columns = `[${config.columnAndOrder.map(item => item.key.named ? `"${item.key.value}"` : item.key.value).join(", ")}]`;
-    const combination_columns="[]";
+    const combination_columns_step1=[];
+     // If no columns are selected, pass None so that the Python function uses all columns(default).
+    let combination_columns = "None";
+    if (config.combination_columns?.length > 0) {
+      combination_columns = `[${config.combination_columns
+        .map((item: any) => (item.named ? `"${item.value}"` : item.value))
+        .join(", ")}]`;
+    }
     return `
 # Execute the detect unique key function
 ${outputName} = []
