@@ -9,6 +9,7 @@ export { setDefaultConfig, onChange, GenerateUIFormComponent, FieldDescriptor, O
 export { renderComponentUI, renderHandle, createZoomSelector } from './rendererUtils'
 export { PipelineComponent } from './PipelineComponent'
 export { CodeGenerator } from './CodeGenerator'
+export { CodeGeneratorDagster } from './CodeGeneratorDagster'
 export { PipelineService } from './PipelineService'
 export { RequestService } from './RequestService'
 
