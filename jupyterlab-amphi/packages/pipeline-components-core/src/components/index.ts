@@ -50,6 +50,7 @@ export { FormulaRow } from './transforms/FormulaRow';
 export { DateTimeConverter } from './transforms/DateTimeConverter';
 export { Summary } from './transforms/Summary';
 export { FrequencyAnalysis } from './transforms/FrequencyAnalysis';
+export { UniqueKeyDetector } from './transforms/UniqueKeyDetector';
 
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';

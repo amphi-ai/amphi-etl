@@ -159,3 +159,5 @@ it must me registered  in amphi-etl\jupyterlab-amphi\packages\pipeline-component
 The privileged icon library is https://helios.hashicorp.design/icons/library
 
 5. Component categories are created on the fly, with the super{} function, you don’t need to create a category.
+
+6. Tips : check your output. Usually on transforms and input, it must be a dataframe (not a list). The output types are also important (string, integer, etc.. instead of object). You can check the Python part with the Python Transforms tool.
