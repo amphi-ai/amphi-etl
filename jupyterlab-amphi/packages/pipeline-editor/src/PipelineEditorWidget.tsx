@@ -657,9 +657,15 @@ const PipelineWrapper: React.FC<IProps> = ({
           },
         }}
       >
-        <ReactFlowProvider>
-          <PipelineFlow context={context} />
-          <Sidebar componentService={componentService} />
+        <ReactFlowProvider> 
+            <Splitter>
+              <Splitter.Panel min="50%">
+                  <PipelineFlow context={context} />
+              </Splitter.Panel>
+              <Splitter.Panel collapsible defaultSize={225} min={225}>
+                <Sidebar componentService={componentService} />
+              </Splitter.Panel>
+            </Splitter>
         </ReactFlowProvider>
       </ConfigProvider>
     </div>
