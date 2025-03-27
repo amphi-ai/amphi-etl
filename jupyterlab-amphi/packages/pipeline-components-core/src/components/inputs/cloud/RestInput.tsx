@@ -56,6 +56,12 @@ export class RestInput extends BaseCoreComponent {
     return ["import pandas as pd", "import json", "import requests", "from jsonpath_ng import parse"];
   }
 
+  public provideDependencies({ config }): string[] {
+    let deps: string[] = [];
+    deps.push('jsonpath_ng');
+    return deps;
+  }
+
   public generateComponentCode({ config, outputName }): string {
     let bodyParam = '';
     if (config.body && config.body.trim() !== '') {
@@ -72,7 +78,7 @@ export class RestInput extends BaseCoreComponent {
     if (config.jsonPath && config.jsonPath.trim() !== '') {
       jsonPathParam = `${outputName}_jsonpath_expr = parse('${config.jsonPath}')\nselected_data = [match.value for match in ${outputName}_jsonpath_expr.find(${outputName}_data)] if ${outputName}_jsonpath_expr.find(${outputName}_data) else []\n${outputName} = pd.DataFrame(selected_data).convert_dtypes() if selected_data else pd.DataFrame()\n`;
     } else {
-      jsonPathParam = `${outputName} = pd.DataFrame([${outputName}_data]).convert_dtypes() if isinstance(data, dict) else pd.DataFrame(${outputName}_data).convert_dtypes()\n`;
+      jsonPathParam = `${outputName} = pd.DataFrame([${outputName}_data]).convert_dtypes() if isinstance(${outputName}_data, dict) else pd.DataFrame(${outputName}_data).convert_dtypes()\n`;
     }
 
     const params = `${headersParam}${bodyParam}`;
