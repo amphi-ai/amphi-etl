@@ -43,8 +43,11 @@ import ReactFlow, {
 import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
 
+import { Octokit } from '@octokit/rest';
+import { Base64 } from 'js-base64';
 
-import { ConfigProvider } from 'antd';
+
+import { ConfigProvider, Splitter } from 'antd';
 import { CodeGenerator, CodeGeneratorDagster, PipelineService } from '@amphi/pipeline-components-manager';
 import ReactDOM from 'react-dom';
 import 'reactflow/dist/style.css';
@@ -657,7 +660,7 @@ const PipelineWrapper: React.FC<IProps> = ({
           },
         }}
       >
-        <ReactFlowProvider> 
+        <ReactFlowProvider>  
             <Splitter>
               <Splitter.Panel min="50%">
                   <PipelineFlow context={context} />
@@ -733,6 +736,57 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
     });
     widget.toolbar.addItem('save', saveButton);
 
+    async function pushToGitHub(code: string, userEmail: string) {
+      // Hardcoded GitHub repository details
+      const OWNER = 'insert_owner_here';
+      const REPO = 'insert_repo_here';
+      
+      // Hardcoded GitHub Personal Access Token (ensure this is kept secure!)
+      const GITHUB_TOKEN = 'insert_some_token_here';
+    
+      // Create an Octokit instance
+      const octokit = new Octokit({
+        auth: GITHUB_TOKEN
+      });
+    
+      // Generate filename with today's date
+      const today = new Date();
+      const formattedDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+      const filename = `dagster_${formattedDate}.py`;
+    
+      try {
+        // Encode the content in Base64
+        const contentEncoded = Base64.encode(code);
+    
+        //console.log('Content:', code);
+        //console.log('Content encoded:', contentEncoded);
+        console.log('User email:', userEmail);
+
+        // Push the file to GitHub
+        const { data } = await octokit.repos.createOrUpdateFileContents({
+          owner: OWNER,
+          repo: REPO,
+          path: filename,
+          message: `Creating new file (${userEmail})`,
+          content: contentEncoded, // code,
+          committer: {
+            name: 'Amphi AI Bot',
+            email: userEmail,
+          },
+          author: {
+            name: 'Amphi AI Bot',
+            email: userEmail,
+          }
+        });
+    
+        console.log('File successfully pushed to GitHub:', data);
+        return data;
+      } catch (error) {
+        console.error('Error pushing file to GitHub:', error);
+        throw error;
+      }
+    }
+
     async function showCodeModal(code: string, commands, isDagsterCode: boolean) {
       const editorDiv = document.createElement('div');
       editorDiv.style.width = '900px';
@@ -763,7 +817,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
                 accept: true
             })
         ] : [])
-    ];
+      ];
 
       const result = await showDialog({
         title: title,
@@ -775,7 +829,15 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
         await saveAsFile();
       }
       if( result.button.label === 'Push to GitHub') {
-        console.log('Push to GitHub');
+        console.log('Push to GitHub 1');
+        try {
+          // You'll need to pass the user's email - this is just an example
+          const userEmail = 'insert email here'; 
+          await pushToGitHub(code, userEmail);
+        } catch (error) {
+          // Handle any errors during GitHub push
+          console.error('Failed to push to GitHub:', error);
+        }
       }
       // Render the AceEditor inside the dialog
     }
@@ -793,8 +855,8 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.toolbar.addItem('generateCode', generateCodeButton); 
 
     const generateDagsterCodeButton = new ToolbarButton({
-      label: 'Export to Dagster Python code',
-      iconLabel: 'Export to Dagster Python code',
+      label: 'Export to Dagster Python code 6',
+      iconLabel: 'Export to Dagster Python code 6',
       icon: codeIcon,
       onClick: async () => {
         try { 
