@@ -44,8 +44,8 @@ import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
 
 
-import { ConfigProvider, Flex, Splitter } from 'antd';
-import { CodeGenerator, PipelineService } from '@amphi/pipeline-components-manager';
+import { ConfigProvider } from 'antd';
+import { CodeGenerator, CodeGeneratorDagster, PipelineService } from '@amphi/pipeline-components-manager';
 import ReactDOM from 'react-dom';
 import 'reactflow/dist/style.css';
 import CustomEdge from './customEdge';
@@ -221,7 +221,7 @@ const PipelineWrapper: React.FC<IProps> = ({
         return url;
       }
     }
-
+    
 
     posthog.init('phc_V56mYhYAQdzJl5tMM2RFedJWbXlbyxDnSj2KMbUX8x3', {
       api_host: 'https://us.i.posthog.com',
@@ -239,7 +239,7 @@ const PipelineWrapper: React.FC<IProps> = ({
         }
         return properties;
       }
-
+        
     })
   }
 
@@ -657,7 +657,7 @@ const PipelineWrapper: React.FC<IProps> = ({
           },
         }}
       >
-        <ReactFlowProvider>
+        <ReactFlowProvider> 
             <Splitter>
               <Splitter.Panel min="50%">
                   <PipelineFlow context={context} />
@@ -733,7 +733,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
     });
     widget.toolbar.addItem('save', saveButton);
 
-    async function showCodeModal(code: string, commands) {
+    async function showCodeModal(code: string, commands, isDagsterCode: boolean) {
       const editorDiv = document.createElement('div');
       editorDiv.style.width = '900px';
       editorDiv.style.height = '1000px';
@@ -747,19 +747,35 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
         doc.context.model.fromString(code);
       };
 
-      const result = await showDialog({
-        title: 'Generated Python Code',
-        body: widget,
-        buttons: [Dialog.okButton({ label: 'Close' }),
+      const title = isDagsterCode ? "Generated Dagster Python Code" : "Generated Python Code";
+
+      const buttons = [
+        Dialog.okButton({ label: 'Close' }),
         Dialog.createButton({
-          label: 'Open in new file',
-          className: '',
-          accept: true
-        })],
+            label: 'Open in new file',
+            className: '',
+            accept: true
+        }),
+        ...(isDagsterCode ? [
+            Dialog.createButton({
+                label: 'Push to GitHub',
+                className: '',
+                accept: true
+            })
+        ] : [])
+    ];
+
+      const result = await showDialog({
+        title: title,
+        body: widget,
+        buttons: buttons
       });
 
       if (result.button.label === 'Open in new file') {
         await saveAsFile();
+      }
+      if( result.button.label === 'Push to GitHub') {
+        console.log('Push to GitHub');
       }
       // Render the AceEditor inside the dialog
     }
@@ -771,10 +787,25 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       icon: codeIcon,
       onClick: async () => {
         const code = await CodeGenerator.generateCode(context.model.toString(), this.commands, this.componentService, true);
-        showCodeModal(code, this.commands);
+        showCodeModal(code, this.commands, false);
       }
     });
-    widget.toolbar.addItem('generateCode', generateCodeButton);
+    widget.toolbar.addItem('generateCode', generateCodeButton); 
+
+    const generateDagsterCodeButton = new ToolbarButton({
+      label: 'Export to Dagster Python code',
+      iconLabel: 'Export to Dagster Python code',
+      icon: codeIcon,
+      onClick: async () => {
+        try { 
+          const code = await CodeGeneratorDagster.generateDagsterCode(context.model.toString(), this.commands, this.componentService, true);
+          showCodeModal(code, this.commands, true);
+        } catch (error) {
+          console.error('Some error occured.. Error generating Dagster code:', error);
+        }
+      }
+    });
+    widget.toolbar.addItem('generateDagsterCode', generateDagsterCodeButton);
 
 
     // Add run button

@@ -26,7 +26,7 @@ import { Dialog, showDialog } from '@jupyterlab/apputils';
 import { createAboutDialog } from './AboutDialog';
 import { RunService } from './RunService'
 import { viewData } from './ViewData'
-import { ComponentManager, CodeGenerator, PipelineService } from '@amphi/pipeline-components-manager';
+import { ComponentManager, CodeGenerator, CodeGeneratorDagster, PipelineService } from '@amphi/pipeline-components-manager';
 import { pipelineCategoryIcon, pipelineBrandIcon, componentIcon, gridAltIcon } from './icons';
 import { PipelineEditorFactory, commandIDs } from './PipelineEditorWidget';
 
