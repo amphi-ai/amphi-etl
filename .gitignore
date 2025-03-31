@@ -6,3 +6,6 @@
 
 venv
 package-lock.json
+.env
+
+env.tsx
