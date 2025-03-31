@@ -10,6 +10,7 @@ import componentIconSvgStr from '../style/icons/node-24.svg';
 import alignIconSvgStr from '../style/icons/align.svg';
 import exportIconSvgStr from '../style/icons/export-svg.svg';
 import gridAltIconSvgStr from '../style/icons/grid-alt-24.svg';
+import dagsterIconSvgStr from '../style/icons/dagster.svg';
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',
@@ -66,7 +67,10 @@ export const gridAltIcon = new LabIcon({
   svgstr: gridAltIconSvgStr
 });
 
-
+export const dagsterIcon = new LabIcon({
+  name: 'amphi:dagster-icon',
+  svgstr: dagsterIconSvgStr
+});
 
 
 
