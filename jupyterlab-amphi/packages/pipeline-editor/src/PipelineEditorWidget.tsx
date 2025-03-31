@@ -57,6 +57,8 @@ import { pipelineIcon } from './icons';
 
 import CodeEditor from './CodeEditor';
 
+import  { env } from './env'; 
+
 const PIPELINE_CLASS = 'amphi-PipelineEditor';
 
 export const commandIDs = {
@@ -737,29 +739,36 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.toolbar.addItem('save', saveButton);
 
     async function pushToGitHub(code: string, userEmail: string) {
-      // Hardcoded GitHub repository details
-      const OWNER = 'insert_owner_here';
-      const REPO = 'insert_repo_here';
       
-      // Hardcoded GitHub Personal Access Token (ensure this is kept secure!)
-      const GITHUB_TOKEN = 'insert_some_token_here';
-    
+      const OWNER = env.OWNER; 
+      const REPO = env.REPO;  
+       
+      const githubToken = env.GITHUB_TOKEN; 
+
       // Create an Octokit instance
       const octokit = new Octokit({
-        auth: GITHUB_TOKEN
+        auth: githubToken
       });
     
-      // Generate filename with today's date
+      //const today = new Date();
+      // const formattedDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
+      // const filename = `dagster_${formattedDate}_1.py`;
+   
+      // Generate filename with today's date and time ( hours, minutes, seconds)
       const today = new Date();
-      const formattedDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
-      const filename = `dagster_${formattedDate}.py`;
-    
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      const hours = String(today.getHours()).padStart(2, '0');
+      const minutes = String(today.getMinutes()).padStart(2, '0');
+      const seconds = String(today.getSeconds()).padStart(2, '0');
+
+      const formattedDate = `${year}-${month}-${day}_${hours}h-${minutes}m-${seconds}s`;
+      const filename = `dagster_${formattedDate}.py`; 
+
       try {
         // Encode the content in Base64
-        const contentEncoded = Base64.encode(code);
-    
-        //console.log('Content:', code);
-        //console.log('Content encoded:', contentEncoded);
+        const contentEncoded = Base64.encode(code); 
         console.log('User email:', userEmail);
 
         // Push the file to GitHub
@@ -786,7 +795,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
         throw error;
       }
     }
-
+ 
     async function showCodeModal(code: string, commands, isDagsterCode: boolean) {
       const editorDiv = document.createElement('div');
       editorDiv.style.width = '900px';
@@ -829,11 +838,10 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
         await saveAsFile();
       }
       if( result.button.label === 'Push to GitHub') {
-        console.log('Push to GitHub 1');
+        console.log('Push to GitHub');
         try {
-          // You'll need to pass the user's email - this is just an example
-          const userEmail = 'insert email here'; 
-          await pushToGitHub(code, userEmail);
+          const userEmail = env.EMAIL;  
+          await pushToGitHub(code, userEmail); 
         } catch (error) {
           // Handle any errors during GitHub push
           console.error('Failed to push to GitHub:', error);
@@ -855,8 +863,8 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.toolbar.addItem('generateCode', generateCodeButton); 
 
     const generateDagsterCodeButton = new ToolbarButton({
-      label: 'Export to Dagster Python code 6',
-      iconLabel: 'Export to Dagster Python code 6',
+      label: 'Export to Dagster Python code',
+      iconLabel: 'Export to Dagster Python code',
       icon: codeIcon,
       onClick: async () => {
         try { 
