@@ -5,7 +5,15 @@ import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
 export class ExcelFileOutput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { fileLocation: "local", connectionMethod: "env", excelOptions: { header: true }, engine: 'xlsxwriter' };
+    const defaultConfig = {
+      fileLocation: "local",
+      connectionMethod: "env",
+      excelOptions: {
+        header: true,
+        index: false
+      },
+      engine: 'xlsxwriter'
+    };
     const form = {
       idPrefix: "component__form",
       fields: [
@@ -82,7 +90,7 @@ export class ExcelFileOutput extends BaseCoreComponent {
           condition: { fileLocation: ["s3"] },
           advanced: true
         },
-        
+
       ],
     };
     const description = "Use Excel File Output to write or append data to an Excel file locally or remotely (S3)."
@@ -94,7 +102,7 @@ export class ExcelFileOutput extends BaseCoreComponent {
     let deps: string[] = [];
 
     const engine = config.engine;
-    
+
     if (engine === 'None' || engine === 'openpyxl') {
       deps.push('openpyxl');
     } if (engine === 'xlsxwriter') {
@@ -114,7 +122,7 @@ export class ExcelFileOutput extends BaseCoreComponent {
 
   public generateComponentCode({ config, inputName }): string {
     const optionsString = this.generateOptionsCode(config);
-    const createFoldersCode = config.createFoldersIfNotExist 
+    const createFoldersCode = config.createFoldersIfNotExist
       ? `os.makedirs(os.path.dirname("${config.filePath}"), exist_ok=True)\n`
       : '';
     const engine = config.engine !== 'None' ? `'${config.engine}'` : config.engine;
