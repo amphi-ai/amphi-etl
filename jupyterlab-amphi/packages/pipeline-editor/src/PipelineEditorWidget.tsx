@@ -46,14 +46,15 @@ import { PostHogProvider } from 'posthog-js/react'
 import { Octokit } from '@octokit/rest';
 import { Base64 } from 'js-base64';
 
+import { ConfigProvider, Modal, Button, Splitter, Dropdown } from 'antd';
+import { DownOutlined, LoadingOutlined } from '@ant-design/icons';
 
-import { ConfigProvider, Splitter } from 'antd';
 import { CodeGenerator, CodeGeneratorDagster, PipelineService } from '@amphi/pipeline-components-manager';
 import ReactDOM from 'react-dom';
 import 'reactflow/dist/style.css';
 import CustomEdge from './customEdge';
 import { Dropzone } from './Dropzone';
-import { pipelineIcon } from './icons';
+import { pipelineIcon, dagsterIcon, filePlusIcon } from './icons';
 
 import CodeEditor from './CodeEditor';
 
@@ -226,7 +227,7 @@ const PipelineWrapper: React.FC<IProps> = ({
         return url;
       }
     }
-    
+
 
     posthog.init('phc_V56mYhYAQdzJl5tMM2RFedJWbXlbyxDnSj2KMbUX8x3', {
       api_host: 'https://us.i.posthog.com',
@@ -244,7 +245,7 @@ const PipelineWrapper: React.FC<IProps> = ({
         }
         return properties;
       }
-        
+
     })
   }
 
@@ -662,15 +663,15 @@ const PipelineWrapper: React.FC<IProps> = ({
           },
         }}
       >
-        <ReactFlowProvider>  
-            <Splitter>
-              <Splitter.Panel min="50%">
-                  <PipelineFlow context={context} />
-              </Splitter.Panel>
-              <Splitter.Panel collapsible defaultSize={225} min={225}>
-                <Sidebar componentService={componentService} />
-              </Splitter.Panel>
-            </Splitter>
+        <ReactFlowProvider>
+          <Splitter>
+            <Splitter.Panel min="50%">
+              <PipelineFlow context={context} />
+            </Splitter.Panel>
+            <Splitter.Panel collapsible defaultSize={225} min={225}>
+              <Sidebar componentService={componentService} />
+            </Splitter.Panel>
+          </Splitter>
         </ReactFlowProvider>
       </ConfigProvider>
     </div>
@@ -738,117 +739,205 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
     });
     widget.toolbar.addItem('save', saveButton);
 
-    async function pushToGitHub(code: string, userEmail: string) {
-      
-      const OWNER = env.OWNER; 
-      const REPO = env.REPO;  
-       
-      const githubToken = env.GITHUB_TOKEN; 
-
-      // Create an Octokit instance
-      const octokit = new Octokit({
-        auth: githubToken
-      });
+    async function showCodeModal(
+      code: string,
+      commands: any,
+      componentService: any,
+      isDagsterCode: boolean
+    ) {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
     
-      //const today = new Date();
-      // const formattedDate = today.toISOString().split('T')[0]; // YYYY-MM-DD format
-      // const filename = `dagster_${formattedDate}_1.py`;
-   
-      // Generate filename with today's date and time ( hours, minutes, seconds)
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, '0');
-      const day = String(today.getDate()).padStart(2, '0');
-      const hours = String(today.getHours()).padStart(2, '0');
-      const minutes = String(today.getMinutes()).padStart(2, '0');
-      const seconds = String(today.getSeconds()).padStart(2, '0');
-
-      const formattedDate = `${year}-${month}-${day}_${hours}h-${minutes}m-${seconds}s`;
-      const filename = `dagster_${formattedDate}.py`; 
-
-      try {
-        // Encode the content in Base64
-        const contentEncoded = Base64.encode(code); 
-        console.log('User email:', userEmail);
-
-        // Push the file to GitHub
-        const { data } = await octokit.repos.createOrUpdateFileContents({
-          owner: OWNER,
-          repo: REPO,
-          path: filename,
-          message: `Creating new file (${userEmail})`,
-          content: contentEncoded, // code,
-          committer: {
-            name: 'Amphi AI Bot',
-            email: userEmail,
-          },
-          author: {
-            name: 'Amphi AI Bot',
-            email: userEmail,
+      function CodeModal() {
+        const [copyStatus, setCopyStatus] = React.useState<'idle' | 'loading' | 'copied'>('idle');
+    
+        const handleClose = () => {
+          ReactDOM.unmountComponentAtNode(container);
+          container.remove();
+        };
+    
+        const handleCopyToClipboard = async () => {
+          try {
+            setCopyStatus('loading');
+            await navigator.clipboard.writeText(code);
+            setCopyStatus('copied');
+            setTimeout(() => setCopyStatus('idle'), 3000);
+          } catch (error) {
+            console.error('Failed to copy code to clipboard:', error);
+            setCopyStatus('idle');
           }
-        });
+        };
     
-        console.log('File successfully pushed to GitHub:', data);
-        return data;
-      } catch (error) {
-        console.error('Error pushing file to GitHub:', error);
-        throw error;
-      }
-    }
- 
-    async function showCodeModal(code: string, commands, isDagsterCode: boolean) {
-      const editorDiv = document.createElement('div');
-      editorDiv.style.width = '900px';
-      editorDiv.style.height = '1000px';
+        const handleOpenInNewFile = async (contents: string) => {
+          try {
+            const file = await commands.execute('docmanager:new-untitled', {
+              path: '/',
+              type: 'file',
+              ext: '.py'
+            });
+            const doc = await commands.execute('docmanager:open', { path: file.path });
+            doc.context.model.fromString(contents);
+          } catch (error) {
+            console.error('Failed to open new file:', error);
+          }
+          handleClose();
+        };
 
-      const widget = new Widget({ node: editorDiv });
-      ReactDOM.render(<CodeEditor code={code} />, editorDiv);
+        const handlePushToGithub = async () => {
+          try {
+            const OWNER = env.OWNER; 
+            const REPO = env.REPO;  
+            const userEmail = env.EMAIL;  
+             
+            const githubToken = env.GITHUB_TOKEN; 
+      
+            // Create an Octokit instance
+            const octokit = new Octokit({
+              auth: githubToken
+            }); 
+         
+            // Generate filename with today's date and time ( hours, minutes, seconds)
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const hours = String(today.getHours()).padStart(2, '0');
+            const minutes = String(today.getMinutes()).padStart(2, '0');
+            const seconds = String(today.getSeconds()).padStart(2, '0');
+      
+            const formattedDate = `${year}-${month}-${day}_${hours}h-${minutes}m-${seconds}s`;
+            const filename = `dagster_${formattedDate}.py`; 
 
-      const saveAsFile = async () => {
-        const file = await commands.execute('docmanager:new-untitled', { path: '/', type: 'file', ext: '.py' });
-        const doc = await commands.execute('docmanager:open', { path: file.path });
-        doc.context.model.fromString(code);
-      };
-
-      const title = isDagsterCode ? "Generated Dagster Python Code" : "Generated Python Code";
-
-      const buttons = [
-        Dialog.okButton({ label: 'Close' }),
-        Dialog.createButton({
+            const dagsterCode = CodeGeneratorDagster.generateDagsterCode(
+              context.model.toString(),
+              commands,
+              componentService,
+              true
+            );
+            console.log(dagsterCode);
+      
+            try {
+              // Encode the content in Base64
+              const contentEncoded = Base64.encode(dagsterCode); 
+              console.log('User email:', userEmail);
+      
+              // Push the file to GitHub
+              const { data } = await octokit.repos.createOrUpdateFileContents({
+                owner: OWNER,
+                repo: REPO,
+                path: filename,
+                message: `Creating new file (${userEmail})`,
+                content: contentEncoded, // code,
+                committer: {
+                  name: 'Amphi AI Bot',
+                  email: userEmail,
+                },
+                author: {
+                  name: 'Amphi AI Bot',
+                  email: userEmail,
+                }
+              });
+          
+              console.log('File successfully pushed to GitHub:', data);
+              return data;
+            } catch (error) {
+              console.error('Error pushing file to GitHub:', error);
+              throw error;
+            }
+          } catch (error) {
+            console.error('Failed to push to github:', error);
+          }
+          handleClose();
+        };
+    
+        const handleExportToDagster = async () => {
+          try {
+            const dagsterCode = CodeGeneratorDagster.generateDagsterCode(
+              context.model.toString(),
+              commands,
+              componentService,
+              true
+            );
+            console.log(dagsterCode);
+            const file = await commands.execute('docmanager:new-untitled', {
+              path: '/',
+              type: 'file',
+              ext: '.py'
+            });
+            const doc = await commands.execute('docmanager:open', { path: file.path });
+            doc.context.model.fromString(dagsterCode);
+          } catch (error) {
+            console.error('Failed to export to Dagster:', error);
+          }
+          handleClose();
+        };
+    
+        const menuItems = [
+          {
+            key: '1',
             label: 'Open in new file',
-            className: '',
-            accept: true
-        }),
-        ...(isDagsterCode ? [
-            Dialog.createButton({
-                label: 'Push to GitHub',
-                className: '',
-                accept: true
-            })
-        ] : [])
-      ];
-
-      const result = await showDialog({
-        title: title,
-        body: widget,
-        buttons: buttons
-      });
-
-      if (result.button.label === 'Open in new file') {
-        await saveAsFile();
+            icon: <filePlusIcon.react height="14px" width="14px;" />,
+            classname: 'anticon',
+            onClick: () => handleOpenInNewFile(code)
+          },
+          {
+            key: '2',
+            label: 'Export to Dagster (beta)',
+            icon: <dagsterIcon.react height="14px" width="14px;" />,
+            classname: 'anticon',
+            onClick: handleExportToDagster
+          },
+          {
+            key: '3',
+            label: 'Push to github',
+            icon: <dagsterIcon.react height="14px" width="14px;" />,
+            classname: 'anticon',
+            onClick: () => handlePushToGithub()
+          }
+        ];
+    
+        const title = isDagsterCode ? 'Generated Dagster Python Code' : 'Generated Python Code';
+    
+        return (
+          <ConfigProvider theme={{ token: { colorPrimary: '#5F9B97' } }}>
+            <ReactFlowProvider>
+              <Modal
+                title={
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>{title}</span>
+                  </div>
+                }
+                visible
+                footer={null}
+                width="70%"
+                onCancel={handleClose}
+              >
+                <div style={{ position: 'relative', width: '100%', height: '500px' }}>
+                  <CodeEditor code={code} />
+                  <div style={{ position: 'absolute', top: 0, right: 0 }}>
+                    <Dropdown.Button
+                      icon={<DownOutlined />}
+                      menu={{ items: menuItems, style: { textAlign: 'left', width: '220px' } }}
+                      onClick={handleCopyToClipboard}
+                      loading={copyStatus === 'loading'}
+                    >
+                      {copyStatus === 'copied'
+                        ? 'Copied!'
+                        : copyStatus === 'loading'
+                        ? 'Loading...'
+                        : 'Copy to clipboard'}
+                    </Dropdown.Button>
+                  </div>
+                </div>
+              </Modal>
+            </ReactFlowProvider>
+          </ConfigProvider>
+        );
       }
-      if( result.button.label === 'Push to GitHub') {
-        console.log('Push to GitHub');
-        try {
-          const userEmail = env.EMAIL;  
-          await pushToGitHub(code, userEmail); 
-        } catch (error) {
-          // Handle any errors during GitHub push
-          console.error('Failed to push to GitHub:', error);
-        }
-      }
-      // Render the AceEditor inside the dialog
+    
+      ReactDOM.render(<CodeModal />, container);
     }
+    
 
     // Add generate code button
     const generateCodeButton = new ToolbarButton({
@@ -857,11 +946,12 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       icon: codeIcon,
       onClick: async () => {
         const code = await CodeGenerator.generateCode(context.model.toString(), this.commands, this.componentService, true);
-        showCodeModal(code, this.commands, false);
+        showCodeModal(code, this.commands, this.componentService, false);
       }
     });
-    widget.toolbar.addItem('generateCode', generateCodeButton); 
+    widget.toolbar.addItem('generateCode', generateCodeButton);
 
+    /*
     const generateDagsterCodeButton = new ToolbarButton({
       label: 'Export to Dagster Python code',
       iconLabel: 'Export to Dagster Python code',
@@ -876,6 +966,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       }
     });
     widget.toolbar.addItem('generateDagsterCode', generateDagsterCodeButton);
+    */
 
 
     // Add run button

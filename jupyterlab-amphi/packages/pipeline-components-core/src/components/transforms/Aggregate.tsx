@@ -88,12 +88,16 @@ ${outputName} = ${inputName}.groupby([`;
       // Complete the aggregation function call
       code += `]).agg(${aggArgs}).reset_index()\n`;
     } else {
-      // No grouping, apply named aggregations directly, then stack and reshape
+      // No grouping, apply named aggregations directly with an index and then destroy it
       code += `
-${outputName} = ${inputName}.agg(${aggArgs})
-${outputName} = ${outputName}.stack()
-${outputName}.index = [idx[0] for idx in ${outputName}.index]
-${outputName} = ${outputName}.to_frame().T.reset_index(drop=True)
+
+# replace empty or none name
+${inputName}.columns = [f"Unnamed_{i}" if col is None or col == "" else col for i, col in enumerate(${inputName}.columns)]
+# generate dynamically the name based on the column list (so that we're sure it's not in the list)
+column_name_concat = "_".join(${inputName}.columns)
+
+# aggregation with the dummy index
+${outputName} = ${inputName}.assign(**{column_name_concat: 0}).groupby(column_name_concat).agg(${aggArgs}).reset_index(drop=True)
 `;
     }
 

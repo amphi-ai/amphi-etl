@@ -215,7 +215,7 @@ ${instructions || 'No specific instructions provided'}
                 <Dropdown.Button
                   icon={<DownOutlined />}
                   loading={copyStatus === 'loading'}
-                  menu={{ items: menuItems }}
+                  menu={{ items: menuItems, style: { textAlign: 'left', width: '220px' } }}
                   onClick={handleCopyPrompt}
                   disabled={!instructions.trim()}
                 >
