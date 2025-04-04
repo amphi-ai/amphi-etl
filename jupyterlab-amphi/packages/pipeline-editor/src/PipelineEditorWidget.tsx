@@ -43,6 +43,8 @@ import ReactFlow, {
 import posthog from 'posthog-js'
 import { PostHogProvider } from 'posthog-js/react'
 
+import { Octokit } from '@octokit/rest';
+import { Base64 } from 'js-base64';
 
 import { ConfigProvider, Modal, Button, Splitter, Dropdown } from 'antd';
 import { DownOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -55,6 +57,8 @@ import { Dropzone } from './Dropzone';
 import { pipelineIcon, dagsterIcon, filePlusIcon } from './icons';
 
 import CodeEditor from './CodeEditor';
+
+import  { env } from './env'; 
 
 const PIPELINE_CLASS = 'amphi-PipelineEditor';
 
@@ -778,6 +782,73 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
           }
           handleClose();
         };
+
+        const handlePushToGithub = async () => {
+          try {
+            const OWNER = env.OWNER; 
+            const REPO = env.REPO;  
+            const userEmail = env.EMAIL;  
+             
+            const githubToken = env.GITHUB_TOKEN; 
+      
+            // Create an Octokit instance
+            const octokit = new Octokit({
+              auth: githubToken
+            }); 
+         
+            // Generate filename with today's date and time ( hours, minutes, seconds)
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            const hours = String(today.getHours()).padStart(2, '0');
+            const minutes = String(today.getMinutes()).padStart(2, '0');
+            const seconds = String(today.getSeconds()).padStart(2, '0');
+      
+            const formattedDate = `${year}-${month}-${day}_${hours}h-${minutes}m-${seconds}s`;
+            const filename = `dagster_${formattedDate}.py`; 
+
+            const dagsterCode = CodeGeneratorDagster.generateDagsterCode(
+              context.model.toString(),
+              commands,
+              componentService,
+              true
+            );
+            console.log(dagsterCode);
+      
+            try {
+              // Encode the content in Base64
+              const contentEncoded = Base64.encode(dagsterCode); 
+              console.log('User email:', userEmail);
+      
+              // Push the file to GitHub
+              const { data } = await octokit.repos.createOrUpdateFileContents({
+                owner: OWNER,
+                repo: REPO,
+                path: filename,
+                message: `Creating new file (${userEmail})`,
+                content: contentEncoded, // code,
+                committer: {
+                  name: 'Amphi AI Bot',
+                  email: userEmail,
+                },
+                author: {
+                  name: 'Amphi AI Bot',
+                  email: userEmail,
+                }
+              });
+          
+              console.log('File successfully pushed to GitHub:', data);
+              return data;
+            } catch (error) {
+              console.error('Error pushing file to GitHub:', error);
+              throw error;
+            }
+          } catch (error) {
+            console.error('Failed to push to github:', error);
+          }
+          handleClose();
+        };
     
         const handleExportToDagster = async () => {
           try {
@@ -815,6 +886,13 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
             icon: <dagsterIcon.react height="14px" width="14px;" />,
             classname: 'anticon',
             onClick: handleExportToDagster
+          },
+          {
+            key: '3',
+            label: 'Push to github',
+            icon: <dagsterIcon.react height="14px" width="14px;" />,
+            classname: 'anticon',
+            onClick: () => handlePushToGithub()
           }
         ];
     
