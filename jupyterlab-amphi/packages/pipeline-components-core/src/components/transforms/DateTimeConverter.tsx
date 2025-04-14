@@ -1,9 +1,9 @@
 import { calendarIcon } from '../../icons';
-import { BaseCoreComponent } from '../BaseCoreComponent';// Adjust the import path
+import { BaseCoreComponent } from '../BaseCoreComponent'; // Adjust the import path
 
 export class DateTimeConverter extends BaseCoreComponent {
     constructor() {
-        const defaultConfig = { conversionType: "stringToDate", language: "en_US.UTF-8", dateTimeFormat: "%d-%m-%Y" };
+        const defaultConfig = { conversionType: "stringToDate", language: "en_US.UTF-8", dateTimeFormat: "auto" };
         const form = {
             idPrefix: "component__form",
             fields: [
@@ -58,26 +58,55 @@ export class DateTimeConverter extends BaseCoreComponent {
                     type: "selectCustomizable",
                     label: "Select the format",
                     id: "dateTimeFormat",
-                    tooltip: "Select pre-defined format or provide a custom strftime format used for the conversion (in both order)",
+                    tooltip: "Select pre-defined format or provide a custom strftime format used for the conversion (in both orders)",
+                    condition: { conversionType: "dateToString"},
                     options: [
-                        { value: "%A, %B %d, %Y", label: "day, dd Month, yyyy" },  // Monday, January 01, 2024
-                        { value: "%d-%m-%Y", label: "dd-MM-yyyy" },  // 01-01-2024
-                        { value: "%d/%m/%Y", label: "dd/MM/yyyy" },  // 01/01/2024
-                        { value: "%Y-%m-%d", label: "yyyy-MM-dd" },  // 2024-01-01
-                        { value: "%Y/%m/%d", label: "yyyy/MM/dd" },  // 2024/01/01
-                        { value: "%B %d, %Y", label: "Month dd, yyyy" },  // January 01, 2024
-                        { value: "%m/%d/%Y", label: "MM/dd/yyyy" },  // 01/01/2024
-                        { value: "%m-%d-%Y", label: "MM-dd-yyyy" },  // 01-01-2024
-                        { value: "%d %b %Y", label: "dd Mon yyyy" },  // 01 Jan 2024
-                        { value: "%d %B %Y", label: "dd Month yyyy" },  // 01 January 2024
-                        { value: "%d.%m.%Y", label: "dd.MM.yyyy" },  // 01.01.2024
-                        { value: "%Y.%m.%d", label: "yyyy.MM.dd" },  // 2024.01.01
-                        { value: "%b %d, %Y", label: "Mon dd, yyyy" },  // Jan 01, 2024
-                        { value: "%a, %d %b %Y", label: "day, dd Mon yyyy" },  // Mon, 01 Jan 2024
-                        { value: "%A, %d %B %Y", label: "day, dd Month yyyy" },  // Monday, 01 January 2024
-                        { value: "%Y-%m-%d %H:%M:%S", label: "yyyy-MM-dd HH:mm:ss" },  // 2024-09-19 14:30:00
-                        { value: "%d/%m/%Y %H:%M", label: "dd/MM/yyyy HH:mm" },  // 19/09/2024 14:30
-                        { value: "%B %d, %Y %H:%M", label: "Month dd, yyyy HH:mm" }  // September 19, 2024 14:30
+                        { value: "%A, %B %d, %Y", label: "day, dd Month, yyyy" },
+                        { value: "%d-%m-%Y", label: "dd-MM-yyyy" },
+                        { value: "%d/%m/%Y", label: "dd/MM/yyyy" },
+                        { value: "%Y-%m-%d", label: "yyyy-MM-dd" },
+                        { value: "%Y/%m/%d", label: "yyyy/MM/dd" },
+                        { value: "%B %d, %Y", label: "Month dd, yyyy" },
+                        { value: "%m/%d/%Y", label: "MM/dd/yyyy" },
+                        { value: "%m-%d-%Y", label: "MM-dd-yyyy" },
+                        { value: "%d %b %Y", label: "dd Mon yyyy" },
+                        { value: "%d %B %Y", label: "dd Month yyyy" },
+                        { value: "%d.%m.%Y", label: "dd.MM.yyyy" },
+                        { value: "%Y.%m.%d", label: "yyyy.MM.dd" },
+                        { value: "%b %d, %Y", label: "Mon dd, yyyy" },
+                        { value: "%a, %d %b %Y", label: "day, dd Mon yyyy" },
+                        { value: "%A, %d %B %Y", label: "day, dd Month yyyy" },
+                        { value: "%Y-%m-%d %H:%M:%S", label: "yyyy-MM-dd HH:mm:ss" },
+                        { value: "%d/%m/%Y %H:%M", label: "dd/MM/yyyy HH:mm" },
+                        { value: "%B %d, %Y %H:%M", label: "Month dd, yyyy HH:mm" }
+                    ]
+                },
+                {
+                    type: "selectCustomizable",
+                    label: "Select the format",
+                    id: "dateTimeFormat",
+                    tooltip: "Select pre-defined format, Auto detect (selected by default) or provide a custom strftime format used for the conversion (in both orders)",
+                    condition: { conversionType: "stringToDate"},
+                    options: [
+                        { value: "auto", label: "Auto detect" },
+                        { value: "%A, %B %d, %Y", label: "day, dd Month, yyyy" },
+                        { value: "%d-%m-%Y", label: "dd-MM-yyyy" },
+                        { value: "%d/%m/%Y", label: "dd/MM/yyyy" },
+                        { value: "%Y-%m-%d", label: "yyyy-MM-dd" },
+                        { value: "%Y/%m/%d", label: "yyyy/MM/dd" },
+                        { value: "%B %d, %Y", label: "Month dd, yyyy" },
+                        { value: "%m/%d/%Y", label: "MM/dd/yyyy" },
+                        { value: "%m-%d-%Y", label: "MM-dd-yyyy" },
+                        { value: "%d %b %Y", label: "dd Mon yyyy" },
+                        { value: "%d %B %Y", label: "dd Month yyyy" },
+                        { value: "%d.%m.%Y", label: "dd.MM.yyyy" },
+                        { value: "%Y.%m.%d", label: "yyyy.MM.dd" },
+                        { value: "%b %d, %Y", label: "Mon dd, yyyy" },
+                        { value: "%a, %d %b %Y", label: "day, dd Mon yyyy" },
+                        { value: "%A, %d %B %Y", label: "day, dd Month yyyy" },
+                        { value: "%Y-%m-%d %H:%M:%S", label: "yyyy-MM-dd HH:mm:ss" },
+                        { value: "%d/%m/%Y %H:%M", label: "dd/MM/yyyy HH:mm" },
+                        { value: "%B %d, %Y %H:%M", label: "Month dd, yyyy HH:mm" }
                     ]
                 },
                 {
@@ -97,7 +126,6 @@ export class DateTimeConverter extends BaseCoreComponent {
             ],
         };
         const description = "Use DateTime to convert between date/time formats and strings, allowing for custom formatting and language options.";
-
         super("DateTime Converter", "datetimeConverter", description, "pandas_df_processor", [], "transforms", calendarIcon, defaultConfig, form);
     }
 
@@ -106,11 +134,11 @@ export class DateTimeConverter extends BaseCoreComponent {
     }
 
     public generateComponentCode({ config, inputName, outputName }) {
-        const prefix = config?.backend?.prefix ?? "pd";        const { conversionType, dateTimeField, language, dateTimeFormat, newColumn } = config;
+        const prefix = config?.backend?.prefix ?? "pd";
+        const { conversionType, dateTimeField, language, dateTimeFormat, newColumn } = config;
 
         // Extract column details
         const columnName = dateTimeField.value;
-        const columnType = dateTimeField.type;
         const columnIsNamed = dateTimeField.named;
         const inputColumnReference = columnIsNamed ? `'${columnName}'` : columnName;
 
@@ -137,7 +165,7 @@ export class DateTimeConverter extends BaseCoreComponent {
             'pt_BR.UTF-8': 'Portuguese_Brazil',
             'ja_JP.UTF-8': 'Japanese_Japan',
             'ko_KR.UTF-8': 'Korean_Korea',
-            'zh_CN.UTF-8': 'Chinese_People\'s Republic of China',
+            'zh_CN.UTF-8': "Chinese_People's Republic of China",
             'zh_TW.UTF-8': 'Chinese_Taiwan',
             'nl_NL.UTF-8': 'Dutch_Netherlands',
             'ru_RU.UTF-8': 'Russian_Russia',
@@ -157,12 +185,10 @@ export class DateTimeConverter extends BaseCoreComponent {
         // Only set locale if language is specified
         if (language) {
             let locale = language;
-
             // If Windows is detected, map the Linux locale to the equivalent Windows locale
             if (isWindows && localeMap[language]) {
                 locale = localeMap[language];
             }
-
             code += `
 # Set the locale for date parsing/formatting
 locale.setlocale(locale.LC_TIME, '${locale}')
@@ -179,14 +205,19 @@ ${outputName} = ${inputName}.copy()
 ${outputName}[${outputColumnReference}] = ${outputName}[${inputColumnReference}].dt.strftime('${dateTimeFormat}').astype('string')
 `;
         } else if (conversionType === 'stringToDate') {
-            code += `
+            if (dateTimeFormat === 'auto') {
+                code += `
+# Convert string column to datetime with auto-detected format
+${outputName}[${outputColumnReference}] = ${prefix}.to_datetime(${outputName}[${inputColumnReference}], infer_datetime_format=True)
+`;
+            } else {
+                code += `
 # Convert string column to datetime with specified format
 ${outputName}[${outputColumnReference}] = ${prefix}.to_datetime(${outputName}[${inputColumnReference}], format='${dateTimeFormat}')
 `;
+            }
         }
 
         return code;
     }
-
-
 }

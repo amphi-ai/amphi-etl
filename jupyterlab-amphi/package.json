@@ -81,5 +81,10 @@
         "title": "Amphi",
         "extension": true,
         "outputDir": "./amphi"
+    },
+    "dependencies": {
+        "@glideapps/glide-data-grid": "^6.0.3",
+        "@tabler/icons-react": "^3.31.0",
+        "react-responsive-carousel": "^3.2.23"
     }
 }
