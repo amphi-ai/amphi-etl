@@ -1,6 +1,6 @@
 {
     "name": "@amphi/jupyterlab-amphi",
-    "version": "0.8.25",
+    "version": "0.8.26",
     "keywords": [
         "amphi",
         "etl",
@@ -84,7 +84,7 @@
     },
     "dependencies": {
         "@glideapps/glide-data-grid": "^6.0.3",
-        "@tabler/icons-react": "^3.31.0",
+        "react-laag": "^2.0.5",
         "react-responsive-carousel": "^3.2.23"
     }
 }
