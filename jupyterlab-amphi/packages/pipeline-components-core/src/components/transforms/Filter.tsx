@@ -5,15 +5,26 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class Filter extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { condition: "==" };
+    const defaultConfig = { filterType: "basic", condition: "==" };
     const form = {
       idPrefix: "component__form",
       fields: [
+        {
+          type: "radio",
+          label: "Type",
+          id: "filterType",
+          options: [
+            { value: "basic", label: "Basic" },
+            { value: "advanced", label: "Advanced" }
+          ],
+          advanced: true
+        },
         {
           type: "column",
           label: "Column name",
           id: "column",
           placeholder: "Select column",
+          condition: { filterType: "basic" }
         },
         {
           type: "select",
@@ -36,17 +47,39 @@ export class Filter extends BaseCoreComponent {
             { value: "startswith", label: "Starts With (string)" },
             { value: "endswith", label: "Ends With (string)" }
           ],
+          condition: { filterType: "basic" }
         },
         {
           type: "input",
           label: "Value",
           id: "conditionValue",
-          placeholder: "Any string of characters (enforce numbers if needed)"
+          placeholder: "Any string of characters (enforce numbers if needed)",
+          condition: { filterType: "basic" }
         },
         {
           type: "boolean",
           label: "Enforce value as string",
           id: "enforceString",
+          condition: { filterType: "basic" },
+          advanced: true
+        },
+        {
+          type: "codeTextarea",
+          label: "Python Expression",
+          mode: "python",
+          id: "pythonExpression",
+          tooltip: "Enter a valid pandas query expression. This should be combining column names, values, and logical operators (e.g., ==, and, or, notnull()). Do not include variable assignments, print statements, or comments.",
+          placeholder: "(firstName == 'Bob' or Lastname == 'SMITH') and Age > 50",
+          aiInstructions: "Generate only the Python expression to be used within the query attribute of a pandas filter.\nIMPORTANT: Return only the expression string, ensuring it is valid for pandas.DataFrame.query. Do not include display or print statements, variable assignments, or explanatory comments.",
+          aiGeneration: true,
+          aiPromptExamples: [
+            { label: "Simple equality filter", value: "Filter rows where BillingCountry is 'France'." },
+            { label: "Multiple conditions", value: "Filter rows where Industry is 'Technology' and CurrencyIsoCode is 'USD'." },
+            { label: "Null check", value: "Filter rows where BillingPostalCode is not null." },
+            { label: "Date comparison", value: "Filter rows where CreatedDate is on or after '2020-01-01'." },
+            { label: "List membership", value: "Filter rows where Industry is either 'Technology' or 'Healthcare'." }
+          ],
+          condition: { filterType: "advanced" },
           advanced: true
         }
       ],
@@ -60,7 +93,25 @@ export class Filter extends BaseCoreComponent {
     return [];
   }
 
-  public generateComponentCode({ config, inputName, outputName }: { config: any; inputName: string; outputName: string }): string {
+  public generateComponentCode({
+    config,
+    inputName,
+    outputName
+  }: {
+    config: any;
+    inputName: string;
+    outputName: string;
+  }): string {
+    /* ---------- advanced mode ---------- */
+    if (config.filterType === "advanced") {
+      const expr = String(config.pythonExpression || "").replace(/"/g, '\\"');
+      return `
+# Advanced filter using pandas.DataFrame.query
+${outputName} = ${inputName}.query("${expr}")
+`;
+    }
+
+    /* ---------- basic mode ---------- */
     const columnName = config.column.value;
     const columnType = config.column.type;
     const columnIsNamed = config.column.named;
@@ -83,79 +134,56 @@ export class Filter extends BaseCoreComponent {
       case ">=":
       case "<=":
         columnReference = `'${columnName}'`;
+        conditionValueReference =
+          enforceString || ["string", "category", "object"].includes(columnType)
+            ? `'${conditionValue}'`
+            : `${conditionValue}`;
 
-        // If columnType is not a string or category, don't wrap into quotes
-        if (enforceString) {
-          conditionValueReference = `'${conditionValue}'`;
-        }
-        else if (columnType === 'string' || columnType === 'category' || columnType === 'object') {
-          conditionValueReference = `'${conditionValue}'`;
-        } else {
-          conditionValueReference = `${conditionValue}`;
-        }
-
-        // Use boolean indexing instead of query
-        switch (condition) {
-          case "==":
-            code += `${outputName} = ${inputName}[${inputName}[${columnReference}] == ${conditionValueReference}]`;
-            break;
-          case "!=":
-            code += `${outputName} = ${inputName}[${inputName}[${columnReference}] != ${conditionValueReference}]`;
-            break;
-          case ">":
-            code += `${outputName} = ${inputName}[${inputName}[${columnReference}] > ${conditionValueReference}]`;
-            break;
-          case "<":
-            code += `${outputName} = ${inputName}[${inputName}[${columnReference}] < ${conditionValueReference}]`;
-            break;
-          case ">=":
-            code += `${outputName} = ${inputName}[${inputName}[${columnReference}] >= ${conditionValueReference}]`;
-            break;
-          case "<=":
-            code += `${outputName} = ${inputName}[${inputName}[${columnReference}] <= ${conditionValueReference}]`;
-            break;
-        }
+        code += `${outputName} = ${inputName}[${inputName}[${columnReference}] ${condition} ${conditionValueReference}]`;
         break;
+
       case "contains":
       case "not contains":
         columnReference = columnIsNamed ? `'${columnName}'` : columnName;
-        if (['string', 'Object', 'category'].includes(columnType)) {
-          const negation = condition === "not contains" ? "~" : "";
-          queryExpression = `${inputName}[${negation}${inputName}[${columnReference}].str.contains("${conditionValue}", na=False)]`;
-          code += `${outputName} = ${queryExpression}`;
+        if (["string", "object", "category"].includes(columnType)) {
+          const neg = condition === "not contains" ? "~" : "";
+          code += `${outputName} = ${inputName}[${neg}${inputName}[${columnReference}].str.contains("${conditionValue}", na=False)]`;
         } else {
-          throw new Error('Invalid operation for the data type');
+          throw new Error("Invalid operation for the data type");
         }
         break;
+
       case "startswith":
       case "endswith":
         columnReference = columnIsNamed ? `'${columnName}'` : columnName;
-        if (['string', 'Object', 'category'].includes(columnType)) {
-          queryExpression = `${inputName}[${inputName}[${columnReference}].str.${condition}("${conditionValue}", na=False)]`;
-          code += `${outputName} = ${queryExpression}`;
+        if (["string", "object", "category"].includes(columnType)) {
+          code += `${outputName} = ${inputName}[${inputName}[${columnReference}].str.${condition}("${conditionValue}", na=False)]`;
         } else {
-          throw new Error('Invalid operation for the data type');
+          throw new Error("Invalid operation for the data type");
         }
         break;
+
       case "notnull":
         columnReference = columnIsNamed ? `'${columnName}'` : columnName;
-        queryExpression = `${inputName}.dropna(subset=[${columnReference}])`
-        code += `${outputName} = ${queryExpression}`;
+        code += `${outputName} = ${inputName}.dropna(subset=[${columnReference}])`;
         break;
+
       case "isnull":
         columnReference = columnIsNamed ? `'${columnName}'` : columnName;
-        queryExpression = `${inputName}[${inputName}[${columnReference}].isna()]`;
-        code += `${outputName} = ${queryExpression}`;
+        code += `${outputName} = ${inputName}[${inputName}[${columnReference}].isna()]`;
         break;
-      default:
-        columnReference = /[^a-zA-Z0-9_]/.test(columnName) ? `\`${columnName}\`` : columnName;
+
+      default: {
+        // Quote column name with back‑ticks only if it contains non‑alphanumeric chars
+        const needsBackticks = /[^a-zA-Z0-9_]/.test(columnName);
+        columnReference = needsBackticks ? `\`${columnName}\`` : columnName;
+
         queryExpression = `${columnReference} ${condition} '${conditionValue}'`;
         code += `${outputName} = ${inputName}.query("${queryExpression}")`;
         break;
+      }
     }
 
-    return code + '\n';
+    return code + "\n";
   }
-
-
 }
