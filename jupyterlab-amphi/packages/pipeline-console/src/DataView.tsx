@@ -204,7 +204,7 @@ const DataView = ({ htmlData }: { htmlData: string }) => {
           bottom: y + height
         }
       });
-    }, 300);                                     // quicker reveal
+    }, 1000);                                     // quicker reveal
   }, [gridColumns, originalHeaders]);
 
   // Create icons using bgColor and fgColor properties

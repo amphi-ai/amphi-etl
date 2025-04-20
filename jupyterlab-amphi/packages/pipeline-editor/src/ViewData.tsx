@@ -310,9 +310,9 @@ export async function viewData(
                 const payload = msg.content as any;
                 let content: string = payload.data['text/plain'] as string;
                 // Clean up the escaping
-                if (content.startsWith("'") && content.endsWith("'")) {
-                    content = content.slice(1, -1);
-                }
+                content = content.replace(/^'|'$/g, '');
+                content = content.replace(/\\"/g, '"');
+                content = content.replace(/\\'/g, "\\\\'");
                 // Parse as JSON
                 const modelOptions = JSON.parse(content);
 
