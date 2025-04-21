@@ -40,7 +40,7 @@ export class FileAction extends BaseCoreComponent {
         },
         {
           type: "column",
-          label: "Action on file : move, delete, copy,rename,zip (string)",
+          label: "Action on file : move, delete, copy,rename,zip,create as empty (string)",
           id: "action_on_file",
           placeholder: "Column name",
           condition: { action_on_file_all: ""},
