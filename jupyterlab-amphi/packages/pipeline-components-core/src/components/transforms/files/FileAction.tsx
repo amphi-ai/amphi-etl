@@ -4,8 +4,13 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 export class FileAction extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-      columns: [],
-      combination_nfield : 1
+      action_on_file_all: "move",
+      source_file_path : "",
+      action_on_file : "",
+      destination_path : "",
+      file_new_name : "",
+      overwrite_file_if_exists : "",
+      retry_count : 0
     };
 
     const form = {
@@ -35,7 +40,7 @@ export class FileAction extends BaseCoreComponent {
         },
         {
           type: "column",
-          label: "Action on file : move,delete,copy,rename,zip,create as empty (string)",
+          label: "Action on file : move, delete, copy,rename,zip (string)",
           id: "action_on_file",
           placeholder: "Column name",
           condition: { action_on_file_all: ""},
@@ -46,6 +51,7 @@ export class FileAction extends BaseCoreComponent {
           label: "Destination (path). ex : C:/tmp/test_amphi_file/result/inou4.txt",
           id: "destination_path",
           placeholder: "Column name",
+          condition: { action_on_file_all: ["","move","copy"]},
           advanced: true
         },
         {
@@ -53,6 +59,7 @@ export class FileAction extends BaseCoreComponent {
           label: "New Name (string)",
           id: "file_new_name",
           placeholder: "Column name",
+          condition: { action_on_file_all: ["","rename"]},
           advanced: true
         },
         {
@@ -60,6 +67,7 @@ export class FileAction extends BaseCoreComponent {
           label: "Overwrite if exists (boolean)",
           id: "overwrite_file_if_exists",
           placeholder: "Column name",
+          condition: { action_on_file_all: ["","move","copy","zip","rename"]},
           advanced: true
         },
         {
@@ -94,7 +102,7 @@ export class FileAction extends BaseCoreComponent {
 
   public provideFunctions({ config }): string[] {
     const prefix = config?.backend?.prefix ?? "pd";
-    // Function to perform frequency analysis
+    // Functions to normalize and do the file action
     const FileActionFunction = `
 def normalize_path(path):
     #Normalize a file path and replace backslashes with slashes for cross-platform consistency.
@@ -264,7 +272,7 @@ console.log(retry_count_value);
 const action_on_file_all_value = config.action_on_file_all ?? "";
 console.log(action_on_file_all_value);
     return `
-# Execute the detect unique key function
+# Execute the file action function
 ${outputName} = []
 
 normalized_input_dataframe=normalize_input_dataframe(
