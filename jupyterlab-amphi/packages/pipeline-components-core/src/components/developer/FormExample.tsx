@@ -27,7 +27,7 @@ export class FormExample extends BaseCoreComponent {
         {
           type: "info",
           id: "instructions",
-          text: "1. Informational text to show in the component. File path (3) and sheet name (18) are mandatory to run, meaning you also need File Location (2/ set to Local",
+          text: "1. Informational text to show in the component. File path (3), Separator (4) and sheet name (18) are mandatory to run, meaning you also need File Location (2) set to Local",
           advanced: true
         },
         {
@@ -342,7 +342,14 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
             { value: "prod", label: "Product", tooltip: "Returns the product of all values in the group." }
           ],
 		  advanced: true
-        }
+        },
+        {
+          type: "column",
+          label: "24. Select a single column (column)",
+          id: "column",
+          placeholder: "Column name",
+          advanced: true
+        },
       ]
           
     };
@@ -423,6 +430,8 @@ print("22 config.removeUnwantedCharacters : ")
 print("${config.removeUnwantedCharacters}")
 print("23 config.columnsOperation : ")
 print("${config.columnsOperation}")
+print("24 config.column : ")
+print("${config.column}")
 ${outputName} = ${inputName}
 `;
 
@@ -473,6 +482,8 @@ console.log("22 config.removeUnwantedCharacters : ");
 console.log(config.removeUnwantedCharacters);
 console.log("23 config.columnsOperation : ");
 console.log(config.columnsOperation);
+console.log("24 config.column : ");
+console.log(config.column);
     return code;
   }
 }
