@@ -6,6 +6,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { gridAltIcon } from './icons'; // Re-using your icon
 import { JSONModel } from '@lumino/datagrid'; // Just for type reference if needed
+import { GridMouseEventArgs } from "@glideapps/glide-data-grid";
+import { useLayer } from "react-laag";
 
 // You can reuse the same "DataView" React component you already have,
 // or simply include it inline below. For clarity, I'm showing an inline version.
@@ -26,6 +28,17 @@ function DataView({ htmlData }: { htmlData: string }) {
     const [rowsData, setRowsData] = React.useState<any[]>([]);
     const [gridColumns, setGridColumns] = React.useState<GridColumn[]>([]);
     const [originalHeaders, setOriginalHeaders] = React.useState<string[]>([]);
+
+    interface IBounds {
+        left: number; top: number; width: number; height: number; right: number; bottom: number;
+    }
+    const zeroBounds: IBounds = { left: 0, top: 0, width: 0, height: 0, right: 0, bottom: 0 };
+
+    const [tooltip, setTooltip] = React.useState<{ val: string; bounds: IBounds }>();
+    const timeoutRef = React.useRef<number>(0);
+
+    // clear pending timeout on unmount
+    React.useEffect(() => () => window.clearTimeout(timeoutRef.current), []);
 
     React.useEffect(() => {
         const handleResize = () => {
@@ -115,6 +128,31 @@ function DataView({ htmlData }: { htmlData: string }) {
         [gridColumns, rowsData, originalHeaders]
     );
 
+    const onItemHovered = React.useCallback(
+        (args: GridMouseEventArgs) => {
+            if (args.kind !== "header") {
+                window.clearTimeout(timeoutRef.current);
+                setTooltip(undefined);
+                return;
+            }
+            window.clearTimeout(timeoutRef.current);
+            setTooltip(undefined);
+
+            const col = args.location[0];
+            timeoutRef.current = window.setTimeout(() => {
+                if (col >= gridColumns.length) return;
+                const raw = originalHeaders[col];
+                const type = raw.match(/\((.+?)\)/)?.[1] ?? "string";
+                const { x, y, width, height } = args.bounds;
+                setTooltip({
+                    val: type,
+                    bounds: { left: x, top: y, width, height, right: x + width, bottom: y + height }
+                });
+            }, 800);         // delay (ms)
+        },
+        [gridColumns, originalHeaders]
+    );
+
     // Create icons for header
     const headerIcons = React.useMemo<SpriteMap>(() => {
         return {
@@ -171,32 +209,67 @@ function DataView({ htmlData }: { htmlData: string }) {
         };
     }, []);
 
+    const { renderLayer, layerProps } = useLayer({
+        isOpen: !!tooltip,
+        triggerOffset: 8,
+        placement: "top-center",
+        auto: true,
+        trigger: { getBounds: () => tooltip?.bounds ?? zeroBounds }
+    });
+
     return (
-        <DataEditor
-            key={pixelRatio}
-            columns={gridColumns}
-            minColumnWidth={100}
-            getCellContent={getCellContent}
-            rows={rowsData.length}
-            rowMarkers="both"
-            onColumnResize={onColumnResize}
-            smoothScrollX={false}
-            smoothScrollY={false}
-            experimental={{ strict: false, renderStrategy: "direct" }}
-            headerIcons={headerIcons}
-            getCellsForSelection={true}
-            theme={React.useMemo(
-                () => ({
-                    baseFontStyle: "0.8125rem",
-                    headerFontStyle: "600 0.8125rem",
-                    editorFontSize: "0.8125rem",
-                    accentColor: "#5F9B97",
-                    bgHeader: "#FBFAFB",
-                    bgIconHeader: "#5F9B97"
-                }),
-                []
-            )}
-        />
+        <div style={{ position: "relative", width: "100%", height: "100%" }}>
+
+            <DataEditor
+                key={pixelRatio}
+                columns={gridColumns}
+                minColumnWidth={100}
+                getCellContent={getCellContent}
+                onItemHovered={onItemHovered}
+                rows={rowsData.length}
+                rowMarkers="both"
+                onColumnResize={onColumnResize}
+                smoothScrollX={false}
+                smoothScrollY={false}
+                experimental={{ strict: false, renderStrategy: "direct" }}
+                headerIcons={headerIcons}
+                getCellsForSelection={true}
+                theme={React.useMemo(
+                    () => ({
+                        baseFontStyle: "0.8125rem",
+                        headerFontStyle: "600 0.8125rem",
+                        editorFontSize: "0.8125rem",
+                        accentColor: "#5f9b97",
+                        accentLight: "#edf4f3",
+                        bgHeaderHovered: "#edf4f3",
+                        bgBubbleSelected: "#edf4f3",
+                        bgHeader: "#fafafa",
+                        bgIconHeader: "#5F9B97"
+                    }),
+                    []
+                )}
+            />
+            {tooltip &&
+                renderLayer(
+                    <div
+                        {...layerProps}
+                        style={{
+                            ...layerProps.style,
+                            padding: "8px 12px",
+                            color: "#fff",
+                            background: "rgba(0,0,0,0.85)",
+                            fontFamily:
+                                "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'",
+                            borderRadius: 7,
+                            maxWidth: 280,
+                            zIndex: 9999,
+                            whiteSpace: "pre-wrap"
+                        }}
+                    >
+                        {tooltip.val}
+                    </div>
+                )}
+        </div>
     );
 }
 

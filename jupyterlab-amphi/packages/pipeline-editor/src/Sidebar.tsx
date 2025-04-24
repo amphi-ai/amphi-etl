@@ -144,7 +144,7 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
                 key: `category-${index}`,
                 children: children,
                 style: {
-                    backgroundColor: '#F1F4F7',
+                    backgroundColor: '#fafafa',
                     padding: '0px 0px 0px 0px',
                     marginBottom: 'Opx'
                 },

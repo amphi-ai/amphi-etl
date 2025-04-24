@@ -290,9 +290,12 @@ const DataView = ({ htmlData }: { htmlData: string }) => {
             baseFontStyle: "0.8125rem",
             headerFontStyle: "600 0.8125rem",
             editorFontSize: "0.8125rem",
-            accentColor: "#5F9B97",
-            bgHeader: "#FBFAFB",
-            bgIconHeader: "#5F9B97" // Sets the icon background
+            accentColor: "#5f9b97",
+            accentLight: "#edf4f3",
+            bgHeaderHovered: "#edf4f3",
+            bgBubbleSelected: "#edf4f3",
+            bgHeader: "#fafafa",
+            bgIconHeader: "#5F9B97"
           }),
           []
         )}

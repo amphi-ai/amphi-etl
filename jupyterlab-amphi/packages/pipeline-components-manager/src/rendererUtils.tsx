@@ -11,6 +11,11 @@ import { useCallback, useEffect } from 'react';
 import { getConnectedEdges, Handle, useNodeId, useStore, NodeToolbar } from 'reactflow';
 import { Popconfirm, Typography, ConfigProvider } from 'antd';
 
+// -------------------------------
+// NEW: Variant types for UI mode
+// -------------------------------
+export type ComponentVariant = 'hybrid' | 'card';
+
 interface IHandleProps {
   type: string;
   Handle: any;
@@ -121,7 +126,8 @@ const MemoizedComponentUI = React.memo(
     deleteNode,
     setViewport,
     handleChange,
-    isSelected
+    isSelected,
+    variant = 'hybrid', // <--- NEW prop with default
   }: UIComponentProps) => {
     // Track form values and updates
     const [formState, setFormState] = useState(data);
@@ -194,11 +200,41 @@ const MemoizedComponentUI = React.memo(
     }), [colorPrimary]);
 
     const componentClassName = useMemo(() => {
-      return `component component${modifier} ${isIbis ? "ibis" : ""}`;
-    }, [modifier, isIbis]);
+      return variant === 'card'
+        ? `component-card component${modifier} ${isIbis ? "ibis" : ""}`
+        : `component component${modifier} ${isIbis ? "ibis" : ""}`;
+    }, [modifier, isIbis, variant]);
 
     const { Text } = Typography;
 
+    /* --------------------------------------------------------------------------------------------------
+     * UI RENDERING
+     * ------------------------------------------------------------------------------------------------*/
+
+    // SIMPLE CARD VARIANT – emphasises icon + title (no in-place form)
+    if (variant === 'card') {
+      return (
+        <ConfigProvider theme={theme}>
+          <div className={componentClassName} onDoubleClick={handleDoubleClick}>
+            <div className="component-card__inner" onDoubleClick={stopPropagation} onDragStart={disableDrag}>
+              <Icon.react height="36px" width="36px" color={colorPrimary} marginRight={8} />
+              <Text
+                editable={isSelected ? {
+                  onChange: onTitleChange,
+                  tooltip: false,
+                  icon: <EditOutlined style={{ color: '#5F9B97' }} />
+                } : undefined}
+              >
+                {titleName}
+              </Text>
+            </div>
+            {handle}
+          </div>
+        </ConfigProvider>
+      );
+    }
+
+    // DEFAULT HYBRID VARIANT (existing behaviour)
     return (
       <ConfigProvider theme={theme}>
         <div className={componentClassName} onDoubleClick={handleDoubleClick}>
@@ -253,14 +289,15 @@ const MemoizedComponentUI = React.memo(
     );
   },
   (prevProps, nextProps) => {
-    // Enhanced comparison function that includes form data changes
+    // Enhanced comparison function that includes form data changes & variant
     return (
       prevProps.id === nextProps.id &&
       prevProps.showContent === nextProps.showContent &&
       prevProps.isSelected === nextProps.isSelected &&
       JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data) &&
       prevProps.name === nextProps.name &&
-      prevProps.configFormProps.modalOpen === nextProps.configFormProps.modalOpen
+      prevProps.configFormProps.modalOpen === nextProps.configFormProps.modalOpen &&
+      prevProps.variant === nextProps.variant
     );
   }
 );
@@ -290,6 +327,7 @@ export interface UIComponentProps {
   setViewport: any;
   handleChange: any;
   isSelected: boolean;
+  variant?: ComponentVariant; // NEW optional prop
 }
 
 interface ICustomHandleProps {
