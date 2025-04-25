@@ -20,7 +20,7 @@ export class DataframeList extends BaseCoreComponent {
 
     const description = "List all existing pandas dataframes created before the tool";
 
-    super("Dataframe List", "DataframeList", description, "pandas_df_processor", [], "Developer", DataframeListIcon, defaultConfig, form);
+    super("Dataframe List", "DataframeList", description, "pandas_df_processor", [], "developer", DataframeListIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {
