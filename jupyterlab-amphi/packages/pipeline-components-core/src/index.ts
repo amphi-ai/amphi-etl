@@ -83,7 +83,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(Summary.getInstance());
     componentService.addComponent(FrequencyAnalysis.getInstance());
     componentService.addComponent(UniqueKeyDetector.getInstance());
-    componentService.addComponent(FileAction.getInstance());
+    // componentService.addComponent(FileAction.getInstance());
 
     // Outputs
     componentService.addComponent(CsvFileOutput.getInstance())

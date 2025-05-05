@@ -36,7 +36,8 @@ export class CsvFileInput extends BaseCoreComponent {
           id: "filePath",
           placeholder: "Type file name or use '*' for patterns",
           tooltip: "Provide a single CSV file path or use '*' for matching multiple files. Extensions accepted: .csv, .tsv, .txt. Can also read CSV files compressed as .gz, .bz2, .zip, .xz, .zst.",
-          validation: "^(.*(\\.csv|\\.tsv|\\.txt))$|^(.*\\*)$"
+          validation: "^(.*(\\.csv|\\.tsv|\\.txt))$|^(.*\\*)$",
+          allowedExtensions: ["csv", "tsv", "txt", "gz", "bz2", "zip", "xz", "zst"]
         },
         {
           type: "selectCustomizable",

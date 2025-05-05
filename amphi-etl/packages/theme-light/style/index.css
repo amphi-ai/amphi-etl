@@ -569,11 +569,11 @@ input.jp-mod-styled:focus {
 }
 
 .jp-ToolbarButtonComponent:hover {
-  background: #e1edeb !important; /* hover grey */
+  background: #e1edeb !important;
 }
 
 .jp-ToolbarButtonComponent:active {
-  background: #d5e6e3 !important; /* active grey */
+  background: #d5e6e3 !important;
 }
 
 /* New file browser button */
@@ -1064,6 +1064,7 @@ input.jp-mod-styled:focus {
   word-break: break-word;
 }
 
+/*
 .amphi-browseFileDialog .jp-Dialog-content {
   height: 400px;
   width: 600px;

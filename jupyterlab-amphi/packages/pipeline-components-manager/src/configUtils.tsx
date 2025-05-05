@@ -620,6 +620,8 @@ export interface FieldDescriptor {
   connectionString?: string;
   addItemLabel?: string;
   selectionRemovable?: boolean;
+  allowedTypes?: string[];
+  allowedExtensions?: string[];
 }
 
 interface ConfigModalProps {

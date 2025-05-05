@@ -33,14 +33,17 @@ export class FileAction extends BaseCoreComponent {
         },
         {
           type: "column",
-          label: "Source File Path (String)",
+          label: "Source file path",
+          allowedTypes: ["string"],
           id: "source_file_path",
           placeholder: "Column name",
           advanced: true
         },
         {
           type: "column",
-          label: "Action on file : move, delete, copy,rename,zip,create as empty (string)",
+          label: "Action on file",
+          tooltip: "Action to perform: move, delete, copy, rename, zip,create as empty (string)",
+          allowedTypes: ["string"],
           id: "action_on_file",
           placeholder: "Column name",
           condition: { action_on_file_all: ""},
@@ -48,15 +51,19 @@ export class FileAction extends BaseCoreComponent {
         },
         {
           type: "column",
-          label: "Destination (path). ex : C:/tmp/test_amphi_file/result/inou4.txt",
+          label: "Destination path",
+          tooltip: "Destination path such as C:/windows/result/file.txt or /your/destination/path",
+          allowedTypes: ["string"],
           id: "destination_path",
-          placeholder: "Column name",
+          placeholder: "/your/destination/path",
           condition: { action_on_file_all: ["","move","copy"]},
           advanced: true
         },
         {
           type: "column",
-          label: "New Name (string)",
+          label: "New name",
+          tooltip: "New name for the file",
+          allowedTypes: ["string"],
           id: "file_new_name",
           placeholder: "Column name",
           condition: { action_on_file_all: ["","rename"]},
@@ -64,7 +71,7 @@ export class FileAction extends BaseCoreComponent {
         },
         {
           type: "column",
-          label: "Overwrite if exists (boolean)",
+          label: "Overwrite if exists",
           id: "overwrite_file_if_exists",
           placeholder: "Column name",
           condition: { action_on_file_all: ["","move","copy","zip","rename"]},
@@ -73,6 +80,7 @@ export class FileAction extends BaseCoreComponent {
         {
           type: "column",
           label: "Retry Count(integer)",
+          allowedTypes: ["numeric"],
           id: "retry_count",
           placeholder: "Column name",
           advanced: true
