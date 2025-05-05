@@ -858,7 +858,7 @@ input.jp-mod-styled:focus {
   cursor: pointer;
 }
 
-.jp-FileBrowser.jp-DirListing-item:hover {
+.jp-FileBrowser .jp-DirListing-item:hover {
   cursor: pointer;
   background: #edf4f3 !important;
 }
@@ -1064,11 +1064,6 @@ input.jp-mod-styled:focus {
   word-break: break-word;
 }
 
-/*
-.amphi-browseFileDialog .jp-Dialog-content {
-  height: 400px;
-  width: 600px;
-}
 
 /* Specifically target only the dialog version */
 .amphi-browseFileDialog .jp-DirListing-item {
