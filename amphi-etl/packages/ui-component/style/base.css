@@ -3,11 +3,6 @@
 | Distributed under the terms of the Modified BSD License.
 |----------------------------------------------------------------------------*/
 
-.elyra-browseFileDialog .jp-Dialog-content {
-  height: 400px;
-  width: 600px;
-}
-
 .launcher-body {
   padding: 20px;
   width:80%;

@@ -11,3 +11,11 @@
     margin-left: auto;
     margin-right:10px;
   }
+
+  .ant-switch.ant-switch-small .ant-switch-inner .ant-switch-inner-checked {
+    min-height: calc(var(--control-height) / 2);
+  }
+  
+  .ant-switch .ant-switch-inner .ant-switch-inner-checked {
+    min-height: calc(var(--font-size) * var(--line-height));
+  }

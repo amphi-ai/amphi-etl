@@ -51,7 +51,7 @@ export { DateTimeConverter } from './transforms/DateTimeConverter';
 export { Summary } from './transforms/Summary';
 export { FrequencyAnalysis } from './transforms/FrequencyAnalysis';
 export { UniqueKeyDetector } from './transforms/UniqueKeyDetector';
-
+export { FileAction } from './transforms/files/FileAction';
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';
 export { CsvFileOutput } from './outputs/files/CsvFileOutput';
@@ -79,3 +79,5 @@ export { Annotation } from './annotations/Annotation';
 
 // Developer
 export { FormExample } from './developer/FormExample';
+export { DataframeList } from './developer/DataframeList';
+export { DataframeDelete } from './developer/DataframeDelete';

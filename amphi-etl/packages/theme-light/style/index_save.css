@@ -4,28 +4,25 @@
 |----------------------------------------------------------------------------*/
 @import './variables.css';
 
-/* Filter Box */
-/* Filter Box */
+/* Filter Box - Ant Design style */
 .jp-FilterBox {
-  background-color: white !important;
-  border-radius: 4px; /* Rounded corners */
-  border: 1px solid #d9d9d9; /* Light gray border */
-  padding: 0px 2px; /* Space inside the box */
+  background-color: #ffffff !important;
+  border-radius: 2px;
+  border: 1px solid #d9d9d9;
+  padding: 4px 11px;
   width: 100%;
-  display: flex; /* Align content horizontally */
-  align-items: center; /* Center align the text and icon vertically */
+  display: flex;
+  align-items: center;
+  transition: all 0.3s;
 }
 
-.jp-FilterBox::part(root) {
-  background: #fff !important; /* Ensure no background for the root */
-  flex-grow: 1;
-  border: none;
-  padding: 0;
-  width: 100%;
+.jp-FilterBox:hover {
+  border-color: #40a9ff;
 }
 
-.jp-FilterBox::part(root):hover {
-  border: none;
+.jp-FilterBox:focus-within {
+  border-color: #40a9ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
 }
 
 .jp-FilterBox input {
@@ -33,15 +30,11 @@
   outline: none;
   width: 100%;
   font-size: 14px;
-}
-
-.jp-FilterBox input:focus {
-  outline: none;
-  box-shadow: 0 0 5px rgba(142, 178, 172, 0.8); /* Add subtle focus shadow */
+  line-height: 1.5715;
 }
 
 .jp-FilterBox input::placeholder {
-  color: #b3b3b3; /* Grayish placeholder text */
+  color: rgba(0, 0, 0, 0.25);
 }
 
 /* FILTER BOX */
@@ -66,53 +59,62 @@
   border-top: 1px solid var(--amphi-border-subtle)
 }
 
-button.jp-mod-styled.jp-mod-accept {
-  background: var(--amphi-interactive-01);
+/* Buttons - Ant Design style */
+button.jp-mod-styled {
+  border-radius: 2px;
+  font-size: 14px;
+  height: 32px;
+  padding: 4px 15px;
+  transition: all 0.3s;
 }
 
-
 button.jp-mod-styled.jp-mod-accept {
-  background: var(--amphi-interactive-01);
-  color: var(--amphi-text-04)
+  background: #1890ff;
+  border: 1px solid #1890ff;
+  color: #ffffff;
 }
 
 button.jp-mod-styled.jp-mod-accept:hover {
-  background: var(--amphi-hover-primary);
-  cursor: pointer;
+  background: #40a9ff;
+  border-color: #40a9ff;
 }
 
 button.jp-mod-styled.jp-mod-accept:active {
-  background: var(--amphi-active-primary)
+  background: #096dd9;
+  border-color: #096dd9;
 }
 
 button.jp-mod-styled.jp-mod-reject {
-  background: var(--amphi-interactive-02);
-  color: var(--amphi-text-04)
+  background: #ffffff;
+  border: 1px solid #d9d9d9;
+  color: rgba(0, 0, 0, 0.85);
 }
 
 button.jp-mod-styled.jp-mod-reject:hover {
-  background: var(--amphi-hover-secondary);
-  cursor: pointer;
+  color: #40a9ff;
+  border-color: #40a9ff;
 }
 
 button.jp-mod-styled.jp-mod-reject:active {
-  background: var(--amphi-active-secondary)
+  color: #096dd9;
+  border-color: #096dd9;
 }
 
 button.jp-mod-styled.jp-mod-warn {
-  background: var(--amphi-danger);
-  color: var(--amphi-text-04)
+  background: #ff4d4f;
+  border: 1px solid #ff4d4f;
+  color: #ffffff;
 }
 
 button.jp-mod-styled.jp-mod-warn:hover {
-  background: var(--amphi-hover-danger);
-  cursor: pointer;
+  background: #ff7875;
+  border-color: #ff7875;
 }
 
 button.jp-mod-styled.jp-mod-warn:active {
-  background: var(--amphi-active-danger)
+  background: #d9363e;
+  border-color: #d9363e;
 }
-
 
 :root {
   --bottom-statusbar-height: 28px;
@@ -132,6 +134,45 @@ button.jp-mod-styled.jp-mod-warn:active {
   height: var(--header-panel-height) !important
 }
 
+/* Menu Bar - Ant Design style */
+.lm-MenuBar {
+  background: #ffffff;
+  border-bottom: 1px solid #f0f0f0;
+  height: 40px;
+  padding: 0 16px;
+}
+
+.lm-MenuBar-item {
+  padding: 0 16px;
+  color: rgba(0, 0, 0, 0.85);
+  transition: color 0.3s;
+  line-height: 40px;
+}
+
+.lm-MenuBar-item:hover {
+  color: #1890ff;
+}
+
+.lm-Menu {
+  background: #ffffff;
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 2px;
+  padding: 4px 0;
+}
+
+.lm-Menu-item {
+  padding: 5px 12px;
+  color: rgba(0, 0, 0, 0.85);
+  transition: all 0.3s;
+}
+
+.lm-Menu-item:hover {
+  background: #f5f5f5;
+}
+
+.lm-Menu-item.lm-mod-disabled {
+  color: rgba(0, 0, 0, 0.25);
+}
 
 :root {
   --jp-private-menubar-height: 48px;
@@ -164,12 +205,12 @@ button.jp-mod-styled.jp-mod-warn:active {
 
 .lm-MenuBar-item:hover {
   cursor: pointer;
-  background-color: #FBFAFB;
+  background-color: var(--amphi-hover-ui)
 }
 
 .lm-Menu-item:not(.lm-mod-disabled):not([data-type=separator]):hover {
   cursor: pointer;
-  background-color: #FBFAFB;
+  background-color: var(--amphi-hover-ui)
 }
 
 .lm-Menu-item[data-type=separator]>div {
@@ -185,61 +226,27 @@ button.jp-mod-styled.jp-mod-warn:active {
   color: var(--amphi-text-03)
 }
 
-
-.lm-MenuBar.lm-mod-active .lm-MenuBar-item .lm-mod-active {
-  background-color: transparent;
-}
-
-.lm-MenuBar-item.lm-mod-active {
-  background-color: white;
-}
-
-body {
-  background-color: var(--amphi-ui-background, #ffffff)
-}
-
-body {
-  scrollbar-color: var(--jp-scrollbar-color) var(--jp-scrollbar-bg);
-  scrollbar-face-color: var(--jp-scrollbar-color);
-  scrollbar-track-color: var(--jp-scrollbar-bg)
-}
-
-body ::-webkit-scrollbar {
-  width: 14px;
-  height: 14px
-}
-
-body ::-webkit-scrollbar-track {
-  background: var(--jp-scrollbar-bg);
-  border-radius: 0
-}
-
-body ::-webkit-scrollbar-thumb {
-  background-color: var(--jp-scrollbar-color);
-  border-radius: 8px;
-  background-clip: padding-box;
-  border: 3px solid rgba(0, 0, 0, 0)
-}
-
-:root {
-  --jp-private-sidebar-tab-width: 48px;
-  --jp-private-sidebar-tab-height: 48px
-}
-
+/* Sidebar - Ant Design style */
 .jp-SideBar.lm-TabBar {
-  background: var(--amphi-ui-01);
-  border-right: 1px solid var(--amphi-skeleton-01);
+  background: #ffffff;
+  border-right: 1px solid #f0f0f0;
 }
 
 .jp-SideBar .lm-TabBar-tab {
-  min-height: var(--jp-private-sidebar-tab-height);
-  padding: 0 14px;
-  align-items: center;
-  /* Centers items vertically */
-  display: flex;
-  /* Add this to make the tab a flex container */
-  justify-content: center;
-  /* Centers items horizontally */
+  min-height: 40px;
+  padding: 0 16px;
+  color: rgba(0, 0, 0, 0.85);
+  transition: all 0.3s;
+}
+
+.jp-SideBar .lm-TabBar-tab:hover {
+  color: #1890ff;
+}
+
+.jp-SideBar .lm-TabBar-tab.lm-mod-current {
+  background: #e6f7ff;
+  color: #1890ff;
+  border-right: 3px solid #1890ff;
 }
 
 .jp-SideBar .lm-TabBar-tab.lm-mod-current {
@@ -302,7 +309,6 @@ body ::-webkit-scrollbar-thumb {
   letter-spacing: 0
 }
 
-
 /* TABAR */
 :root {
   --jp-private-horizontal-tab-height: 32px
@@ -360,19 +366,13 @@ body ::-webkit-scrollbar-thumb {
 }
 
 .lm-DockPanel-handle[data-orientation='vertical'] {
-  border-bottom: 1px solid #FBFAFB;
-  background-color: #FBFAFB;
-  height: 2px !important
+  border-bottom: 1px solid var(--amphi-skeleton-01);
+  background-color: #F1F4F7;
 }
 
 .lm-DockPanel-handle[data-orientation='horizontal'] {
-  background-color: #FBFAFB;
-  height: 2px !important
-
+  background-color: #F1F4F7;
 }
-
-.lm-DockPanel-tabBar{ margin-top:0 !important; }
-
 
 .lm-CommandPalette-itemLabel {
   line-height: 1rem
@@ -383,92 +383,122 @@ body ::-webkit-scrollbar-thumb {
   right: 1rem
 }
 
-/*
-.jp-Dialog-header {
-  padding: 0 1.5rem;
-  font-size: var(--amphi-productive-heading-03-font-size, 1.25rem);
-  font-weight: var(--amphi-productive-heading-03-font-weight, 400);
-  line-height: var(--amphi-productive-heading-03-line-height, 1.4);
-  letter-spacing: var(--amphi-productive-heading-03-letter-spacing, 0);
-  color: var(--amphi-text-01, #161616);
-  margin-bottom: 1rem
+body {
+  background-color: var(--amphi-ui-background, #ffffff)
 }
 
-.jp-Dialog-body {
-  padding: 0 1.5rem 1.5rem;
-  min-height: 4rem;
-  background-color: var(--amphi-ui-01)
+body {
+  scrollbar-color: var(--jp-scrollbar-color) var(--jp-scrollbar-bg);
+  scrollbar-face-color: var(--jp-scrollbar-color);
+  scrollbar-track-color: var(--jp-scrollbar-bg)
 }
 
-.jp-Dialog-body>label {
+body ::-webkit-scrollbar {
+  width: 14px;
+  height: 14px
+}
+
+body ::-webkit-scrollbar-track {
+  background: var(--jp-scrollbar-bg);
+  border-radius: 0
+}
+
+body ::-webkit-scrollbar-thumb {
+  background-color: var(--jp-scrollbar-color);
+  border-radius: 8px;
+  background-clip: padding-box;
+  border: 3px solid rgba(0, 0, 0, 0)
+}
+
+/* Scrollbar - Ant Design style */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+:root {
+  --jp-private-sidebar-tab-width: 48px;
+  --jp-private-sidebar-tab-height: 48px
+}
+
+.jp-SideBar.lm-TabBar {
+  background: var(--amphi-ui-01);
+  border-right: 1px solid var(--amphi-skeleton-01);
+}
+
+.jp-SideBar .lm-TabBar-tab {
+  min-height: var(--jp-private-sidebar-tab-height);
+  padding: 0 14px;
+  align-items: center;
+  /* Centers items vertically */
+  display: flex;
+  /* Add this to make the tab a flex container */
+  justify-content: center;
+  /* Centers items horizontally */
+}
+
+.jp-SideBar .lm-TabBar-tab.lm-mod-current {
+  background: var(--amphi-ui-02);
+  box-shadow: inset 3px 0 0 var(--amphi-interactive-04);
+}
+
+.jp-SideBar .lm-TabBar-tab:hover {
+  cursor: pointer
+}
+
+.jp-SideBar .lm-TabBar-tab:hover:not(.lm-mod-current) {
+  background: var(--amphi-ui-02)
+}
+
+.jp-SideBar .lm-TabBar-tab:not(.lm-mod-current) {
+  background: var(--amphi-ui-03);
+  box-shadow: inset 3px 0 #0000
+}
+
+.jp-SideBar .lm-TabBar-tab .lm-TabBar-tabIcon {
+  display: flex;
+  align-items: center;
+  /* Centers items vertically */
+  justify-content: center;
+  /* Centers items horizontally */
+  width: 20px;
+}
+
+.jp-SideBar.lm-TabBar .lm-TabBar-tabLabel {
+  display: none;
+}
+
+#kernelusage-panel-id {
+  background-color: var(--amphi-ui-02);
   color: var(--amphi-text-02);
-  font-size: .75rem;
-  padding-bottom: 4px
+  overflow: auto !important
 }
 
-.jp-Dialog-content {
-  padding: 24px 0 0;
-  min-height: 3rem;
-  background-color: var(--amphi-ui-01)
+#kernelusage-panel-id hr.jp-KernelUsage-section-separator {
+  border-top-color: var(--amphi-ui-03)
 }
 
-.jp-Dialog-footer {
-  padding: 0;
-  height: 4rem;
-  margin-top: auto;
-  margin-left: 0;
-  margin-right: 0
-}
-
-.jp-Dialog-button.jp-mod-styled {
-  flex: 0 1 50%;
-  display: inline-flex;
-  height: 4rem;
-  width: 100%;
-  line-height: unset;
-  padding-top: var(--amphi-spacing-05, 1rem);
+#kernelusage-panel-id h3.jp-KernelUsage-section-separator {
+  font-size: 1.75rem;
+  font-weight: 400;
+  line-height: 1.28572;
   letter-spacing: 0
 }
 
-/* Dialog Cancel Button */
-.jp-Dialog-button.jp-mod-reject {
-  border-radius: var(--jp-border-radius) !important;
-  background: #5f9b97 !important;
-  color: #fff !important;
-  border: none !important;
-  box-shadow: 0 2px 0 rgba(10, 75, 60, 0.2) !important;
-  font-size: 14px !important;
-  height: 32px !important;
-  padding: 0 14px !important;
-}
-
-.jp-Dialog-button.jp-mod-reject:hover {
-  background: #82a8a4 !important;
-}
-
-.jp-Dialog-button.jp-mod-reject:active {
-  background: #4b7c78 !important;
-}
-
-/* Dialog Delete Button (Red) */
-.jp-Dialog-button.jp-mod-accept.jp-mod-warn {
-  border-radius: var(--jp-border-radius) !important;
-  background: #d9534f !important; /* Red */
-  color: #fff !important;
-  border: none !important;
-  box-shadow: 0 2px 0 rgba(136, 0, 0, 0.2) !important;
-  font-size: 14px !important;
-  height: 32px !important;
-  padding: 0 14px !important;
-}
-
-.jp-Dialog-button.jp-mod-accept.jp-mod-warn:hover {
-  background: #e57373 !important;
-  cursor: pointer !important;
-}
-
-.jp-Dialog-button.jp-mod-accept.jp-mod-warn:active {
-  background: #c9302c !important;
+#kernelusage-panel-id h4.jp-KernelUsage-section-separator {
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0
 }
 
 input.jp-mod-styled {
@@ -484,27 +514,6 @@ input.jp-mod-styled {
   max-height: 3rem;
   min-height: 3rem
 }
- /*
-.jp-DirListing-item.jp-mod-selected .jp-DirListing-itemText:focus {
-  outline: none;
-}
-
-.jp-DirListing-itemText:focus {
-  outline: none;
- 
-  outline-width: 2px;
-  outline-color: var(--jp-inverse-layout-color1);
-  outline-style: solid;
-  outline-offset: 1px;
-  
-}
-  */
-
-/*
-input.jp-mod-styled:focus {
-  outline-color: var(--amphi-focus)
-}
-*/
 
 .jp-select-wrapper {
   margin: .5rem 0
@@ -522,12 +531,6 @@ input.jp-mod-styled:focus {
   padding: 0 25px 0 16px;
   min-height: 3rem
 }
-
-/*
-.jp-select-wrapper select.jp-mod-styled:focus {
-  outline-color: var(--amphi-focus)
-}
-*/
 
 .jp-select-wrapper select.jp-mod-styled:hover {
   background-color: var(--amphi-hover-field);
@@ -552,50 +555,6 @@ input.jp-mod-styled:focus {
 .jp-ToolbarButtonComponent-label {
   margin-left: 3px;
 
-}
-
-
-
-/* All buttons */
-.jp-ToolbarButtonComponent {
-  border-radius: var(--jp-border-radius) !important;
-  background: #edf4f3 !important; /* Ant Design filled button grey */
-  color: rgba(0, 0, 0, 0.88) !important; /* default text color */
-  /* border: 1px solid #d9d9d9 !important;  subtle border */
-  box-shadow: none !important;
-  font-size: 14px !important;
-  height: 25px !important;
-  padding: 0 6px !important;
-}
-
-.jp-ToolbarButtonComponent:hover {
-  background: #e1edeb !important;
-}
-
-.jp-ToolbarButtonComponent:active {
-  background: #d5e6e3 !important;
-}
-
-/* New file browser button */
-.jp-FileBrowser-toolbar .jp-ToolbarButtonComponent[data-command='launcher:create'] {
-  border-radius: var(--jp-border-radius) !important;
-  background: #5f9b97 !important;
-  color: #fff !important;
-  border: none !important;
-  box-shadow: 0 2px 0 rgba(10, 75, 60, 0.2) !important;
-  font-size: 14px !important;
-  height: 32px !important;
-  width: 42px !important;
-  padding: 0 14px !important;
-
-}
-
-.jp-FileBrowser-toolbar .jp-ToolbarButtonComponent[data-command='launcher:create']:hover {
-  background: #82a8a4 !important;
-}
-
-.jp-FileBrowser-toolbar .jp-ToolbarButtonComponent[data-command='launcher:create']:active {
-  background: #4b7c78 !important;
 }
 
 .jp-Toolbar .jp-Toolbar-item {
@@ -704,7 +663,6 @@ input.jp-mod-styled:focus {
   border: 0
 }
 
-
 .jp-cell-toolbar {
   min-height: auto !important;
   padding: 1px;
@@ -758,12 +716,42 @@ input.jp-mod-styled:focus {
   margin: 0
 }
 
-.jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar .jp-Toolbar-item:not(:first-child):hover {
-  background-color: var(--amphi-hover-ui)
+.jp-FileBrowser .jp-DirListing-header {
+  background-color: var(--amphi-ui-03);
+  min-height: 2rem;
+  align-items: center
 }
 
-.jp-FileBrowser .jp-FileBrowser-toolbar.jp-Toolbar .jp-Toolbar-item:not(:first-child) button.jp-Button.bp3-button.bp3-minimal:hover {
-  background-color: unset
+.jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem {
+  /* display: flex; */
+  align-items: center;
+  /* height: 100% */
+}
+
+.jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem.jp-id-name {
+  font-weight: 600
+}
+
+.jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem.jp-id-modified {
+  flex: 0 0 8.5rem;
+  font-weight: 600
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item {
+  position: relative;
+  /*color: var(--amphi-text-02);*/
+  min-height: 2rem;
+  align-items: center;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--amphi-ui-03)
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-running {
+  box-shadow: inset 2px 0 var(--amphi-interactive-04)
+}
+
+.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-running .jp-DirListing-itemIcon:before {
+  content: ""
 }
 
 .jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs {
@@ -801,50 +789,6 @@ input.jp-mod-styled:focus {
   text-decoration: underline
 }
 
-.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs .jp-BreadCrumbs-home:after {
-  content: "Workspace ";
-  white-space: pre;
-}
-
-.jp-FileBrowser .jp-BreadCrumbs.jp-FileBrowser-crumbs svg {
-  display: none;
-}
-
-.jp-FileBrowser .jp-DirListing-header {
-  background-color: var(--amphi-ui-03);
-  min-height: 2rem;
-  align-items: center
-}
-
-.jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem {
-  align-items: center;
-}
-
-.jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem.jp-id-name {
-  font-weight: 600
-}
-
-.jp-FileBrowser .jp-DirListing-header .jp-DirListing-headerItem.jp-id-modified {
-  flex: 0 0 8.5rem;
-  font-weight: 600
-}
-
-.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item {
-  position: relative;
-  min-height: 2rem;
-  align-items: center;
-  padding: 0 12px;
-  border-bottom: 1px solid var(--amphi-ui-03)
-}
-
-.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-running {
-  box-shadow: inset 2px 0 var(--amphi-interactive-04)
-}
-
-.jp-FileBrowser .jp-DirListing-content .jp-DirListing-item.jp-mod-running .jp-DirListing-itemIcon:before {
-  content: ""
-}
-
 .jp-FileBrowser .jp-DirListing-content .jp-DirListing-item .jp-DirListing-itemText {
   line-height: 20px
 }
@@ -854,24 +798,8 @@ input.jp-mod-styled:focus {
   color: var(--amphi-text-02)
 }
 
-.jp-FileBrowser .jp-DirListing-item {
-  cursor: pointer;
-}
-
-.jp-FileBrowser .jp-DirListing-item:hover {
-  cursor: pointer;
-  background: #edf4f3 !important;
-}
-
-
-.jp-FileBrowser .jp-DirListing-item.jp-mod-selected {
-  color: var(--amphi-text-02) !important;
-  background: #d5e6e2 !important;
-}
-
-
-.jp-FileBrowser .jp-DirListing-item.lm-mod-drag-image,
-.jp-FileBrowser .jp-DirListing-item.jp-mod-selected.lm-mod-drag-image {
+.jp-DirListing-item.lm-mod-drag-image,
+.jp-DirListing-item.jp-mod-selected.lm-mod-drag-image {
   z-index: 2
 }
 
@@ -891,7 +819,6 @@ input.jp-mod-styled:focus {
 .lm-TabBar-tabCloseIcon:hover {
   cursor: pointer
 }
-
 
 :root {
   --jp-private-running-item-height: 48px
@@ -949,7 +876,6 @@ input.jp-mod-styled:focus {
   outline-offset: -2px
 }
 
-
 #jp-main-statusbar svg[data-icon="ui-components:terminal"],
 #jp-main-statusbar svg[data-icon="ui-components:kernel"] {
   top: 1px
@@ -979,7 +905,6 @@ input.jp-mod-styled:focus {
 .jp-switch:hover {
   background-color: unset
 }
-
 
 .jp-HTMLSelect.jp-DefaultStyle select {
   cursor: pointer
@@ -1050,45 +975,26 @@ input.jp-mod-styled:focus {
   background: var(--scrollbar-bg)
 }
 
-.lm-Tooltip {
-  z-index: 9999;                         /* bring it to the top */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, .15);
-}
-
-.lm-Tooltip-content {
-  font: 500 13px/18px Inter, -apple-system, BlinkMacSystemFont,
-        'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans',
-        sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
-  color: #ffffff;
-  word-break: break-word;
-}
-
-
-/* Specifically target only the dialog version */
-.amphi-browseFileDialog .jp-DirListing-item {
-  width: 100%;
-  height: 2rem;
-}
-
-/* Name column in dialog */
-.amphi-browseFileDialog .jp-DirListing-itemName {
-  flex: 1 1 auto;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Last-Modified column in dialog */
-.amphi-browseFileDialog .jp-DirListing-itemModified {
-  flex: 0 0 8.5rem;
-  margin-left: 8px; /* Add some separation */
-}
-
-/* Fix truncation in dialog */
-.amphi-browseFileDialog .jp-DirListing-itemText > span {
-  overflow: visible; /* Make text fully visible */
-  text-overflow: clip;
-  white-space: nowrap;
+/* Root variables - Ant Design colors */
+:root {
+  --amphi-ui-01: #ffffff;
+  --amphi-ui-02: #fafafa;
+  --amphi-ui-03: #f0f0f0;
+  --amphi-text-01: rgba(0, 0, 0, 0.85);
+  --amphi-text-02: rgba(0, 0, 0, 0.65);
+  --amphi-text-03: rgba(0, 0, 0, 0.45);
+  --amphi-text-04: #ffffff;
+  --amphi-interactive-01: #1890ff;
+  --amphi-interactive-02: #ffffff;
+  --amphi-interactive-04: #1890ff;
+  --amphi-hover-primary: #40a9ff;
+  --amphi-hover-secondary: #f5f5f5;
+  --amphi-active-primary: #096dd9;
+  --amphi-active-secondary: #e6f7ff;
+  --amphi-danger: #ff4d4f;
+  --amphi-hover-danger: #ff7875;
+  --amphi-active-danger: #d9363e;
+  --amphi-border-subtle: #f0f0f0;
+  --amphi-skeleton-01: #f0f0f0;
+  --amphi-hover-ui: #f5f5f5;
 }

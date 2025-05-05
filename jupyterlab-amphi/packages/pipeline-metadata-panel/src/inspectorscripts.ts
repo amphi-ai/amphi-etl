@@ -213,6 +213,8 @@ def _amphi_metadatapanel_dict_list():
     ]
     return json.dumps(vardic, ensure_ascii=False)
   
+# 1) Updated Python helper function to add column types in parentheses
+
 def _amphi_metadatapanel_getmatrixcontent(x, max_rows=10000):
     # to do: add something to handle this in the future
     threshold = max_rows
@@ -223,7 +225,15 @@ def _amphi_metadatapanel_getmatrixcontent(x, max_rows=10000):
     elif __np and __pd and type(x).__name__ == "DataFrame":
         if threshold is not None:
             x = x.head(threshold)
+        # Force all column names to string
         x.columns = x.columns.map(str)
+        # Append the column dtype in parentheses
+        dtypes_map = x.dtypes
+        rename_map = {}
+        for col in x.columns:
+            col_type = str(dtypes_map[col])
+            rename_map[col] = f"{col} ({col_type})"
+        x = x.rename(columns=rename_map)
         return x.to_json(orient="table", default_handler=_amphi_metadatapanel_default, force_ascii=False)
     elif __np and __pd and type(x).__name__ == "Series":
         if threshold is not None:
@@ -244,6 +254,7 @@ def _amphi_metadatapanel_getmatrixcontent(x, max_rows=10000):
     elif isinstance(x, list):
         s = __pd.Series(x)
         return _amphi_metadatapanel_getmatrixcontent(s)
+
   
   
 def _amphi_metadatapanel_displaywidget(widget):

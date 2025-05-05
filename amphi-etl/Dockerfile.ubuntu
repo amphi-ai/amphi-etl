@@ -27,7 +27,7 @@ RUN chown -R $NB_UID:$NB_GID /home/amphi
 RUN apt-get update && apt-get install -y --no-install-recommends \
     && python3 -m pip install --upgrade pip setuptools wheel \
     && python3 -m pip install --no-cache-dir pandas==2.2.1 numpy \
-    jupyterlab==4.2.5 jupyterlab-amphi==0.8.25  \
+    jupyterlab==4.2.5 jupyterlab-amphi==0.8.28  \
     sqlalchemy==2.0.4 python-dotenv \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 

@@ -9,8 +9,14 @@ import { useVariableAutoComplete } from '../variablesUtils';
 
 type CustomIconComponentProps = GetProps<typeof Icon>;
 
-
 export const InputFile = ({ field, value, handleChange, context, advanced, manager }) => {
+
+  const allowedExts =
+    Array.isArray(field.allowedExtensions) && field.allowedExtensions.length
+      ? field.allowedExtensions.map(e =>
+          e.startsWith('.') ? e.toLowerCase() : `.${e.toLowerCase()}`
+        )
+      : undefined;
 
   const {
     inputValue,
@@ -59,6 +65,7 @@ export const InputFile = ({ field, value, handleChange, context, advanced, manag
           {
             multiselect: false,
             includeDir: true,
+            extensions: allowedExts,                  /* just pass, dialog handles switch */
             filter: (model: any): boolean => {
               return model.path !== context.path;
             }

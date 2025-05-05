@@ -1,5 +1,5 @@
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import { Card, Cascader, Flex, Form, Modal, Radio, Switch, Typography, Select, Divider, Space, Button } from 'antd';
+import { Card, Cascader, Flex, Form, Modal, Drawer,  Radio, Switch, Typography, Select, Divider, Space, Button } from 'antd';
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { renderFormItem } from './formUtils'
 import CodeTextarea from './forms/CodeTextarea';
@@ -476,7 +476,6 @@ export default function ConfigModal({
   const [formValues, setFormValues] = useState(fieldsForm.getFieldsValue());
 
   const width = form["fields"].some(field => field.type === 'codeTextarea') ? '80%' : 800;
-  const height = form["fields"].some(field => field.type === 'codeTextarea') ? '80%' : '1200px';
 
   return (
     <>
@@ -487,7 +486,6 @@ export default function ConfigModal({
         onOk={() => setModalOpen(false)}
         onCancel={() => setModalOpen(false)}
         width={width}
-        style={{ height }}
         footer={(_, { OkBtn }) => (
           <>
             <OkBtn />
@@ -622,6 +620,8 @@ export interface FieldDescriptor {
   connectionString?: string;
   addItemLabel?: string;
   selectionRemovable?: boolean;
+  allowedTypes?: string[];
+  allowedExtensions?: string[];
 }
 
 interface ConfigModalProps {

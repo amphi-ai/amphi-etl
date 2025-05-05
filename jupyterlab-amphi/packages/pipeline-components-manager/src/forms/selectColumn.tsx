@@ -6,6 +6,7 @@ import type { InputRef } from 'antd';
 import { FieldDescriptor, Option } from '../configUtils';
 import { AddNewColumn } from './AddNewColumn';
 import { RequestService } from '../RequestService';
+import { useMemo } from 'react';
 
 
 interface SelectColumnsProps {
@@ -17,11 +18,32 @@ interface SelectColumnsProps {
   commands: any;
   nodeId: string;
   advanced: boolean;
+  columnTypes?: string[];
 }
+
+const TYPE_GROUPS: Record<string, RegExp> = {
+  numeric:  /^(u?int|float|complex|decimal)\d*$/i,
+  datetime: /^(datetime|timedelta|period|datetimetz)/i,
+  bool:     /^bool/i,
+  string:   /^(object|string)$/i,
+  category: /^category$/i,
+};
 
 export const SelectColumn: React.FC<SelectColumnsProps> = ({
   field, handleChange, defaultValue, context, componentService, commands, nodeId, advanced
 }) => {
+
+  let allowedTypes = field.allowedTypes ?? [];
+
+  const matchers = useMemo(
+    () => allowedTypes.map(k => TYPE_GROUPS[k]).filter(Boolean),
+    [allowedTypes]
+  );
+
+  const matchesAllowedType = (t: string) =>
+    !matchers.length || matchers.some(rx => rx.test(t));
+
+  const byAllowedTypes = (opts: Option[]) => opts.filter(o => matchesAllowedType(o.type));
 
   const findOptionByValue = (value: any) => {
     if (value === undefined) {
@@ -76,6 +98,8 @@ export const SelectColumn: React.FC<SelectColumnsProps> = ({
     </div>
   );
 
+  const displayItems = byAllowedTypes(items);
+
   return (
     <ConfigProvider renderEmpty={customizeRenderEmpty}>
       <Select
@@ -121,7 +145,7 @@ export const SelectColumn: React.FC<SelectColumnsProps> = ({
             )}
           </>
         )}
-        options={items.map((item: Option) => ({ label: item.label, value: item.value, type: item.type, named: item.named }))}
+        options={displayItems.map((item: Option) => ({ label: item.label, value: item.value, type: item.type, named: item.named }))}
         optionRender={(option) => (
           <Space>
             <span> {option.data.label}</span>

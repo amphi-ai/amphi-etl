@@ -45,7 +45,7 @@
   --jp-console-padding: 10px;
   --jp-toolbar-micro-height: 8px;
   --jp-toolbar-header-margin: 4px 4px 0px 4px;
-  --jp-sidebar-min-width: 280px;
+  --jp-sidebar-min-width: 310px;
   --jp-shadow-base-lightness: 0;
   --jp-shadow-umbra-color: rgba( var(--jp-shadow-base-lightness), var(--jp-shadow-base-lightness), var(--jp-shadow-base-lightness), .2 );
   --jp-shadow-penumbra-color: rgba( var(--jp-shadow-base-lightness), var(--jp-shadow-base-lightness), var(--jp-shadow-base-lightness), .14 );
@@ -74,23 +74,23 @@
   --jp-success-color3: #a7f0ba;
   --jp-info-color0: #002d9c;
   
-  --jp-info-color1: #5A8F7B;
+  --jp-info-color1: #5f9b97;
   --jp-info-color2: #78a9ff;
   --jp-info-color3: #d0e2ff;
   --jp-statusbar-height: 24px;
 
-  --amphi-interactive-01: #5A8F7B;
+  --amphi-interactive-01: #5f9b97;
   --amphi-interactive-02: #393939;
-  --amphi-interactive-03: #5A8F7B;
-  --amphi-interactive-04: #5A8F7B;
+  --amphi-interactive-03: #5f9b97;
+  --amphi-interactive-04: #5f9b97;
   --amphi-ui-background: #ffffff;
   /* --amphi-ui-01: #f4f4f4; */
   --amphi-ui-01: #ffffff;
-  --amphi-ui-02: #ffffff;
-  --amphi-ui-03: #FFFFFF;
+  --amphi-ui-02: #fafafa;
+  --amphi-ui-03: #fafafa;
   --amphi-ui-04: #fff;
   --amphi-ui-05: #161616;
-  --amphi-ui-06: #F2F4F7;
+  --amphi-ui-06: #fafafa;
 
   --amphi-text-01: #000000;
   --amphi-text-02: #000000;
@@ -101,7 +101,7 @@
   --amphi-icon-01: #161616;
   --amphi-icon-02: #000000;
   --amphi-icon-03: #ffffff;
-  --amphi-link-01: #5A8F7B;
+  --amphi-link-01: #5f9b97;
   --amphi-link-02: #0043ce;
   --amphi-inverse-link: #78a9ff;
   --amphi-field-01: #f4f4f4;
@@ -119,7 +119,7 @@
   --amphi-overlay-01: rgba(22, 22, 22, .5);
   --amphi-danger-01: #da1e28;
   --amphi-danger-02: #da1e28;
-  --amphi-focus: #5A8F7B;
+  --amphi-focus: #5f9b97;
   --amphi-inverse-focus-ui: #ffffff;
   --amphi-hover-primary: #0353e9;
   --amphi-active-primary: #002d9c;
@@ -128,18 +128,18 @@
   --amphi-active-secondary: #F2F4F7;
   --amphi-hover-tertiary: #0353e9;
   --amphi-active-tertiary: #002d9c;
-  --amphi-hover-ui: #F2F4F7;
-  --amphi-hover-light-ui: #F2F4F7;
-  --amphi-hover-selected-ui: #F2F4F7;
-  --amphi-active-ui: #F2F4F7;
-  --amphi-active-light-ui: #F2F4F7;
-  --amphi-selected-ui: #F2F4F7;
-  --amphi-selected-light-ui: #F2F4F7;
+  --amphi-hover-ui: ##e0e0e0;
+  --amphi-hover-light-ui: ##e0e0e0;
+  --amphi-hover-selected-ui: ##e0e0e0;
+  --amphi-active-ui: ##e0e0e0;
+  --amphi-active-light-ui: ##e0e0e0;
+  --amphi-selected-ui: ##e0e0e0;
+  --amphi-selected-light-ui: ##e0e0e0;
   --amphi-inverse-hover-ui: #4c4c4c;
   --amphi-hover-danger: #b81921;
   --amphi-active-danger: #750e13;
   --amphi-hover-row: #EBEBEA;
-  --amphi-visited-link: #5A8F7B;
+  --amphi-visited-link: #5f9b97;
   --amphi-disabled-01: #f4f4f4;
   --amphi-disabled-02: #c6c6c6;
   --amphi-disabled-03: #8d8d8d;
@@ -155,8 +155,8 @@
   --amphi-layer-accent-active: #a8a8a8;
   --amphi-field: #f4f4f4;
   --amphi-background-inverse: #393939;
-  --amphi-background-brand: #5A8F7B;
-  --amphi-interactive: #5A8F7B;
+  --amphi-background-brand: #5f9b97;
+  --amphi-interactive: #5f9b97;
   --amphi-border-subtle: #e0e0e0;
   --amphi-border-strong: #8d8d8d;
   --amphi-border-inverse: #161616;
@@ -167,9 +167,9 @@
   --amphi-text-helper: #6f6f6f;
   --amphi-text-on-color: #ffffff;
   --amphi-text-inverse: #ffffff;
-  --amphi-link-primary: #5A8F7B;
+  --amphi-link-primary: #5f9b97;
   --amphi-link-secondary: #0043ce;
-  --amphi-link-visited: #5A8F7B;
+  --amphi-link-visited: #5f9b97;
   --amphi-link-inverse: #78a9ff;
   --amphi-icon-primary: #161616;
   --amphi-icon-secondary: #525252;
@@ -186,9 +186,9 @@
   --amphi-overlay: rgba(22, 22, 22, .5);
   --amphi-toggle-off: #8d8d8d;
   --amphi-shadow: rgba(0, 0, 0, .3);
-  --amphi-button-primary: #5A8F7B;
+  --amphi-button-primary: #5f9b97;
   --amphi-button-secondary: #393939;
-  --amphi-button-tertiary: #5A8F7B;
+  --amphi-button-tertiary: #5f9b97;
   --amphi-button-danger-primary: #da1e28;
   --amphi-button-danger-secondary: #da1e28;
   --amphi-background-active: #c6c6c6;
@@ -223,9 +223,9 @@
   --amphi-layer-selected-disabled: #8d8d8d;
   --amphi-skeleton-background: #EBEBEA;
   --amphi-skeleton-element: #c6c6c6;
-  --amphi-brand-01: #5A8F7B;
+  --amphi-brand-01: #5f9b97;
   --amphi-brand-02: #393939;
-  --amphi-brand-03: #5A8F7B;
+  --amphi-brand-03: #5f9b97;
   --amphi-active-01: #c6c6c6;
   --amphi-hover-field: #EBEBEA;
   --amphi-danger: #da1e28;
@@ -303,7 +303,7 @@
   --jp-highlight: var(--amphi-highlight);
   --jp-field01: var(--amphi-field-01);
   --jp-field02: var(--amphi-field-02);
-
+  --jp-accept-color-normal: #82a8a4;
 
   /* Tab
   */

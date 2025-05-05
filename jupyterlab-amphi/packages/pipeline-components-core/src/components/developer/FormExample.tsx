@@ -16,7 +16,7 @@ export class FormExample extends BaseCoreComponent {
         // Each form has a type, label, tooltip, and additional properties.
         // Available form types are defined in:
         // amphi-etl\jupyterlab-amphi\packages\pipeline-components-manager\src\forms
-        
+        // For this example, id sometimes mention the  type of the component. Do not do that in real life, use a functional name.
         // Informational sections
         {
           type: "info",
@@ -27,14 +27,14 @@ export class FormExample extends BaseCoreComponent {
         {
           type: "info",
           id: "instructions",
-          text: "1. Informational text to show in the component.",
-		      advanced: true
+          text: "1. Informational text to show in the component. File path (3), Separator (4) and sheet name (18) are mandatory to run, meaning you also need File Location (2) set to Local",
+          advanced: true
         },
         {
           type: "radio",
           label: "2. File Location (radio)",
           id: "fileLocation",
-		  //options : value on the radio button
+          //options : value on the radio button
           options: [
             { value: "local", label: "Local" },
             { value: "http", label: "HTTP" },
@@ -115,7 +115,7 @@ export class FormExample extends BaseCoreComponent {
         {
           type: "transferData",
           label: "10. Filter columns (transferData)",
-          id: "columns",
+          id: "transferData_filtercolumn",
           advanced: true
         },
         {
@@ -130,14 +130,14 @@ export class FormExample extends BaseCoreComponent {
         {
           type: "keyvalueColumns",
           label: "12. Columns (keyvalueColumns)",
-          id: "columns",
+          id: "keyvalueColumns_columns",
           placeholders: { key: "column name", value: "new column name" },
           advanced: true
         },
         {
           type: "codeTextarea",
           label: "13. Imports (codeTextarea)",
-          id: "import",
+          id: "codeTextarea_import",
           placeholder: "import langchain ...",
           height: '50px',
           advanced: true
@@ -145,7 +145,7 @@ export class FormExample extends BaseCoreComponent {
         {
           type: "textarea",
           label: "14. Body (textarea)",
-          id: "body",
+          id: "textarea_body",
           placeholder: "Write body in JSON",
           advanced: true
         },
@@ -162,13 +162,13 @@ export class FormExample extends BaseCoreComponent {
           type: "boolean",
           label: "16. Auto Commit (boolean)",
           tooltip: "Setting autocommit True will cause the database to issue a commit after each SQL statement, otherwise database transactions will have to be explicity committed. As per the Python DB API, the default value is False (even though the ODBC default value is True). Typically, you will probably want to set autocommit True when creating a connection.",
-          id: "autoCommit",
+          id: "boolean_autoCommit",
           advanced: true
          },
         {
           type: "valuesList",
           label: "17. URLs (valuesList)",
-          id: "urls",
+          id: "valuesList_urls",
           placeholders: "Enter URLs",
           advanced: true
         },
@@ -342,7 +342,14 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
             { value: "prod", label: "Product", tooltip: "Returns the product of all values in the group." }
           ],
 		  advanced: true
-        }
+        },
+        {
+          type: "column",
+          label: "24. Select a single column (column)",
+          id: "column",
+          placeholder: "Column name",
+          advanced: true
+        },
       ]
           
     };
@@ -353,7 +360,6 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
     // 1. Do not forget to add the icon in amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\icons.ts and in amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\style\icons.
     super("Form Example", "form_example", description, "pandas_df_processor", [], "developer", formexampletypescriptIcon, defaultConfig, form);
   }
-
   // List of additional Python packages required (if any)
   public provideImports({ config }): string[] {
     return [];
@@ -377,8 +383,107 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
 
     // Template for outputting the input data
     const code = `
+print("example of print in Amphi console")
+print("2 config.fileLocation : ")
+print("${config.fileLocation}")
+print("3 config.filePath : ")
+print("${config.filePath}")
+print("4 config.csvOptions.sep : ")
+print("${config.csvOptions.sep}")
+print("5 config.csvOptions.nrows : ")
+print("${config.csvOptions.nrows}")
+print("6 config.csvOptions.names : ")
+print("${config.csvOptions.names}")
+print("7 config.csvOptions.quotechar : ")
+print("${config.csvOptions.quotechar}")
+print("8 config.csvOptions.on_bad_lines : ")
+print("${config.csvOptions.on_bad_lines}")
+print("9 config.csvOptions.storage_options : ")
+print("${config.csvOptions.storage_options}")
+print("10 config.transferData_filtercolumn : ")
+print("${config.transferData_filtercolumn}")
+print("11 config.leftKeyColumn : ")
+print("${config.leftKeyColumn}")
+print("12 config.keyvalueColumns_columns : ")
+print("${config.keyvalueColumns_columns}")
+print("13 config.codeTextarea_import : ")
+print("${config.csvOptions.nrows}")
+print("14 config.textarea_body : ")
+print("${config.textarea_body}")
+print("14 config.textarea_body : ")
+print("${config.textarea_body}")
+print("15 config.tableName : ")
+print("${config.tableName}")
+print("16 config.boolean_autoCommit : ")
+print("${config.boolean_autoCommit}")
+print("17 config.valuesList_urls : ")
+print("${config.valuesList_urls}")
+print("18 config.excelOptions.sheet_name: ")
+print("${config.excelOptions.sheet_name}")
+print("19 config.mapping : ")
+print("${config.mapping}")
+print("20 config.dataType : ")
+print("${config.dataType}")
+print("21 columnAndOrder : ")
+print("${config.columnAndOrder}")
+print("22 config.removeUnwantedCharacters : ")
+print("${config.removeUnwantedCharacters}")
+print("23 config.columnsOperation : ")
+print("${config.columnsOperation}")
+print("24 config.column : ")
+print("${config.column}")
 ${outputName} = ${inputName}
 `;
+
+//test console : it will appear in your browser console
+console.log("2 config.fileLocation : ");
+console.log(config.fileLocation);
+console.log("3 config.filePath : ");
+console.log(config.filePath);
+console.log("4 config.csvOptions.sep : ");
+console.log(config.csvOptions.sep);
+console.log("5 config.csvOptions.nrows : ");
+console.log(config.csvOptions.nrows);
+console.log("6 config.csvOptions.names : ");
+console.log(config.csvOptions.names);
+console.log("7 config.csvOptions.quotechar : ");
+console.log(config.csvOptions.quotechar);
+console.log("8 config.csvOptions.on_bad_lines : ");
+console.log(config.csvOptions.on_bad_lines);
+console.log("9 config.csvOptions.storage_options : ");
+console.log(config.csvOptions.storage_options);
+console.log("10 config.transferData_filtercolumn : ");
+console.log(config.transferData_filtercolumn);
+console.log("11 config.leftKeyColumn : ");
+console.log(config.leftKeyColumn);
+console.log("12 config.keyvalueColumns_columns : ");
+console.log(config.keyvalueColumns_columns);
+console.log("13 config.codeTextarea_import : ");
+console.log(config.csvOptions.nrows);
+console.log("14 config.textarea_body : ");
+console.log(config.textarea_body);
+console.log("14 config.textarea_body : ");
+console.log(config.textarea_body);
+console.log("15 config.tableName : ");
+console.log(config.tableName);
+console.log("16 config.boolean_autoCommit : ");
+console.log(config.boolean_autoCommit);
+console.log("17 config.valuesList_urls : ");
+console.log(config.valuesList_urls);
+console.log("18 config.excelOptions.sheet_name: ");
+console.log(config.excelOptions.sheet_name);
+console.log("19 config.mapping : ");
+console.log(config.mapping);
+console.log("20 config.dataType : ");
+console.log(config.dataType);
+console.log("21 columnAndOrder : ");
+console.log(config.columnAndOrder);
+console.log("22 config.removeUnwantedCharacters : ");
+console.log(config.removeUnwantedCharacters);
+console.log("23 config.columnsOperation : ");
+console.log(config.columnsOperation);
+console.log("24 config.column : ");
+console.log(config.column);
     return code;
   }
 }

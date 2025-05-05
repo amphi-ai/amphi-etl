@@ -5,8 +5,6 @@
 import {
   PipelineService, Node, Flow
 } from './PipelineService';
-import { RequestService } from './RequestService';
-import { KernelMessage } from '@jupyterlab/services';
 
 export interface NodeObject {
   id: string;
@@ -164,11 +162,9 @@ export abstract class BaseCodeGenerator {
       if (config.customTitle) {
         const generatedCode = component.generateComponentCode({ config });
         const needsNewLine = !generatedCode.startsWith('\n');
-        code += `\n# ${config.customTitle}${needsNewLine ? '\n' : ''}`;
+        code += `\n# ${config.customTitle}${needsNewLine ? '\n' : ''}`; 
       }
 
-
-    // ----------------  ----------- START FIRST FIX , IT WORKS.. I TRIED IT -------------------------------
       try {
         switch (componentType) {
           case 'pandas_df_processor':
@@ -264,115 +260,17 @@ export abstract class BaseCodeGenerator {
           dependencies,
           type: componentType,
           code,
-          outputName,
+          outputName: nodeOutputs.get(nodeId) || '',
           functions,
           lastUpdated: config.lastUpdated || 0,
           lastExecuted: config.lastExecuted || 0,
-          runtime: config.backend?.engine || "local"
+          runtime: config.backend?.engine || 'local'
         });
 
       } catch (error) {
         console.error(`Error processing node ${nodeId}:`, error);
-        throw error; // Stop and throw error...
+        throw error;
       }
-
-    // ----------------  -----------  END FIRST FIX , IT WORKS.. I TRIED IT -------------------------------
-
-
-    // ----------------  -----------  START SECOND FIX , IT WORKS.. I TRIED IT -------------------------------
-      // try {
-      //   if (/double_processor/.test(componentType)) {
-      //     const [input1Id, input2Id] = PipelineService.findMultiplePreviousNodeIds(flow, nodeId);
-      //     const inputName1 = getInputName(input1Id, componentType);
-      //     const inputName2 = getInputName(input2Id, componentType);
-      //     outputName = getOutputName(node, componentId, variablesAutoNaming)
-      //     nodeOutputs.set(nodeId, outputName);
-      //     code += component.generateComponentCode({ config, inputName1, inputName2, outputName });
-      //   }
-      //   else if (/multi_processor/.test(componentType)) {
-      //     const inputIds = PipelineService.findMultiplePreviousNodeIds(flow, nodeId);
-      //     const inputNames = inputIds.map(id => getInputName(id, componentType));
-      //     outputName = getOutputName(node, componentId, variablesAutoNaming)
-      //     nodeOutputs.set(nodeId, outputName);
-      //     code += component.generateComponentCode({ config, inputNames, outputName });
-      //   }
-      //   else if (/processor/.test(componentType)) {
-      //     const previousNodeId = PipelineService.findPreviousNodeId(flow, nodeId);
-      //     inputName = getInputName(previousNodeId, componentType);
-      //     outputName = getOutputName(node, componentId, variablesAutoNaming)
-      //     nodeOutputs.set(nodeId, outputName);
-      //     code += component.generateComponentCode({ config, inputName, outputName });
-      //   }
-      //   else if (/ibis_df_input/.test(componentType)) {
-      //     outputName = getOutputName(node, componentId, variablesAutoNaming)
-      //     nodeOutputs.set(nodeId, outputName);
-
-      //     // Find the nodes that follow this input node
-      //     const nextNodeIds = PipelineService.findNextNodeIds(flow, nodeId);
-      //     let uniqueEngineName: string | undefined = undefined;
-
-      //     for (const nextNodeId of nextNodeIds) {
-      //       const nextNode = nodesMap.get(nextNodeId);
-      //       if (nextNode) {
-      //         const nextComponent = componentService.getComponent(nextNode.type);
-      //         const nextComponentType = nextComponent._type;
-      //         if (nextComponentType === 'ibis_df_double_processor') {
-      //           // Get previous nodes connected to the join node
-      //           const previousNodeIds = PipelineService.findMultiplePreviousNodeIds(flow, nextNodeId);
-      //           if (previousNodeIds.length > 1) {
-      //             // Find the other input node ID (excluding current node)
-      //             const otherNodeId = previousNodeIds.find(id => id !== nodeId);
-      //             if (otherNodeId && nodeOutputs.has(otherNodeId)) {
-      //               const otherOutputName = getInputName(otherNodeId, 'ibis_df_double_processor');
-      //               uniqueEngineName = `${otherOutputName}_backend`;
-      //               break; // Stop after finding the first matching join node
-      //             }
-      //           }
-      //         }
-      //       }
-      //     }
-
-      //     // Generate code with or without uniqueEngineName
-      //     if (uniqueEngineName) {
-      //       code += component.generateComponentCode({ config, outputName, uniqueEngineName });
-      //     } else {
-      //       code += component.generateComponentCode({ config, outputName });
-      //     }
-      //   }
-      //   // Simplified logic for example. Expand as needed (input, output, multi, etc.)
-      //   else if (/input/.test(componentType)) {
-      //     outputName = getOutputName(node, componentId, variablesAutoNaming)
-      //     nodeOutputs.set(nodeId, outputName);
-      //     code += component.generateComponentCode({ config, outputName });
-      //   } else if (/output/.test(componentType)) {
-      //     const previousNodeId = PipelineService.findPreviousNodeId(flow, nodeId);
-      //     const inputName = getInputName(previousNodeId, componentType);
-      //     code += component.generateComponentCode({ config, inputName });
-      //   } else {
-      //     console.warn(`Unhandled componentType for node ${nodeId}: ${componentType}`);
-      //   }
-
-      //   nodeObjects.push({
-      //     id: nodeId,
-      //     title: config.customTitle || node.type,
-      //     imports,
-      //     dependencies,
-      //     type: componentType,
-      //     code,
-      //     outputName: nodeOutputs.get(nodeId) || '',
-      //     functions,
-      //     lastUpdated: config.lastUpdated || 0,
-      //     lastExecuted: config.lastExecuted || 0,
-      //     runtime: config.backend?.engine || 'local'
-      //   });
-
-      // } catch (error) {
-      //   console.error(`Error processing node ${nodeId}:`, error);
-      //   throw error;
-      // }
- 
-    // ----------------  -----------  END SECOND FIX , IT WORKS.. I TRIED IT -------------------------------
-
     }
 
     return nodeObjects;

@@ -39,12 +39,27 @@ export class PipelineConsolePanel
     this._commands = commands;
     this._context = context;
     this.addClass(PANEL_CLASS);
+
+    // Create a single container div with id="portal" that wraps all content.
+    const portalDiv = document.createElement('div');
+    portalDiv.id = 'portal';
+    portalDiv.style.position = 'absolute';
+    portalDiv.style.left = '0';
+    portalDiv.style.top = '0';
+    portalDiv.style.width = '100%';
+    portalDiv.style.height = '100%';
+    portalDiv.style.zIndex = '9999';
+
     this._title = Private.createTitle();
     this._title.className = TITLE_CLASS;
     this._console = Private.createConsole();
     this._console.className = TABLE_CLASS;
-    this.node.appendChild(this._title as HTMLElement);
-    this.node.appendChild(this._console as HTMLElement);
+    // Append title and console into the portal div.
+    portalDiv.appendChild(this._title);
+    portalDiv.appendChild(this._console);
+
+    // Append the portal div into the widget's node.
+    this.node.appendChild(portalDiv);
   }
 
   get source(): IPipelineConsole.ILogging | null {
@@ -107,7 +122,7 @@ export class PipelineConsolePanel
 
     switch (level) {
       case "info":
-        dateTag = <Tag bordered={false} icon={<clockIcon.react className="anticon"/>} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{date}</Tag>;
+        dateTag = <Tag bordered={false} icon={<clockIcon.react className="anticon" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{date}</Tag>;
         contentComponent = (
           <Alert
             showIcon
@@ -118,7 +133,7 @@ export class PipelineConsolePanel
         );
         break;
       case "error":
-        dateTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size"/>}  style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{date}</Tag>;
+        dateTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{date}</Tag>;
         contentComponent = (
           <Alert
             message="Error"
@@ -129,48 +144,48 @@ export class PipelineConsolePanel
           />
         );
         break;
-        case "data":
-          dateTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size"/>} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{date}</Tag>;
-          
-          nodeIdTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size"/>} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{metadata.nodeId}</Tag>;
-          runtimeTag = <Tag bordered={false} icon={<cpuIcon.react className="anticon amphi-Console-icon-size"/>} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{metadata.runtime}</Tag>;
-          viewData = (
-            <Tag
-              bordered={false}
-              onClick={() => this._commands.execute('pipeline-editor-component:view-data', { nodeId: metadata.nodeId, context: this._context as any })} // Use the command here
-              icon={<clockIcon.react className="anticon amphi-Console-icon-size" />}
-              color="#44776D"
-              style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}
-            >
-              View data
-            </Tag>
-          );
-          
-          const parser = new DOMParser();
-          const doc = parser.parseFromString(content, 'text/html');
-          const firstDiv = doc.querySelector('div');
-          if (firstDiv && firstDiv.id === 'documents') {
-            contentComponent = <DocumentView htmlData={content} />;
-          } else {
-            // Extract dataframe size from the last paragraph if it exists
-            const sizeElement = doc.querySelector('p:last-of-type');
-            let dataframeSize = null;
-    
-            if (sizeElement && sizeElement.textContent.includes('rows ×')) {
-              dataframeSize = sizeElement.textContent.trim();
-            }
-    
-            if (dataframeSize) {
-              dataframeSizeTag = <Tag bordered={false} icon={<gridIcon.react className="anticon amphi-Console-icon-size"/>} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{dataframeSize}</Tag>;
-            }
-    
-            contentComponent = (
-              <>
-                <DataView htmlData={content} />
-              </>
-            );
+      case "data":
+        dateTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{date}</Tag>;
+
+        nodeIdTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{metadata.nodeId}</Tag>;
+        runtimeTag = <Tag bordered={false} icon={<cpuIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{metadata.runtime}</Tag>;
+        viewData = (
+          <Tag
+            bordered={false}
+            onClick={() => this._commands.execute('pipeline-editor-component:view-data', { nodeId: metadata.nodeId, context: this._context as any })} // Use the command here
+            icon={<clockIcon.react className="anticon amphi-Console-icon-size" />}
+            color="#44776D"
+            style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}
+          >
+            View data
+          </Tag>
+        );
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(content, 'text/html');
+        const firstDiv = doc.querySelector('div');
+        if (firstDiv && firstDiv.id === 'documents') {
+          contentComponent = <DocumentView htmlData={content} />;
+        } else {
+          // Extract dataframe size from the last paragraph if it exists
+          const sizeElement = doc.querySelector('p:last-of-type');
+          let dataframeSize = null;
+
+          if (sizeElement && sizeElement.textContent.includes('rows ×')) {
+            dataframeSize = sizeElement.textContent.trim();
           }
-          break;
+
+          if (dataframeSize) {
+            dataframeSizeTag = <Tag bordered={false} icon={<gridIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{dataframeSize}</Tag>;
+          }
+
+          contentComponent = (
+            <>
+              <DataView htmlData={content} />
+            </>
+          );
+        }
+        break;
       default:
         dateTag = <Tag bordered={false} >{date}</Tag>;
         contentComponent = <div>{content}</div>;
@@ -196,7 +211,7 @@ export class PipelineConsolePanel
           {contentComponent}
         </div>
         {/* Divider between logs */}
-        <Divider style={{ margin: '6px 0' }}/>
+        <Divider style={{ margin: '6px 0' }} />
       </div>,
       singleCell
     );

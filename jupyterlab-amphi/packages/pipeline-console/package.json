@@ -1,6 +1,6 @@
 {
   "name": "@amphi/pipeline-log-console",
-  "version": "0.8.25",
+  "version": "0.8.28",
   "description": "Amphi Pipeline Log Console",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {
@@ -49,7 +49,7 @@
     "watch:src": "tsc -w"
   },
   "dependencies": {
-    "@amphi/pipeline-editor": "^0.8.25",
+    "@amphi/pipeline-editor": "^0.8.28",
     "@jupyterlab/application": "^4.0.0",
     "@jupyterlab/apputils": "^4.0.0",
     "@jupyterlab/console": "^4.0.0",

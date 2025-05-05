@@ -63,6 +63,9 @@ import fileJsonIconSvgStr from '../style/icons/file-json-24.svg';
 import activityIconSvgStr from '../style/icons/activity-24.svg';
 import formexampletypescriptIconSvgStr from '../style/icons/form-example-typescript-24.svg';
 import UniquekeyIconSvgStr from '../style/icons/outline-24.svg';
+import FileActionIconSvgStr from '../style/icons/file-change-24.svg';
+import DataframeListIconSvgStr from '../style/icons/list-svgrepo-com-24.svg';
+import DataframeDeleteIconSvgStr from '../style/icons/x-24.svg';
 
 export const expandJsonIcon = new LabIcon({
   name: 'amphi:expand-icon',
@@ -380,3 +383,17 @@ export const UniquekeyIcon = new LabIcon({
   svgstr: UniquekeyIconSvgStr
 });
 
+export const FileActionIcon = new LabIcon({
+  name: 'amphi:file-action-icon',
+  svgstr: FileActionIconSvgStr
+});
+
+export const DataframeDeleteIcon = new LabIcon({
+  name: 'amphi:dataframe-delete-icon',
+  svgstr: DataframeDeleteIconSvgStr
+});
+
+export const DataframeListIcon = new LabIcon({
+  name: 'amphi:dataframe-list-icon',
+  svgstr: DataframeListIconSvgStr
+});

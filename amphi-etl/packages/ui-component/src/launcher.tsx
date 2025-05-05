@@ -152,7 +152,7 @@ export class Launcher extends JupyterlabLauncher {
       this.myCommands.execute('ui-components:file-upload');
     };
 
-    
+
 
     const AlertBox = () => {
       const [isVisible, setIsVisible] = useState(false);
@@ -201,7 +201,7 @@ export class Launcher extends JupyterlabLauncher {
     return (
       <div className="launcher-body">
         <div className="launcher-content">
-          <h1 className="launcher-title">Amphi</h1>
+          {/* <h1 className="launcher-title">Amphi</h1> */}
           <div className="launcher-grid">
             <div className="launcher-card">
               <div className="launcher-card-header">
@@ -229,17 +229,17 @@ export class Launcher extends JupyterlabLauncher {
               </div>
 
               <ul className="launcher-card-list">
-                  <li>
-                    <a href="https://community.amphi.ai/" target="_blank" className="launcher-card-item">
-                      <div className="launcher-icon">
-                        <discourseIcon.react />
-                      </div>
-                      <div>
-                        <strong>Join the Community</strong>
-                        <p>Access Amphi's forum, read documentation, get support, ask questions, and share your experience.</p>
-                      </div>
-                    </a>
-                  </li>
+                <li>
+                  <a href="https://community.amphi.ai/" target="_blank" className="launcher-card-item">
+                    <div className="launcher-icon">
+                      <discourseIcon.react />
+                    </div>
+                    <div>
+                      <strong>Join the Community</strong>
+                      <p>Access Amphi's forum, read documentation, get support, ask questions, and share your experience.</p>
+                    </div>
+                  </a>
+                </li>
                 <li>
                   <a href="https://github.com/amphi-ai/amphi-etl" target="_blank" className="launcher-card-item">
                     <div className="launcher-icon">

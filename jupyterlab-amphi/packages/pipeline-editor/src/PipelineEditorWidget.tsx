@@ -914,7 +914,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
               >
                 <div style={{ position: 'relative', width: '100%', height: '500px' }}>
                   <CodeEditor code={code} />
-                  <div style={{ position: 'absolute', top: 0, right: 0 }}>
+                  <div style={{ position: 'absolute', top: 0, right: 25 }}>
                     <Dropdown.Button
                       icon={<DownOutlined />}
                       menu={{ items: menuItems, style: { textAlign: 'left', width: '220px' } }}
