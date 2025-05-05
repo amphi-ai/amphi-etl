@@ -639,7 +639,7 @@ const PipelineWrapper: React.FC<IProps> = ({
               deleteKeyCode={["Delete", "Backspace"]}
               proOptions={proOptions}
             >
-              <Panel position="top-right" children={''}>
+              <Panel position="top-right">
               </Panel>
               <Controls>
                 <DownloadImageButton pipelineName={context.context.sessionContext.path} pipelineId={pipelineId} />
