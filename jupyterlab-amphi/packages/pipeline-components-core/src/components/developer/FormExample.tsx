@@ -350,6 +350,20 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
           placeholder: "Column name",
           advanced: true
         },
+        {
+          type: "column",
+          label: "25. Select a single column (column) restricted to specific types (string, bool)",
+          id: "type_restricted_column",
+//types for allowedtype : 
+//            numeric:  /^(u?int|float|complex|decimal)\d*$/i,
+//              datetime: /^(datetime|timedelta|period|datetimetz)/i,
+//  bool:     /^bool/i,
+//  string:   /^(object|string)$/i,
+//  category: /^category
+          allowedTypes: ["string","bool"],
+          placeholder: "Column name",
+          advanced: true
+        },
       ]
           
     };
@@ -432,6 +446,12 @@ print("23 config.columnsOperation : ")
 print("${config.columnsOperation}")
 print("24 config.column : ")
 print("${config.column}")
+print("24 config.column.value: ")
+print("${config.column.value}")
+print("25 config.type_restricted_column: ")
+print("${config.type_restricted_column}")
+print("25 config.type_restricted_column.value: ")
+print("${config.type_restricted_column.value}")
 ${outputName} = ${inputName}
 `;
 
@@ -484,6 +504,8 @@ console.log("23 config.columnsOperation : ");
 console.log(config.columnsOperation);
 console.log("24 config.column : ");
 console.log(config.column);
+console.log("25 config.type_restricted_column : ");
+console.log(config.type_restricted_column);
     return code;
   }
 }

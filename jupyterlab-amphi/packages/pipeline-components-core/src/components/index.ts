@@ -52,6 +52,8 @@ export { Summary } from './transforms/Summary';
 export { FrequencyAnalysis } from './transforms/FrequencyAnalysis';
 export { UniqueKeyDetector } from './transforms/UniqueKeyDetector';
 export { FileAction } from './transforms/files/FileAction';
+export { HierarchyPath } from './transforms/HierarchyPath';
+
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';
 export { CsvFileOutput } from './outputs/files/CsvFileOutput';
