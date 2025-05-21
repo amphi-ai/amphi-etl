@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+  <g fill="currentColor">
+    <!-- Tree nodes -->
+    <circle cx="12" cy="5" r="1"/>
+    <circle cx="8" cy="9" r="1"/>
+    <circle cx="16" cy="9" r="1"/>
+    <circle cx="16" cy="13" r="1"/>
+
+    <!-- Tree edges -->
+    <path d="M12 6L8 8" stroke="currentColor" stroke-width="0.25"/>
+    <path d="M12 6L16 8" stroke="currentColor" stroke-width="0.25"/>
+    <path d="M16 10L16 12" stroke="currentColor" stroke-width="0.25"/>
+
+    <!-- Dot-paths -->
+    <text x="5" y="15" font-size="10" fill="currentColor">.</text>
+    <text x="5" y="17" font-size="10" fill="currentColor">..</text>
+    <text x="5" y="19" font-size="10" fill="currentColor">..</text>
+    <text x="5" y="21" font-size="10" fill="currentColor">...</text>
+  </g>
+</svg>
