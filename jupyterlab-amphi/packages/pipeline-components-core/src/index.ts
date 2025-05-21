@@ -12,7 +12,7 @@ import {
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, DateTimeConverter,
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
-  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample,UniqueKeyDetector,FileAction,DataframeList,DataframeDelete
+  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample,UniqueKeyDetector,FileAction,DataframeList,DataframeDelete,HierarchyPath
 } from './components';
 
 // Export allow the component to be used as a base component in different packages
@@ -21,7 +21,7 @@ export { Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonF
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, DateTimeConverter,
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
-  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample,UniqueKeyDetector,FileAction,DataframeList,DataframeDelete }
+  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample,UniqueKeyDetector,FileAction,DataframeList,DataframeDelete,HierarchyPath }
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-components-core',
@@ -84,6 +84,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(FrequencyAnalysis.getInstance());
     componentService.addComponent(UniqueKeyDetector.getInstance());
     // componentService.addComponent(FileAction.getInstance());
+    componentService.addComponent(HierarchyPath.getInstance());
 
     // Outputs
     componentService.addComponent(CsvFileOutput.getInstance())
