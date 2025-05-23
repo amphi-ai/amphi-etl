@@ -4,6 +4,7 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 export class HierarchyPath extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
+                           hierarchy_path_columnoperations : []
     };
     const form = {
       idPrefix: "component__form",
@@ -11,21 +12,21 @@ export class HierarchyPath extends BaseCoreComponent {
         {
           type: "column",
           label: "Select the parent column",
-          id: "hierarchy.parent_column",
+          id: "hierarchy_parent_column",
           placeholder: "Column name",
           advanced: false
         },
         {
           type: "column",
           label: "Select the child column",
-          id: "hierarchy.child_column",
+          id: "hierarchy_child_column",
           placeholder: "Column name",
           advanced: false
         },
         {
           type: "selectCustomizable",
           label: "Separator",
-          id: "hierarchy.sep",
+          id: "hierarchy_sep",
           placeholder: "default: > (with spaces)",
           tooltip: "Select or provide a custom delimiter.",
           options: [
@@ -41,27 +42,27 @@ export class HierarchyPath extends BaseCoreComponent {
           advanced: false
         },
 // FOR NEXT RELEASE=> need to find a way to deal with it optionnaly
-//        {
-//          type: "keyvalueColumnsSelect",
-//          label: "Operations along path (optional)",
-//          id: "hierarchy.path_columnoperations",
-//          placeholder: "Select column",
-//          options: [
-//            { value: "min", label: "Min", tooltip: "Returns the minimum value in the group." },
-//            { value: "max", label: "Max", tooltip: "Returns the maximum value in the group." },
-//            { value: "sum", label: "Sum", tooltip: "Returns the sum of all values in the group." },
-//            { value: "mean", label: "Mean", tooltip: "Returns the average value of the group." },
-//            { value: "count", label: "Count", tooltip: "Counts the number of non-null entries." },
-//            { value: "nunique", label: "Distinct Count", tooltip: "Returns the number of distinct elements." },
-//            { value: "first", label: "First", tooltip: "Returns the first value in the group." },
-//            { value: "last", label: "Last", tooltip: "Returns the last value in the group." },
-//            { value: "median", label: "Median", tooltip: "Returns the median value in the group." },
-//            { value: "std", label: "Standard Deviation", tooltip: "Returns the standard deviation of the group." },
-//            { value: "var", label: "Variance", tooltip: "Returns the variance of the group." },
-//            { value: "prod", label: "Product", tooltip: "Returns the product of all values in the group." }
-//          ],
-//          advanced: true
-//        }
+        {
+          type: "keyvalueColumnsSelect",
+          label: "Operations along path (optional)",
+          id: "hierarchy_path_columnoperations",
+          placeholder: "Select column",
+          options: [
+            { value: "min", label: "Min", tooltip: "Returns the minimum value in the group." },
+            { value: "max", label: "Max", tooltip: "Returns the maximum value in the group." },
+            { value: "sum", label: "Sum", tooltip: "Returns the sum of all values in the group." },
+            { value: "mean", label: "Mean", tooltip: "Returns the average value of the group." },
+            { value: "count", label: "Count", tooltip: "Counts the number of non-null entries." },
+            { value: "nunique", label: "Distinct Count", tooltip: "Returns the number of distinct elements." },
+            { value: "first", label: "First", tooltip: "Returns the first value in the group." },
+            { value: "last", label: "Last", tooltip: "Returns the last value in the group." },
+            { value: "median", label: "Median", tooltip: "Returns the median value in the group." },
+            { value: "std", label: "Standard Deviation", tooltip: "Returns the standard deviation of the group." },
+            { value: "var", label: "Variance", tooltip: "Returns the variance of the group." },
+            { value: "prod", label: "Product", tooltip: "Returns the product of all values in the group." }
+          ],
+          advanced: true
+        }
       ],
     };
 
@@ -171,14 +172,55 @@ def build_all_hierarchy_paths(df, parent_col, child_col, separator=" > ", aggreg
     return [HierarchyPathFunction];
   }
   public generateComponentCode({ config, inputName, outputName }: { config: any; inputName: string; outputName: string }): string {
-    const parent_column=config.hierarchy.parent_column.value;
-    const child_column=config.hierarchy.child_column.value;
+    const parent_column=config.hierarchy_parent_column.value;
+    const child_column=config.hierarchy_child_column.value;
+    const aggregations=config.hierarchy_path_columnoperations;
+    const aggregations_value=config.hierarchy_path_columnoperations.value;
+    let aggregations_param=`aggregations=None`;
+    // Start constructing the aggregation arguments dynamically
+    let agg_Args = "[";
+
+    if (config.hierarchy_path_columnoperations && config.hierarchy_path_columnoperations.length > 0) {
+      config.hierarchy_path_columnoperations.forEach((op, index) => {
+        // Determine how to reference the column based on 'named'
+        const agg_columnReference = op.key.named ? `${op.key.value}` : op.key.value;
+        const agg_operation = op.value.value;
+        const agg_columnName = op.key.named ? op.key.value : `col${op.key.value}`;
+        const agg_operationName = `${agg_columnName}_${agg_operation}`;
+
+        const sanitize_agg_ColumnName = (name: string) => name.replace(/[^a-zA-Z0-9_]/g, '_');
+        const agg_operationNameReference = sanitize_agg_ColumnName(agg_operationName);
+
+        // Construct each aggregation argument. The 
+        agg_Args += `("${agg_operationNameReference}","${agg_columnReference}", "${agg_operation}")`;
+        if (index < config.hierarchy_path_columnoperations.length - 1) {
+          agg_Args += ", ";
+        }
+      });
+     agg_Args += "]";
+     aggregations_param=`aggregations=${agg_Args}`;
+    }
+    else
+    {
+     aggregations_param=`aggregations=None`;
+    }
+    ;
+
+    //const aggregations_param=`aggregations=None`;
+//3 cases for the aggregations python variable :
+//-can be undefined (if the user has not choosen any aggregation)
+//-can be filled (if the user has choosen an aggregation)
+//in this case we must have
+//aggregations=[
+//    ("Sum_longueur", "longueur", "sum"),
+//    ("Max_longueur", "longueur", "max")
+//]
     let code = `# Create the Hierarchy Path \n`;
     //execute the function
-    code += `
+    code +=` 
 # Execute the hierarchy path function
 ${outputName} = []
-${outputName} =build_all_hierarchy_paths(${inputName}, '${parent_column}', '${child_column}', '${config.hierarchy.sep}', aggregations=None)
+${outputName} =build_all_hierarchy_paths(${inputName}, '${parent_column}', '${child_column}', '${config.hierarchy_sep}', ${aggregations_param})
     `;
     return code + '\n';
   }

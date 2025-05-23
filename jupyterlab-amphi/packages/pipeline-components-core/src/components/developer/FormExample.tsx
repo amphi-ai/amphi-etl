@@ -7,7 +7,10 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 export class FormExample extends BaseCoreComponent {
   // Constructor initializes the form structure
   constructor() {
-    const defaultConfig = {};
+    const defaultConfig = {
+                           with_default_value_inputNumber : "18",
+                           default_value_column : []
+                           };
     
     const form = {
       idPrefix: "component__form",
@@ -341,7 +344,7 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
             { value: "var", label: "Variance", tooltip: "Returns the variance of the group." },
             { value: "prod", label: "Product", tooltip: "Returns the product of all values in the group." }
           ],
-		  advanced: true
+          advanced: true
         },
         {
           type: "column",
@@ -364,6 +367,21 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
           placeholder: "Column name",
           advanced: true
         },
+        {
+          type: "inputNumber",
+          tooltip: "Number of rows of file to read. Useful for reading pieces of large files.",
+          label: "26. Rows number with a default value (inputNumber)",
+          id: "with_default_value_inputNumber",
+          min: 0,
+          advanced: true
+        },
+        {
+          type: "column",
+          label: "27. Select a single column with default value so that code can work when retrieving default_value_column.value even if not defined(column)",
+          id: "default_value_column",
+          placeholder: "Column name",
+          advanced: true
+        },
       ]
           
     };
@@ -380,7 +398,12 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
   }
 
   // Generates the Python code for processing the form input
+  //please note a few things : 
+  //-that typescript const/var will also be interpretated on commented lines
+  //-you can use in your code config.column even if undefined but to use config.column.value, config.column has to be defined
   public generateComponentCode({ config, inputName, outputName }): string {
+    //constant declaration
+    const default_value_column_value=config.default_value_column.value;
     let columnsParam = "{";
     if (config.columns && config.columns.length > 0) {
       columnsParam += config.columns.map(column => {
@@ -442,16 +465,20 @@ print("21 columnAndOrder : ")
 print("${config.columnAndOrder}")
 print("22 config.removeUnwantedCharacters : ")
 print("${config.removeUnwantedCharacters}")
-print("23 config.columnsOperation : ")
-print("${config.columnsOperation}")
+print("23 config.columnsOperations : ")
+print("${config.columnsOperations}")
 print("24 config.column : ")
 print("${config.column}")
-print("24 config.column.value: ")
-print("${config.column.value}")
 print("25 config.type_restricted_column: ")
 print("${config.type_restricted_column}")
-print("25 config.type_restricted_column.value: ")
-print("${config.type_restricted_column.value}")
+print("26 config.with_default_value_inputNumber: ")
+print("${config.with_default_value_inputNumber}")
+print("27 config.default_value_column: ")
+print("${config.default_value_column}")
+print("27 config.default_value_column.value: ")
+print("${config.default_value_column.value}")
+print("27 default_value_column_value: ")
+print("${default_value_column_value}")
 ${outputName} = ${inputName}
 `;
 
@@ -500,12 +527,20 @@ console.log("21 columnAndOrder : ");
 console.log(config.columnAndOrder);
 console.log("22 config.removeUnwantedCharacters : ");
 console.log(config.removeUnwantedCharacters);
-console.log("23 config.columnsOperation : ");
-console.log(config.columnsOperation);
+console.log("23 config.columnsOperations : ");
+console.log(config.columnsOperations);
 console.log("24 config.column : ");
 console.log(config.column);
 console.log("25 config.type_restricted_column : ");
 console.log(config.type_restricted_column);
+console.log("26 config.with_default_value_inputNumber: ");
+console.log(config.with_default_value_inputNumber);
+console.log("27 config.default_value_column: ");
+console.log(config.default_value_column);
+console.log("27 config.default_value_column.value: ");
+console.log(config.default_value_column.value);
+console.log("27 default_value_column_value: ");
+console.log(default_value_column_value);
     return code;
   }
 }
