@@ -41,7 +41,6 @@ export class HierarchyPath extends BaseCoreComponent {
           ],
           advanced: false
         },
-// FOR NEXT RELEASE=> need to find a way to deal with it optionnaly
         {
           type: "keyvalueColumnsSelect",
           label: "Operations along path (optional)",
