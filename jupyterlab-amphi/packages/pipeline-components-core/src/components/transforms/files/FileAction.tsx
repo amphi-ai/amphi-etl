@@ -10,7 +10,8 @@ export class FileAction extends BaseCoreComponent {
       destination_path : "",
       file_new_name : "",
       overwrite_file_if_exists : "",
-      retry_count : 0
+      retry_count : 0,
+      boolean_raise_error : true
     };
 
     const form = {
@@ -71,9 +72,10 @@ export class FileAction extends BaseCoreComponent {
         },
         {
           type: "column",
-          label: "Overwrite if exists",
+          label: "Overwrite if exists (boolean)",
           id: "overwrite_file_if_exists",
           placeholder: "Column name",
+          allowedTypes: ["bool"],
           condition: { action_on_file_all: ["","move","copy","zip","rename"]},
           advanced: true
         },
@@ -86,11 +88,12 @@ export class FileAction extends BaseCoreComponent {
           advanced: true
         },
         {
-          type: "info",
-          id: "description",
-          text: "⚠️ As of now, all fields are mandatory, meaning you have too choose From Field, fill all options (even with a dummy column) and then stay on From Field or Choose an action for all rows",
-          advanced: false
-        },
+          type: "boolean",
+          label: "Raise an error",
+          tooltip: "Raise an error and stop execution",
+          id: "boolean_raise_error",
+          advanced: true
+         }
       ],
     };
 
@@ -143,11 +146,17 @@ def normalize_input_dataframe(
         df['normalized_destination'] = ""
 
     # Normalize actions: trim, lowercase, validate, fallback to "unknown"
-    def resolve_action(row_action):
-        action = str(action_from_form).strip().lower() if action_from_form and str(action_from_form).strip().lower() != "undefined"  else str(row_action).strip().lower()
-        return action if action in allowed_actions else "unknown"
+    if action_col == "":
+        # fallback: use action_from_form directly
+        action = str(action_from_form).strip().lower()
+        df['normalized_action'] = action if action in allowed_actions else "unknown"
+    else:
+        # use action column + form as fallback
+        def resolve_action(row_action):
+            action = str(action_from_form).strip().lower() if action_from_form and str(action_from_form).strip().lower() != "undefined" else str(row_action).strip().lower()
+            return action if action in allowed_actions else "unknown"
 
-    df['normalized_action'] = df[action_col].apply(resolve_action)
+        df['normalized_action'] = df[action_col].apply(resolve_action)
 
     # Enforce string data type for normalized columns
     df = df.astype({
@@ -158,43 +167,34 @@ def normalize_input_dataframe(
 
     return df
 #################################################################
-def handle_file_safe(file_path, action, destination=None, new_name=None, overwrite=False, retry_count=0):
-    # Handle NaN values for overwrite and retry_count
-    overwrite = False if pd.isna(overwrite) else overwrite
-    retry_count = 0 if pd.isna(retry_count) else retry_count
-    
-    file_path = normalize_path(file_path)  # Normalize the input file path
+def handle_file_safe(file_path, action, destination=None, new_name=None, overwrite=False, retry_count=0, raise_on_error=False):
+    import pandas as pd
+    import os, shutil, zipfile, time
 
-    # Normalize the destination and new name if they exist
-    if  not pd.isna(destination):
-        destination = normalize_path(destination)
-    
-    if  not pd.isna(new_name):  # Ensure new_name isn't NA before normalizing
-        new_name = normalize_path(new_name)
-    
+    overwrite = False if (pd.isna(overwrite) or overwrite == '') else overwrite
+    retry_count = 0 if (pd.isna(retry_count) or retry_count == '') else retry_count
+
     attempt = 0
+    last_error_msg = ""
     while attempt <= retry_count:
         try:
             if action == 'delete':
                 if pd.isna(file_path) or not os.path.exists(file_path):
-                    return 'failure', f"File not found: {file_path}"
+                    raise FileNotFoundError(f"File not found: {file_path}")
 
                 os.remove(file_path)
                 return 'success', f"Deleted: {file_path}"
 
             elif action in ['move', 'copy']:
                 if pd.isna(destination) or not os.path.exists(file_path):
-                    return 'failure', f"Source file not found or destination missing: {file_path}"
+                    raise FileNotFoundError(f"Source file not found or destination missing: {file_path}")
 
                 dest_dir = os.path.dirname(destination)
                 if not os.path.exists(dest_dir):
-                    try:
-                        os.makedirs(dest_dir)
-                    except Exception as e:
-                        return 'failure', f"Cannot create destination folder: {dest_dir} ({e})"
+                    os.makedirs(dest_dir)
 
                 if os.path.exists(destination) and not overwrite:
-                    return 'failure', f"Destination file already exists: {destination}"
+                    raise FileExistsError(f"Destination file already exists: {destination}")
 
                 if action == 'move':
                     shutil.move(file_path, destination)
@@ -205,25 +205,25 @@ def handle_file_safe(file_path, action, destination=None, new_name=None, overwri
 
             elif action == 'rename':
                 if pd.isna(new_name) or pd.isna(file_path):
-                    return 'failure', "new_name missing or file_path invalid for rename"
-                
+                    raise ValueError("new_name missing or file_path invalid for rename")
+
                 new_path = os.path.join(os.path.dirname(file_path), new_name)
                 if os.path.exists(new_path) and not overwrite:
-                    return 'failure', f"Target name already exists: {new_path}"
+                    raise FileExistsError(f"Target name already exists: {new_path}")
 
                 os.rename(file_path, new_path)
                 return 'success', f"Renamed to {new_path}"
 
             elif action == 'create as empty':
                 if pd.isna(file_path):
-                    return 'failure', "File path is missing for create as empty"
-                
+                    raise ValueError("File path is missing for create as empty")
+
                 dir_name = os.path.dirname(file_path)
                 if dir_name and not os.path.exists(dir_name):
                     os.makedirs(dir_name)
 
                 if os.path.exists(file_path) and not overwrite:
-                    return 'failure', f"File already exists: {file_path}"
+                    raise FileExistsError(f"File already exists: {file_path}")
 
                 with open(file_path, 'w') as f:
                     pass
@@ -231,19 +231,16 @@ def handle_file_safe(file_path, action, destination=None, new_name=None, overwri
 
             elif action == 'zip':
                 if pd.isna(file_path) or not os.path.exists(file_path):
-                    return 'failure', f"File not found: {file_path}"
+                    raise FileNotFoundError(f"File not found: {file_path}")
 
-                zip_dest = destination if not pd.isna(destination) else f"{file_path}.zip"
+                zip_dest = destination if not (pd.isna(destination) or destination == '') else f"{file_path}.zip"
                 zip_dir = os.path.dirname(zip_dest)
 
-                if not pd.isna(zip_dir) and not os.path.exists(zip_dir):
-                    try:
-                        os.makedirs(zip_dir)
-                    except Exception as e:
-                        return 'failure', f"Cannot create zip destination folder: {zip_dir} ({e})"
+                if not (pd.isna(destination) or destination == '') and not os.path.exists(zip_dir):
+                    os.makedirs(zip_dir)
 
                 if os.path.exists(zip_dest) and not overwrite:
-                    return 'failure', f"Zip file already exists: {zip_dest}"
+                    raise FileExistsError(f"Zip file already exists: {zip_dest}")
 
                 with zipfile.ZipFile(zip_dest, 'w') as zipf:
                     zipf.write(file_path, os.path.basename(file_path))
@@ -251,14 +248,17 @@ def handle_file_safe(file_path, action, destination=None, new_name=None, overwri
                 return 'success', f"Zipped to {zip_dest}"
 
             else:
-                return 'failure', f"Unknown action: {action}"
+                raise ValueError(f"Unknown action: {action}")
 
         except Exception as e:
+            last_error_msg = str(e)
             if attempt < retry_count:
-                time.sleep(1)  # pause before retry
+                time.sleep(1)
                 attempt += 1
             else:
-                return 'failure', f"Exception after {attempt+1} attempt(s) during '{action}' on {file_path}: {e}"
+                if raise_on_error:
+                    raise
+                return 'failure', f"Exception after {attempt+1} attempt(s): {last_error_msg}"
     `;
     return [FileActionFunction];
   }
@@ -279,6 +279,7 @@ const retry_count_value = config.retry_count?.value ?? "";
 console.log(retry_count_value);
 const action_on_file_all_value = config.action_on_file_all ?? "";
 console.log(action_on_file_all_value);
+const raise_on_error=config.boolean_raise_error ? "True" : "False";
     return `
 # Execute the file action function
 ${outputName} = []
@@ -298,9 +299,10 @@ results = normalized_input_dataframe.apply(
         file_path=row['normalized_file_path'],
         action=row['normalized_action'],
         destination=row.get('normalized_destination'),
-        new_name=row.get('${file_new_name_value}'),
-        overwrite=row['${overwrite_file_if_exists_value}'],
-        retry_count=row['${retry_count_value}']
+        new_name=row.get('${file_new_name_value}', ''),
+        overwrite = '' if '${overwrite_file_if_exists_value}' == '' else row.get('${overwrite_file_if_exists_value}'),
+        retry_count = 0 if '${retry_count_value}' == '' else row.get('${retry_count_value}'),
+        raise_on_error=${raise_on_error}
     ),
     axis=1
 )
