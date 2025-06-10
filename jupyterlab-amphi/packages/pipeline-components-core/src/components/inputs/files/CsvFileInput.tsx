@@ -11,7 +11,8 @@ export class CsvFileInput extends BaseCoreComponent {
       connectionMethod: "env",
       csvOptions: {
         sep: ","
-      }
+      },
+      useHeader: "true" // Changed to string to match radio values
     };
     const form = {
       idPrefix: "component__form",
@@ -82,6 +83,17 @@ export class CsvFileInput extends BaseCoreComponent {
           id: "csvOptions.names",
           placeholder: "Type header fields (ordered and comma-separated)",
           options: [],
+          advanced: true
+        },
+        {
+          type: "radio",
+          label: "Use header",
+          id: "useHeader",
+          options: [
+            { value: "true", label: "Yes" },
+            { value: "false", label: "No" }
+          ],
+          tooltip: "Select whether to use the first row as header or treat all rows as data with default column names.",
           advanced: true
         },
         {
@@ -162,9 +174,6 @@ export class CsvFileInput extends BaseCoreComponent {
     return imports;
   }
 
-  // Utility method to determine if input uses a wildcard
-
-
   // Main generation method
   public generateComponentCode({ config, outputName }): string {
     const optionsString = this.generateOptionsCode({ config });
@@ -189,6 +198,14 @@ ${outputName} = pd.read_csv("${config.filePath}"${optionsString}).convert_dtypes
       `;
     }
 
+    // Add header handling if useHeader is false
+    if (config.useHeader === "false") {
+      code += `
+# Setting default column names since header is not used
+${outputName}.columns = [f"Column_{i+1}" for i in range(len(${outputName}.columns))]
+      `;
+    }
+
     return code.trim();
   }
 
@@ -200,7 +217,10 @@ ${outputName} = pd.read_csv("${config.filePath}"${optionsString}).convert_dtypes
       csvOptions.engine = 'python';
     }
   
-    if (config.header === '0' || config.header === '1' || config.header === 'None') {
+    // Handle header based on useHeader radio
+    if (config.useHeader === "false") {
+      csvOptions.header = 'None';
+    } else if (config.header === '0' || config.header === '1' || config.header === 'None') {
       csvOptions.header = config.header;
     }
   
