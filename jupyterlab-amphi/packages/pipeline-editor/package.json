@@ -66,8 +66,10 @@
     "@jupyterlab/settingregistry": "^4.2.2",
     "@jupyterlab/ui-components": "^4.2.2",
     "@lumino/dragdrop": "^2.0.0",
+    "@octokit/rest": "^21.1.1",
     "antd": "5.24.4",
     "html-to-image": "^1.11.11",
+    "js-base64": "^3.7.7",
     "posthog-js": "^1.194.3",
     "reactflow": "^11.11.4"
   },
