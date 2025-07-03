@@ -10,9 +10,7 @@ export class CsvFileInput extends BaseCoreComponent {
       fileLocation: "local",
       connectionMethod: "env",
       csvOptions: {
-        sep: ",",
-        encoding: "utf-8",
-        encoding_errors: "strict"
+        sep: ","
       }
     };
     const form = {
