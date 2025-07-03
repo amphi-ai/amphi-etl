@@ -10,7 +10,9 @@ export class CsvFileInput extends BaseCoreComponent {
       fileLocation: "local",
       connectionMethod: "env",
       csvOptions: {
-        sep: ","
+        sep: ",",
+        encoding: "utf-8",
+        encoding_errors: "strict"
       }
     };
     const form = {
@@ -53,6 +55,21 @@ export class CsvFileInput extends BaseCoreComponent {
             { value: "|", label: "pipe (|)" },
             { value: "infer", label: "infer (tries to auto detect)" }
           ],
+        },
+        {
+          type: "selectCustomizable",
+          label: "Encoding",
+          id: "csvOptions.encoding",
+          placeholder: "Default: utf-8",
+          tooltip: "Select the character encoding of the file.",
+          options: [
+              { value: "utf-8", label: "UTF-8" },
+              { value: "latin-1", label: "latin-1" },
+              { value: "iso-8859-1", label: "ISO-8859-1" },
+              { value: "cp1252", label: "cp1252" },
+              { value: "utf-16", label: "UTF-16" }
+          ],
+          advanced: true
         },
         {
           type: "inputNumber",
