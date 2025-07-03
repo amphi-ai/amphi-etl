@@ -65,7 +65,17 @@ export class CsvFileInput extends BaseCoreComponent {
               { value: "latin-1", label: "latin-1" },
               { value: "iso-8859-1", label: "ISO-8859-1" },
               { value: "cp1252", label: "cp1252" },
-              { value: "utf-16", label: "UTF-16" }
+              { value: "utf-16", label: "UTF-16" },
+              { value: "ascii", label: "ASCII" },
+              { value: "iso-8859-15", label: "ISO‑8859‑15" },
+              { value: "windows-1250", label: "Windows‑1250 (Central Europe)" },
+              { value: "windows-1251", label: "Windows‑1251 (Cyrillic)" },
+              { value: "koi8-r", label: "KOI8‑R (Russian Cyrillic)" },
+              { value: "koi8-u", label: "KOI8‑U (Ukrainian Cyrillic)" },
+              { value: "gbk", label: "GBK (Simplified Chinese)" },
+              { value: "big5", label: "Big5 (Traditional Chinese)" },
+              { value: "shift_jis", label: "Shift_JIS (Japanese)" },
+              { value: "euc-kr", label: "EUC‑KR (Korean)" },
           ],
           advanced: true
         },
