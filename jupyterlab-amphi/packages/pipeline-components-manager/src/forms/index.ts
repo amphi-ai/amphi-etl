@@ -4,5 +4,6 @@ export { SelectRegular } from './selectRegular';
 export { SelectColumns } from './selectColumns';
 export { CodeTextarea } from './CodeTextarea';
 export { CodeTextareaMirror } from './CodeTextareaMirror';
+export { DatePickerForm } from './DatePickerForm';
 
 

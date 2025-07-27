@@ -22,7 +22,8 @@ import SelectRegular from './forms/selectRegular';
 import SelectTokenization from './forms/selectTokenization';
 import TransferData from './forms/transferData';
 import ValuesListForm from './forms/valuesListForm';
-import FormulaColumns from './forms/FormulaColumns'
+import FormulaColumns from './forms/FormulaColumns';
+import DatePickerForm from './forms/DatePickerForm';
 import { PipelineService } from './PipelineService';
 import { ThemeConsumer } from 'styled-components';
 import SelectSheetFromExcel from './forms/selectSheetFromExcel';
@@ -386,6 +387,8 @@ export const GenerateUIInputs = React.memo(({
         return renderFormItem(field, <DataMapping data={data} {...commonProps} defaultValue={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "formulaColumns":
         return renderFormItem(field, <FormulaColumns {...commonProps} defaultValue={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
+      case "date":
+        return renderFormItem(field, <DatePickerForm {...commonProps} value={value} />);
       case "info":
         return <Typography.Paragraph style={{ padding: '5px' }}>{field.text}</Typography.Paragraph>;
       default:
@@ -588,7 +591,7 @@ export interface Option {
 export interface FieldDescriptor {
   type: 'file' | 'files' | 'column' | 'columns' | 'table' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio'
   | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'sheets'
-  | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable' | 'formulaColumns' | 'keyvalueColumnsRadio';
+  | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable' | 'formulaColumns' | 'keyvalueColumnsRadio' | 'date';
   label: string;
   id: string;
   placeholder?: any;
