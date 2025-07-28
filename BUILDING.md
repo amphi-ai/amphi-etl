@@ -6,6 +6,7 @@ This document explains how to build Amphi from source code. Amphi consists of tw
 
 ## 👉 Prerequisites 👈
 Python must be installed on your machine.
+NodeJS must be installed on your machine.
 Before starting the build process, we strongly recommend setting up a Python virtual environment. This helps avoid conflicts between Python packages and ensures a clean installation. You can create one using either `venv` or `conda`:
 
 ### Creating a Virtual Environment
