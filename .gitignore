@@ -3,3 +3,9 @@
 *.ampln
 *.ipynb
 .jupyter_ystore.db
+
+venv
+package-lock.json
+.env
+
+env.tsx
