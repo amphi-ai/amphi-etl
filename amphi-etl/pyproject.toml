@@ -50,6 +50,8 @@ include = [
 amphi = "share/jupyter/labextensions/@amphi"
 "config/labconfig" = "etc/jupyter/labconfig"
 "config/settings" = "share/jupyter/lab/settings"
+"config/server-config" = "etc/jupyter/jupyter_server_config.d"
+
 
 [tool.hatch.build.hooks.version]
 path = "amphi/_version.py"

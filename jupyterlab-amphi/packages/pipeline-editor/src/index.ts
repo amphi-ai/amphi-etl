@@ -42,6 +42,8 @@ namespace CommandIDs {
   export const runPipeline = 'pipeline-editor:run-pipeline';
   export const runPipelineUntil = 'pipeline-editor:run-pipeline-until';
   export const runIncrementalPipelineUntil = 'pipeline-editor:run-incremental-pipeline-until';
+  export const generateCode = 'pipeline-editor:generate-code';
+
 }
 
 const PIPELINE_FACTORY = 'Pipeline Editor';
@@ -194,6 +196,19 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           ['JSON']
         );
 
+
+        app.docRegistry.addFileType(
+          {
+            name: 'amphi-component',
+            displayName: 'component',
+            extensions: ['.amcpn'],
+            icon: componentIcon,
+            fileFormat: 'text'
+          },
+          ['JSON']
+        );
+
+
         // Add command to create new Pipeline
         commands.addCommand(command, {
           label: args =>
@@ -309,6 +324,34 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           },
           isEnabled
         });
+
+
+        commands.addCommand(CommandIDs.generateCode, {
+          label: 'Generate Code',
+          /**
+           * Args: { json: string } – `json` is the JSON description of the pipeline.
+           * Returns the generated code string.
+           */
+          execute: async args => {
+            const json = args.json as string | undefined;
+            if (!json) {
+              console.error('generateCode requires a "json" argument.');
+              return;
+            }
+            try {
+              const code = CodeGenerator.generateCode(
+                json,
+                commands,
+                componentService,
+                false
+              );
+              return code; // callers can handle the resulting code as needed
+            } catch (err) {
+              console.error('Failed to generate code:', err);
+            }
+          }
+        });
+
 
         /**
          * Run Pipeline on Kernel linked to the current Editor
@@ -539,6 +582,12 @@ ${code}
           args: { isPalette: true }
         });
 
+        palette.addItem({
+          command: CommandIDs.generateCode,
+          category: 'Pipeline',
+          args: { isPalette: true }
+        });
+
         // Components //
         // ----
         // ----
@@ -609,15 +658,14 @@ ${code}
         });
 
 
-        
         commands.addCommand('pipeline-editor-component:override', {
           execute: async args => {
-        
+
             const contextNode: HTMLElement | undefined = app.contextMenuHitTest(
               node => !!node.dataset.id
-              
+
             );
-        
+
             console.log("contextNode: %o", contextNode)
             /*
             if (contextNode) {
@@ -636,7 +684,7 @@ ${code}
           },
           label: 'Override Code'
         });
-        
+
 
         commands.addCommand('pipeline-editor-component:generate-ibis-code', {
           execute: async args => {

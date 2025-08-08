@@ -7,5 +7,8 @@
     },
     "ContentsManager": {
       "allow_hidden": true
+    },
+    "FileContentsManager": {
+      "allow_hidden": true
     }
   }
