@@ -5,8 +5,6 @@
 import {
   PipelineService, Node, Flow
 } from './PipelineService';
-import { RequestService } from './RequestService';
-import { KernelMessage } from '@jupyterlab/services';
 
 export interface NodeObject {
   id: string;
@@ -164,7 +162,7 @@ export abstract class BaseCodeGenerator {
       if (config.customTitle) {
         const generatedCode = component.generateComponentCode({ config });
         const needsNewLine = !generatedCode.startsWith('\n');
-        code += `\n# ${config.customTitle}${needsNewLine ? '\n' : ''}`;
+        code += `\n# ${config.customTitle}${needsNewLine ? '\n' : ''}`; 
       }
 
       try {
