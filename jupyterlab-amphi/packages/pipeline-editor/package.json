@@ -62,7 +62,7 @@
     "@jupyterlab/launcher": "^4.2.2",
     "@jupyterlab/logconsole": "^4.2.2",
     "@jupyterlab/mainmenu": "^4.2.2",
-    "@jupyterlab/services": "~7.1.5",
+    "@jupyterlab/services": "~7.4.5",
     "@jupyterlab/settingregistry": "^4.2.2",
     "@jupyterlab/ui-components": "^4.2.2",
     "@lumino/dragdrop": "^2.0.0",
@@ -74,7 +74,7 @@
   "resolutions": {
     "@lumino/widgets": "^2.0.0",
     "@types/react": "^18.2.7",
-    "@jupyterlab/services": "^7.1.5",
+    "@jupyterlab/services": "^7.4.5",
     "@jupyterlab/rendermime-interfaces": "^4.1.5",
     "@amphi/pipeline-components-manager": "file:./../pipeline-components-manager"
   },
