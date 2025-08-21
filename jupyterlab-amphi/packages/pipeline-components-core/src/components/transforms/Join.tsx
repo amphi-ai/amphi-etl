@@ -82,6 +82,7 @@ export class Join extends BaseCoreComponent {
             { value: "suffix_both", label: "Suffix fields from both dataframes", tooltip: "Suffix with _Left and _Right" },
             { value: "coalesce", label: "Coalesce fields from Left dataframe then Right dataframe", tooltip: "Coalesce from Left then Right" }
           ],
+          condition: { select_join_type: ["inner","left","right","outer","cross"]},
           advanced: true
         }
       ],
@@ -113,6 +114,10 @@ export class Join extends BaseCoreComponent {
     const prefix = config?.backend?.prefix ?? "pd";
     // Function to perform frequency analysis
     const JoinFunction = `
+# Quote identifiers safely for DuckDB
+def quote_duckdb(col:str) -> str:           
+  return f'"{col}"'
+
 def check_cartesian_product(execution_engine, df1, df2, key_left, key_right):
     #Checks if a Cartesian product may result from the join based on key uniqueness.
 	  #
@@ -161,12 +166,16 @@ def check_cartesian_product(execution_engine, df1, df2, key_left, key_right):
             key_left = [key_left]
         if isinstance(key_right, str):
             key_right = [key_right]
-
+            
+        # Quote keys before using them in SQL
+        quoted_key_left = [quote_duckdb(c) for c in key_left]
+        quoted_key_right = [quote_duckdb(c) for c in key_right]
+        
         num_unique_df1 = duckdb.query(
-            f"SELECT COUNT(DISTINCT {', '.join(key_left)}) FROM df1"
+            f"SELECT COUNT(DISTINCT {', '.join(quoted_key_left)}) FROM df1"
         ).fetchone()[0]
         num_unique_df2 = duckdb.query(
-            f"SELECT COUNT(DISTINCT {', '.join(key_right)}) FROM df2"
+            f"SELECT COUNT(DISTINCT {', '.join(quoted_key_right)}) FROM df2"
         ).fetchone()[0]
 
         num_duplicates_df1 = num_rows_df1 - num_unique_df1
@@ -318,38 +327,49 @@ def perform_join(execution_engine, df1, df2, key_left, key_right, join_type, sam
         duckdb.register("df2", df2)
 
         if same_name_strategy == 'suffix_right':
-            left_cols = [f"df1.{c}" for c in df1.columns]
-            right_cols = [f"df2.{c} AS {c}{right_suffix}" if c in overlap_cols else f"df2.{c}" for c in df2.columns]
+            left_cols = [f"df1.{quote_duckdb(c)}" for c in df1.columns]
+            right_cols = [f"df2.{quote_duckdb(c)} AS {quote_duckdb(c+right_suffix)}" if c in overlap_cols else f"df2.{quote_duckdb(c)}" for c in df2.columns]
         elif same_name_strategy == 'suffix_both':
-            left_cols = [f"df1.{c} AS {c}{left_suffix}" if c in overlap_cols else f"df1.{c}" for c in df1.columns]
-            right_cols = [f"df2.{c} AS {c}{right_suffix}" if c in overlap_cols else f"df2.{c}" for c in df2.columns]
+            left_cols = [f"df1.{quote_duckdb(c)} AS {quote_duckdb(c+left_suffix)}" if c in overlap_cols else f"df1.{quote_duckdb(c)}" for c in df1.columns]
+            right_cols = [f"df2.{quote_duckdb(c)} AS {quote_duckdb(c+right_suffix)}" if c in overlap_cols else f"df2.{c}" for c in df2.columns]
         elif same_name_strategy == 'coalesce':
-            left_cols = [f"df1.{c} AS {c}{left_suffix}" if c in overlap_cols else f"df1.{c}" for c in df1.columns]
-            right_cols = [f"df2.{c} AS {c}{right_suffix}" if c in overlap_cols else f"df2.{c}" for c in df2.columns]
+             # Build coalesced expressions for overlapping cols (including keys)
+            left_cols = []
+            right_cols = []
+            for c in df1.columns:
+              if c in overlap_cols:
+                # coalesce(df1.c, df2.c) as c
+                left_cols.append(f"COALESCE(df1.{quote_duckdb(c)}, df2.{quote_duckdb(c)}) AS {quote_duckdb(c)}")
+              else:
+                left_cols.append(f"df1.{quote_duckdb(c)}")
+              for c in df2.columns:
+                 if c not in overlap_cols:  # already handled in coalesce
+                    right_cols.append(f"df2.{quote_duckdb(c)}")
         else:
             raise ValueError(f"Unsupported same_name_strategy: {same_name_strategy}")
 
         select_clause = ", ".join(left_cols + right_cols)
-        key_pairs = " AND ".join(f"df1.{l} = df2.{r}" for l, r in zip(key_left, key_right))
+        key_pairs = " AND ".join(f"df1.{quote_duckdb(l)} = df2.{quote_duckdb(r)}" for l, r in zip(key_left, key_right))
 
         if join_type == 'cross':
             query = f"SELECT {select_clause} FROM df1 CROSS JOIN df2"
         elif join_type in ['inner', 'left', 'right', 'outer']:
             sql_how = "full outer" if join_type == "outer" else join_type
             query = f"SELECT {select_clause} FROM df1 {sql_how} JOIN df2 ON {key_pairs}"
+        #for anti-left and right, we only retrieve one side in result so no need for name strategy    
         elif join_type == 'anti-left':
             query = f"""
                 SELECT {', '.join(left_cols)}
                 FROM df1
                 LEFT JOIN df2 ON {key_pairs}
-                WHERE df2.{key_right[0]} IS NULL
+                WHERE df2.{quote_duckdb(key_right[0])} IS NULL
             """
         elif join_type == 'anti-right':
             query = f"""
                 SELECT {', '.join(right_cols)}
                 FROM df2
                 LEFT JOIN df1 ON {key_pairs}
-                WHERE df1.{key_left[0]} IS NULL
+                WHERE df1.{quote_duckdb(key_left[0])} IS NULL
             """
         else:
             raise ValueError(f"Unsupported join type: {join_type}")
@@ -360,13 +380,13 @@ def perform_join(execution_engine, df1, df2, key_left, key_right, join_type, sam
         raise ValueError(f"Unsupported execution engine: {execution_engine}")
 
     # Apply coalesce if needed
-    if same_name_strategy == 'coalesce':
-        for col in overlap_cols:
-            left_col = f"{col}{left_suffix}"
-            right_col = f"{col}{right_suffix}"
-            if left_col in result.columns and right_col in result.columns:
-                result[col] = result[left_col].combine_first(result[right_col])
-                result.drop(columns=[left_col, right_col], inplace=True)
+    #if same_name_strategy == 'coalesce':
+    #    for col in overlap_cols:
+    #        left_col = f"{col}{left_suffix}"
+    #        right_col = f"{col}{right_suffix}"
+    #        if left_col in result.columns and right_col in result.columns:
+    #            result[col] = result[left_col].combine_first(result[right_col])
+    #           result.drop(columns=[left_col, right_col], inplace=True)
 
     # Normalize missing values
     result = result.convert_dtypes()
