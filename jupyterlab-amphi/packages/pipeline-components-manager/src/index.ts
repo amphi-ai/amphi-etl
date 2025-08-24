@@ -95,14 +95,21 @@ const addComponentPlugin: JupyterFrontEndPlugin<void> = {
     app.commands.addCommand(command, {
       label: 'Add Component',
       caption: 'Register this file as an Amphi component',
-      execute: async () => {
-        const browser = browserFactory.defaultBrowser;
-        const item = browser.selectedItems().next();
-        if (!item) {
-          return;
+      isVisible: args => {
+        const path = (args['path'] as string) || browserFactory.defaultBrowser.selectedItems().next()?.path || '';
+        return path.endsWith('.ts');
+      },
+      execute: async args => {
+        let path = args['path'] as string;
+        if (!path) {
+          const item = browserFactory.defaultBrowser.selectedItems().next();
+          if (!item) {
+            return;
+          }
+          path = item.path;
         }
 
-        const model = await app.serviceManager.contents.get(item.path, {
+        const model = await app.serviceManager.contents.get(path, {
           content: true
         });
 
@@ -135,7 +142,7 @@ const addComponentPlugin: JupyterFrontEndPlugin<void> = {
 
     app.contextMenu.addItem({
       command,
-      selector: '.jp-DirListing-item[data-file-type="typescript"]',
+      selector: '.jp-DirListing-item[data-file-extensions~="ts"]',
       rank: 100
     });
     palette.addItem({ command, category: 'Amphi' });
