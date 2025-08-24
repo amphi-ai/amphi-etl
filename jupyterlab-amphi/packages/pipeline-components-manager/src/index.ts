@@ -4,6 +4,8 @@ import {
 } from '@jupyterlab/application';
 import { LabIcon } from '@jupyterlab/ui-components';
 import { Token } from '@lumino/coreutils';
+import { ICommandPalette } from '@jupyterlab/apputils';
+import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 
 export { setDefaultConfig, onChange, GenerateUIFormComponent, FieldDescriptor, Option } from './configUtils';
 export { renderComponentUI, renderHandle, createZoomSelector } from './rendererUtils'
@@ -64,7 +66,7 @@ class ComponentService implements Components {
   }
 }
 
-const plugin: JupyterFrontEndPlugin<Components> = {
+const managerPlugin: JupyterFrontEndPlugin<Components> = {
   id: '@amphi/pipeline-components-manager:plugin',
   description: 'Provider plugin for the pipeline editor\'s "component" service object.',
   autoStart: true,
@@ -76,5 +78,81 @@ const plugin: JupyterFrontEndPlugin<Components> = {
   }
 };
 
+const addComponentPlugin: JupyterFrontEndPlugin<void> = {
+  id: '@amphi/pipeline-components-manager:add-component',
+  autoStart: true,
+  requires: [ComponentManager, IFileBrowserFactory, ICommandPalette],
+  activate: async (
+    app: JupyterFrontEnd,
+    componentService: Components,
+    browserFactory: IFileBrowserFactory,
+    palette: ICommandPalette
+  ) => {
+    console.log('JupyterLab extension (@amphi/pipeline-components-manager/add-component) is activated!');
+
+    const command = '@amphi/pipeline-components-manager:add-component';
+
+    app.commands.addCommand(command, {
+      label: 'Add Component',
+      caption: 'Register this file as an Amphi component',
+      isVisible: args => {
+        const path = (args['path'] as string) || browserFactory.defaultBrowser.selectedItems().next()?.path || '';
+        return path.endsWith('.tsx');
+      },
+      execute: async args => {
+        let path = args['path'] as string;
+        if (!path) {
+          const item = browserFactory.defaultBrowser.selectedItems().next();
+          if (!item) {
+            return;
+          }
+          path = item.path;
+        }
+
+        const model = await app.serviceManager.contents.get(path, {
+          content: true
+        });
+
+        const source = (model as any).content as string;
+
+        // Dynamically transpile the TypeScript source to JavaScript.
+        const ts = await import('typescript');
+        const transpiled = ts.transpileModule(source, {
+          compilerOptions: {
+            module: ts.ModuleKind.ES2020,
+            esModuleInterop: true,
+            jsx: ts.JsxEmit.React
+          }
+        });
+
+        const blob = new Blob([transpiled.outputText], {
+          type: 'text/javascript'
+        });
+        const url = URL.createObjectURL(blob);
+
+        try {
+          const mod: any = await import(/* webpackIgnore: true */ url);
+          const component = mod.default ?? mod.Component ?? mod;
+          if (component && typeof component.getInstance === 'function') {
+            componentService.addComponent(component.getInstance());
+          } else if (component) {
+            componentService.addComponent(component);
+          }
+        } finally {
+          URL.revokeObjectURL(url);
+        }
+      }
+    });
+
+    app.contextMenu.addItem({
+      command,
+      selector: '.jp-DirListing-item[data-file-extensions~="tsx"]',
+      rank: 100
+    });
+    palette.addItem({ command, category: 'Amphi' });
+  }
+};
+
 export { ComponentItem, Components, ComponentManager };
-export default plugin;
+const plugins: JupyterFrontEndPlugin<any>[] = [managerPlugin, addComponentPlugin];
+export default plugins;
