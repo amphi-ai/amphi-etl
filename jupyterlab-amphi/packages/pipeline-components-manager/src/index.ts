@@ -97,7 +97,7 @@ const addComponentPlugin: JupyterFrontEndPlugin<void> = {
       caption: 'Register this file as an Amphi component',
       isVisible: args => {
         const path = (args['path'] as string) || browserFactory.defaultBrowser.selectedItems().next()?.path || '';
-        return path.endsWith('.ts');
+        return path.endsWith('.tsx');
       },
       execute: async args => {
         let path = args['path'] as string;
@@ -118,7 +118,11 @@ const addComponentPlugin: JupyterFrontEndPlugin<void> = {
         // Dynamically transpile the TypeScript source to JavaScript.
         const ts = await import('typescript');
         const transpiled = ts.transpileModule(source, {
-          compilerOptions: { module: ts.ModuleKind.ES2020, esModuleInterop: true }
+          compilerOptions: {
+            module: ts.ModuleKind.ES2020,
+            esModuleInterop: true,
+            jsx: ts.JsxEmit.React
+          }
         });
 
         const blob = new Blob([transpiled.outputText], {
@@ -142,7 +146,7 @@ const addComponentPlugin: JupyterFrontEndPlugin<void> = {
 
     app.contextMenu.addItem({
       command,
-      selector: '.jp-DirListing-item[data-file-extensions~="ts"]',
+      selector: '.jp-DirListing-item[data-file-extensions~="tsx"]',
       rank: 100
     });
     palette.addItem({ command, category: 'Amphi' });
