@@ -53,6 +53,7 @@
     "@codemirror/lang-python": "^6.0.0",
     "@jupyterlab/application": "^4.1.5",
     "@jupyterlab/apputils": "^4.1.5",
+    "@jupyterlab/filebrowser": "^4.1.5",
     "@jupyterlab/completer": "^4.1.5",
     "@lumino/widgets": "^2.0.0",
     "@uiw/react-codemirror": "^4.22.0",
@@ -67,7 +68,8 @@
     "react-mentions": "^4.4.10",
     "react-select": "^5.8.0",
     "reactflow": "11.7.2",
-    "styled-components": "^6.1.8"
+    "styled-components": "^6.1.8",
+    "typescript": "~5.2.2"
   },
   "resolutions": {
     "antd": "5.24.4",
@@ -87,7 +89,6 @@
     "npm-run-all": "^4.1.5",
     "prettier": "^2.1.1",
     "rimraf": "^3.0.2",
-    "typescript": "~5.2.2",
     "yarn-deduplicate": "^6.0.2"
   },
   "publishConfig": {
