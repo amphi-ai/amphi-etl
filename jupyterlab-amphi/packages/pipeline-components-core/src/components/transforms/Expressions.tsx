@@ -1,4 +1,4 @@
-import { bracesIcon } from '../../icons';
+import { formulaIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
 
@@ -8,7 +8,7 @@ export class Expressions extends BaseCoreComponent {
     const defaultConfig = {};
     const form = {};
 
-    super("Expressions", "expressions", "no desc", "pandas_df_processor", [], "transforms", bracesIcon, defaultConfig, form);
+    super("Expressions", "expressions", "no desc", "pandas_df_processor", [], "transforms", formulaIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

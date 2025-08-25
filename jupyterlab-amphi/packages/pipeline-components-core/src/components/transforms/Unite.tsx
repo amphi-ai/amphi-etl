@@ -1,4 +1,4 @@
-import { plusCircleIcon } from '../../icons';
+import { concatIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
 
@@ -38,7 +38,7 @@ export class Unite extends BaseCoreComponent {
     };
     const description = "Use Concatenate to combine two or more datasets vertically (stacking rows) or horizontally (side-by-side columns)."
 
-    super("Concatenate", "concat", description, "pandas_df_multi_processor", [], "transforms", plusCircleIcon, defaultConfig, form);
+    super("Concatenate", "concat", description, "pandas_df_multi_processor", [], "transforms", concatIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

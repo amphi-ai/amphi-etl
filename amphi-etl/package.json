@@ -25,7 +25,8 @@
     "workspaces": {
         "packages": [
             "packages/theme-light",
-            "packages/ui-component"
+            "packages/ui-component",
+            "packages/pipeline-scheduler"
         ]
     },
     "scripts": {

@@ -30,7 +30,7 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
   public _id = "annotation";
   public _type = "annotation";
   public _icon = annotationIcon;
-  public _category = "documentation";
+  public _category = "Misc";
   public _description = "Annotation";
   public _default = { content: "# Annotation", isLocked: false };
 

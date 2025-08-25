@@ -1,5 +1,5 @@
 
-import { googleSheetsIcon } from '../../../icons';
+import { fileSpreadsheetIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 
@@ -39,7 +39,7 @@ export class GoogleSheetsOutput extends BaseCoreComponent {
       ],
     };
 
-    super("G. Sheets Output", "googleSheetsOutput", "no desc", "pandas_df_output", [], "outputs", googleSheetsIcon, defaultConfig, form);
+    super("G. Sheets Output", "googleSheetsOutput", "no desc", "pandas_df_output", [], "outputs", fileSpreadsheetIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

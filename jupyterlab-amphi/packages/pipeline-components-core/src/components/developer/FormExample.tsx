@@ -1,6 +1,6 @@
 // Import necessary icons and the BaseCoreComponent class.
 // Ensure the correct folder hierarchy is used (e.g., input/xx/yy...)
-import { formexampletypescriptIcon } from '../../icons';
+import { typescriptIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
 // Main class definition
@@ -390,7 +390,7 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
     
     // Super constructor call with necessary parameters
     // 1. Do not forget to add the icon in amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\icons.ts and in amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\style\icons.
-    super("Form Example", "form_example", description, "pandas_df_processor", [], "developer", formexampletypescriptIcon, defaultConfig, form);
+    super("Form Example", "form_example", description, "pandas_df_processor", [], "developer", typescriptIcon, defaultConfig, form);
   }
   // List of additional Python packages required (if any)
   public provideImports({ config }): string[] {

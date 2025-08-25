@@ -1,5 +1,5 @@
 
-import { googleSheetsIcon } from '../../../icons';
+import { fileSpreadsheetIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';// Adjust the import path
 
 export class GoogleSheetsInput extends BaseCoreComponent {
@@ -38,7 +38,7 @@ export class GoogleSheetsInput extends BaseCoreComponent {
     };
     const description = "Use Google Sheet Input to retrieve spreadsheet data from a Google Sheet using its ID.";
 
-    super("G. Sheets Input", "googleSheetsInput", description, "pandas_df_input", [], "inputs", googleSheetsIcon, defaultConfig, form);
+    super("G. Sheets Input", "googleSheetsInput", description, "pandas_df_input", [], "inputs", fileSpreadsheetIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

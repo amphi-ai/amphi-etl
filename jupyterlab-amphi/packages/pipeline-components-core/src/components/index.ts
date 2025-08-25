@@ -23,6 +23,8 @@ export { SqlServerInput } from './inputs/databases/SqlServerInput';
 export { SnowflakeInput } from './inputs/databases/SnowflakeInput';
 export { BigQueryInput } from './inputs/databases/BigQueryInput';
 export { ODBCInput } from './inputs/databases/ODBCInput';
+export { DatabaseInput } from './inputs/databases/DatabaseInput';
+export { DatabaseOutput } from './outputs/databases/DatabaseOutput';
 
 // Transforms
 export { Filter } from './transforms/Filter';
@@ -32,6 +34,8 @@ export { SplitColumn } from './transforms/SplitColumn';
 export { Deduplicate } from './transforms/Deduplicate';
 export { ExpandList } from './transforms/JSON/ExpandList';
 export { FlattenJSON } from './transforms/JSON/FlattenJSON';
+export { JSONTools } from './transforms/JSON/JSONTools';
+
 
 export { Sample } from './transforms/Sample';
 export { Sort } from './transforms/Sort';

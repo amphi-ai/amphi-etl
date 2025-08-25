@@ -1,4 +1,4 @@
-import { filePlusIcon } from '../../../icons';
+import { fileCsvIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 import { GCSOptionsHandler } from '../../common/GCSOptionsHandler';
@@ -100,7 +100,7 @@ export class CsvFileOutput extends BaseCoreComponent {
     };
     const description = "Use CSV File Output to write or append data to a CSV file locally or remotely (S3)."
 
-    super("CSV File Output", "csvFileOutput", description, "pandas_df_output", [], "outputs", filePlusIcon, defaultConfig, form);
+    super("CSV File Output", "csvFileOutput", description, "pandas_df_output", [], "outputs", fileCsvIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

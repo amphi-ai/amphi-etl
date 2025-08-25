@@ -664,7 +664,7 @@ const PipelineWrapper: React.FC<IProps> = ({
             <Splitter.Panel min="50%">
               <PipelineFlow context={context} />
             </Splitter.Panel>
-            <Splitter.Panel collapsible defaultSize={225} min={225}>
+            <Splitter.Panel collapsible defaultSize={327} min={241}>
               <Sidebar componentService={componentService} />
             </Splitter.Panel>
           </Splitter>

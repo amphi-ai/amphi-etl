@@ -1,4 +1,4 @@
-import { mergeIcon } from '../../icons';
+import { joinIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
 
@@ -45,7 +45,7 @@ export class Join extends BaseCoreComponent {
     };
     const description = "Use Join Datasets to combine two datasets by one or more columns."
 
-    super("Join Datasets", "join", description, "pandas_df_double_processor", [], "transforms", mergeIcon, defaultConfig, form);
+    super("Join Datasets", "join", description, "pandas_df_double_processor", [], "transforms", joinIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

@@ -1,4 +1,4 @@
-import { codeIcon } from '../../icons';
+import { pythonIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent'; // Adjust the import path
 
 export class CustomInput extends BaseCoreComponent {
@@ -50,7 +50,7 @@ export class CustomInput extends BaseCoreComponent {
 
     const description = "Use custom Python code to create or load a DataFrame into 'output'.";
 
-    super("Python Input", "customInput", description, "pandas_df_input", [], "inputs", codeIcon, defaultConfig, form);
+    super("Python Input", "customInput", description, "pandas_df_input", [], "inputs", pythonIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

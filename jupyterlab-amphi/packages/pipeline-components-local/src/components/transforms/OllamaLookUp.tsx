@@ -70,11 +70,11 @@ export class OllamaLookUp extends BaseCoreComponent {
     return deps;
   }
 
-  public provideImports(): string[] {
+  public provideImports({ config }): string[] {
     return ["import pandas as pd", "from ollama import Client"];
   }
 
-  public provideFunctions(): string[] {
+  public provideFunctions({ config }): string[] {
     let functions = [];
     const code = `
 def generate_ollama_response(

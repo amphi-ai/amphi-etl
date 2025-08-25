@@ -2,18 +2,18 @@ import React, { useContext, useEffect, useCallback, useState, useRef } from 'rea
 import { ComponentItem, PipelineComponent, InputFile, InputRegular, SelectRegular, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector, RequestService, Option } from '@amphi/pipeline-components-manager';
 import { KernelMessage } from '@jupyterlab/services';
 import { Handle, Position, useReactFlow, useStore, useStoreApi, NodeToolbar } from 'reactflow';
-import { bracesIcon, settingsIcon } from '../../icons';
+import { fileVariableIcon, settingsIcon } from '../../icons';
 
 import { Form, Table, ConfigProvider, Divider, Input, Select, Space, Button, Typography, Modal, Popconfirm } from 'antd';
 import type { GetRef, InputRef } from 'antd';
 
 export class EnvFile extends PipelineComponent<ComponentItem>() {
-  public _name = "Env. Variables File";
+  public _name = "Env. File";
   public _id = "envFile";
   public _type = "env_variables";
   public _category = "configuration";
   public _description = "Use Env. Variables to define environment variable names for use in the pipeline. You can also assign a value directly and set a default value. It is not recommended for credentials or sensitive data unless you fully understand the implications."
-  public _icon = bracesIcon;
+  public _icon = fileVariableIcon;
   public _default = {};
   public _form = {};
 

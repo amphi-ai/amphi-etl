@@ -1,5 +1,5 @@
 
-import { filePlusIcon } from '../../../icons';
+import { fileXmlIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
@@ -47,7 +47,7 @@ export class XmlFileOutput extends BaseCoreComponent {
     };
     const description = "Use XML File Output to write or append data to a XML file locally or remotely (S3)."
 
-    super("XML File Output", "xmlFileOutput", "no desc", "pandas_df_output", [], "outputs", filePlusIcon, defaultConfig, form);
+    super("XML File Output", "xmlFileOutput", "no desc", "pandas_df_output", [], "outputs", fileXmlIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

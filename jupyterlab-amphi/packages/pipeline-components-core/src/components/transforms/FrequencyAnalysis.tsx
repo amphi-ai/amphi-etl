@@ -12,16 +12,16 @@ export class FrequencyAnalysis extends BaseCoreComponent {
       fields: [
         {
           type: "columns",
-          label: "Select Columns",
+          label: "Columns to analyze",
           id: "columns",
-          placeholder: "Default: all columns",
+          placeholder: "Leave blank to analyze all columns",
         }
       ],
     };
 
-    const description = "Use Frequency Analysis to generate frequency tables on columns.";
+    const description = "Turn selected columns into simple frequency tables. For every unique value you get the count, percent, and cumulative totals. The results are combined into one table.";
 
-    super("Frequency Analysis", "frequencyAnalysis", description, "pandas_df_processor", [], "Data Exploration", activityIcon, defaultConfig, form);
+    super("Frequency Analysis", "frequencyAnalysis", description, "pandas_df_processor", [], "Misc", activityIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

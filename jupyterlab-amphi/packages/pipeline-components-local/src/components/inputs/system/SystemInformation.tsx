@@ -33,7 +33,7 @@ export class SystemInformation extends BaseCoreComponent {
       description,             // Description
       "pandas_df_input",       // Component type
       [],                      // File drop (unused)
-      "inputs.System",         // Category
+      "inputs",         // Category
       systemInformationIcon,  // Component icon
       defaultConfig,           // Default configuration
       form                     // Form structure

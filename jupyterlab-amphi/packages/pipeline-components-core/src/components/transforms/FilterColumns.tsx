@@ -1,4 +1,4 @@
-import { crosshairIcon } from '../../icons';
+import { columnRemoveIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
 
@@ -19,7 +19,7 @@ export class FilterColumns extends BaseCoreComponent {
     };
     const description = "Use Select Columns to select and reorder columns.";
 
-    super("Select Columns", "filterColumn", description, "pandas_df_processor", [], "transforms", crosshairIcon, defaultConfig, form);
+    super("Select Columns", "filterColumn", description, "pandas_df_processor", [], "transforms", columnRemoveIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

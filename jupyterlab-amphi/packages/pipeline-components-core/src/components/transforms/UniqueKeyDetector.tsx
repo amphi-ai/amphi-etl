@@ -1,4 +1,4 @@
-import { UniquekeyIcon } from '../../icons';
+import { UniqueKeyIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class UniqueKeyDetector extends BaseCoreComponent {
@@ -31,7 +31,7 @@ export class UniqueKeyDetector extends BaseCoreComponent {
 
     const description = "Find combination of fields for unique key";
 
-    super("Unique Key Detector", "UniqueKeyDetector", description, "pandas_df_processor", [], "Data Exploration", UniquekeyIcon, defaultConfig, form);
+    super("Unique Key Detector", "UniqueKeyDetector", description, "pandas_df_processor", [], "Misc", UniqueKeyIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

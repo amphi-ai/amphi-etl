@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Tree, Input, Space, Tooltip } from 'antd';
+import { Input, Space, Tooltip, Collapse } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import posthog from 'posthog-js'
 import { NONAME } from 'dns';
 
-const { DirectoryTree } = Tree;
-const { Search } = Input;
+const { Panel } = Collapse;
 
 interface SidebarProps {
     componentService: {
@@ -15,21 +14,13 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
     const [searchValue, setSearchValue] = useState('');
-    const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
-    const [autoExpandParent, setAutoExpandParent] = useState(true);
+    const [activeKeys, setActiveKeys] = useState<string[]>([]);
     const [components, setComponents] = useState<any[]>([]);
-
 
     useEffect(() => {
         const fetchedComponents = componentService.getComponents();
         setComponents(fetchedComponents);
     }, [componentService]);
-
-    const onDragStart = (event: React.DragEvent, nodeType: string, config: any) => {
-        event.dataTransfer.setData('application/reactflow', nodeType);
-        event.dataTransfer.setData('additionalData', config);
-        event.dataTransfer.effectAllowed = 'move';
-    };
 
     const categorizedComponents = useMemo(() => {
         const result: Record<string, Record<string, any[]>> = {};
@@ -53,171 +44,175 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
         return result;
     }, [components]);
 
+    // Set initial expanded state after components are categorized
+    useEffect(() => {
+        if (components.length > 0) {
+            const categories = Object.keys(categorizedComponents);
+            setActiveKeys(categories.map((_, index) => `category-${index}`));
+        }
+    }, [categorizedComponents]);
 
-    const getCategoryBackgroundColor = (category: string) => {
-        switch (category.toLowerCase()) {
-            case 'inputs':
-                return 'rgba(68, 121, 111, 0.5)'; // 50% opacity background
-            case 'transforms':
-                return 'rgba(22, 96, 130, 0.5)'; // 50% opacity background
-            case 'outputs':
-                return 'rgba(122, 195, 198, 0.3)'; // 50% opacity background
-            case 'data exploration':
-                return 'rgba(245, 240, 187, 0.5)'; // 50% opacity background
-            case 'configuration':
-                return 'rgba(219, 223, 234, 0.5)'; // 50% opacity background
-            case 'documentation':
-                return 'rgba(205, 193, 255, 0.5)'; // 50% opacity background
-            default:
-                return 'rgba(255, 255, 255, 0.5)'; // Default 50% opacity
+    const onDragStart = (event: React.DragEvent, nodeType: string, config: any) => {
+        event.dataTransfer.setData('application/reactflow', nodeType);
+        event.dataTransfer.setData('additionalData', config);
+        event.dataTransfer.effectAllowed = 'move';
+    };
+
+
+
+    const renderComponentGrid = (components: any[], categoryKey: string) => {
+        return (
+            <div 
+                style={{ 
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: '8px',
+                    padding: '8px'
+                }}
+            >
+                {components.map((component, index) => (
+                    <Tooltip
+                        key={`${categoryKey}-${index}`}
+                        title={component._description || component._name}
+                        placement="bottom"
+                        mouseEnterDelay={0.5}
+                        overlayInnerStyle={{ fontSize: '12px' }}
+                    >
+                        <div
+                            draggable
+                            className="palette-component-square"
+                            onDragStart={(event) => onDragStart(event, component._id, component._default ? JSON.stringify(component._default) : '{}')}
+                            style={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                padding: '6px 2px 6px 2px',
+                                border: '1px solid #d9d9d9',
+                                borderRadius: '6px',
+                                cursor: 'grab',
+                                backgroundColor: '#ffffff',
+                                width: '70px',
+                                height: '70px',
+                                transition: 'all 0.2s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.backgroundColor = '#f5f5f5';
+                                e.currentTarget.style.borderColor = '#778899';
+                                e.currentTarget.style.transform = 'translateY(-1px)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.backgroundColor = '#ffffff';
+                                e.currentTarget.style.borderColor = '#d9d9d9';
+                                e.currentTarget.style.transform = 'translateY(0)';
+                            }}
+                        >
+                            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px', color: '#5E9B96' }}>
+                                <component._icon.react height="30px" width="30px" />
+                            </div>
+                            <div 
+                                style={{ 
+                                    fontSize: '10px', 
+                                    textAlign: 'center', 
+                                    lineHeight: '1.1',
+                                    color: '#595959',
+                                    fontWeight: '500',
+                                    wordBreak: 'break-word',
+                                    overflow: 'hidden',
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: 'vertical',
+                                    maxWidth: '100%'
+                                }}
+                            >
+                                {component._name}
+                            </div>
+                        </div>
+                    </Tooltip>
+                ))}
+            </div>
+        );
+    };
+
+    const renderCategoryContent = (category: string, categoryData: Record<string, any[]>) => {
+        const subCategories = Object.keys(categoryData);
+        
+        if (subCategories.length === 1 && subCategories[0] === '_') {
+            // No subcategories, render components directly
+            return renderComponentGrid(categoryData['_'], category);
+        } else {
+            // Has subcategories
+            return (
+                <div>
+                    {subCategories.map((subCat, subIndex) => (
+                        <div key={`${category}-${subIndex}`} style={{ marginBottom: '16px' }}>
+                            {subCat !== '_' && (
+                                <div 
+                                    style={{ 
+                                        fontSize: '12px', 
+                                        fontWeight: '600', 
+                                        color: '#8c8c8c',
+                                        marginBottom: '8px',
+                                        paddingLeft: '8px'
+                                    }}
+                                >
+                                    {subCat.charAt(0).toUpperCase() + subCat.slice(1)}
+                                </div>
+                            )}
+                            {renderComponentGrid(categoryData[subCat], `${category}-${subCat}`)}
+                        </div>
+                    ))}
+                </div>
+            );
         }
     };
 
-
-    const getTreeData = () => {
-        return Object.keys(categorizedComponents).map((category, index) => {
-            const subCategories = Object.keys(categorizedComponents[category]);
-            let children = [];
-
-            subCategories.forEach((subCat, subIndex) => {
-                if (subCat === '_') {
-                    children.push(...categorizedComponents[category][subCat].map((component, childIndex) => ({
-                        title: (
-                            <Tooltip
-                                placement="left"
-                                title={component._description ? component._description : ''}
-                                arrow={true}
-                                mouseEnterDelay={1}
-                                mouseLeaveDelay={0}
-                                align={{ offset: [-30, 0] }}
-                                overlayInnerStyle={{ fontSize: '12px' }}
-                            >
-                                <span
-                                    draggable
-                                    className="palette-component"
-                                    onDragStart={(event) => onDragStart(event, component._id, component._default ? JSON.stringify(component._default) : '{}')}
-                                    key={`category-${index}-item-${childIndex}`}
-                                >
-                                    {component._name}
-                                </span>
-                            </Tooltip>
-                        ),
-                        key: `category-${index}-item-${childIndex}`,
-                        isLeaf: true,
-                        icon: <span className="anticon"><component._icon.react height="14px" width="14px;" /></span>
-                    })));
-                } else {
-                    children.push({
-                        title: <span className="palette-component-category">{subCat.charAt(0).toUpperCase() + subCat.slice(1)}</span>,
-                        key: `category-${index}-sub-${subIndex}`,
-                        children: categorizedComponents[category][subCat].map((component, childIndex) => ({
-                            title: (
-                                <Tooltip
-                                    placement="left"
-                                    title={component._description ? component._description : ''}
-                                    arrow={true}
-                                    mouseEnterDelay={1}
-                                    mouseLeaveDelay={0}
-                                    align={{ offset: [-30, 0] }}
-                                    overlayInnerStyle={{ fontSize: '12px' }}
-                                >
-                                    <span
-                                        draggable
-                                        className="palette-component"
-                                        onDragStart={(event) => onDragStart(event, component._id, component._default ? JSON.stringify(component._default) : '{}')}
-                                        key={`category-${index}-sub-${subIndex}-item-${childIndex}`}
-                                    >
-                                        {component._name}
-                                    </span>
-                                </Tooltip>
-                            ),
-                            key: `category-${index}-sub-${subIndex}-item-${childIndex}`,
-                            isLeaf: true,
-                            icon: <span className="anticon"><component._icon.react height="14px" width="14px;" /></span>
-                        }))
-                    });
+    const filterComponents = (categorizedComponents: Record<string, Record<string, any[]>>, searchValue: string) => {
+        const filtered: Record<string, Record<string, any[]>> = {};
+        
+        Object.keys(categorizedComponents).forEach(category => {
+            const categoryData = categorizedComponents[category];
+            const filteredCategoryData: Record<string, any[]> = {};
+            
+            Object.keys(categoryData).forEach(subCategory => {
+                const filteredComponents = categoryData[subCategory].filter(component => 
+                    component._name.toLowerCase().includes(searchValue.toLowerCase()) ||
+                    (component._description && component._description.toLowerCase().includes(searchValue.toLowerCase()))
+                );
+                
+                if (filteredComponents.length > 0) {
+                    filteredCategoryData[subCategory] = filteredComponents;
                 }
             });
-
-            return {
-                title: <span className="palette-component-category" >{category.charAt(0).toUpperCase() + category.slice(1)}</span>,
-                key: `category-${index}`,
-                children: children,
-                style: {
-                    backgroundColor: '#fafafa',
-                    padding: '0px 0px 0px 0px',
-                    marginBottom: 'Opx'
-                },
-            };
+            
+            if (Object.keys(filteredCategoryData).length > 0) {
+                filtered[category] = filteredCategoryData;
+            }
         });
+        
+        return filtered;
     };
-
-    const filterTree = (data: any[], searchValue: string) => {
-        const filteredData = data
-            .map((item) => {
-                const newItem = { ...item };
-
-                // Check if newItem.title.props.children is an object or a string
-                const childrenText = typeof newItem.title.props.children === 'object'
-                    ? newItem.title.props.children.props.children
-                    : newItem.title.props.children;
-
-                if (newItem.children) {
-                    newItem.children = filterTree(newItem.children, searchValue);
-                }
-
-                if (
-                    childrenText.toLowerCase().includes(searchValue.toLowerCase()) ||
-                    (newItem.children && newItem.children.length > 0)
-                ) {
-                    return newItem;
-                }
-                return null;
-            })
-            .filter(item => item !== null);
-        return filteredData;
-    };
-
 
     const onSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
         setSearchValue(value);
-        setAutoExpandParent(true);
+        
+        // If searching, expand all categories to show results
+        if (value.trim()) {
+            const allKeys = Object.keys(categorizedComponents).map((_, index) => `category-${index}`);
+            setActiveKeys(allKeys);
+        }
     };
 
-    const treeData = useMemo(getTreeData, [categorizedComponents]);
-
-    const filteredTreeData = useMemo(() => {
+    const filteredCategorizedComponents = useMemo(() => {
         if (searchValue && searchValue.trim()) {
-            return filterTree(treeData, searchValue);
-        } else {
-            return treeData;
+            return filterComponents(categorizedComponents, searchValue);
         }
-    }, [searchValue, treeData]);
+        return categorizedComponents;
+    }, [searchValue, categorizedComponents]);
 
-    useEffect(() => {
-        const collectKeys = (data: any[]): React.Key[] => {
-            return data.reduce((acc: React.Key[], item: any) => {
-                // Add the current item's key to the accumulator array
-                acc.push(item.key);
-
-                // If the current item has children, recursively collect their keys
-                if (item.children) {
-                    acc.push(...collectKeys(item.children));
-                }
-
-                return acc; // Return the accumulated keys
-            }, []);
-        };
-
-        // Collect keys based on the presence of a search value
-        const keys = searchValue ? collectKeys(filteredTreeData) : Object.keys(categorizedComponents).map((category, index) => `category-${index}`);
-        setExpandedKeys(keys); // Update the expanded keys state
-    }, [searchValue, filteredTreeData, categorizedComponents]);
-
-    const onExpand = (keys: React.Key[]) => {
-        setExpandedKeys(keys);
-        setAutoExpandParent(false);
+    const onCollapseChange = (keys: string | string[]) => {
+        setActiveKeys(Array.isArray(keys) ? keys : [keys]);
     };
 
     return (
@@ -228,7 +223,6 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
                     top: 0,
                     zIndex: 999,
                     backgroundColor: 'white',
-                    // padding: '10px'
                 }}
             >
                 <Space direction="vertical" style={{ marginTop: '10px', marginLeft: '10px', width: '90%', textAlign: 'center' }}>
@@ -240,15 +234,38 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
                     />
                 </Space>
             </div>
-            <DirectoryTree
-                selectable={false}
-                multiple
-                blockNode
-                autoExpandParent={autoExpandParent}
-                expandedKeys={expandedKeys}
-                onExpand={onExpand}
-                treeData={filteredTreeData}
-            />
+            
+            <div style={{ padding: '0 4px' }}>
+                <Collapse
+                    activeKey={activeKeys}
+                    onChange={onCollapseChange}
+                    ghost
+                    size="small"
+                    style={{ backgroundColor: 'transparent' }}
+                    items={Object.keys(filteredCategorizedComponents).map((category, index) => ({
+                        key: `category-${index}`,
+                        label: (
+                            <span 
+                                style={{ 
+                                    fontWeight: '600', 
+                                    fontSize: '13px',
+                                    color: '#262626'
+                                }}
+                            >
+                                {category.charAt(0).toUpperCase() + category.slice(1)}
+                            </span>
+                        ),
+                        children: renderCategoryContent(category, filteredCategorizedComponents[category]),
+                        style: {
+                            borderRadius: '6px',
+                            marginBottom: '4px',
+                            border: '1px solid #f0f0f0',
+                            paddingLeft: '6px',
+                            paddingRight: '6px'
+                        }
+                    }))}
+                />
+            </div>
         </aside>
     );
 };
