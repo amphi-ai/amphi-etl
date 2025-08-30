@@ -39,7 +39,7 @@ export { RenameColumns } from './transforms/RenameColumns';
 export { TypeConverter } from './transforms/TypeConverter';
 export { Extract } from './transforms/Extract';
 export { FilterColumns } from './transforms/FilterColumns';
-export { Join } from './transforms/Join';
+export { Join } from './transforms/join/Join';
 export { Transpose } from './transforms/Transpose';
 export { DataCleansing } from './transforms/DataCleansing';
 export { Unite } from './transforms/Unite';
