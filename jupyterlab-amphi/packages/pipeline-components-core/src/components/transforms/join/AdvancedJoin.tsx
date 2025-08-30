@@ -1,7 +1,7 @@
-import { mergeIcon } from '../../icons';
-import { BaseCoreComponent } from '../BaseCoreComponent';
+import { mergeIcon } from '../../../icons';
+import { BaseCoreComponent } from '../../BaseCoreComponent';
 
-export class Join extends BaseCoreComponent {
+export class AdvancedJoin extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
 		select_execution_engine : "pandas",
@@ -12,19 +12,6 @@ export class Join extends BaseCoreComponent {
     const form = {
       idPrefix: "component__form",
       fields: [
-        {
-          type: "select",
-          label: "Execution Engine",
-          id: "select_execution_engine",
-          //placeholder: "Default: Pandas", (no placeholder because defined in defaultConfig)
-          options: [
-            { value: "pandas", label: "Pandas", tooltip: "Mature, easy-to-use, great for small-to-medium datasets." },
-            { value: "polars", label: "Polars", tooltip: "Fast, memory-efficient, great for large-scale in-memory analytics." },
-            { value: "duckdb", label: "DuckDB", tooltip: "SQL-based, excellent for large datasets" }
-          ],
-          advanced: true
-        }
-		,
         {
           type: "columns",
           label: "Left Input Column(s)",
@@ -83,6 +70,19 @@ export class Join extends BaseCoreComponent {
             { value: "coalesce", label: "Coalesce fields from Left dataframe then Right dataframe", tooltip: "Coalesce from Left then Right" }
           ],
           condition: { select_join_type: ["inner","left","right","outer","cross"]},
+          advanced: true
+        }
+        ,
+        {
+          type: "select",
+          label: "Execution Engine",
+          id: "select_execution_engine",
+          //placeholder: "Default: Pandas", (no placeholder because defined in defaultConfig)
+          options: [
+            { value: "pandas", label: "Pandas", tooltip: "Mature, easy-to-use, great for small-to-medium datasets." },
+            { value: "polars", label: "Polars", tooltip: "Fast, memory-efficient, great for large-scale in-memory analytics." },
+            { value: "duckdb", label: "DuckDB", tooltip: "SQL-based, excellent for large datasets" }
+          ],
           advanced: true
         }
       ],
