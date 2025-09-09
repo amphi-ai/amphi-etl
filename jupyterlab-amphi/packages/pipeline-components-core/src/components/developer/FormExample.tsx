@@ -7,6 +7,7 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 export class FormExample extends BaseCoreComponent {
   // Constructor initializes the form structure
   constructor() {
+	//this is here where you set the default values of form. but choose either default value or placeholder  
     const defaultConfig = {
                            with_default_value_inputNumber : "18",
                            default_value_column : []
@@ -382,6 +383,12 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
           placeholder: "Column name",
           advanced: true
         },
+		{
+          type: "DatePicker",
+          label: "28. Select a Date (DatePicker)",
+          id: "date_picker",
+          advanced: true
+        },
       ]
           
     };
@@ -480,6 +487,9 @@ print("${config.default_value_column.value}")
 print("27 default_value_column_value: ")
 print("${default_value_column_value}")
 ${outputName} = ${inputName}
+print("${config.dataType}")
+print("28 date_picker : ")
+print("${config.date_picker}")
 `;
 
 //test console : it will appear in your browser console
@@ -541,6 +551,8 @@ console.log("27 config.default_value_column.value: ");
 console.log(config.default_value_column.value);
 console.log("27 default_value_column_value: ");
 console.log(default_value_column_value);
+console.log("28 date_picker: ");
+console.log(config.date_picker);
     return code;
   }
 }

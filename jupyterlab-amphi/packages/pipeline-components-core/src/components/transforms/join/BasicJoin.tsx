@@ -1,11 +1,9 @@
-import { joinIcon } from '../../icons';
-import { BaseCoreComponent } from '../BaseCoreComponent';
+import { mergeIcon } from '../../../icons';
+import { BaseCoreComponent } from '../../BaseCoreComponent';
 
-
-
-export class Join extends BaseCoreComponent {
+export class BasicJoin extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { how: "left" };
+    const defaultConfig = { select_join_type: "left" };
     const form = {
       idPrefix: "component__form",
       fields: [
@@ -28,7 +26,7 @@ export class Join extends BaseCoreComponent {
         {
           type: "select",
           label: "Join type",
-          id: "how",
+          id: "select_join_type",
           placeholder: "Default: Inner",
           options: [
             { value: "inner", label: "Inner", tooltip: "Return only the rows with matching keys in both datasets (intersection)." },
@@ -45,7 +43,7 @@ export class Join extends BaseCoreComponent {
     };
     const description = "Use Join Datasets to combine two datasets by one or more columns."
 
-    super("Join Datasets", "join", description, "pandas_df_double_processor", [], "transforms", joinIcon, defaultConfig, form);
+    super("Join Datasets", "join", description, "pandas_df_double_processor", [], "transforms", mergeIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {
@@ -65,14 +63,14 @@ export class Join extends BaseCoreComponent {
 
     let code = `# Join ${inputName1} and ${inputName2}\n`;
 
-    if (config.how === "anti-left") {
+    if (config.select_join_type === "anti-left") {
       code += `${outputName} = ${prefix}.merge(${inputName1}, ${inputName2}, left_on=${leftKeysStr}, right_on=${rightKeysStr}, how="left", indicator=True)\n`;
       code += `${outputName} = ${outputName}[${outputName}["_merge"] == "left_only"].drop(columns=["_merge"])\n`;
-    } else if (config.how === "anti-right") {
+    } else if (config.select_join_type === "anti-right") {
       code += `${outputName} = ${prefix}.merge(${inputName1}, ${inputName2}, left_on=${leftKeysStr}, right_on=${rightKeysStr}, how="right", indicator=True)\n`;
       code += `${outputName} = ${outputName}[${outputName}["_merge"] == "right_only"].drop(columns=["_merge"])\n`;
     } else {
-      const joinType = config.how ? `, how="${config.how}"` : '';
+      const joinType = config.select_join_type ? `, how="${config.select_join_type}"` : '';
       code += `${outputName} = ${prefix}.merge(${inputName1}, ${inputName2}, left_on=${leftKeysStr}, right_on=${rightKeysStr}${joinType})\n`;
     }
 
