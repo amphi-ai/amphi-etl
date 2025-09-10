@@ -74,6 +74,12 @@ import pythonIconSvgStr from '../style/icons/python.svg';
 import concatIconSvgStr from '../style/icons/concat.svg';
 import fileXmlIconSvgStr from '../style/icons/file-xml.svg';
 import fileSpreadsheetIconSvgStr from '../style/icons/file-spreadsheet.svg';
+import mongodbIconSvgStr from '../style/icons/mongodb.svg';
+
+export const mongodbIcon = new LabIcon({
+  name: 'amphi:mongodb-icon',
+  svgstr: mongodbIconSvgStr
+});
 
 export const expandJsonIcon = new LabIcon({
   name: 'amphi:expand-icon',

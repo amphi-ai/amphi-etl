@@ -1,13 +1,13 @@
-import { mergeIcon } from '../../../icons';
+import { joinIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
-import { BasicJoin } from './BasicJoin';
+import { Join } from './BasicJoin';
 import { AdvancedJoin } from './AdvancedJoin';
 
-export class Join extends BaseCoreComponent {
+export class CombinedJoin extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { mode: 'basic', select_join_type: 'left', select_action_if_cartesian_product: '0', select_same_name_strategy : "suffix_right" };
+    const defaultConfig = { mode: 'basic', selectJoinType: 'left', selectActionIfCartesianProduct: '0', selectSameNameStrategy: "suffix_right" };
 
-    const basic = new BasicJoin();
+    const basic = new Join();
     const advanced = new AdvancedJoin();
 
     const getFields = (comp: BaseCoreComponent): any[] => {
@@ -46,14 +46,17 @@ export class Join extends BaseCoreComponent {
       'pandas_df_double_processor',
       [],
       'transforms',
-      mergeIcon,
+      joinIcon,
       defaultConfig,
       form
     );
   }
 
   public provideDependencies({ config }): string[] {
-    // Delegate if Advanced ever exposes deps
+    // Only AdvancedJoin exposes deps; basic mode returns none
+    if (config?.mode === "advanced") {
+      return new AdvancedJoin().provideDependencies?.({ config }) ?? [];
+    }
     return [];
   }
 
@@ -62,7 +65,7 @@ export class Join extends BaseCoreComponent {
     const imports =
       mode === 'advanced'
         ? new AdvancedJoin().provideImports({ config })
-        : new BasicJoin().provideImports({ config });
+        : new Join().provideImports({ config });
 
     const seen = new Set<string>();
     return imports.filter(i => (seen.has(i) ? false : (seen.add(i), true)));
@@ -78,6 +81,6 @@ export class Join extends BaseCoreComponent {
   public generateComponentCode({ config, inputName1, inputName2, outputName }): string {
     return config.mode === 'advanced'
       ? new AdvancedJoin().generateComponentCode({ config, inputName1, inputName2, outputName })
-      : new BasicJoin().generateComponentCode({ config, inputName1, inputName2, outputName });
+      : new Join().generateComponentCode({ config, inputName1, inputName2, outputName });
   }
 }

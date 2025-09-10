@@ -28,7 +28,7 @@ export class DatabaseOutput extends BaseCoreComponent {
       idPrefix: "component__form",
       fields: [
         {
-          type: "radio",
+          type: "select",
           label: "Database Type",
           id: "provider",
           options: [

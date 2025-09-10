@@ -161,18 +161,18 @@ export class RequestService {
     const flow = PipelineService.filterPipeline(context.model.toString());
     let codeList: any[];
     let code: string = '';
-  
+
     // Retrieve the previous nodes
     const prevNodesList = PipelineService.findMultiplePreviousNodeIds(flow, nodeId);
     const prevNodes = prevNodesList[inputNb];
-  
+
     if (prevNodes == null) {
       console.log("No previous nodes found.");
       setSample('No inputs');
       setLoadings(false);
       return;
     }
-  
+
     try {
       let refNodeId = previousNodes ? prevNodes : nodeId;
       codeList = CodeGenerator.generateCodeUntil(
@@ -191,12 +191,12 @@ export class RequestService {
       setLoadings(false);
       return;
     }
-  
+
     // Helper function to convert HTML table to CSV
     const tableToCSV = (tableElement: HTMLTableElement) => {
       const rows = tableElement.querySelectorAll('tr');
       const csvRows: string[] = [];
-  
+
       rows.forEach((row) => {
         const cells = row.querySelectorAll('th, td');
         const rowData: string[] = [];
@@ -205,22 +205,22 @@ export class RequestService {
         });
         csvRows.push(rowData.join(','));
       });
-  
+
       return csvRows.join('\n');
     };
-  
+
     console.log("Executing code in Jupyter Kernel...");
     const future = context.sessionContext.session.kernel!.requestExecute({ code });
-  
+
     future.onIOPub = (msg: any) => {
       if (msg.header.msg_type === 'stream') {
         console.log("Stream output received");
       } else if (msg.header.msg_type === 'execute_result' || msg.header.msg_type === 'display_data') {
         const content = msg.content as KernelMessage.IExecuteResultMsg['content'] | KernelMessage.IDisplayDataMsg['content'];
-  
+
         if (content.data['text/html']) {
           let htmlContent: string;
-  
+
           if (Array.isArray(content.data['text/html'])) {
             htmlContent = content.data['text/html'].join('');
           } else if (typeof content.data['text/html'] === 'string') {
@@ -230,11 +230,11 @@ export class RequestService {
             setSample("No sample available.");
             return;
           }
-  
+
           const parser = new DOMParser();
           const doc = parser.parseFromString(htmlContent, 'text/html');
           const tableElement = doc.querySelector('table') as HTMLTableElement | null;
-  
+
           if (tableElement) {
             const csvData = tableToCSV(tableElement);
             setSample(csvData);
@@ -251,12 +251,11 @@ export class RequestService {
         setSample("Error retrieving data sample.");
       }
     };
-  
+
     future.onDone = () => {
       setLoadings(false);
     };
   }
-  
 
   static executePythonCode(
     code: string,
@@ -607,9 +606,9 @@ ${pythonExtraction}
       const optionsString = component.generateOptionsCode(excelOptions);
 
       let filteredOptions = optionsString
-      .split(",")
-      .filter(option => option.trim().startsWith("engine"))
-      .join(",");
+        .split(",")
+        .filter(option => option.trim().startsWith("engine"))
+        .join(",");
       // Build the Python code string
       let code = `
 !pip install --quiet ${dependencies.join(" ")} --disable-pip-version-check
@@ -749,5 +748,126 @@ print(formatted_output)
       }
     };
   };
+
+  static retrieveCollectionsList(
+    event: React.MouseEvent<HTMLElement>,
+    schemaName: string,
+    query: string | undefined,
+    context: any,
+    componentService: any,
+    setList: any,
+    setLoadings: any,
+    nodeId: any,
+  ): any {
+    setLoadings(true);
+
+    // Prepare query as a regex filter; default to match all
+    const rawQuery = query ?? ".*";
+    let escapedQuery = rawQuery.replace(/"/g, '\\"');
+    escapedQuery = escapedQuery.replace(/{{schema}}/g, schemaName);
+
+    // Get environment and connection code
+    const envVariableCode = CodeGenerator.getEnvironmentVariableCode(
+      context.model.toString(),
+      componentService
+    );
+    const connectionCode = CodeGenerator.getConnectionCode(
+      context.model.toString(),
+      componentService
+    );
+
+    // Get the component and data for the node
+    const { component, data } = CodeGenerator.getComponentAndDataForNode(
+      nodeId,
+      componentService,
+      context.model.toString()
+    );
+
+    if (!component) {
+      console.error("Component or data not found.");
+      setLoadings(false);
+      return;
+    }
+
+    // Get dependencies and imports from the component
+    const dependencies = component.provideDependencies(data);
+    const imports = component.provideImports(data);
+
+    // Generate strings
+    const dependencyString = dependencies.join(" ");
+    const importStatements = imports.map((imp: string) => `${imp}`).join("\n");
+
+    // Build the Python code string for MongoDB-like databases
+    let code = `
+!pip install --quiet ${dependencyString} --disable-pip-version-check
+${importStatements}
+${envVariableCode}
+${connectionCode}
+
+import re
+
+database_name = """${schemaName}"""
+pattern = re.compile(r"""${escapedQuery}""")
+
+${component.generateDatabaseConnectionCode({ config: data, connectionName: "client" })}
+
+# Prefer an existing 'db' if generated by the component; otherwise derive from 'client'
+try:
+    db  # type: ignore # noqa
+except NameError:
+    db = client[database_name]  # type: ignore # noqa
+
+collections = db.list_collection_names()
+filtered = [c.strip() for c in collections if pattern.search(c)]
+print(", ".join(filtered))
+`;
+
+    // Format remaining variables in the code
+    code = CodeGenerator.formatVariables(code);
+
+    const future = context.sessionContext.session.kernel!.requestExecute({ code });
+
+    future.onReply = (reply: any) => {
+      if (reply.content.status === "ok") {
+      } else {
+        setLoadings(false);
+      }
+    };
+
+    future.onIOPub = (msg: any) => {
+      if (msg.header.msg_type === "stream") {
+        const streamMsg = msg as KernelMessage.IStreamMsg;
+
+        if (streamMsg.content.name === "stdout") {
+          const output = streamMsg.content.text;
+          const collections = output.split(", ").filter(Boolean);
+
+          const newItems = collections.map((name: string) => {
+            const trimmed = name.trim();
+            return {
+              input: {},
+              value: trimmed,
+              key: trimmed,
+              label: trimmed,
+              type: "collection",
+            };
+          });
+
+          setList((items: any[]) => {
+            const existingKeys = new Set(items.map((item) => item.key));
+            const uniqueItems = newItems.filter((n) => !existingKeys.has(n.key));
+            return [...items, ...uniqueItems];
+          });
+
+          setLoadings(false);
+        }
+      } else if (msg.header.msg_type === "error") {
+        setLoadings(false);
+        const errorMsg = msg as KernelMessage.IErrorMsg;
+        const errorOutput = errorMsg.content;
+        console.error(`Received error: \${errorOutput.ename}: \${errorOutput.evalue}`);
+      }
+    };
+  }
 
 }

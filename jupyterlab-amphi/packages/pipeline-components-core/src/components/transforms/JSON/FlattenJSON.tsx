@@ -5,7 +5,7 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class FlattenJSON extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = {};
+    const defaultConfig = { keepColumns: true };
     const form = {
       idPrefix: "component__form",
       fields: [
@@ -14,6 +14,12 @@ export class FlattenJSON extends BaseCoreComponent {
           label: "Column",
           id: "column",
           placeholder: "Select column",
+        },
+        {
+          type: "boolean",
+          label: "Keep all columns",
+          id: "keepColumns",
+          advanced: true
         }
       ]
     };
@@ -30,17 +36,18 @@ export class FlattenJSON extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    // Retrieve the column details from the config
     const columnName = config.column.value;
-    const columnType = config.column.type;
     const columnIsNamed = config.column.named;
+    const keepAll = config.keepColumns;
 
-    let columnReference: string;
-    columnReference = columnIsNamed ? `'${columnName}'` : columnName;
+    const columnReference = columnIsNamed ? `'${columnName}'` : columnName;
 
-    let code = `# Flatten the JSON data in the specified column\n`;
-    code += `${outputName} = pd.json_normalize(${inputName}[${columnReference}])\n`;
-
+    let code = `# Flatten JSON in the specified column\n`;
+    if (keepAll) {
+      code += `${outputName} = ${inputName}.join(pd.json_normalize(${inputName}.pop(${columnReference})))\n`;
+    } else {
+      code += `${outputName} = pd.json_normalize(${inputName}[${columnReference}])\n`;
+    }
     return code;
   }
 }

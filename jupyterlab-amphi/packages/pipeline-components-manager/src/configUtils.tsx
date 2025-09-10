@@ -16,6 +16,7 @@ import KeyValueForm from './forms/keyValueForm';
 import SelectColumn from './forms/selectColumn';
 import SelectColumns from './forms/selectColumns';
 import SelectFromSQLQuery from './forms/selectFromSQLQuery';
+import SelectFromPythonQuery from './forms/selectFromPythonQuery';
 import SelectCustomizable from './forms/selectCustomizable';
 import SelectMultipleCustomizable from './forms/selectMultipleCustomizable';
 import SelectRegular from './forms/selectRegular';
@@ -336,6 +337,8 @@ export const GenerateUIInputs = React.memo(({
         return renderFormItem(field, <SelectColumn {...commonProps} defaultValue={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "table":
         return renderFormItem(field, <SelectFromSQLQuery {...commonProps} data={data} defaultValue={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
+      case "collection":
+        return renderFormItem(field, <SelectFromPythonQuery {...commonProps} data={data} defaultValue={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "sheets":
         return renderFormItem(field, <SelectSheetFromExcel {...commonProps} data={data} defaultValue={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "selectCustomizable":
@@ -591,7 +594,7 @@ export interface Option {
 export interface FieldDescriptor {
   type: 'file' | 'files' | 'column' | 'columns' | 'table' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio'
   | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'sheets'
-  | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable' | 'formulaColumns' | 'keyvalueColumnsRadio' | 'date';
+  | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable' | 'formulaColumns' | 'keyvalueColumnsRadio' | 'date' | 'collection';
   label: string;
   id: string;
   placeholder?: any;
