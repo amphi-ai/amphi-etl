@@ -13,7 +13,7 @@ import {
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput, 
   SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample,UniqueKeyDetector,FileAction,DataframeList,DataframeDelete,HierarchyPath, JSONTools,
-  DatabaseInput, DatabaseOutput, MongoDBInput
+  DatabaseInput, DatabaseOutput
 } from './components';
 
 // Export allow the component to be used as a base component in different packages
@@ -51,7 +51,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
     // componentService.addComponent(SnowflakeInput.getInstance())
     // componentService.addComponent(ODBCInput.getInstance())
     componentService.addComponent(DatabaseInput.getInstance())
-    componentService.addComponent(MongoDBInput.getInstance())
     componentService.addComponent(CustomInput.getInstance())
     // componentService.addComponent(PyGWalker.getInstance())
     // componentService.addComponent(Slider.getInstance())

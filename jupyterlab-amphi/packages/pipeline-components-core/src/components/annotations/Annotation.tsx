@@ -161,7 +161,7 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
                       min={0}
                       max={50}
                       onChange={handleBorderRadiusChange}
-                      value={typeof borderRadius === 'number' ? borderRadius : 0}
+                      value={typeof borderRadius === 'number' ? borderRadius : 5}
                     />
                   </Col>
                   <Col span={4}>
