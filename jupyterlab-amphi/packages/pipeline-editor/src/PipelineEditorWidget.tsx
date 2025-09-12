@@ -64,12 +64,31 @@ export const commandIDs = {
   saveDocManager: 'docmanager:save',
 };
 
-
-
 export const FitViewOptions = {
   padding: 10,
   maxZoom: 1.0
 }
+
+const InlineIcon: React.FC<{
+  icon?: any;
+  height?: string;
+  width?: string;
+  className?: string;
+  color?: string;
+}> = ({ icon, height = '20px', width = '20px', className, color }) => {
+  if (!icon) return null;
+  const MaybeReact = (icon as any).react;
+  if (typeof MaybeReact === 'function') {
+    const R = MaybeReact as React.FC<any>;
+    return <R height={height} width={width} color={color} className={className} />;
+  }
+  const svgstr: string | undefined = (icon as any).svgstr;
+  if (typeof svgstr === 'string' && svgstr.trim()) {
+    const sized = svgstr.replace('<svg', `<svg height="${parseInt(height)}" width="${parseInt(width)}"`);
+    return <span className={className} dangerouslySetInnerHTML={{ __html: sized }} />;
+  }
+  return null;
+};
 
 /**
  * Initialization: The class extends ReactWidget and initializes the pipeline editor widget. It sets up the initial properties and state for the widget.
@@ -178,29 +197,40 @@ const PipelineWrapper: React.FC<IProps> = ({
   }
 
   const nodeTypes = {
-    ...componentService.getComponents().reduce((acc, component: any) => {
+    ...componentService.getComponents().reduce((acc: Record<string, any>, component: any) => {
       const id = component._id;
-      const ComponentUI = (props) => (
-        <component.UIComponent
-          context={context}
-          componentService={componentService}
-          manager={manager}
-          commands={commands}
-          rendermimeRegistry={rendermimeRegistry}
-          settings={settings}
-          {...props}
-        />
-      );
+      const HasCustomUI = !!component && typeof component.UIComponent === 'function';
 
-      acc[id] = (props) => (
-        <ComponentUI
-          context={context}
-          componentService={componentService}
-          manager={manager}
-          commands={commands}
-          {...props}
-        />
-      );
+      // Safe wrapper: use component.UIComponent if present, otherwise a minimal fallback node
+      const NodeRenderer: React.FC<any> = (props) => {
+        if (HasCustomUI) {
+          const UI = component.UIComponent as React.FC<any>;
+          return (
+            <UI
+              context={context}
+              componentService={componentService}
+              manager={manager}
+              commands={commands}
+              rendermimeRegistry={rendermimeRegistry}
+              settings={settings}
+              {...props}
+            />
+          );
+        }
+
+        // Fallback node: no JSX from the blob needed; avoids invalid element type
+        return (
+          <div className="component component--fallback" style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd', background: '#fff' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <InlineIcon icon={component._icon} height="20px" width="20px" />
+              <span style={{ fontWeight: 500 }}>{component._name ?? id}</span>
+            </div>
+            {/* Render nothing else; ReactFlow provides handles via props if needed */}
+          </div>
+        );
+      };
+
+      acc[id] = NodeRenderer;
       return acc;
     }, {})
   };
@@ -743,15 +773,15 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
     ) {
       const container = document.createElement('div');
       document.body.appendChild(container);
-    
+
       function CodeModal() {
         const [copyStatus, setCopyStatus] = React.useState<'idle' | 'loading' | 'copied'>('idle');
-    
+
         const handleClose = () => {
           ReactDOM.unmountComponentAtNode(container);
           container.remove();
         };
-    
+
         const handleCopyToClipboard = async () => {
           try {
             setCopyStatus('loading');
@@ -763,7 +793,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
             setCopyStatus('idle');
           }
         };
-    
+
         const handleOpenInNewFile = async (contents: string) => {
           try {
             const file = await commands.execute('docmanager:new-untitled', {
@@ -778,7 +808,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
           }
           handleClose();
         };
-    
+
         const handleExportToDagster = async () => {
           try {
             const dagsterCode = CodeGeneratorDagster.generateDagsterCode(
@@ -800,7 +830,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
           }
           handleClose();
         };
-    
+
         const menuItems = [
           {
             key: '1',
@@ -817,9 +847,9 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
             onClick: handleExportToDagster
           }
         ];
-    
+
         const title = isDagsterCode ? 'Generated Dagster Python Code' : 'Generated Python Code';
-    
+
         return (
           <ConfigProvider theme={{ token: { colorPrimary: '#5F9B97' } }}>
             <ReactFlowProvider>
@@ -846,8 +876,8 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
                       {copyStatus === 'copied'
                         ? 'Copied!'
                         : copyStatus === 'loading'
-                        ? 'Loading...'
-                        : 'Copy to clipboard'}
+                          ? 'Loading...'
+                          : 'Copy to clipboard'}
                     </Dropdown.Button>
                   </div>
                 </div>
@@ -856,10 +886,10 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
           </ConfigProvider>
         );
       }
-    
+
       ReactDOM.render(<CodeModal />, container);
     }
-    
+
 
     // Add generate code button
     const generateCodeButton = new ToolbarButton({

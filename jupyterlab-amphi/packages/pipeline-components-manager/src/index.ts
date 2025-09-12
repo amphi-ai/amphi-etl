@@ -57,6 +57,7 @@ const managerPlugin: JupyterFrontEndPlugin<Components> = {
   autoStart: true,
   provides: ComponentManager,
   activate: () => {
+
     console.log('JupyterLab extension (@amphi/pipeline-components-manager/provider) activated');
     return new ComponentService();
   }
@@ -115,10 +116,26 @@ async function maybeWrapAsLabIcon(icon: any): Promise<any> {
 
 // Normalize minimal component shape
 async function normalizeComponent(candidate: any): Promise<ComponentItem | null> {
+  const g: any = globalThis as any;
+  const Base = g?.Amphi?.BaseCoreComponent;
+
   const inst = typeof candidate?.getInstance === 'function' ? candidate.getInstance() : candidate;
   if (!inst || typeof inst !== 'object') return null;
-  if (!inst._id || !inst._name) return null;
 
+  // If it’s really a BaseCoreComponent instance, keep it intact
+  if (Base && inst instanceof Base) {
+    if (inst._icon) inst._icon = await maybeWrapAsLabIcon(inst._icon);
+    // ensure required fields exist
+    inst._type = String(inst._type || 'uncategorized');
+    inst._category = String(inst._category || inst._type || 'uncategorized');
+    inst._default = inst._default ?? {};
+    inst._form = inst._form ?? {};
+    inst._description = inst._description ?? '';
+    return inst as unknown as ComponentItem;
+  }
+
+  // Fallback: plain-object path (legacy)
+  if (!inst._id || !inst._name) return null;
   return {
     _id: String(inst._id),
     _name: String(inst._name),
@@ -130,7 +147,7 @@ async function normalizeComponent(candidate: any): Promise<ComponentItem | null>
     _description: inst._description ?? '',
     provideImports: inst.provideImports,
     generateComponentCode: inst.generateComponentCode,
-    getInstance: undefined // already resolved
+    getInstance: undefined
   };
 }
 
