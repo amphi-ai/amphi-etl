@@ -99,7 +99,7 @@ export class FileAction extends BaseCoreComponent {
 
     const description = "Delete, move, rename, zip.. files";
 
-    super("File Action", "FileAction", description, "pandas_df_processor", [], "File Management", FileActionIcon, defaultConfig, form);
+    super("File Action", "FileAction", description, "pandas_df_processor", [], "Misc", FileActionIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

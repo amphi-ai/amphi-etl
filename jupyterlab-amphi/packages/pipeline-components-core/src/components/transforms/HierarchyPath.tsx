@@ -1,4 +1,4 @@
-import { HierarchyPathIcon } from '../../icons';
+import { hierarchyIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class HierarchyPath extends BaseCoreComponent {
@@ -67,7 +67,7 @@ export class HierarchyPath extends BaseCoreComponent {
 
     const description = "Transpose a parent/child hierarchy to a path of every node";
 
-    super("Hierarchy Path", "hierarchy_path", description, "pandas_df_processor", [], "transforms", HierarchyPathIcon, defaultConfig, form);
+    super("Hierarchy Path", "hierarchy_path", description, "pandas_df_processor", [], "transforms", hierarchyIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

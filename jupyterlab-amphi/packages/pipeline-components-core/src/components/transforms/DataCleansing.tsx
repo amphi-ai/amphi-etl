@@ -1,5 +1,5 @@
 
-import { checkDiamondIcon } from '../../icons'; // Define this icon in your icons file
+import { washIcon } from '../../icons'; // Define this icon in your icons file
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
 
@@ -106,7 +106,7 @@ export class DataCleansing extends BaseCoreComponent {
 
     const description = "Use Data Cleansing to clean and preprocess your data. It provides options to handle missing values, drop null rows or columns, modify string cases, and remove unwanted characters. You can apply these transformations to specific columns or the entire dataset.";
 
-    super("Data Cleansing", "cleanDataCLeansing", description, "pandas_df_processor", [], "transforms", checkDiamondIcon, defaultConfig, form);
+    super("Data Cleansing", "cleanDataCLeansing", description, "pandas_df_processor", [], "transforms", washIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

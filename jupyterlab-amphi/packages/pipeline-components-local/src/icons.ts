@@ -12,12 +12,17 @@ import openAiSvgStr from '../style/icons/openai.svg';
 import htmlLineSvgStr from '../style/icons/html-line.svg';
 import apiIconSvgStr from '../style/icons/api-24.svg';
 import splitIconSvgStr from '../style/icons/scissors-24.svg';
-import boxIconSvgStr from '../style/icons/box-16.svg';
+import sqlIconSvgStr from '../style/icons/sql.svg';
 import engineIconSvgStr from '../style/icons/service-16.svg'
 import settingsIconSvgStr from '../style/icons/settings-16.svg';
 import playCircleIconSvgStr from '../style/icons/play-circle-16.svg';
-import systemInformationIconSvgStr from '../style/icons/monitor-24.svg';
+import systemInformationIconSvgStr from '../style/icons/system.svg';
+import aiIconSvgStr from '../style/icons/brain.svg'; 
 
+export const aiIcon = new LabIcon({
+  name: 'amphi:ai-icon',
+  svgstr: aiIconSvgStr
+});
 
 export const apiIcon = new LabIcon({
   name: 'amphi:api-icon',
@@ -34,9 +39,9 @@ export const splitIcon = new LabIcon({
   svgstr: splitIconSvgStr
 });
 
-export const boxIcon = new LabIcon({
-  name: 'amphi:box-icon',
-  svgstr: boxIconSvgStr
+export const sqlIcon = new LabIcon({
+  name: 'amphi:sql-icon',
+  svgstr: sqlIconSvgStr
 });
 
 export const redditIcon = new LabIcon({

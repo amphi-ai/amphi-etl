@@ -1,4 +1,4 @@
-import { s3Icon } from '../../../icons';
+import { bucketIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 import { CsvFileOutput } from './CsvFileOutput';
@@ -66,7 +66,7 @@ export class S3FileOutput extends BaseCoreComponent {
 
     const description = "Use File Output to write or append data to a file remotely (S3). Supports CSV, JSON, Excel, Parquet, and XML formats.";
 
-    super("S3 File Output", "fileOutput", description, "pandas_df_output", [], "outputs.AWS", s3Icon, defaultConfig, form);
+    super("S3 File Output", "fileOutput", description, "pandas_df_output", [], "outputs", bucketIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

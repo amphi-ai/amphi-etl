@@ -30,7 +30,7 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
   public _id = "annotation";
   public _type = "annotation";
   public _icon = annotationIcon;
-  public _category = "documentation";
+  public _category = "Misc";
   public _description = "Annotation";
   public _default = { content: "# Annotation", isLocked: false };
 
@@ -161,7 +161,7 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
                       min={0}
                       max={50}
                       onChange={handleBorderRadiusChange}
-                      value={typeof borderRadius === 'number' ? borderRadius : 0}
+                      value={typeof borderRadius === 'number' ? borderRadius : 5}
                     />
                   </Col>
                   <Col span={4}>

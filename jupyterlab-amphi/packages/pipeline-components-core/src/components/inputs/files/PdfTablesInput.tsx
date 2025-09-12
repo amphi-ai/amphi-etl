@@ -1,5 +1,5 @@
 
-import { fileTextIcon } from '../../../icons';
+import { filePdfIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class PdfTablesInput extends BaseCoreComponent {
@@ -31,7 +31,7 @@ export class PdfTablesInput extends BaseCoreComponent {
       ],
     };
 
-    super("PDF Tables Input", "pdfTablesInput", "no desc", "pandas_df_input", ["pdf"], "inputs", fileTextIcon, defaultConfig, form);
+    super("PDF Tables Input", "pdfTablesInput", "no desc", "pandas_df_input", ["pdf"], "inputs", filePdfIcon, defaultConfig, form);
   }
 
 

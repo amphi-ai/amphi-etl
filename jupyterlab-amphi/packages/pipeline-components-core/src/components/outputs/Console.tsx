@@ -1,4 +1,4 @@
-import { monitorIcon } from '../../icons';
+import { consoleIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class Console extends BaseCoreComponent {
@@ -53,7 +53,7 @@ export class Console extends BaseCoreComponent {
     };
     const description = "Use Console Message to display a message (info, warning, error) or data into the Pipeline Console.";
 
-    super("Console Message", "console", description, "pandas_df_output", [], "outputs", monitorIcon, defaultConfig, form);
+    super("Console Message", "console", description, "pandas_df_output", [], "outputs", consoleIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

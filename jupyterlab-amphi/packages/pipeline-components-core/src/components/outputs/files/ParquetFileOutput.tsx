@@ -1,5 +1,5 @@
 
-import { filePlusIcon } from '../../../icons';
+import { fileParquetIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
@@ -59,7 +59,7 @@ export class ParquetFileOutput extends BaseCoreComponent {
     };
     const description = "Use Parquet File Output to write or append data to a Parquet file locally or remotely (S3)."
 
-    super("Parquet File Output", "parquetFileOutput", "no desc", "pandas_df_output", [], "outputs", filePlusIcon, defaultConfig, form);
+    super("Parquet File Output", "parquetFileOutput", "no desc", "pandas_df_output", [], "outputs", fileParquetIcon, defaultConfig, form);
   }
 
   public provideDependencies({config}): string[] {

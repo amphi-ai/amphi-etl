@@ -1,5 +1,5 @@
 
-import { fileTextIcon } from '../../../icons';
+import { fileXmlIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 
@@ -57,7 +57,7 @@ export class XmlFileInput extends BaseCoreComponent {
     };
     const description = "Use XML File Input to access data from a XML file locally or remotely (via HTTP or S3)."
 
-    super("XML File Input", "xmlFileInput", description, "pandas_df_input", ["xml"], "inputs", fileTextIcon, defaultConfig, form);
+    super("XML File Input", "xmlFileInput", description, "pandas_df_input", ["xml"], "inputs", fileXmlIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

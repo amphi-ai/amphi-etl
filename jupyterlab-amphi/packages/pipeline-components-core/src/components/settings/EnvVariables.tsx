@@ -4,7 +4,7 @@ import type { GetRef, InputRef } from 'antd';
 import { Form, Table, ConfigProvider, Divider, Input, Select, Space, Button, Typography, Modal, Popconfirm } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Handle, Position, useReactFlow, useStore, useStoreApi, NodeToolbar } from 'reactflow';
-import { bracesIcon, settingsIcon } from '../../icons';
+import { variableIcon, settingsIcon } from '../../icons';
 
 
 export class EnvVariables extends PipelineComponent<ComponentItem>() {
@@ -14,7 +14,7 @@ export class EnvVariables extends PipelineComponent<ComponentItem>() {
   public _type = "env_variables";
   public _category = "configuration";
   public _description = "Use Env. Variables File to retrieve environment variables from configuration files. This is the recommended approach for handling credentials or sensitive data that should not be exposed in plain text within the pipeline."
-  public _icon = bracesIcon;
+  public _icon = variableIcon;
   public _default = {};
   public _form = {};
 

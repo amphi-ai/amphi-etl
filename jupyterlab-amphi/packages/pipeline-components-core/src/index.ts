@@ -9,16 +9,17 @@ import { BaseCoreComponent } from "./components/BaseCoreComponent";
 // Import allow to add the component to the palette
 import {
   Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
-  SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join,
+  SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join, CombinedJoin,
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, DateTimeConverter,
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON,
-  DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
-  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample,UniqueKeyDetector,FileAction,DataframeList,DataframeDelete,HierarchyPath
+  DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput, 
+  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample,UniqueKeyDetector,FileAction,DataframeList,DataframeDelete,HierarchyPath, JSONTools,
+  DatabaseInput, DatabaseOutput
 } from './components';
 
 // Export allow the component to be used as a base component in different packages
 export { Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
-  SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join,
+  SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join, CombinedJoin,
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, DateTimeConverter,
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
@@ -32,7 +33,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
   activate: (app: JupyterFrontEnd, componentService: any) => {
     console.log('Amphi extension pipeline-components-core is activated!');
-
 
     const g: any = globalThis as any;
     g.Amphi = g.Amphi || {};
@@ -55,12 +55,13 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(S3FileInput.getInstance())
     componentService.addComponent(RestInput.getInstance())
     componentService.addComponent(GoogleSheetsInput.getInstance())
-    componentService.addComponent(MySQLInput.getInstance())
-    componentService.addComponent(PostgresInput.getInstance())
-    componentService.addComponent(OracleInput.getInstance())
-    componentService.addComponent(SqlServerInput.getInstance())
-    componentService.addComponent(SnowflakeInput.getInstance())
-    componentService.addComponent(ODBCInput.getInstance())
+    // componentService.addComponent(MySQLInput.getInstance())
+    // componentService.addComponent(PostgresInput.getInstance())
+    // componentService.addComponent(OracleInput.getInstance())
+    // componentService.addComponent(SqlServerInput.getInstance())
+    // componentService.addComponent(SnowflakeInput.getInstance())
+    // componentService.addComponent(ODBCInput.getInstance())
+    componentService.addComponent(DatabaseInput.getInstance())
     componentService.addComponent(CustomInput.getInstance())
     // componentService.addComponent(PyGWalker.getInstance())
     // componentService.addComponent(Slider.getInstance())
@@ -72,10 +73,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(Sort.getInstance());
     componentService.addComponent(SplitColumn.getInstance());
     componentService.addComponent(Extract.getInstance());
-    componentService.addComponent(ExpandList.getInstance());
-    componentService.addComponent(FlattenJSON.getInstance());
     componentService.addComponent(FormulaRow.getInstance());
-    componentService.addComponent(Join.getInstance());
+    componentService.addComponent(CombinedJoin.getInstance());
     componentService.addComponent(Unite.getInstance());
     componentService.addComponent(Aggregate.getInstance());
     componentService.addComponent(Pivot.getInstance());
@@ -87,10 +86,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(Sample.getInstance());
     componentService.addComponent(CustomTransformations.getInstance());
     componentService.addComponent(GenerateIDColumn.getInstance());
-    componentService.addComponent(Summary.getInstance());
-    componentService.addComponent(FrequencyAnalysis.getInstance());
-    componentService.addComponent(UniqueKeyDetector.getInstance());
-    componentService.addComponent(FileAction.getInstance());
+    componentService.addComponent(JSONTools.getInstance());
     componentService.addComponent(HierarchyPath.getInstance());
 
     // Outputs
@@ -101,16 +97,22 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(XmlFileOutput.getInstance())
     componentService.addComponent(GoogleSheetsOutput.getInstance())
     componentService.addComponent(S3FileOutput.getInstance())
-    componentService.addComponent(MySQLOutput.getInstance())
-    componentService.addComponent(PostgresOutput.getInstance())
+    componentService.addComponent(DatabaseOutput.getInstance())
     componentService.addComponent(Console.getInstance())
-    componentService.addComponent(SnowflakeOutput.getInstance())
-    componentService.addComponent(SqlServerOutput.getInstance())
-    componentService.addComponent(OracleOutput.getInstance())
     componentService.addComponent(CustomOutput.getInstance())
 
-    // Documentation
+
+    // Misc
+    componentService.addComponent(Summary.getInstance());
+    componentService.addComponent(FrequencyAnalysis.getInstance());
+    componentService.addComponent(UniqueKeyDetector.getInstance());
+    componentService.addComponent(FileAction.getInstance());
     componentService.addComponent(Annotation.getInstance())
+
+    // Settings
+    componentService.addComponent(EnvVariables.getInstance())
+    componentService.addComponent(EnvFile.getInstance())
+    componentService.addComponent(Connection.getInstance())
 
     // Developer
     componentService.addComponent(FormExample.getInstance())

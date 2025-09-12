@@ -13,7 +13,7 @@ import fileCsvIconSvgStr from '../style/icons/file-csv-24.svg';
 import filePdfIconSvgStr from '../style/icons/file-pdf-24.svg';
 import fileExcelIconSvgStr from '../style/icons/file-excel-24.svg';
 import fileParquetIconSvgStr from '../style/icons/file-parquet-24.svg';
-import fileJsonIconSvgStr from '../style/icons/file-json-24.svg';
+import fileJsonIconSvgStr from '../style/icons/file-json.svg';
 import fileNotebookIconSvgStr from '../style/icons/file-ipynb-24.svg';
 import terminalIconSvgStr from '../style/icons/terminal-screen-24.svg';
 import homeIconSvgStr from '../style/icons/home-24.svg';

@@ -1,4 +1,4 @@
-import { hashIcon } from '../../icons';
+import { numberIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';// Adjust the import path
 
 export class GenerateIDColumn extends BaseCoreComponent {
@@ -37,7 +37,7 @@ export class GenerateIDColumn extends BaseCoreComponent {
     };
     const description = "Use Row ID to assign a unique identifier to each row in a dataset.";
 
-    super("Row ID", "generate_id_column", description, "pandas_df_processor", [], "transforms", hashIcon, defaultConfig, form);
+    super("Row ID", "generate_id_column", description, "pandas_df_processor", [], "transforms", numberIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

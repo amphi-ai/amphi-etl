@@ -1,5 +1,5 @@
 import { ComponentItem, PipelineComponent } from '@amphi/pipeline-components-manager';
-import { randomIcon } from '../../icons';
+import { sampleIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class Sample extends BaseCoreComponent {
@@ -57,7 +57,7 @@ export class Sample extends BaseCoreComponent {
     };
     const description = "Use the Sample component to limit data by selecting a specified number of rows or percentage, either randomly, from the start, or from the end of the dataset. You can also group the sampling by one or more columns.";
 
-    super("Sample Datasets", "sample", description, "pandas_df_processor", [], "transforms", randomIcon, defaultConfig, form);
+    super("Sample Datasets", "sample", description, "pandas_df_processor", [], "transforms", sampleIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

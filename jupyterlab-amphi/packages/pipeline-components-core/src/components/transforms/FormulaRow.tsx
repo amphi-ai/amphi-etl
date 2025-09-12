@@ -6,7 +6,7 @@ import { CloseOutlined } from '@ant-design/icons';
 import { Form, Table, ConfigProvider, Card, Input, Select, Row, Button, Typography, Modal, Col } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 import { Handle, Position, useReactFlow, useStore, useStoreApi, NodeToolbar } from 'reactflow';
-import { sumIcon, settingsIcon, playCircleIcon } from '../../icons';
+import { formulaIcon, settingsIcon, playCircleIcon } from '../../icons';
 
 
 export class FormulaRow extends PipelineComponent<ComponentItem>() {
@@ -16,7 +16,7 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
     public _type = "pandas_df_processor";
     public _category = "transforms";
     public _description = "Use Formula Row to update existing columns or create new columns using expressions and functions.";
-    public _icon = sumIcon;
+    public _icon = formulaIcon;
     public _default = {};
     public _form = {};
 

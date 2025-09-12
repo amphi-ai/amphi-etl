@@ -1,6 +1,6 @@
 {
   "name": "@amphi/pipeline-editor",
-  "version": "0.8.28",
+  "version": "0.8.30",
   "description": "Amphi Pipeline Editor",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {
@@ -52,7 +52,7 @@
     "watch:labextension": "jupyter labextension watch ."
   },
   "dependencies": {
-    "@amphi/pipeline-components-manager": "^0.8.28",
+    "@amphi/pipeline-components-manager": "^0.8.30",
     "@dagrejs/dagre": "^1.0.4",
     "@jupyter-widgets/jupyterlab-manager": "3.1.9",
     "@jupyterlab/application": "^4.2.2",
@@ -62,7 +62,7 @@
     "@jupyterlab/launcher": "^4.2.2",
     "@jupyterlab/logconsole": "^4.2.2",
     "@jupyterlab/mainmenu": "^4.2.2",
-    "@jupyterlab/services": "~7.1.5",
+    "@jupyterlab/services": "~7.4.5",
     "@jupyterlab/settingregistry": "^4.2.2",
     "@jupyterlab/ui-components": "^4.2.2",
     "@lumino/dragdrop": "^2.0.0",
@@ -74,7 +74,7 @@
   "resolutions": {
     "@lumino/widgets": "^2.0.0",
     "@types/react": "^18.2.7",
-    "@jupyterlab/services": "^7.1.5",
+    "@jupyterlab/services": "^7.4.5",
     "@jupyterlab/rendermime-interfaces": "^4.1.5",
     "@amphi/pipeline-components-manager": "file:./../pipeline-components-manager"
   },

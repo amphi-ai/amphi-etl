@@ -1,4 +1,4 @@
-import { boxIcon } from '../../icons';
+import { sqlIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
 
@@ -28,7 +28,7 @@ export class SQLQuery extends BaseCoreComponent {
     };
     const description = "Run a SQL query to select and update the dataset."
 
-    super("SQL Query", "sqlQuery", description, "pandas_df_processor", [], "transforms", boxIcon, defaultConfig, form);
+    super("SQL Query", "sqlQuery", description, "pandas_df_processor", [], "transforms", sqlIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

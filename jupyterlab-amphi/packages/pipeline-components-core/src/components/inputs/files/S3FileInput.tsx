@@ -1,4 +1,4 @@
-import { s3Icon } from '../../../icons';
+import { bucketIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
 import { CsvFileInput } from './CsvFileInput';
@@ -66,7 +66,7 @@ export class S3FileInput extends BaseCoreComponent {
 
     const description = "Use File Input to read data from a file remotely (S3). Supports CSV, JSON, Excel, Parquet, and XML formats.";
 
-    super("S3 File Input", "s3FileInput", description, "pandas_df_input", [], "inputs.AWS", s3Icon, defaultConfig, form);
+    super("S3 File Input", "s3FileInput", description, "pandas_df_input", [], "inputs", bucketIcon, defaultConfig, form);
   }
 
   public provideDependencies({ config }): string[] {

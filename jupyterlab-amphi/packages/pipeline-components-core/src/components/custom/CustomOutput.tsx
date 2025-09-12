@@ -1,4 +1,4 @@
-import { codeIcon } from '../../icons';
+import { pythonIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent'; // Adjust the import path
 
 export class CustomOutput extends BaseCoreComponent {
@@ -48,7 +48,7 @@ export class CustomOutput extends BaseCoreComponent {
 
     const description = "Use custom Python code to process or consume the input DataFrame named 'input'.";
 
-    super("Python Output", "customOutput", description, "pandas_df_output", [], "outputs", codeIcon, defaultConfig, form);
+    super("Python Output", "customOutput", description, "pandas_df_output", [], "outputs", pythonIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

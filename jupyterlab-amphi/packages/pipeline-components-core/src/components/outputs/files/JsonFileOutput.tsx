@@ -1,5 +1,5 @@
 
-import { filePlusIcon } from '../../../icons';
+import { fileJsonIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
@@ -60,7 +60,7 @@ export class JsonFileOutput extends BaseCoreComponent {
     };
     const description = "Use JSON File Output to write or append data to a JSON file locally or remotely (S3)."
 
-    super("JSON File Output", "jsonFileOutput", description, "pandas_df_output", [], "outputs", filePlusIcon, defaultConfig, form);
+    super("JSON File Output", "jsonFileOutput", description, "pandas_df_output", [], "outputs", fileJsonIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {
