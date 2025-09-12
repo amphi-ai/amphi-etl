@@ -2,7 +2,7 @@
 
 import { JupyterFrontEnd, JupyterFrontEndPlugin } from '@jupyterlab/application';
 import { Token } from '@lumino/coreutils';
-import { ICommandPalette } from '@jupyterlab/apputils';
+import { ICommandPalette, Notification } from '@jupyterlab/apputils';
 import { IFileBrowserFactory, IDefaultFileBrowser } from '@jupyterlab/filebrowser';
 
 // === Public re-exports (keep as you had) ===
@@ -45,7 +45,15 @@ class ComponentService implements Components {
   _components: ComponentItem[] = [];
   getComponents() { return this._components; }
   getComponent(id: string) { return this._components.find(c => c._id === id); }
-  addComponent(newComponent: ComponentItem) { this._components.push(newComponent); }
+  addComponent(newComponent: ComponentItem) {
+    const idx = this._components.findIndex(c => c._id === newComponent._id);
+    if (idx >= 0) {
+      this._components[idx] = newComponent;
+      console.info(`[Amphi] Replaced component with id "${newComponent._id}".`);
+    } else {
+      this._components.push(newComponent);
+    }
+  }
   getComponentCount() { return this._components.length; }
   removeComponent(id: string) { this._components = this._components.filter(c => c._id !== id); }
 }
@@ -63,13 +71,11 @@ const managerPlugin: JupyterFrontEndPlugin<Components> = {
   }
 };
 
-// === Helpers for dynamic TS/TSX registration ===
-
 // Remove imports and JSX to keep blob-import self-contained
 function sanitizeSource(src: string): string {
   // 1) Disallow any import statements
   if (/\bimport\s+.*from\s+['"][^'"]+['"]\s*;?/.test(src) || /\bimport\s*['"][^'"]+['"]\s*;?/.test(src)) {
-    throw new Error('[Amphi][TSX] External imports are not allowed in dynamically registered files.');
+    throw new Error('[Amphi] External imports are not allowed in dynamically registered files.');
   }
 
   // 2) Strip comments
@@ -86,7 +92,7 @@ function sanitizeSource(src: string): string {
   // 4) Basic JSX detection on stripped source
   //    This catches real JSX like <Div ...> but ignores anything that was in strings/comments
   if (/<[A-Za-z][\w:-]*(\s[^>]*)?>/.test(strippedForJsxCheck)) {
-    throw new Error('[Amphi][TSX] JSX is not allowed. Export a plain object or functions.');
+    throw new Error('[Amphi] JSX is not allowed. Export a plain object or functions.');
   }
 
   // 5) Strip type-only exports and convert exported declarations to local
@@ -109,7 +115,7 @@ async function maybeWrapAsLabIcon(icon: any): Promise<any> {
       return new LabIcon({ name: icon.name || 'amphi-inline', svgstr: icon.svgstr });
     }
   } catch {
-    // fallback: leave as inline svgstr; your UI supports it
+    // fallback: leave as inline svgstr; the UI supports it
   }
   return icon;
 }
@@ -168,38 +174,41 @@ const addTsxComponentPlugin: JupyterFrontEndPlugin<void> = {
     const command = '@amphi/pipeline-components-manager:register-tsx';
 
     app.commands.addCommand(command, {
-      label: () => 'Register TS/TSX Component',
+      label: () => 'Add Component',
       caption: 'Transpile and register this TS/TSX file as an Amphi component',
       execute: async args => {
-        console.log('[Amphi][TSX] Command args:', args);
-
-        // Resolve a string path
-        let path = typeof args['path'] === 'string' ? (args['path'] as string) : '';
-        if (!path) {
-          const it = defaultFileBrowser.selectedItems().next();
-          if (!it || it.done || !it.value) {
-            console.warn('[Amphi][TSX] No file selected in the file browser.');
+        try {
+          // Resolve a string path
+          let path = typeof args['path'] === 'string' ? (args['path'] as string) : '';
+          if (!path) {
+            const it = defaultFileBrowser.selectedItems().next();
+            if (!it || it.done || !it.value) {
+              Notification.error('No file selected in the file browser.', {
+                actions: [{ label: 'Reload and try again', callback: () => location.reload() }],
+                autoClose: 6000
+              });
+              return;
+            }
+            path = (it.value as any).path ?? '';
+          }
+          if (!path || typeof path !== 'string') {
+            Notification.error('Could not resolve a valid string path.', {
+              actions: [{ label: 'Reload and try again', callback: () => location.reload() }],
+              autoClose: 6000
+            });
             return;
           }
-          path = (it.value as any).path ?? '';
-        }
-        if (!path || typeof path !== 'string') {
-          console.warn('[Amphi][TSX] Could not resolve a valid string path.');
-          return;
-        }
-        console.log('[Amphi][TSX] Resolved path:', path);
 
-        if (!/\.(ts|tsx)$/i.test(path)) {
-          console.warn('[Amphi][TSX] Not a .ts/.tsx file:', path);
-          return;
-        }
+          if (!/\.(ts|tsx)$/i.test(path)) {
+            Notification.error('Please select a .ts or .tsx file.', { autoClose: 6000 });
+            return;
+          }
 
-        try {
           // Load file text
           const model = await app.serviceManager.contents.get(path, { content: true });
           const raw = (model as any).content as string;
           if (typeof raw !== 'string') {
-            console.error('[Amphi][TSX] File content is not string.');
+            Notification.error('File content is not text.', { autoClose: 6000 });
             return;
           }
 
@@ -207,8 +216,11 @@ const addTsxComponentPlugin: JupyterFrontEndPlugin<void> = {
           let source: string;
           try {
             source = sanitizeSource(raw);
-          } catch (e) {
-            console.error(String(e));
+          } catch (e: any) {
+            Notification.error(String(e?.message ?? e), {
+              actions: [{ label: 'Reload and try again', callback: () => location.reload() }],
+              autoClose: 8000
+            });
             return;
           }
 
@@ -223,7 +235,7 @@ const addTsxComponentPlugin: JupyterFrontEndPlugin<void> = {
             }
           });
           if (transpiled.diagnostics?.length) {
-            console.warn('[Amphi][TSX] Diagnostics:', transpiled.diagnostics);
+            console.warn('[Amphi] Diagnostics:', transpiled.diagnostics);
           }
 
           // Import from blob
@@ -235,22 +247,41 @@ const addTsxComponentPlugin: JupyterFrontEndPlugin<void> = {
             const normalized = await normalizeComponent(candidate);
 
             if (!normalized) {
-              console.error('[Amphi][TSX] No valid component export found. Expected default export with {_id, _name}.');
+              Notification.error('No valid component export found. Expect default export with {_id, _name}.', {
+                autoClose: 7000
+              });
               return;
             }
 
-            // Ensure required fields for your UI
+            // Ensure required fields
             if (!normalized._category) normalized._category = normalized._type || 'uncategorized';
 
+            const existed = !!componentService.getComponent(normalized._id);
             componentService.addComponent(normalized);
-            console.log('[Amphi][TSX] Component registered:', normalized._id, normalized);
-          } catch (err) {
-            console.error('[Amphi][TSX] Failed to import transpiled module', err);
+
+            Notification.success(
+              existed
+                ? `Component "${normalized._name}" (${normalized._id}) updated successfully.`
+                : `Component "${normalized._name}" (${normalized._id}) added successfully.`,
+              { autoClose: 4000 }
+            );
+
+            console.log('[Amphi] Component registered:', normalized._id, normalized);
+          } catch (err: any) {
+            console.error('[Amphi] Failed to import transpiled module', err);
+            Notification.error(`Failed to import transpiled module. ${String(err?.message ?? err)}`, {
+              actions: [{ label: 'Reload and try again', callback: () => location.reload() }],
+              autoClose: 8000
+            });
           } finally {
             URL.revokeObjectURL(url);
           }
-        } catch (err) {
-          console.error('[Amphi][TSX] Unexpected error while processing file', err);
+        } catch (err: any) {
+          console.error('[Amphi] Unexpected error while processing file', err);
+          Notification.error(`Unexpected error while processing file. ${String(err?.message ?? err)}`, {
+            actions: [{ label: 'Reload and try again', callback: () => location.reload() }],
+            autoClose: 8000
+          });
         }
       }
     });
