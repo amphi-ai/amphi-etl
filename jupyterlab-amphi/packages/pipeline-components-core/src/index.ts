@@ -4,6 +4,7 @@ import {
 } from '@jupyterlab/application';
 
 import { ComponentManager } from "@amphi/pipeline-components-manager";
+import { BaseCoreComponent } from "./components/BaseCoreComponent";
 
 // Import allow to add the component to the palette
 import {
@@ -32,6 +33,16 @@ const plugin: JupyterFrontEndPlugin<void> = {
 
   activate: (app: JupyterFrontEnd, componentService: any) => {
     console.log('Amphi extension pipeline-components-core is activated!');
+
+    const g: any = globalThis as any;
+    g.Amphi = g.Amphi || {};
+    g.Amphi.BaseCoreComponent = BaseCoreComponent;
+
+
+    // Settings
+    componentService.addComponent(EnvVariables.getInstance())
+    componentService.addComponent(EnvFile.getInstance())
+    componentService.addComponent(Connection.getInstance())
 
     // Input
     componentService.addComponent(InlineInput.getInstance())

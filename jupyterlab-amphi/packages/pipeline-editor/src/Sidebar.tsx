@@ -1,16 +1,37 @@
+// Sidebar.tsx — support inline SVG icons without LabIcon
+
 import React, { useState, useEffect, useMemo } from 'react';
 import { Input, Space, Tooltip, Collapse } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
-import posthog from 'posthog-js'
-import { NONAME } from 'dns';
 
 const { Panel } = Collapse;
 
 interface SidebarProps {
-    componentService: {
-        getComponents: () => any[];
-    };
+  componentService: { getComponents: () => any[] };
 }
+
+const renderIcon = (icon: any, size: number | string = 14) => {
+  if (icon?.react) {
+    const Icon = icon.react;
+    return (
+      <span className="anticon">
+        <Icon height={typeof size === 'number' ? `${size}px` : size} width={typeof size === 'number' ? `${size}px` : size} />
+      </span>
+    );
+  }
+  if (icon?.svgstr) {
+    return (
+      <span
+        className="anticon"
+        style={{ display: 'inline-flex', lineHeight: 0, verticalAlign: 'middle' }}
+        dangerouslySetInnerHTML={{
+          __html: icon.svgstr.replace('<svg', `<svg height="${size}" width="${size}"`)
+        }}
+      />
+    );
+  }
+  return null;
+};
 
 const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
     const [searchValue, setSearchValue] = useState('');
@@ -57,8 +78,6 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
         event.dataTransfer.setData('additionalData', config);
         event.dataTransfer.effectAllowed = 'move';
     };
-
-
 
     const renderComponentGrid = (components: any[], categoryKey: string) => {
         return (
@@ -107,9 +126,9 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService }) => {
                                 e.currentTarget.style.transform = 'translateY(0)';
                             }}
                         >
-                            <div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px', color: '#5E9B96' }}>
-                                <component._icon.react height="30px" width="30px" />
-                            </div>
+                          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '8px', color: '#5E9B96' }}>
+                            {renderIcon(component?._icon, 30)}
+                          </div>
                             <div 
                                 style={{ 
                                     fontSize: '10px', 
