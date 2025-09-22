@@ -11,6 +11,12 @@ import alignIconSvgStr from '../style/icons/align.svg';
 import exportIconSvgStr from '../style/icons/export-svg.svg';
 import gridAltIconSvgStr from '../style/icons/grid-alt-24.svg';
 import dagsterIconSvgStr from '../style/icons/dagster.svg';
+import refreshIconSvgStr from '../style/icons/refresh.svg';
+
+export const refreshIcon = new LabIcon({
+  name: 'amphi:refresh',
+  svgstr: refreshIconSvgStr
+});
 
 export const fileTextIcon = new LabIcon({
   name: 'amphi:file-text-icon',

@@ -1,3 +1,9 @@
+// PipelineEditorWidget.tsx
+/**
+ * This file defines a PipelineEditorWidget class that extends ReactWidget to create a custom widget for editing pipelines.
+ * The widget integrates with JupyterLab and uses ReactFlow for visualizing and managing pipeline components.
+ * It includes features like drag-and-drop, undo/redo, and exporting code.
+ */
 import {
   ILabShell,
   JupyterFrontEnd,
@@ -21,7 +27,7 @@ import { useUndoRedo } from './Commands';
 import DownloadImageButton from './ExportToImage';
 import Sidebar from './Sidebar';
 
-import React, { useCallback, useRef, useState, Profiler } from 'react';
+import React, { useEffect, useCallback, useRef, useState, Profiler } from 'react';
 import ReactFlow, {
   Background,
   Controls,
@@ -188,52 +194,67 @@ const PipelineWrapper: React.FC<IProps> = ({
   widgetId,
   componentService,
 }) => {
-
-
   const manager = defaultFileBrowser.model.manager;
+  
+  // Add state for nodeTypes to make it reactive
+  const [nodeTypes, setNodeTypes] = useState({});
+  const [componentsRefreshKey, setComponentsRefreshKey] = useState(0);
 
   const edgeTypes = {
     'custom-edge': CustomEdge
-  }
-
-  const nodeTypes = {
-    ...componentService.getComponents().reduce((acc: Record<string, any>, component: any) => {
-      const id = component._id;
-      const HasCustomUI = !!component && typeof component.UIComponent === 'function';
-
-      // Safe wrapper: use component.UIComponent if present, otherwise a minimal fallback node
-      const NodeRenderer: React.FC<any> = (props) => {
-        if (HasCustomUI) {
-          const UI = component.UIComponent as React.FC<any>;
-          return (
-            <UI
-              context={context}
-              componentService={componentService}
-              manager={manager}
-              commands={commands}
-              rendermimeRegistry={rendermimeRegistry}
-              settings={settings}
-              {...props}
-            />
-          );
-        }
-
-        // Fallback node: no JSX from the blob needed; avoids invalid element type
-        return (
-          <div className="component component--fallback" style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd', background: '#fff' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <InlineIcon icon={component._icon} height="20px" width="20px" />
-              <span style={{ fontWeight: 500 }}>{component._name ?? id}</span>
-            </div>
-            {/* Render nothing else; ReactFlow provides handles via props if needed */}
-          </div>
-        );
-      };
-
-      acc[id] = NodeRenderer;
-      return acc;
-    }, {})
   };
+
+  // Update nodeTypes whenever components change
+  useEffect(() => {
+    const updateNodeTypes = () => {
+      const newNodeTypes = {
+        ...componentService.getComponents().reduce((acc: Record<string, any>, component: any) => {
+          const id = component._id;
+          const HasCustomUI = !!component && typeof component.UIComponent === 'function';
+
+          // Safe wrapper: use component.UIComponent if present, otherwise a minimal fallback node
+          const NodeRenderer: React.FC<any> = (props) => {
+            if (HasCustomUI) {
+              const UI = component.UIComponent as React.FC<any>;
+              return (
+                <UI
+                  context={context}
+                  componentService={componentService}
+                  manager={manager}
+                  commands={commands}
+                  rendermimeRegistry={rendermimeRegistry}
+                  settings={settings}
+                  {...props}
+                />
+              );
+            }
+
+            // Fallback node: no JSX from the blob needed; avoids invalid element type
+            return (
+              <div className="component component--fallback" style={{ padding: 8, borderRadius: 8, border: '1px solid #ddd', background: '#fff' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <InlineIcon icon={component._icon} height="20px" width="20px" />
+                  <span style={{ fontWeight: 500 }}>{component._name ?? id}</span>
+                </div>
+                {/* Render nothing else; ReactFlow provides handles via props if needed */}
+              </div>
+            );
+          };
+
+          acc[id] = NodeRenderer;
+          return acc;
+        }, {})
+      };
+      setNodeTypes(newNodeTypes);
+    };
+
+    updateNodeTypes();
+  }, [componentService, context, manager, commands, rendermimeRegistry, settings, componentsRefreshKey]);
+
+  // Callback to handle component refresh from Sidebar
+  const handleComponentsRefresh = useCallback(() => {
+    setComponentsRefreshKey(prev => prev + 1);
+  }, []);
 
   const getNodeId = () => `node_${+new Date()}`;
   let defaultEngineBackend = settings.get('defaultEngineBackend').composite as string;
@@ -695,7 +716,7 @@ const PipelineWrapper: React.FC<IProps> = ({
               <PipelineFlow context={context} />
             </Splitter.Panel>
             <Splitter.Panel collapsible defaultSize={327} min={241}>
-              <Sidebar componentService={componentService} />
+              <Sidebar componentService={componentService} onRefreshed={handleComponentsRefresh} />
             </Splitter.Panel>
           </Splitter>
         </ReactFlowProvider>

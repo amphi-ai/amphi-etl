@@ -69,7 +69,7 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
     const [borderColor, setBorderColor] = useState<Color>(data.borderColor || '#42766D');
     const [borderWidth, setBorderWidth] = useState<number>(data.borderWidth || 5);
     const [textColor, setTextColor] = useState<Color>(data.textColor || '#000');
-    const [borderRadius, setBorderRadius] = useState<number>(data.borderRadius || 0);
+    const [borderRadius, setBorderRadius] = useState<number>(data.borderRadius || 5);
 
     useEffect(() => {
       setContent(data.content || '# Annotation');

@@ -38,12 +38,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
     g.Amphi = g.Amphi || {};
     g.Amphi.BaseCoreComponent = BaseCoreComponent;
 
-
-    // Settings
-    componentService.addComponent(EnvVariables.getInstance())
-    componentService.addComponent(EnvFile.getInstance())
-    componentService.addComponent(Connection.getInstance())
-
     // Input
     componentService.addComponent(InlineInput.getInstance())
     componentService.addComponent(CsvFileInput.getInstance())
@@ -101,6 +95,10 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(Console.getInstance())
     componentService.addComponent(CustomOutput.getInstance())
 
+    // Settings
+    componentService.addComponent(EnvVariables.getInstance())
+    componentService.addComponent(EnvFile.getInstance())
+    componentService.addComponent(Connection.getInstance())
 
     // Misc
     componentService.addComponent(Summary.getInstance());
