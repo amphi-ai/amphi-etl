@@ -1,13 +1,13 @@
 import { LabIcon } from '@jupyterlab/ui-components';
 
-import folderIconSvgStr from '../style/icons/folder-24.svg';
+import folderIconSvgStr from '../style/icons/folder.svg';
 import saveIconSvgStr from '../style/icons/save-24.svg';
 import terminalScreenIconSvgStr from '../style/icons/terminal-screen-24.svg';
 import playIconSvgStr from '../style/icons/play-24.svg';
 import fileSourceIconSvgStr from '../style/icons/file-source-24.svg';
-import folderPlusIconSvgStr from '../style/icons/folder-plus-24.svg';
-import uploadIconSvgStr from '../style/icons/upload-24.svg';
-import reloadIconSvgStr from '../style/icons/reload-24.svg';
+import folderPlusIconSvgStr from '../style/icons/folder-plus.svg';
+import uploadIconSvgStr from '../style/icons/upload.svg';
+import reloadIconSvgStr from '../style/icons/refresh.svg';
 import fileIconSvgStr from '../style/icons/file-24.svg';
 import fileCsvIconSvgStr from '../style/icons/file-csv-24.svg';
 import filePdfIconSvgStr from '../style/icons/file-pdf-24.svg';
@@ -17,7 +17,7 @@ import fileJsonIconSvgStr from '../style/icons/file-json.svg';
 import fileNotebookIconSvgStr from '../style/icons/file-ipynb-24.svg';
 import terminalIconSvgStr from '../style/icons/terminal-screen-24.svg';
 import homeIconSvgStr from '../style/icons/home-24.svg';
-import searchIconSvgStr from '../style/icons/search-24.svg';
+import searchIconSvgStr from '../style/icons/search.svg';
 
 
 export const terminalIcon = new LabIcon({

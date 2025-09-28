@@ -106,7 +106,7 @@
     "outputDir": "../../amphi/pipeline-scheduler",
     "schemaDir": "",
     "_build": {
-      "load": "static/remoteEntry.a8d18f7e9abdc1c43409.js",
+      "load": "static/remoteEntry.89d38ac6529fd48194bd.js",
       "extension": "./extension",
       "style": "./style"
     }

@@ -1,3 +1,4 @@
+// index.tsx
 import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin
@@ -88,9 +89,13 @@ interface SchedulerPanelProps {
   docManager: IDocumentManager;   /* NEW */
 }
 
+interface ExtendedRequestInit extends Omit<RequestInit, 'body'> {
+  body?: BodyInit | Record<string, any>;
+}
+
 /* ---------- API Client ---------- */
 class SchedulerAPI {
-  private static async makeRequest(endpoint: string, init: RequestInit = {}) {
+  private static async makeRequest(endpoint: string, init: ExtendedRequestInit = {}) {
     const settings = ServerConnection.makeSettings();
     // Try multiple URL patterns to increase chances of connecting successfully
     const urlPatterns = [
@@ -103,11 +108,49 @@ class SchedulerAPI {
     for (const baseEndpoint of urlPatterns) {
       try {
         console.log(`Trying API endpoint with base: ${baseEndpoint}`);
+
+        // Fix: Properly handle the body serialization
+        let body: BodyInit | undefined = undefined;
+        let headers = { ...(init.headers || {}) };
+
+        if (init.body && (init.method || 'GET') !== 'GET') {
+          if (typeof init.body === 'object' && !(init.body instanceof FormData) && !(init.body instanceof URLSearchParams) && !(init.body instanceof ArrayBuffer) && !(init.body instanceof Blob)) {
+            // It's a plain object, serialize to JSON
+            body = JSON.stringify(init.body);
+            headers['Content-Type'] = 'application/json';
+          } else {
+            // It's already a valid BodyInit type
+            body = init.body as BodyInit;
+          }
+        }
+
+        // Create a clean RequestInit object
+        const requestInit: RequestInit = {
+          ...init,
+          body,
+          headers
+        };
+        // Remove the body property since we're passing it separately
+        delete (requestInit as any).body;
+
+        console.log('Sending request:', {
+          endpoint,
+          method: init.method || 'GET',
+          body: body,
+          bodyType: typeof body,
+          bodyLength: body ? body.toString().length : 0,
+          isObjectBody: init.body && typeof init.body === 'object',
+          originalBody: init.body,
+          headers: headers
+        });
+
+
         const response = await requestScheduler(endpoint, {
           method: init.method || 'GET',
-          body: init.body ? JSON.parse(init.body as string) : undefined,
-          init
+          body: body,
+          init: requestInit
         });
+
         console.log(`Successfully connected using base: ${baseEndpoint}`);
         return response;
       } catch (error) {
@@ -132,7 +175,7 @@ class SchedulerAPI {
   static createJob(job: JobFormSubmitValues): Promise<Job> {
     return this.makeRequest('jobs', {
       method: 'POST',
-      body: JSON.stringify(job)
+      body: job  // This will be properly serialized by makeRequest
     });
   }
 
@@ -143,15 +186,11 @@ class SchedulerAPI {
   }
 
   static runJob(
-    id: string,
-    payload: { code: string }
+    id: string
   ): Promise<{ success: boolean; output?: string; error?: string }> {
-    return this.makeRequest(`run/${id}`, {
-      method: 'POST',
-      body: JSON.stringify(payload)
-    });
+    // Server does not read a body here
+    return this.makeRequest(`run/${id}`, { method: 'POST' });
   }
-
 }
 
 /* ---------- styles ---------- */
@@ -341,28 +380,32 @@ const getPythonCode = async (
   docManager: IDocumentManager
 ): Promise<string> => {
 
-    console.log('Loaded path:', path);
-
-
+  console.log('Loaded path:', path);
+  // Ask for text; server may still return JSON for certain mimetypes
   const file = await docManager.services.contents.get(path, {
-    content: true // Required
+    content: true,
+    format: 'text'
   });
 
   console.log('Loaded file:', file);
 
-  if (!file.content) {
+  if (file.content == null) {
     console.error('File content is empty or null:', path);
     throw new Error('Selected file is empty or could not be loaded');
   }
 
   if (path.endsWith('.ampln')) {
     try {
-      const parsed = JSON.parse(file.content as string);
-      console.log('Parsed JSON:', parsed);
+      const raw = file.content as unknown;
+      const jsonString =
+        typeof raw === 'string'
+          ? raw
+          : JSON.stringify(raw);
 
-      const code = await commands.execute('pipeline-editor:generate-code', {
-        json: parsed
-      }) as string;
+      // Many generators expect a string and will JSON.parse internally.
+      const code = (await commands.execute('pipeline-editor:generate-code', {
+        json: jsonString
+      })) as string;
 
       console.log('Generated Python code:', code);
       if (!code) throw new Error('Code generation failed');
@@ -373,6 +416,7 @@ const getPythonCode = async (
     }
   }
 
+  // .py and others: the server returns text, so just forward it
   return file.content as string;
 };
 
@@ -453,7 +497,7 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
 
     const pythonCode = await getPythonCode(job.pipeline_path, commands, docManager);
 
-    const promise = SchedulerAPI.runJob(jobId, { code: pythonCode }).then(res => {
+    const promise = SchedulerAPI.runJob(jobId).then(res => {
       if (!res.success) throw new Error(res.error || 'Execution failed');
       return res.output ?? '';
     });
@@ -475,7 +519,7 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
       const formData: JobFormSubmitValues = {
         name: values.name,
         schedule_type: values.schedule_type,
-        run_date: values.run_date?.toISOString(),
+        run_date: values.run_date ? values.run_date.toDate().toISOString() : undefined,
         interval_seconds: values.interval_seconds,
         cron_expression: values.cron_expression
       };

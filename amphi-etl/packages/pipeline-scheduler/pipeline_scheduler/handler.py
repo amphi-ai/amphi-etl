@@ -1,4 +1,4 @@
-# handler.py  (backend – complete file)  ─────────────────────────────────────
+# handler.py  (backend)  ─────────────────────────────────────
 import os, json, logging, datetime, subprocess
 import tornado
 from apscheduler.triggers.cron import CronTrigger
@@ -124,12 +124,11 @@ class SchedulerConfigHandler(APIHandler):
 
 # ── HTTP handlers ───────────────────────────────────────────────────────────
 class SchedulerListHandler(APIHandler):
+    # Single, non-duplicated implementations
     @tornado.web.authenticated
     async def get(self):
         try:
-            self.finish(
-                json.dumps({"jobs": [_serialise(j) for j in scheduler.get_jobs()]})
-            )
+            self.finish(json.dumps({"jobs": [_serialise(j) for j in scheduler.get_jobs()]}))
         except Exception as e:
             logger.exception("Error listing jobs")
             self.set_status(500)
@@ -139,15 +138,12 @@ class SchedulerListHandler(APIHandler):
     async def post(self):
         try:
             body = self.get_json_body() or {}
-
-            # Accept either a path to a file or raw Python code
+            # Accept raw Python code or a file path
             pipeline = body.get("python_code") or body.get("pipeline_path")
             if not pipeline:
                 raise ValueError("pipeline_path or python_code is required")
 
             trigger, kind = _make_trigger(body)
-
-            # Persist original schedule parameters for round‑tripping
             kwargs = {}
             if kind == "cron":
                 kwargs["cron_expression"] = body["cron_expression"]
@@ -159,7 +155,7 @@ class SchedulerListHandler(APIHandler):
             job = scheduler.add_job(
                 run_pipeline,
                 trigger=trigger,
-                args=[pipeline],          # stored directly in scheduler.sqlite
+                args=[pipeline],
                 kwargs=kwargs,
                 misfire_grace_time=60,
                 id=body.get("id"),
@@ -167,7 +163,6 @@ class SchedulerListHandler(APIHandler):
                 replace_existing=bool(body.get("id")),
             )
             self.finish(json.dumps(_serialise(job)))
-
         except Exception as e:
             logger.exception("Error creating job")
             self.set_status(400)
