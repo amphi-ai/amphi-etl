@@ -1,3 +1,4 @@
+// inspectorscripts.ts
 export namespace Languages {
     export type LanguageModel = {
       initScript: string;
@@ -275,39 +276,68 @@ def _amphi_metadatapanel_deleteallvariables():
         if not key.startswith('_') and not hasattr(__builtins__, key) and not key in ['exit', 'quit', 'get_ipython', 'In', 'Out', 'Session', 'session', 'warehouse', 'mpd'] and not isinstance(value, (type(sys), types.ModuleType)) and camel_case_pattern.match(key):
             exec("del %s" % key, globals())
 
-def __amphi_display_dataframe(df, dfName=None, nodeId=None, runtime=None):
-    result_df = None  # Initialize result_df
+def __amphi_display(obj, dfName=None, nodeId=None, runtime=None):
+    """
+    Display a pandas/Snowpark DataFrame, an ibis Table, or a matplotlib Figure/Axes with metadata.
+    """
+    # Common metadata
+    metadata = {
+        "runtime": None if runtime is None else runtime,
+        "nodeId": nodeId or None,
+        "dfName": dfName or None,
+    }
 
-    # Check if the input is a pandas DataFrame
-    if __pd and isinstance(df, __pd.DataFrame):
-        runtime = runtime or "local (pandas)"
-        result_df = df.copy()
-        result_df.columns = [f"{col} ({df[col].dtype})" for col in df.columns]
+    # Try pandas DataFrame (supports both __pd and pd globals)
+    _pd = globals().get("__pd") or globals().get("pd")
+    if _pd is not None and isinstance(obj, _pd.DataFrame):
+        metadata["runtime"] = metadata["runtime"] or "local (pandas)"
+        result_df = obj.copy()
+        result_df.columns = [f"{col} ({obj[col].dtype})" for col in obj.columns]
+        return display(result_df, metadata=metadata)
 
-    elif mpd and isinstance(x, mpd.DataFrame):
-        runtime = runtime or "Snowflake (Snowpark pandas API)"
-        result_df = df.copy()
-        result_df.columns = [f"{col} ({df[col].dtype})" for col in df.columns]
+    # Try Snowflake Snowpark pandas API (modin-like)
+    mpd = globals().get("mpd")
+    if mpd is not None and hasattr(mpd, "DataFrame"):
+        try:
+            if isinstance(obj, mpd.DataFrame):
+                metadata["runtime"] = metadata["runtime"] or "Snowflake (Snowpark pandas API)"
+                result_df = obj.copy()
+                result_df.columns = [f"{col} ({obj[col].dtype})" for col in obj.columns]
+                return display(result_df, metadata=metadata)
+        except Exception:
+            pass
 
-    # Check if the input is an Ibis Table
-    elif "ibis" in globals() and isinstance(df, ibis.expr.types.Table):
-        runtime = runtime or "ibis"
-        schema = df.schema()
-        result_df = df.execute()
-        result_df.columns = [
-            f"{col} ({dtype})" for col, dtype in schema.items()
-        ]
+    # Try ibis Table
+    ibis = globals().get("ibis")
+    if ibis is not None:
+        try:
+            import ibis.expr.types as itypes
+            if isinstance(obj, itypes.Table):
+                metadata["runtime"] = metadata["runtime"] or "ibis"
+                schema = obj.schema()
+                result_df = obj.execute()
+                result_df.columns = [f"{col} ({dtype})" for col, dtype in schema.items()]
+                return display(result_df, metadata=metadata)
+        except Exception:
+            pass
 
-    # If result_df is set, display with metadata
-    if result_df is not None:
-        metadata = {
-            'runtime': runtime,
-            'nodeId': nodeId if nodeId else None,
-            'dfName': dfName if dfName else None
-        }
-        display(result_df, metadata=metadata)
-    else:
-        raise ValueError("Unsupported dataframe type: The provided dataframe is neither a pandas DataFrame nor an ibis Table.")
+    # Try matplotlib Figure or Axes
+    try:
+        from matplotlib.figure import Figure
+        from matplotlib.axes import Axes
+        if isinstance(obj, Figure):
+            metadata["runtime"] = metadata["runtime"] or "matplotlib"
+            return display(obj, metadata=metadata)
+        if isinstance(obj, Axes):
+            metadata["runtime"] = metadata["runtime"] or "matplotlib"
+            return display(obj.figure, metadata=metadata)
+    except Exception:
+        pass
+
+    # Fallback if unsupported
+    raise ValueError(
+        "Unsupported type: expected pandas/Snowpark DataFrame, ibis Table, or matplotlib Figure/Axes."
+    )
 
 
 def __amphi_display_pandas_dataframe(df, dfName=None, nodeId=None, runtime="local (pandas)"):

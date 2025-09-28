@@ -90,7 +90,7 @@ export class CodeGenerator extends BaseCodeGenerator {
               executedNodes.clear();
               executedNodes.add(nodeObj.id);
             }
-            displayCode = `\n__amphi_display_dataframe(${nodeObj.outputName}, dfName="${nodeObj.outputName}", nodeId="${targetNodeId}"${nodeObj.runtime !== "local" ? `, runtime="${nodeObj.runtime}"` : ''})`;
+            displayCode = `\__amphi_display(${nodeObj.outputName}, dfName="${nodeObj.outputName}", nodeId="${targetNodeId}"${nodeObj.runtime !== "local" ? `, runtime="${nodeObj.runtime}"` : ''})`;
           }
           codeList.push(displayCode);
           if (incrementalCodeList.length > 0) {

@@ -97,7 +97,7 @@ export class RequestService {
 
     const lines = code.split('\n');
     let output_df = lines.pop();
-    const match = output_df.match(/__amphi_display_dataframe\(([^,]*)/);
+    const match = output_df.match(/__amphi_display\(([^,]*)/);
     output_df = match ? match[1] : null;
 
     if (output_df && output_df.trim() && output_df.trim().split(' ').length === 1) {

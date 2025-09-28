@@ -1,3 +1,4 @@
+// logconsole.tsx
 import { Widget, StackedPanel } from '@lumino/widgets';
 import { DataGrid, DataModel } from '@lumino/datagrid';
 import { JupyterFrontEnd } from '@jupyterlab/application';
@@ -146,7 +147,6 @@ export class PipelineConsolePanel
         break;
       case "data":
         dateTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{date}</Tag>;
-
         nodeIdTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{metadata.nodeId}</Tag>;
         runtimeTag = <Tag bordered={false} icon={<cpuIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{metadata.runtime}</Tag>;
         viewData = (
@@ -163,6 +163,7 @@ export class PipelineConsolePanel
 
         const parser = new DOMParser();
         const doc = parser.parseFromString(content, 'text/html');
+        console.log(doc);
         const firstDiv = doc.querySelector('div');
         if (firstDiv && firstDiv.id === 'documents') {
           contentComponent = <DocumentView htmlData={content} />;
@@ -185,6 +186,10 @@ export class PipelineConsolePanel
             </>
           );
         }
+        break;
+      case 'rich':
+        dateTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size" />}>{date}</Tag>;
+        contentComponent = <div dangerouslySetInnerHTML={{ __html: content }} />;
         break;
       default:
         dateTag = <Tag bordered={false} >{date}</Tag>;

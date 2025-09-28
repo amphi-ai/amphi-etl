@@ -67,18 +67,18 @@ const logsconsole: JupyterFrontEndPlugin<IPipelineConsoleManager> = {
         function newPanel(): PipelineConsolePanel {
           // Get the current widget from the lab shell
           const currentWidget = labShell.currentWidget;
-        
+
           // Ensure the current widget is a pipeline and has a context
           if (!currentWidget || !pipelines.has(currentWidget)) {
             console.warn('No active pipeline to provide context.');
             return;
           }
-        
+
           const pipelinePanel = currentWidget as DocumentWidget;
           const context = pipelinePanel.context;
-        
+
           const panel = new PipelineConsolePanel(app, app.commands, context);
-        
+
           panel.id = 'amphi-logConsole';
           panel.title.label = 'Pipeline Console';
           panel.title.icon = listIcon;
@@ -88,13 +88,13 @@ const logsconsole: JupyterFrontEndPlugin<IPipelineConsoleManager> = {
               manager.panel = null;
             }
           });
-        
+
           // Track the inspector panel
           tracker.add(panel);
-        
+
           return panel;
         }
-        
+
 
         // Add command to palette
         app.commands.addCommand(command, {
@@ -200,22 +200,21 @@ const pipelines: JupyterFrontEndPlugin<void> = {
      * Subscribes to the creation of new pipelines. If a new pipeline is created, build a new handler for the pipelines.
      * Adds a promise for a instanced handler to the 'handlers' collection.
      */
-    pipelines.widgetAdded.connect((sender, pipelinePanel) => {
 
+    // Function that handles the type of data from the kernel that is displayed in the console and how
+    pipelines.widgetAdded.connect((sender, pipelinePanel) => {
       if (manager.hasHandler(pipelinePanel.context.sessionContext.path)) {
-        handlers[pipelinePanel.id] = new Promise((resolve, reject) => {
+        handlers[pipelinePanel.id] = new Promise(resolve => {
           resolve(manager.getHandler(pipelinePanel.context.sessionContext.path));
         });
       } else {
-        handlers[pipelinePanel.id] = new Promise((resolve, reject) => {
+        handlers[pipelinePanel.id] = new Promise(resolve => {
           const session = pipelinePanel.context.sessionContext;
 
-          // Create connector and init w script if it exists for kernel type.
           const connector = new KernelConnector({ session });
-
           const options: PipelineConsoleHandler.IOptions = {
-            connector: connector,
-            id: session.path //Using the sessions path as an identifier for now.
+            connector,
+            id: session.path
           };
           const handler = new PipelineConsoleHandler(options);
 
@@ -229,76 +228,103 @@ const pipelines: JupyterFrontEndPlugin<void> = {
             resolve(handler);
             connector.ready.then(async () => {
               session.session.kernel.anyMessage.connect((sender, args) => {
+                if (!manager.panel) return;
+                if (args.direction !== 'recv') return;
 
-                if (manager.panel) {
-                  if (args.direction === 'recv') {
-                    // Filter and process kernel messages here
-                    // For example, args.msg.header.msg_type might be 'stream' for log messages
-                    if (args.msg.header.msg_type === 'execute_result' || args.msg.header.msg_type === 'display_data') {
-                      // Assert the message type to IExecuteResultMsg or IDisplayDataMsg to access 'data'
-                      const content = args.msg.content as KernelMessage.IExecuteResultMsg['content'] | KernelMessage.IDisplayDataMsg['content'];
-                      if (content.data['text/html']) {
-                        manager.panel.onNewLog(formatLogDate(args.msg.header.date), session.name, "data", content.data['text/html'], content.metadata)
-                      }
-                    }
+                const { msg } = args;
+                const type = msg.header.msg_type as KernelMessage.MessageType;
 
-                    else if (args.msg.header.msg_type === 'stream') {
-                      const streamMsg = args.msg as KernelMessage.IStreamMsg;
-                    
-                      if (streamMsg.content.text && streamMsg.content.text !== '\n') {
-                        // Create a container div for the content
-                        const streamText = document.createElement('div');
-                    
-                        console.log("streamMsg.content.text %o", streamMsg.content.text);
-                    
-                        // Directly set innerHTML with replaced newlines, avoiding renderText to prevent duplication
-                        streamText.innerHTML = streamMsg.content.text.replace(/\n/g, '<br>');
-                    
-                        // Convert the entire structure to HTML string if necessary
-                        const streamHTML = streamText.outerHTML;
-                        manager.panel.onNewLog(formatLogDate(args.msg.header.date), session.name, "info", streamHTML, null);
-                      }
-                    }
-                    else if (args.msg.header.msg_type === 'error') {
+                // Only render when we have HTML tables or images
+                if (type === 'execute_result' || type === 'display_data') {
+                  const content =
+                    msg.content as
+                    | KernelMessage.IExecuteResultMsg['content']
+                    | KernelMessage.IDisplayDataMsg['content'];
+                  const data = content.data as Record<string, any>;
 
-                      // Handle error messages
-                      const errorMsg = args.msg as KernelMessage.IErrorMsg; // If using TypeScript
-                      const traceback = errorMsg.content.traceback.join('\n');
-                      const errorId = `traceback-${Date.now()}`; // Unique ID for the traceback container
-
-                      // Create a container for the error message and the link
-                      const errorContainer = document.createElement('div');
-                      const errorMessageText = `${errorMsg.content.evalue}`;
-
-                      // Ensure the link has a unique ID that matches the pattern for event delegation
-
-                      // Can do better here, ... TODO
-                      errorContainer.innerHTML = `<pre><span>${errorMessageText}</span><br><a href="#" style="text-decoration: underline; color: grey;" id="link-${errorId}" onClick="document.getElementById('${errorId}').style.display = document.getElementById('${errorId}').style.display === 'none' ? 'block' : 'none'; return false;">Show Traceback</a></pre>`;
-
-                      // Create a container for the traceback, initially hidden
-                      const tracebackContainer = document.createElement('pre');
-                      tracebackContainer.id = errorId;
-                      tracebackContainer.style.display = 'none';
-                      errorContainer.appendChild(tracebackContainer);
-
-                      // Use the sanitizer to safely render the traceback
-                      const options = {
-                        host: tracebackContainer, // The container for the rendered content
-                        source: traceback, // The ANSI encoded string you want to render
-                        sanitizer: new Sanitizer(), // Use the default sanitizer
-                      };
-
-                      renderText(options).then(() => {
-                        // Once the traceback is sanitized and rendered, append it to the errorContainer
-                        // Convert the entire structure to HTML string if necessary
-                        const errorHTML = errorContainer.outerHTML;
-                        manager.panel.onNewLog(formatLogDate(errorMsg.header.date), session.name, "error", errorHTML, null);
-                      });
-                    }
+                  // HTML tables or custom HTML blocks
+                  if (data['text/html']) {
+                    manager.panel.onNewLog(
+                      formatLogDate(msg.header.date),
+                      session.name,
+                      'data',
+                      data['text/html'],
+                      content.metadata
+                    );
+                    return;
                   }
+
+                  // PNG image from matplotlib
+                  if (data['image/png']) {
+                    const b64 = data['image/png'] as string;
+                    const html = `<img alt="plot" style="max-width:100%;height:auto;" src="data:image/png;base64,${b64}" />`;
+                    manager.panel.onNewLog(
+                      formatLogDate(msg.header.date),
+                      session.name,
+                      'rich',
+                      html,
+                      content.metadata
+                    );
+                    return;
+                  }
+
+                  // SVG image from matplotlib
+                  if (data['image/svg+xml']) {
+                    const svgRaw = data['image/svg+xml'];
+                    const svg =
+                      typeof svgRaw === 'string' ? svgRaw : (svgRaw as string[]).join('\n');
+                    manager.panel.onNewLog(
+                      formatLogDate(msg.header.date),
+                      session.name,
+                      'rich',
+                      svg,
+                      content.metadata
+                    );
+                    return;
+                  }
+
+                  // Ignore text/plain or other mime types on purpose
+                  return;
                 }
-              }
-              );
+
+                // Do not echo stdout/stderr text streams into the panel
+                if (type === 'stream') {
+                  return;
+                }
+
+                // Still show errors with traceback
+                if (type === 'error') {
+                  const errorMsg = msg as KernelMessage.IErrorMsg;
+                  const traceback = errorMsg.content.traceback?.join('\n') ?? '';
+                  const errorId = `traceback-${Date.now()}`;
+
+                  const errorContainer = document.createElement('div');
+                  const errorMessageText = `${errorMsg.content.evalue}`;
+                  errorContainer.innerHTML = `<pre><span>${errorMessageText}</span><br><a href="#" style="text-decoration: underline; color: grey;" id="link-${errorId}" onClick="document.getElementById('${errorId}').style.display = document.getElementById('${errorId}').style.display === 'none' ? 'block' : 'none'; return false;">Show Traceback</a></pre>`;
+
+                  const tracebackContainer = document.createElement('pre');
+                  tracebackContainer.id = errorId;
+                  tracebackContainer.style.display = 'none';
+                  errorContainer.appendChild(tracebackContainer);
+
+                  const options = {
+                    host: tracebackContainer,
+                    source: traceback,
+                    sanitizer: new Sanitizer()
+                  };
+
+                  renderText(options).then(() => {
+                    const errorHTML = errorContainer.outerHTML;
+                    manager.panel.onNewLog(
+                      formatLogDate(errorMsg.header.date),
+                      session.name,
+                      'error',
+                      errorHTML,
+                      null
+                    );
+                  });
+                }
+              });
             });
           });
         });
@@ -306,6 +332,7 @@ const pipelines: JupyterFrontEndPlugin<void> = {
 
       setSource(labShell);
     });
+
 
     const setSource = (sender: ILabShell, args?: ILabShell.IChangedArgs) => {
       const widget = args?.newValue ?? sender.currentWidget;

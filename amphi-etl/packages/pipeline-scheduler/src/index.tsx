@@ -627,9 +627,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
         class SchedulerWidget extends ReactWidget {
           constructor() {
             super();
-            this.id = 'pipeline-scheduler-sidebar';
+            this.id = 'amphi-pipeline-scheduler';
             this.title.caption = 'Pipeline Scheduler';
-            this.title.iconClass = 'jp-SideBar-tabIcon jp-CalendarIcon';
+            this.title.icon = schedulerIcon;
             this.title.closable = true;
           }
           render() {
