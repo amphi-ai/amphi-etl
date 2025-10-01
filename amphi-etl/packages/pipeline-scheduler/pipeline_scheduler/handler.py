@@ -1,26 +1,30 @@
 # handler.py  (backend)  ─────────────────────────────────────
-import os, json, logging, datetime, subprocess
+import os, json, logging, subprocess
+import sys
 import tornado
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.date import DateTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
+import datetime as dt
+
+
 
 logger = logging.getLogger(__name__)
 
 # ── helpers ────────────────────────────────────────────────────────────────
 def _make_trigger(body: dict):
-    """Return (trigger, schedule_type)."""
     kind = body.get("schedule_type", "date")
 
     if kind == "date":
         iso = body.get("run_date")
         if not iso:
             raise ValueError("run_date is required for date trigger")
-        run_date = datetime.datetime.fromisoformat(iso)
+        run_date = _parse_iso_datetime(iso)
         return DateTrigger(run_date=run_date), "date"
 
     if kind == "interval":
@@ -33,8 +37,7 @@ def _make_trigger(body: dict):
         expr = body.get("cron_expression")
         if not expr:
             raise ValueError("cron_expression is required for cron trigger")
-        # standard 5-field crontab string → CronTrigger
-        return CronTrigger.from_crontab(expr), "cron"
+        return _cron_from_string(expr), "cron"
 
     raise ValueError(f"Invalid schedule_type: {kind}")
 
@@ -47,23 +50,46 @@ def _cron_to_crontab(trigger: CronTrigger) -> str:
     dow    = str(trigger.fields[4])
     return f"{minute} {hour} {dom} {month} {dow}"
 
+def _cron_from_string(expr: str) -> CronTrigger:
+    parts = expr.split()
+    if len(parts) == 5:
+        minute, hour, dom, month, dow = parts
+        second = "0"
+    elif len(parts) == 6:
+        second, minute, hour, dom, month, dow = parts
+    else:
+        raise ValueError(f"Wrong number of fields; got {len(parts)}, expected 5 or 6")
+
+    return CronTrigger(
+        second=second,
+        minute=minute,
+        hour=hour,
+        day=dom,
+        month=month,
+        day_of_week=dow,
+    )
+
 def _serialise(job):
     """Return a dict with a stable shape for both APScheduler 3.x and 4.x."""
     # APS 3.x -> next_run_time | APS 4.x -> next_fire_time
     next_time = getattr(job, "next_run_time", getattr(job, "next_fire_time", None))
 
+    # Get the pipeline_path from kwargs (where we store it), not from args
+    pipeline_path = job.kwargs.get("pipeline_path", "")
+    
     base = {
         "id": job.id,
         "name": job.name,
         "next_run_time": next_time.isoformat() if next_time else None,
-        "pipeline_path": job.args[0] if job.args else None,
+        "pipeline_path": pipeline_path,
         "trigger": str(job.trigger),
     }
 
     if isinstance(job.trigger, DateTrigger):
         base.update(
-            schedule_type="date",
-            run_date=job.kwargs.get("run_date") or job.trigger.run_date.isoformat(),
+            coalesce=getattr(job, "coalesce", None),
+            max_instances=getattr(job, "max_instances", None),
+            misfire_grace_time=getattr(job, "misfire_grace_time", None),
         )
     elif isinstance(job.trigger, IntervalTrigger):
         base.update(
@@ -76,6 +102,12 @@ def _serialise(job):
         base.update(schedule_type="cron", cron_expression=cron_expr)
 
     return base
+
+
+def _parse_iso_datetime(iso: str) -> dt.datetime:
+    if iso.endswith('Z'):
+        iso = iso[:-1] + '+00:00'
+    return dt.datetime.fromisoformat(iso)
 
 
 scheduler = BackgroundScheduler()
@@ -92,28 +124,51 @@ def run_pipeline(pipeline_or_code, **_meta):
     """
     Execute the scheduled pipeline.
 
-    * If *pipeline_or_code* points to a file that exists, run it with
-      `python <file>`.
-    * Otherwise treat the string as raw Python and run it with
-      `python -c "<code>"`.
+    * If *pipeline_or_code* points to a file that exists (relative to _AMPHI_ROOT if needed), run it with
+      the current Python interpreter.
+    * Otherwise treat the string as raw Python and run it with: python -c "<code>".
     """
     try:
-        if os.path.isfile(pipeline_or_code):
-            abs_path = (
-                pipeline_or_code
-                if os.path.isabs(pipeline_or_code)
-                else os.path.join(_AMPHI_ROOT, pipeline_or_code)
-            )
-            cmd = ["python", abs_path]
-        else:
-            cmd = ["python", "-c", pipeline_or_code]
+        root = _AMPHI_ROOT or os.getcwd()
 
-        res = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        logger.info(res.stdout)
-        return {"success": True, "output": res.stdout}
-    except subprocess.CalledProcessError as e:
-        logger.error(e.stderr)
-        return {"success": False, "error": e.stderr}
+        # Build an absolute candidate and only then decide if it is a file
+        candidate = pipeline_or_code
+        if not os.path.isabs(candidate):
+            candidate = os.path.join(root, pipeline_or_code)
+
+        if os.path.isfile(candidate):
+            cmd = [sys.executable, candidate]
+        else:
+            cmd = [sys.executable, "-c", pipeline_or_code]
+
+        # Run inside the workspace root so relative IO in scripts works
+        res = subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            cwd=root,
+        )
+
+        success = (res.returncode == 0)
+
+        if success:
+            logger.info("Pipeline OK (exit %s)\nSTDOUT:\n%s", res.returncode, res.stdout)
+            if res.stderr:
+                logger.warning("Pipeline STDERR:\n%s", res.stderr)
+        else:
+            logger.error("Pipeline FAILED (exit %s)\nSTDOUT:\n%s\nSTDERR:\n%s",
+                         res.returncode, res.stdout, res.stderr)
+
+        return {
+            "success": success,
+            "output": res.stdout,
+            "error": res.stderr if res.stderr else None,
+            "exit_code": res.returncode,
+        }
+
+    except Exception as e:
+        logger.exception("Exception while running pipeline")
+        return {"success": False, "error": str(e)}
 
 
 class SchedulerConfigHandler(APIHandler):
@@ -124,7 +179,6 @@ class SchedulerConfigHandler(APIHandler):
 
 # ── HTTP handlers ───────────────────────────────────────────────────────────
 class SchedulerListHandler(APIHandler):
-    # Single, non-duplicated implementations
     @tornado.web.authenticated
     async def get(self):
         try:
@@ -137,14 +191,42 @@ class SchedulerListHandler(APIHandler):
     @tornado.web.authenticated
     async def post(self):
         try:
-            body = self.get_json_body() or {}
-            # Accept raw Python code or a file path
-            pipeline = body.get("python_code") or body.get("pipeline_path")
-            if not pipeline:
-                raise ValueError("pipeline_path or python_code is required")
+            # More robust JSON body parsing
+            try:
+                body = self.get_json_body()
+                if body is None:
+                    # Try to get the body and parse it manually
+                    raw_body = self.request.body
+                    if raw_body:
+                        body = json.loads(raw_body.decode('utf-8'))
+                    else:
+                        raise ValueError("Request body is empty")
+                elif isinstance(body, str):
+                    # If it's a string, try to parse it as JSON
+                    body = json.loads(body)
+            except (json.JSONDecodeError, UnicodeDecodeError) as e:
+                raise ValueError(f"Invalid JSON in request body: {e}")
+            
+            if not isinstance(body, dict):
+                raise ValueError("Request body must be a JSON object")
+            
+            # Determine what to execute: python_code takes precedence over pipeline_path
+            executable = body.get("python_code") or body.get("pipeline_path")
+            if not executable:
+                raise ValueError("Either pipeline_path or python_code is required")
+            
+            # Store the original pipeline_path for display purposes
+            pipeline_path = body.get("pipeline_path", "")
 
             trigger, kind = _make_trigger(body)
-            kwargs = {}
+
+            # runtime controls (with sensible defaults)
+            max_instances = int(body.get("max_instances", 2))
+            coalesce      = bool(body.get("coalesce", True))
+            misfire_grace = int(body.get("misfire_grace_time", 60))
+
+            # Keep original parameters so we can round-trip them later
+            kwargs = {"pipeline_path": pipeline_path}
             if kind == "cron":
                 kwargs["cron_expression"] = body["cron_expression"]
             elif kind == "interval":
@@ -155,12 +237,14 @@ class SchedulerListHandler(APIHandler):
             job = scheduler.add_job(
                 run_pipeline,
                 trigger=trigger,
-                args=[pipeline],
+                args=[executable],
                 kwargs=kwargs,
-                misfire_grace_time=60,
+                misfire_grace_time=misfire_grace,
+                coalesce=coalesce,
+                max_instances=max_instances,
                 id=body.get("id"),
-                name=body.get("name", f"job_{datetime.datetime.now():%Y%m%d%H%M%S}"),
-                replace_existing=bool(body.get("id")),
+                name=body.get("name", f"job_{dt.datetime.now():%Y%m%d%H%M%S}"),
+                replace_existing=bool(body.get("id")),  # replace to update persisted jobs
             )
             self.finish(json.dumps(_serialise(job)))
         except Exception as e:
@@ -168,55 +252,14 @@ class SchedulerListHandler(APIHandler):
             self.set_status(400)
             self.finish(json.dumps({"error": str(e)}))
 
-    @tornado.web.authenticated
-    async def get(self):
-        try:
-            self.finish(json.dumps({"jobs": [_serialise(j) for j in scheduler.get_jobs()]}))
-        except Exception as e:
-            logger.exception("Error listing jobs")
-            self.set_status(500); self.finish(json.dumps({"error": str(e)}))
-
-    @tornado.web.authenticated
-    async def post(self):
-        try:
-            body = self.get_json_body() or {}
-            pipeline = body.get("pipeline_path")
-            if not pipeline:
-                raise ValueError("pipeline_path is required")
-
-            trigger, kind = _make_trigger(body)
-
-            # keep original parameters so we can round-trip them later
-            kwargs = {}
-            if kind == "cron":
-                kwargs["cron_expression"] = body["cron_expression"]
-            elif kind == "interval":
-                kwargs["interval_seconds"] = body["interval_seconds"]
-            elif kind == "date":
-                kwargs["run_date"] = body["run_date"]
-
-            job = scheduler.add_job(
-                run_pipeline,
-                trigger=trigger,
-                args=[pipeline],
-                kwargs=kwargs,
-                misfire_grace_time=60,                           # avoid “missed by 1 s” errors
-                id=body.get("id"),
-                name=body.get("name", f"job_{datetime.datetime.now():%Y%m%d%H%M%S}"),
-                replace_existing=bool(body.get("id"))            # true if updating
-            )
-            self.finish(json.dumps(_serialise(job)))
-
-        except Exception as e:
-            logger.exception("Error creating job")
-            self.set_status(400); self.finish(json.dumps({"error": str(e)}))
-
 class SchedulerJobHandler(APIHandler):
     @tornado.web.authenticated
     async def get(self, job_id):
         job = scheduler.get_job(job_id)
         if not job:
-            self.set_status(404); self.finish(json.dumps({"error": "Job not found"})); return
+            self.set_status(404)
+            self.finish(json.dumps({"error": "Job not found"}))
+            return
         self.finish(json.dumps(_serialise(job)))
 
     @tornado.web.authenticated
@@ -225,14 +268,47 @@ class SchedulerJobHandler(APIHandler):
             scheduler.remove_job(job_id)
             self.finish(json.dumps({"success": True}))
         except Exception as e:
-            self.set_status(404); self.finish(json.dumps({"error": str(e)}))
+            self.set_status(404)
+            self.finish(json.dumps({"error": str(e)}))
+            
+    @tornado.web.authenticated
+    async def put(self, job_id):
+        job = scheduler.get_job(job_id)
+        if not job:
+            self.set_status(404)
+            self.finish(json.dumps({"error": "Job not found"}))
+            return
+
+        try:
+            body = self.get_json_body() or {}
+            # modify general options
+            changes = {}
+            for k in ("name", "misfire_grace_time", "coalesce", "max_instances"):
+                if k in body:
+                    changes[k] = body[k]
+            if changes:
+                scheduler.modify_job(job_id, **changes)
+
+            # optionally replace trigger
+            if "schedule_type" in body:
+                trigger, _ = _make_trigger(body)
+                scheduler.reschedule_job(job_id, trigger=trigger)
+
+            job = scheduler.get_job(job_id)
+            self.finish(json.dumps(_serialise(job)))
+        except Exception as e:
+            logger.exception("Error updating job")
+            self.set_status(400)
+            self.finish(json.dumps({"error": str(e)}))
 
 class SchedulerRunHandler(APIHandler):
     @tornado.web.authenticated
     async def post(self, job_id):
         job = scheduler.get_job(job_id)
         if not job:
-            self.set_status(404); self.finish(json.dumps({"error": "Job not found"})); return
+            self.set_status(404)
+            self.finish(json.dumps({"error": "Job not found"}))
+            return
         result = run_pipeline(job.args[0], **job.kwargs)
         self.finish(json.dumps(result))
 
@@ -244,7 +320,7 @@ def setup_handlers(web_app):
         (url_path_join(base, "pipeline-scheduler", "jobs"), SchedulerListHandler),
         (url_path_join(base, "pipeline-scheduler", "jobs", "(.+)"), SchedulerJobHandler),
         (url_path_join(base, "pipeline-scheduler", "run",  "(.+)"), SchedulerRunHandler),
-        (url_path_join(base, "pipeline-scheduler", "config"), SchedulerConfigHandler)  # ← add this
+        (url_path_join(base, "pipeline-scheduler", "config"), SchedulerConfigHandler)
     ])
 
 def _jupyter_server_extension_paths():
@@ -252,23 +328,30 @@ def _jupyter_server_extension_paths():
 
 def load_jupyter_server_extension(nb_server_app):
     """Initialise the pipeline-scheduler extension."""
-    global _AMPHI_ROOT
+    global _AMPHI_ROOT, logger
 
-    # 1. Work out the workspace directory in a way that survives Jupyter-Server v1→v2
     _AMPHI_ROOT = (
-        getattr(nb_server_app, "preferred_dir", None)        # Jupyter-Server ≤2.4
-        or getattr(nb_server_app, "root_dir", None)          # Jupyter-Server ≥2.5
-        or os.getcwd()                                       # last-ditch fallback
+        getattr(nb_server_app, "preferred_dir", None)
+        or getattr(nb_server_app, "root_dir", None)
+        or os.getcwd()
     )
+    # reuse Jupyter's logger so you actually see messages
+    logger = nb_server_app.log
+
     nb_server_app.log.info("🚀 _AMPHI_ROOT resolved to %s", _AMPHI_ROOT)
 
-    # 2. Configure APScheduler (DB goes under that root)
     amphi_data_dir = os.path.join(_AMPHI_ROOT, ".amphi")
-    os.makedirs(amphi_data_dir, exist_ok=True)          # create once, no-op if present
+    os.makedirs(amphi_data_dir, exist_ok=True)
     sqlite_path = os.path.join(amphi_data_dir, "scheduler.sqlite")
-    scheduler.configure(jobstores={"default": SQLAlchemyJobStore(url=f"sqlite:///{sqlite_path}")})
+    scheduler.configure(
+        executors={
+            "default": ThreadPoolExecutor(max_workers=10),
+            "processpool": ProcessPoolExecutor(max_workers=2),
+        },
+        job_defaults={"coalesce": True, "max_instances": 10},
+        jobstores={"default": SQLAlchemyJobStore(url=f"sqlite:///{sqlite_path}")},
+        # timezone="Europe/Zurich",
+    )
     scheduler.start()
-
-    # 3. Wire HTTP handlers
     setup_handlers(nb_server_app.web_app)
     nb_server_app.log.info("🚀 Pipeline Scheduler extension loaded")

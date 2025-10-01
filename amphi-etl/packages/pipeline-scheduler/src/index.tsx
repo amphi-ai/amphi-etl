@@ -55,7 +55,7 @@ interface Job {
   trigger: string;
   pipeline_path: string;
 
-  /*  ⇣ fields returned by the backend’s `_serialise()` helper ⇣  */
+  /*  ⇣ fields returned by the backend's `_serialise()` helper ⇣  */
   schedule_type: 'date' | 'interval' | 'cron';
   run_date?: string;              // only for `date`
   interval_seconds?: number;      // only for `interval`
@@ -80,7 +80,7 @@ interface JobFormSubmitValues {
   run_date?: string;          // ISO string sent to backend
   interval_seconds?: number;
   cron_expression?: string;
-  pipeline_path?: string;     // present when user picked a .py
+  pipeline_path: string;      // ALWAYS present - the original file path
   python_code?: string;       // present when user picked a .ampln
 }
 
@@ -89,78 +89,65 @@ interface SchedulerPanelProps {
   docManager: IDocumentManager;   /* NEW */
 }
 
-interface ExtendedRequestInit extends Omit<RequestInit, 'body'> {
-  body?: BodyInit | Record<string, any>;
+function toHeaderRecord(h?: HeadersInit): Record<string, string> {
+  if (!h) return {};
+  if (h instanceof Headers) {
+    const obj: Record<string, string> = {};
+    h.forEach((v, k) => (obj[k] = v));
+    return obj;
+  }
+  if (Array.isArray(h)) return Object.fromEntries(h);
+  return { ...(h as Record<string, string>) };
 }
+
+
+type ExtendedRequestInit = Omit<RequestInit, 'body'> & {
+  body?: BodyInit | Record<string, any> | null;
+};
 
 /* ---------- API Client ---------- */
 class SchedulerAPI {
   private static async makeRequest(endpoint: string, init: ExtendedRequestInit = {}) {
     const settings = ServerConnection.makeSettings();
-    // Try multiple URL patterns to increase chances of connecting successfully
-    const urlPatterns = [
-      'pipeline-scheduler'
-    ];
+    const urlPatterns = ['pipeline-scheduler'];
 
-    // Try each URL pattern until one succeeds
     let lastError: Error | null = null;
 
     for (const baseEndpoint of urlPatterns) {
       try {
-        console.log(`Trying API endpoint with base: ${baseEndpoint}`);
+        // take body out first so we can re-type it safely
+        const { body, ...rest } = init;
+        const requestInit: RequestInit = { ...rest };
 
-        // Fix: Properly handle the body serialization
-        let body: BodyInit | undefined = undefined;
-        let headers = { ...(init.headers || {}) };
+        // normalize headers to a plain object we can mutate
+        const headers = toHeaderRecord(rest.headers);
+        const method = (rest.method || 'GET').toUpperCase();
 
-        if (init.body && (init.method || 'GET') !== 'GET') {
-          if (typeof init.body === 'object' && !(init.body instanceof FormData) && !(init.body instanceof URLSearchParams) && !(init.body instanceof ArrayBuffer) && !(init.body instanceof Blob)) {
-            // It's a plain object, serialize to JSON
-            body = JSON.stringify(init.body);
-            headers['Content-Type'] = 'application/json';
+        if (method !== 'GET' && body != null) {
+          const isPlainObject =
+            typeof body === 'object' &&
+            !(body instanceof FormData) &&
+            !(body instanceof URLSearchParams) &&
+            !(body instanceof ArrayBuffer) &&
+            !(body instanceof Blob);
+
+          if (isPlainObject) {
+            requestInit.body = JSON.stringify(body as Record<string, any>);
+            headers['Content-Type'] = headers['Content-Type'] || 'application/json';
           } else {
-            // It's already a valid BodyInit type
-            body = init.body as BodyInit;
+            requestInit.body = body as BodyInit;
           }
         }
+        requestInit.headers = headers;
 
-        // Create a clean RequestInit object
-        const requestInit: RequestInit = {
-          ...init,
-          body,
-          headers
-        };
-        // Remove the body property since we're passing it separately
-        delete (requestInit as any).body;
-
-        console.log('Sending request:', {
-          endpoint,
-          method: init.method || 'GET',
-          body: body,
-          bodyType: typeof body,
-          bodyLength: body ? body.toString().length : 0,
-          isObjectBody: init.body && typeof init.body === 'object',
-          originalBody: init.body,
-          headers: headers
-        });
-
-
-        const response = await requestScheduler(endpoint, {
-          method: init.method || 'GET',
-          body: body,
-          init: requestInit
-        });
-
-        console.log(`Successfully connected using base: ${baseEndpoint}`);
+        const response = await requestScheduler(endpoint, requestInit);
         return response;
       } catch (error) {
         console.warn(`Failed to connect using ${baseEndpoint}:`, error);
         lastError = error instanceof Error ? error : new Error(String(error));
-        // Continue to try the next URL pattern
       }
     }
 
-    // If we get here, all patterns failed
     throw lastError || new Error('Failed to connect to any API endpoint');
   }
 
@@ -521,20 +508,19 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
         schedule_type: values.schedule_type,
         run_date: values.run_date ? values.run_date.toDate().toISOString() : undefined,
         interval_seconds: values.interval_seconds,
-        cron_expression: values.cron_expression
+        cron_expression: values.cron_expression,
+        pipeline_path: values.pipeline_path  // ALWAYS send the original path
       };
 
       if (values.id) formData.id = values.id;
 
-      /* .ampln → raw Python, else keep path */
+      /* .ampln → also send raw Python code */
       if (values.pipeline_path.endsWith('.ampln')) {
         formData.python_code = await getPythonCode(
           values.pipeline_path,
           commands,
           docManager
         );
-      } else {
-        formData.pipeline_path = values.pipeline_path;
       }
 
       await SchedulerAPI.createJob(formData);

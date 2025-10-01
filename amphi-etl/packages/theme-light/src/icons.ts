@@ -1,10 +1,9 @@
 import { LabIcon } from '@jupyterlab/ui-components';
 
 import folderIconSvgStr from '../style/icons/folder.svg';
-import saveIconSvgStr from '../style/icons/save-24.svg';
-import terminalScreenIconSvgStr from '../style/icons/terminal-screen-24.svg';
-import playIconSvgStr from '../style/icons/play-24.svg';
-import fileSourceIconSvgStr from '../style/icons/file-source-24.svg';
+import saveIconSvgStr from '../style/icons/save.svg';
+import playIconSvgStr from '../style/icons/play.svg';
+import fileSourceIconSvgStr from '../style/icons/code.svg';
 import folderPlusIconSvgStr from '../style/icons/folder-plus.svg';
 import uploadIconSvgStr from '../style/icons/upload.svg';
 import reloadIconSvgStr from '../style/icons/refresh.svg';
@@ -13,16 +12,16 @@ import fileCsvIconSvgStr from '../style/icons/file-csv-24.svg';
 import filePdfIconSvgStr from '../style/icons/file-pdf-24.svg';
 import fileExcelIconSvgStr from '../style/icons/file-excel-24.svg';
 import fileParquetIconSvgStr from '../style/icons/file-parquet-24.svg';
-import fileJsonIconSvgStr from '../style/icons/file-json.svg';
+import fileJsonIconSvgStr from '../style/icons/file-json-24.svg';
 import fileNotebookIconSvgStr from '../style/icons/file-ipynb-24.svg';
-import terminalIconSvgStr from '../style/icons/terminal-screen-24.svg';
-import homeIconSvgStr from '../style/icons/home-24.svg';
+import consoleIconSvgStr from '../style/icons/console.svg';
+import homeIconSvgStr from '../style/icons/home.svg';
 import searchIconSvgStr from '../style/icons/search.svg';
 
 
-export const terminalIcon = new LabIcon({
+export const consoleIcon = new LabIcon({
   name: 'amphi:terminal-amphi-icon',
-  svgstr: terminalIconSvgStr
+  svgstr: consoleIconSvgStr
 });
 
 export const folderAmphiIcon = new LabIcon({
@@ -33,11 +32,6 @@ export const folderAmphiIcon = new LabIcon({
 export const saveAmphiIcon = new LabIcon({
   name: 'amphi:save-icon',
   svgstr: saveIconSvgStr
-});
-
-export const terminalScreenAmphiIcon = new LabIcon({
-  name: 'amphi:terminal-screen-icon',
-  svgstr: terminalScreenIconSvgStr
 });
 
 export const playAmphiIcon = new LabIcon({
