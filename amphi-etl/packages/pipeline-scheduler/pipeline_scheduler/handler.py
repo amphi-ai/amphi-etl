@@ -21,11 +21,45 @@ def _make_trigger(body: dict):
     kind = body.get("schedule_type", "date")
 
     if kind == "date":
-        iso = body.get("run_date")
-        if not iso:
-            raise ValueError("run_date is required for date trigger")
-        run_date = _parse_iso_datetime(iso)
-        return DateTrigger(run_date=run_date), "date"
+        date_type = body.get("date_type", "once")
+
+        if date_type == "once":
+            iso = body.get("run_date")
+            if not iso:
+                raise ValueError("run_date is required for one-time date trigger")
+            run_date = _parse_iso_datetime(iso)
+            return DateTrigger(run_date=run_date), "date"
+
+        elif date_type == "daily":
+            iso = body.get("run_date")
+            if not iso:
+                raise ValueError("run_date is required for daily trigger")
+            start_time = _parse_iso_datetime(iso)
+            return CronTrigger(hour=start_time.hour, minute=start_time.minute), "cron"
+
+        elif date_type == "weekly":
+            iso = body.get("run_date")
+            if not iso:
+                raise ValueError("run_date is required for weekly trigger")
+            start_time = _parse_iso_datetime(iso)
+            day_of_week = start_time.weekday()  # 0=Monday, 6=Sunday
+            return CronTrigger(day_of_week=day_of_week, hour=start_time.hour, minute=start_time.minute), "cron"
+
+        elif date_type == "monthly":
+            iso = body.get("run_date")
+            if not iso:
+                raise ValueError("run_date is required for monthly trigger")
+            start_time = _parse_iso_datetime(iso)
+            return CronTrigger(day=start_time.day, hour=start_time.hour, minute=start_time.minute), "cron"
+
+        elif date_type == "every_x_days":
+            days = body.get("interval_days")
+            if days is None:
+                raise ValueError("interval_days is required for every_x_days trigger")
+            return IntervalTrigger(days=int(days)), "interval"
+
+        else:
+            raise ValueError(f"Invalid date_type: {date_type}")
 
     if kind == "interval":
         secs = body.get("interval_seconds")
@@ -76,7 +110,7 @@ def _serialise(job):
 
     # Get the pipeline_path from kwargs (where we store it), not from args
     pipeline_path = job.kwargs.get("pipeline_path", "")
-    
+
     base = {
         "id": job.id,
         "name": job.name,
@@ -87,19 +121,40 @@ def _serialise(job):
 
     if isinstance(job.trigger, DateTrigger):
         base.update(
+            schedule_type="date",
+            date_type=job.kwargs.get("date_type", "once"),
+            run_date=job.kwargs.get("run_date"),
             coalesce=getattr(job, "coalesce", None),
             max_instances=getattr(job, "max_instances", None),
             misfire_grace_time=getattr(job, "misfire_grace_time", None),
         )
     elif isinstance(job.trigger, IntervalTrigger):
-        base.update(
-            schedule_type="interval",
-            interval_seconds=job.kwargs.get("interval_seconds")
-            or int(job.trigger.interval.total_seconds()),
-        )
+        # Check if this is from a date-based every_x_days schedule
+        if job.kwargs.get("date_type") == "every_x_days":
+            base.update(
+                schedule_type="date",
+                date_type="every_x_days",
+                interval_days=job.kwargs.get("interval_days")
+                or int(job.trigger.interval.total_seconds() / 86400),  # convert seconds to days
+            )
+        else:
+            base.update(
+                schedule_type="interval",
+                interval_seconds=job.kwargs.get("interval_seconds")
+                or int(job.trigger.interval.total_seconds()),
+            )
     elif isinstance(job.trigger, CronTrigger):
-        cron_expr = job.kwargs.get("cron_expression") or _cron_to_crontab(job.trigger)
-        base.update(schedule_type="cron", cron_expression=cron_expr)
+        # Check if this is from a date-based schedule (daily, weekly, monthly)
+        date_type = job.kwargs.get("date_type")
+        if date_type in ("daily", "weekly", "monthly"):
+            base.update(
+                schedule_type="date",
+                date_type=date_type,
+                run_date=job.kwargs.get("run_date"),
+            )
+        else:
+            cron_expr = job.kwargs.get("cron_expression") or _cron_to_crontab(job.trigger)
+            base.update(schedule_type="cron", cron_expression=cron_expr)
 
     return base
 
@@ -228,11 +283,20 @@ class SchedulerListHandler(APIHandler):
             # Keep original parameters so we can round-trip them later
             kwargs = {"pipeline_path": pipeline_path}
             if kind == "cron":
-                kwargs["cron_expression"] = body["cron_expression"]
+                kwargs["cron_expression"] = body.get("cron_expression")
+                # Store date_type if it was a date-based cron
+                if body.get("schedule_type") == "date":
+                    kwargs["date_type"] = body.get("date_type")
+                    kwargs["run_date"] = body.get("run_date")
             elif kind == "interval":
-                kwargs["interval_seconds"] = body["interval_seconds"]
+                kwargs["interval_seconds"] = body.get("interval_seconds")
+                # Store date_type if it was every_x_days
+                if body.get("schedule_type") == "date" and body.get("date_type") == "every_x_days":
+                    kwargs["date_type"] = body.get("date_type")
+                    kwargs["interval_days"] = body.get("interval_days")
             elif kind == "date":
-                kwargs["run_date"] = body["run_date"]
+                kwargs["run_date"] = body.get("run_date")
+                kwargs["date_type"] = body.get("date_type", "once")
 
             job = scheduler.add_job(
                 run_pipeline,

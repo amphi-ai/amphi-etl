@@ -517,10 +517,12 @@ const useStyle = (0,antd_style__WEBPACK_IMPORTED_MODULE_8__.createStyles)(({ tok
 const JobForm = ({ docManager, onSubmit, onCancel, initialValues }) => {
     const [form] = antd__WEBPACK_IMPORTED_MODULE_7__.Form.useForm();
     const [scheduleType, setScheduleType] = (0,react__WEBPACK_IMPORTED_MODULE_4__.useState)((initialValues === null || initialValues === void 0 ? void 0 : initialValues.schedule_type) || 'date');
+    const [dateType, setDateType] = (0,react__WEBPACK_IMPORTED_MODULE_4__.useState)((initialValues === null || initialValues === void 0 ? void 0 : initialValues.date_type) || 'once');
     (0,react__WEBPACK_IMPORTED_MODULE_4__.useEffect)(() => {
         if (initialValues) {
             form.setFieldsValue(initialValues);
             setScheduleType(initialValues.schedule_type || 'date');
+            setDateType(initialValues.date_type || 'once');
         }
     }, [initialValues, form]);
     /* helper to launch the file-picker */
@@ -544,7 +546,7 @@ const JobForm = ({ docManager, onSubmit, onCancel, initialValues }) => {
                 colorPrimary: '#5F9B97',
             },
         } },
-        react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Form, { form: form, layout: "vertical", onFinish: onSubmit, initialValues: { schedule_type: 'date', ...initialValues } },
+        react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Form, { form: form, layout: "vertical", onFinish: onSubmit, initialValues: { schedule_type: 'date', date_type: 'once', ...initialValues } },
             react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Form.Item, { name: "id", hidden: true },
                 react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Input, null)),
             react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Form.Item, { style: { marginBottom: 16 }, name: "name", label: "Task Name", rules: [{ required: true, message: 'Please input a task name' }] },
@@ -556,11 +558,20 @@ const JobForm = ({ docManager, onSubmit, onCancel, initialValues }) => {
                     react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Button, { icon: react__WEBPACK_IMPORTED_MODULE_4___default().createElement(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__.FolderOpenOutlined, null), onClick: pickPipelinePath }))),
             react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Form.Item, { style: { marginBottom: 16 }, name: "schedule_type", label: "Schedule Type" },
                 react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Radio.Group, { onChange: (e) => setScheduleType(e.target.value) },
-                    react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Radio, { value: "date" }, "One-time"),
+                    react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Radio, { value: "date" }, "Date"),
                     react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Radio, { value: "interval" }, "Interval"),
                     react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Radio, { value: "cron" }, "Cron"))),
-            scheduleType === 'date' && (react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Form.Item, { style: { marginBottom: 16 }, name: "run_date", label: "Run Date", rules: [{ required: true, message: 'Please select a date and time' }] },
-                react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.DatePicker, { showTime: true, style: { width: '100%' } }))),
+            scheduleType === 'date' && (react__WEBPACK_IMPORTED_MODULE_4___default().createElement((react__WEBPACK_IMPORTED_MODULE_4___default().Fragment), null,
+                react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Form.Item, { style: { marginBottom: 16 }, name: "date_type", label: "Date Type" },
+                    react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Select, { onChange: (value) => setDateType(value), style: { width: '100%' } },
+                        react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Select.Option, { value: "once" }, "One-time"),
+                        react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Select.Option, { value: "daily" }, "Daily"),
+                        react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Select.Option, { value: "weekly" }, "Weekly"),
+                        react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Select.Option, { value: "monthly" }, "Monthly"),
+                        react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Select.Option, { value: "every_x_days" }, "Every X Days"))),
+                dateType !== 'every_x_days' ? (react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Form.Item, { style: { marginBottom: 16 }, name: "run_date", label: dateType === 'once' ? 'Run Date & Time' : 'Start Date & Time', rules: [{ required: true, message: 'Please select a date and time' }] },
+                    react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.DatePicker, { showTime: true, style: { width: '100%' } }))) : (react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Form.Item, { style: { marginBottom: 16 }, name: "interval_days", label: "Interval (days)", rules: [{ required: true, message: 'Please input a number of days' }] },
+                    react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.InputNumber, { min: 1, style: { width: '100%' } }))))),
             scheduleType === 'interval' && (react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Form.Item, { style: { marginBottom: 16 }, name: "interval_seconds", label: "Interval (seconds)", rules: [{ required: true, message: 'Please input an interval' }] },
                 react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.InputNumber, { min: 1, style: { width: '100%' } }))),
             scheduleType === 'cron' && (react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Form.Item, { style: { marginBottom: 16 }, name: "cron_expression", label: "Cron Expression", rules: [{ required: true, message: 'Please input a cron expression' }] },
@@ -644,8 +655,14 @@ const SchedulerPanel = ({ commands, docManager }) => {
             pipeline_path: job.pipeline_path,
             schedule_type: job.schedule_type
         };
-        if (job.schedule_type === 'date' && job.run_date) {
-            formValues.run_date = dayjs__WEBPACK_IMPORTED_MODULE_9___default()(job.run_date);
+        if (job.schedule_type === 'date') {
+            formValues.date_type = job.date_type || 'once';
+            if (job.run_date) {
+                formValues.run_date = dayjs__WEBPACK_IMPORTED_MODULE_9___default()(job.run_date);
+            }
+            if (job.date_type === 'every_x_days') {
+                formValues.interval_days = job.interval_days;
+            }
         }
         if (job.schedule_type === 'interval') {
             formValues.interval_seconds = job.interval_seconds;
@@ -697,6 +714,13 @@ const SchedulerPanel = ({ commands, docManager }) => {
                 cron_expression: values.cron_expression,
                 pipeline_path: values.pipeline_path // ALWAYS send the original path
             };
+            // Add date_type if schedule_type is 'date'
+            if (values.schedule_type === 'date') {
+                formData.date_type = values.date_type || 'once';
+                if (values.date_type === 'every_x_days') {
+                    formData.interval_days = values.interval_days;
+                }
+            }
             if (values.id)
                 formData.id = values.id;
             /* .ampln → also send raw Python code */
@@ -724,30 +748,30 @@ const SchedulerPanel = ({ commands, docManager }) => {
                     react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Button, { type: "primary", icon: react__WEBPACK_IMPORTED_MODULE_4___default().createElement(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__.PlusOutlined, null), onClick: handleCreateJob }, "Task"),
                     react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Button, { icon: react__WEBPACK_IMPORTED_MODULE_4___default().createElement(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__.ReloadOutlined, null), onClick: fetchJobs }))),
             react__WEBPACK_IMPORTED_MODULE_4___default().createElement("div", { className: styles.content }, loading ? (react__WEBPACK_IMPORTED_MODULE_4___default().createElement("div", { style: { textAlign: 'center', padding: '40px 0' } },
-                react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Spin, { size: "large" }))) : jobs.length === 0 ? (react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Empty, { description: "No scheduled tasks yet", image: antd__WEBPACK_IMPORTED_MODULE_7__.Empty.PRESENTED_IMAGE_SIMPLE })) : (react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.List, { dataSource: jobs, renderItem: (job) => (react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Card, { className: styles.jobCard, size: "small", title: job.name, key: job.id },
-                    react__WEBPACK_IMPORTED_MODULE_4___default().createElement("div", { className: styles.jobMeta },
-                        react__WEBPACK_IMPORTED_MODULE_4___default().createElement(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__.ScheduleOutlined, { className: styles.jobMetaIcon }),
-                        react__WEBPACK_IMPORTED_MODULE_4___default().createElement("span", null,
-                            "Pipeline: ",
-                            job.pipeline_path)),
-                    react__WEBPACK_IMPORTED_MODULE_4___default().createElement("div", { className: styles.jobMeta },
-                        react__WEBPACK_IMPORTED_MODULE_4___default().createElement(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__.ClockCircleOutlined, { className: styles.jobMetaIcon }),
-                        react__WEBPACK_IMPORTED_MODULE_4___default().createElement("span", null,
-                            "Type: ",
-                            job.trigger.split('[')[0])),
-                    job.next_run_time && (react__WEBPACK_IMPORTED_MODULE_4___default().createElement("div", { className: styles.jobMeta },
-                        react__WEBPACK_IMPORTED_MODULE_4___default().createElement(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__.CalendarOutlined, { className: styles.jobMetaIcon }),
-                        react__WEBPACK_IMPORTED_MODULE_4___default().createElement("span", null,
-                            "Next run: ",
-                            dayjs__WEBPACK_IMPORTED_MODULE_9___default()(job.next_run_time).format('YYYY-MM-DD HH:mm:ss')))),
-                    react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Divider, { style: { margin: '12px 0' } }),
-                    react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Space, null,
-                        react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Tooltip, { title: "Run now" },
-                            react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Button, { type: "text", icon: react__WEBPACK_IMPORTED_MODULE_4___default().createElement(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__.PlayCircleOutlined, null), onClick: () => handleRunJob(job.id) })),
-                        react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Tooltip, { title: "Edit" },
-                            react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Button, { type: "text", icon: react__WEBPACK_IMPORTED_MODULE_4___default().createElement(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__.EditOutlined, null), onClick: () => handleEditJob(job) })),
-                        react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Tooltip, { title: "Delete" },
-                            react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Button, { type: "text", danger: true, icon: react__WEBPACK_IMPORTED_MODULE_4___default().createElement(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__.DeleteOutlined, null), onClick: () => handleDeleteJob(job.id) }))))) }))),
+                react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Spin, { size: "large" }))) : jobs.length === 0 ? (react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Empty, { description: "No scheduled tasks yet", image: antd__WEBPACK_IMPORTED_MODULE_7__.Empty.PRESENTED_IMAGE_SIMPLE })) : (react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.List, { itemLayout: "vertical", dataSource: jobs, renderItem: job => {
+                    const type = job.trigger.split('[')[0];
+                    return (react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.List.Item, { key: job.id, actions: [
+                            react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Tooltip, { title: "Run now", key: "run" },
+                                react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Button, { type: "text", icon: react__WEBPACK_IMPORTED_MODULE_4___default().createElement(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__.PlayCircleOutlined, null), onClick: () => handleRunJob(job.id) })),
+                            react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Tooltip, { title: "Edit", key: "edit" },
+                                react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Button, { type: "text", icon: react__WEBPACK_IMPORTED_MODULE_4___default().createElement(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__.EditOutlined, null), onClick: () => handleEditJob(job) })),
+                            react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Tooltip, { title: "Delete", key: "delete" },
+                                react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Button, { type: "text", danger: true, icon: react__WEBPACK_IMPORTED_MODULE_4___default().createElement(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__.DeleteOutlined, null), onClick: () => handleDeleteJob(job.id) }))
+                        ] },
+                        react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.List.Item.Meta, { title: react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Space, { wrap: true },
+                                react__WEBPACK_IMPORTED_MODULE_4___default().createElement("span", { style: { fontWeight: 600 } }, job.name),
+                                react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Tag, { icon: react__WEBPACK_IMPORTED_MODULE_4___default().createElement(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__.ClockCircleOutlined, null), color: "default" }, type)), description: react__WEBPACK_IMPORTED_MODULE_4___default().createElement("div", null,
+                                react__WEBPACK_IMPORTED_MODULE_4___default().createElement("div", { className: styles.jobMeta },
+                                    react__WEBPACK_IMPORTED_MODULE_4___default().createElement(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__.ScheduleOutlined, { className: styles.jobMetaIcon }),
+                                    react__WEBPACK_IMPORTED_MODULE_4___default().createElement("span", null,
+                                        "Pipeline: ",
+                                        job.pipeline_path)),
+                                job.next_run_time && (react__WEBPACK_IMPORTED_MODULE_4___default().createElement("div", { className: styles.jobMeta },
+                                    react__WEBPACK_IMPORTED_MODULE_4___default().createElement(_ant_design_icons__WEBPACK_IMPORTED_MODULE_5__.CalendarOutlined, { className: styles.jobMetaIcon }),
+                                    react__WEBPACK_IMPORTED_MODULE_4___default().createElement("span", null,
+                                        "Next: ",
+                                        dayjs__WEBPACK_IMPORTED_MODULE_9___default()(job.next_run_time).format('YYYY-MM-DD HH:mm:ss'))))) })));
+                } }))),
             react__WEBPACK_IMPORTED_MODULE_4___default().createElement(antd__WEBPACK_IMPORTED_MODULE_7__.Modal, { title: currentJob ? 'Edit Task' : 'New Task', open: jobModalVisible, onCancel: () => setJobModalVisible(false), footer: null, destroyOnClose: true, width: 500 },
                 react__WEBPACK_IMPORTED_MODULE_4___default().createElement(JobForm, { docManager: docManager, onSubmit: handleFormSubmit, onCancel: () => setJobModalVisible(false), initialValues: currentJob || undefined })))));
 };
@@ -834,4 +858,4 @@ module.exports = "<svg  xmlns=\"http://www.w3.org/2000/svg\"  width=\"24\"  heig
 /***/ })
 
 }]);
-//# sourceMappingURL=lib_index_js.58733a2c501e43ac1871.js.map
+//# sourceMappingURL=lib_index_js.8565f7561787e2b97e4f.js.map

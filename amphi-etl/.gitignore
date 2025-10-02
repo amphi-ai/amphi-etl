@@ -59,3 +59,6 @@ install.sh
 # Amphi
 untitled*
 testing*
+
+# Environment variables
+.env

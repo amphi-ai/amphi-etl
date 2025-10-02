@@ -57,8 +57,10 @@ interface Job {
 
   /*  ⇣ fields returned by the backend's `_serialise()` helper ⇣  */
   schedule_type: 'date' | 'interval' | 'cron';
+  date_type?: 'once' | 'daily' | 'weekly' | 'monthly' | 'every_x_days';
   run_date?: string;              // only for `date`
   interval_seconds?: number;      // only for `interval`
+  interval_days?: number;         // only for `date` with `every_x_days`
   cron_expression?: string;       // only for `cron`
 }
 
@@ -67,8 +69,10 @@ interface JobFormValues {
   name: string;
   pipeline_path: string;
   schedule_type: 'date' | 'interval' | 'cron';
+  date_type?: 'once' | 'daily' | 'weekly' | 'monthly' | 'every_x_days';
   run_date?: Dayjs;  // Changed to Dayjs type
   interval_seconds?: number;
+  interval_days?: number;
   cron_expression?: string;
 }
 
@@ -77,8 +81,10 @@ interface JobFormSubmitValues {
   id?: string;
   name: string;
   schedule_type: 'date' | 'interval' | 'cron';
+  date_type?: 'once' | 'daily' | 'weekly' | 'monthly' | 'every_x_days';
   run_date?: string;          // ISO string sent to backend
   interval_seconds?: number;
+  interval_days?: number;
   cron_expression?: string;
   pipeline_path: string;      // ALWAYS present - the original file path
   python_code?: string;       // present when user picked a .ampln
@@ -238,11 +244,15 @@ const JobForm: React.FC<{
   const [scheduleType, setScheduleType] = useState<'date' | 'interval' | 'cron'>(
     initialValues?.schedule_type || 'date'
   );
+  const [dateType, setDateType] = useState<'once' | 'daily' | 'weekly' | 'monthly' | 'every_x_days'>(
+    initialValues?.date_type || 'once'
+  );
 
   useEffect(() => {
     if (initialValues) {
       form.setFieldsValue(initialValues);
       setScheduleType(initialValues.schedule_type || 'date');
+      setDateType(initialValues.date_type || 'once');
     }
   }, [initialValues, form]);
 
@@ -276,7 +286,7 @@ const JobForm: React.FC<{
         form={form}
         layout="vertical"
         onFinish={onSubmit}
-        initialValues={{ schedule_type: 'date', ...initialValues }}
+        initialValues={{ schedule_type: 'date', date_type: 'once', ...initialValues }}
       >
         <Form.Item name="id" hidden>
           <Input />
@@ -308,21 +318,44 @@ const JobForm: React.FC<{
 
         <Form.Item style={{ marginBottom: 16 }} name="schedule_type" label="Schedule Type">
           <Radio.Group onChange={(e) => setScheduleType(e.target.value)}>
-            <Radio value="date">One-time</Radio>
+            <Radio value="date">Date</Radio>
             <Radio value="interval">Interval</Radio>
             <Radio value="cron">Cron</Radio>
           </Radio.Group>
         </Form.Item>
 
         {scheduleType === 'date' && (
-          <Form.Item
-            style={{ marginBottom: 16 }}
-            name="run_date"
-            label="Run Date"
-            rules={[{ required: true, message: 'Please select a date and time' }]}
-          >
-            <DatePicker showTime style={{ width: '100%' }} />
-          </Form.Item>
+          <>
+            <Form.Item style={{ marginBottom: 16 }} name="date_type" label="Date Type">
+              <Select onChange={(value) => setDateType(value)} style={{ width: '100%' }}>
+                <Select.Option value="once">One-time</Select.Option>
+                <Select.Option value="daily">Daily</Select.Option>
+                <Select.Option value="weekly">Weekly</Select.Option>
+                <Select.Option value="monthly">Monthly</Select.Option>
+                <Select.Option value="every_x_days">Every X Days</Select.Option>
+              </Select>
+            </Form.Item>
+
+            {dateType !== 'every_x_days' ? (
+              <Form.Item
+                style={{ marginBottom: 16 }}
+                name="run_date"
+                label={dateType === 'once' ? 'Run Date & Time' : 'Start Date & Time'}
+                rules={[{ required: true, message: 'Please select a date and time' }]}
+              >
+                <DatePicker showTime style={{ width: '100%' }} />
+              </Form.Item>
+            ) : (
+              <Form.Item
+                style={{ marginBottom: 16 }}
+                name="interval_days"
+                label="Interval (days)"
+                rules={[{ required: true, message: 'Please input a number of days' }]}
+              >
+                <InputNumber min={1} style={{ width: '100%' }} />
+              </Form.Item>
+            )}
+          </>
         )}
 
         {scheduleType === 'interval' && (
@@ -449,8 +482,14 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
       schedule_type: job.schedule_type as any
     };
 
-    if (job.schedule_type === 'date' && job.run_date) {
-      formValues.run_date = dayjs(job.run_date);
+    if (job.schedule_type === 'date') {
+      formValues.date_type = job.date_type || 'once';
+      if (job.run_date) {
+        formValues.run_date = dayjs(job.run_date);
+      }
+      if (job.date_type === 'every_x_days') {
+        formValues.interval_days = job.interval_days;
+      }
     }
     if (job.schedule_type === 'interval') {
       formValues.interval_seconds = job.interval_seconds;
@@ -512,6 +551,14 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
         pipeline_path: values.pipeline_path  // ALWAYS send the original path
       };
 
+      // Add date_type if schedule_type is 'date'
+      if (values.schedule_type === 'date') {
+        formData.date_type = values.date_type || 'once';
+        if (values.date_type === 'every_x_days') {
+          formData.interval_days = values.interval_days;
+        }
+      }
+
       if (values.id) formData.id = values.id;
 
       /* .ampln → also send raw Python code */
@@ -570,50 +617,65 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
             />
           ) : (
             <List
+              itemLayout="vertical"
               dataSource={jobs}
-              renderItem={(job) => (
-                <Card className={styles.jobCard} size="small" title={job.name} key={job.id}>
-                  <div className={styles.jobMeta}>
-                    <ScheduleOutlined className={styles.jobMetaIcon} />
-                    <span>Pipeline: {job.pipeline_path}</span>
-                  </div>
-                  <div className={styles.jobMeta}>
-                    <ClockCircleOutlined className={styles.jobMetaIcon} />
-                    <span>Type: {job.trigger.split('[')[0]}</span>
-                  </div>
-                  {job.next_run_time && (
-                    <div className={styles.jobMeta}>
-                      <CalendarOutlined className={styles.jobMetaIcon} />
-                      <span>Next run: {dayjs(job.next_run_time).format('YYYY-MM-DD HH:mm:ss')}</span>
-                    </div>
-                  )}
-                  <Divider style={{ margin: '12px 0' }} />
-                  <Space>
-                    <Tooltip title="Run now">
-                      <Button
-                        type="text"
-                        icon={<PlayCircleOutlined />}
-                        onClick={() => handleRunJob(job.id)}
-                      />
-                    </Tooltip>
-                    <Tooltip title="Edit">
-                      <Button
-                        type="text"
-                        icon={<EditOutlined />}
-                        onClick={() => handleEditJob(job)}
-                      />
-                    </Tooltip>
-                    <Tooltip title="Delete">
-                      <Button
-                        type="text"
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() => handleDeleteJob(job.id)}
-                      />
-                    </Tooltip>
-                  </Space>
-                </Card>
-              )}
+              renderItem={job => {
+                const type = job.trigger.split('[')[0];
+                return (
+                  <List.Item
+                    key={job.id}
+                    actions={[
+                      <Tooltip title="Run now" key="run">
+                        <Button
+                          type="text"
+                          icon={<PlayCircleOutlined />}
+                          onClick={() => handleRunJob(job.id)}
+                        />
+                      </Tooltip>,
+                      <Tooltip title="Edit" key="edit">
+                        <Button
+                          type="text"
+                          icon={<EditOutlined />}
+                          onClick={() => handleEditJob(job)}
+                        />
+                      </Tooltip>,
+                      <Tooltip title="Delete" key="delete">
+                        <Button
+                          type="text"
+                          danger
+                          icon={<DeleteOutlined />}
+                          onClick={() => handleDeleteJob(job.id)}
+                        />
+                      </Tooltip>
+                    ]}
+                  >
+                    <List.Item.Meta
+                      title={
+                        <Space wrap>
+                          <span style={{ fontWeight: 600 }}>{job.name}</span>
+                          <Tag icon={<ClockCircleOutlined />} color="default">
+                            {type}
+                          </Tag>
+                        </Space>
+                      }
+                      description={
+                        <div>
+                          <div className={styles.jobMeta}>
+                            <ScheduleOutlined className={styles.jobMetaIcon} />
+                            <span>Pipeline: {job.pipeline_path}</span>
+                          </div>
+                          {job.next_run_time && (
+                            <div className={styles.jobMeta}>
+                              <CalendarOutlined className={styles.jobMetaIcon} />
+                              <span>Next: {dayjs(job.next_run_time).format('YYYY-MM-DD HH:mm:ss')}</span>
+                            </div>
+                          )}
+                        </div>
+                      }
+                    />
+                  </List.Item>
+                );
+              }}
             />
           )}
         </div>
