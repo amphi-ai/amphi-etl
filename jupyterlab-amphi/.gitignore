@@ -48,6 +48,8 @@ junit.xml
 .history
 .vscode
 
+.env
+
 # dev
 build.sh
 start.sh

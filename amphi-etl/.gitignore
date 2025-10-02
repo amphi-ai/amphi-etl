@@ -2,6 +2,7 @@ MANIFEST
 amphi/__pycache__
 amphi/theme-light
 amphi/ui-component
+amphi/pipeline-scheduler
 build
 dist
 lib
