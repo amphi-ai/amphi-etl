@@ -51,14 +51,14 @@ export class CombinedJoin extends BaseCoreComponent {
       form
     );
   }
-
-  public provideDependencies({ config }): string[] {
-    // Only AdvancedJoin exposes deps; basic mode returns none
-    if (config?.mode === "advanced") {
-      return new AdvancedJoin().provideDependencies?.({ config }) ?? [];
-    }
-    return [];
-  }
+//no need now
+  // public provideDependencies({ config }): string[] {
+  //  Only AdvancedJoin exposes deps; basic mode returns none
+    // if (config?.mode === "advanced") {
+      // return new AdvancedJoin().provideDependencies?.({ config }) ?? [];
+    // }
+    // return [];
+  // }
 
   public provideImports({ config }): string[] {
     const mode = config.mode;

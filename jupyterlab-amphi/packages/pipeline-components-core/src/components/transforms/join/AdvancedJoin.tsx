@@ -90,21 +90,23 @@ export class AdvancedJoin extends BaseCoreComponent {
         super("Join Datasets", "join", description, "pandas_df_double_processor", [], "transforms", joinIcon, defaultConfig, form);
     }
 
-    public provideDependencies({ config }): string[] {
-        const engine = config?.selectExecutionEngine ?? "pandas";
-        const deps: string[] = [];
-
-        if (engine === "polars") {
-            deps.push("polars", "pyarrow");
-        } else if (engine === "duckdb") {
-            deps.push("duckdb", "pyarrow");
-        }
-        // pandas assumed available, no extra deps
-        return deps;
-    }
+//now always available through requirements.txt
+//    public provideDependencies({ config }): string[] {
+//        const engine = config?.selectExecutionEngine ?? "pandas";
+//        const deps: string[] = [];
+//
+//        if (engine === "polars") {
+//            deps.push("polars", "pyarrow");
+//        } else if (engine === "duckdb") {
+//            deps.push("duckdb", "pyarrow");
+//        }
+//        // pandas assumed available, no extra deps
+//        return deps;
+//    }
 
     public provideImports({ config }): string[] {
         const engine = config?.selectExecutionEngine ?? "pandas";
+		//pandas always necessary, since output and input are still pandas df
         const imports = ["import pandas as pd", "import warnings"];
 
         if (engine === "polars") {

@@ -76,6 +76,7 @@ import fileXmlIconSvgStr from '../style/icons/file-xml.svg';
 import fileSpreadsheetIconSvgStr from '../style/icons/file-spreadsheet.svg';
 import mongodbIconSvgStr from '../style/icons/mongodb.svg';
 import PackagesListIconSvgStr from '../style/icons/package.svg';
+import CompareDataframesIconSvgStr from '../style/icons/congruent-to.svg';
 
 export const mongodbIcon = new LabIcon({
   name: 'amphi:mongodb-icon',
@@ -459,4 +460,9 @@ export const concatIcon = new LabIcon({
 export const PackagesListIcon = new LabIcon({
   name: 'amphi:packages-list-icon',
   svgstr: PackagesListIconSvgStr
+});
+
+export const CompareDataframesIcon = new LabIcon({
+  name: 'amphi:compare-dataframes-icon',
+  svgstr: CompareDataframesIconSvgStr
 });
