@@ -58,7 +58,7 @@ export class Extract extends BaseCoreComponent {
           id: "customRegex",
           mode: "python",
           height: '300px',
-          placeholder: "(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)",
+          placeholder: "^((?:0[1-9]|1[1-2])[.](?:0[1-9]|[12][0-9]|3[01])[.])$",
           aiInstructions: "Generate only the raw regular expression pattern with at least one capturing group, no Python code, no quotes, and no prefix like r''. The regex should be compatible with pandas' .str.extract(). For example: ([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)",
           aiGeneration: true,
           aiPromptExamples: [
