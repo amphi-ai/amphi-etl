@@ -67,6 +67,8 @@ jlpm install
 jlpm run build
 python -m pip install .
 ```
+pip install -r requirements.txt may come after
+
 check that the extension is really installed with
 ```bash
 python -m jupyter labextension list
@@ -160,4 +162,4 @@ The privileged icon library is now https://tabler.io/icons (formerly https://hel
 
 5. Component categories are created on the fly, with the super{} function, you don’t need to create a category.
 
-6. Tips : check your output. Usually on transforms and input, it must be a dataframe (not a list). The output types are also important (string, integer, etc.. instead of object). You can check the Python part with the Python Transforms tool.
+6. Tips : check your output. Usually on transforms and input, it must be a dataframe (not a list). The output types are also important (string, integer, etc.. instead of object). You can check the Python part with the Python Transforms tool. Also be careful when your python code use backslash in your component code (like to escape a double quote), it may disapear when using it and useful to build properly a string (cf compare dataframe tool as an example to handle it)

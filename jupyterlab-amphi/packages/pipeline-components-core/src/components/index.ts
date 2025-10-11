@@ -61,6 +61,7 @@ export { FrequencyAnalysis } from './transforms/FrequencyAnalysis';
 export { UniqueKeyDetector } from './transforms/UniqueKeyDetector';
 export { FileAction } from './transforms/files/FileAction';
 export { HierarchyPath } from './transforms/HierarchyPath';
+export { CompareDataframes } from './transforms/CompareDataframes';
 
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';
