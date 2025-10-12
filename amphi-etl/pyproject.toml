@@ -2,6 +2,9 @@
 requires = ["hatchling>=1.5.0", "jupyterlab>=4.0.0,<5", "hatch-nodejs-version>=0.3.2"]
 build-backend = "hatchling.build"
 
+[tool.hatch.version]
+path = "amphi/_version.py"
+
 [project]
 name = "amphi-etl"
 description="Amphi is a low-code and python-based data manipulation tool"
@@ -23,12 +26,6 @@ dynamic = ["version", "authors", "keywords", "scripts", "dependencies"]
 [project.urls]
 Documentation = "https://docs.amphi.ai"
 Homepage = "https://amphi.ai"
-
-[tool.hatch.version]
-source = "nodejs"
-
-[tool.hatch.metadata.hooks.nodejs]
-fields = ["description", "authors", "urls"]
 
 [tool.hatch.build.targets.sdist]
 artifacts = ["amphi"]

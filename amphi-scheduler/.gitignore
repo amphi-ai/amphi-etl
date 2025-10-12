@@ -1,0 +1,56 @@
+MANIFEST
+amphi
+build
+dist
+lib
+*_env
+*_venv
+
+
+node_modules
+.cache
+*.py[co]
+.pytest_cache
+__pycache__
+*.egg-info
+*~
+*.bak
+.ipynb_checkpoints
+.DS_Store
+\#*#
+.#*
+.jupyter_ystore.db
+
+*.swp
+*.map
+
+coverage/
+tests/**/coverage
+tests/**/.cache-loader
+docs/_build
+docs/api
+docs/source/_build
+
+lerna-debug.log
+yarn-error.log
+yarn.lock
+junit.xml
+
+*.tsbuildinfo
+.yarn/
+
+# jetbrains IDE stuff
+*.iml
+.idea/
+
+# ms IDE stuff
+*.code-workspace
+.history
+.vscode
+
+.env
+
+# dev
+build.sh
+start.sh
+# requirements.txt

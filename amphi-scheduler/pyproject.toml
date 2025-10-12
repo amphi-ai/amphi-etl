@@ -1,0 +1,70 @@
+# pyproject.toml (root) — keep jupyter-builder default to run at repo root
+[build-system]
+requires = ["hatchling>=1.20", "hatch-jupyter-builder>=0.9"]
+build-backend = "hatchling.build"
+
+[project]
+name = "amphi-scheduler"
+dynamic = ["version"]
+description = "Amphi Scheduler (JupyterLab extension + Python backend)"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Thibaut Gourdel", email = "tgourdel@amphi.ai" }]
+requires-python = ">=3.8"
+dependencies = [
+    "jupyterlab>=4,<5",
+    "apscheduler",
+    "sqlalchemy",
+]
+
+[project.urls]
+Homepage = "https://amphi.ai"
+Issues = "https://github.com/amphi-ai/jupyterlab-amphi/issues"
+Repository = "https://github.com/amphi-ai/jupyterlab-amphi.git"
+
+[tool.hatch.version]
+source = "regex"
+path = "packages/pipeline-scheduler/pipeline_scheduler/version.py"
+pattern = "^__version__\\s*=\\s*['\\\"](?P<version>[^'\\\"]+)['\\\"]"
+
+[tool.hatch.build]
+include = [
+    "packages/pipeline-scheduler/pipeline_scheduler/**",
+    "amphi/pipeline-scheduler/**",
+    "packages/pipeline-scheduler/install.json",
+    "packages/pipeline-scheduler/schema/amphi-scheduler.json",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["packages/pipeline-scheduler/pipeline_scheduler"]
+include = [
+    "packages/pipeline-scheduler/install.json",
+    "packages/pipeline-scheduler/schema/amphi-scheduler.json",
+    "amphi/pipeline-scheduler/**",
+]
+
+# Ensure python package and built assets land in the wheel even if discovery fails.
+[tool.hatch.build.targets.wheel.force-include]
+"amphi/pipeline-scheduler" = "amphi/pipeline-scheduler"
+
+# Let hatch_jupyter_builder run: `yarn install` + `yarn run build` at repo root.
+# Our root package.json forwards `build` to the package, so no extra kwargs needed.
+
+[tool.hatch.build.targets.wheel.shared-data]
+"amphi/pipeline-scheduler" = "share/jupyter/labextensions/@amphi/pipeline-scheduler"
+"packages/pipeline-scheduler/install.json" = "share/jupyter/labextensions/@amphi/pipeline-scheduler/install.json"
+"packages/pipeline-scheduler/schema/amphi-scheduler.json" = "etc/jupyter/jupyter_server_config.d/amphi-scheduler.json"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "packages/pipeline-scheduler/pipeline_scheduler/**",
+    "packages/pipeline-scheduler/install.json",
+    "packages/pipeline-scheduler/schema/amphi-scheduler.json",
+    "amphi/pipeline-scheduler/**",
+]
+
+[tool.hatch.build.targets.sdist.force-include]
+"packages/pipeline-scheduler/pipeline_scheduler" = "packages/pipeline-scheduler/pipeline_scheduler"
+"packages/pipeline-scheduler/install.json" = "packages/pipeline-scheduler/install.json"
+"packages/pipeline-scheduler/schema/amphi-scheduler.json" = "packages/pipeline-scheduler/schema/amphi-scheduler.json"
+"amphi/pipeline-scheduler" = "amphi/pipeline-scheduler"

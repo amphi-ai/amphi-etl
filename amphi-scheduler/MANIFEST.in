@@ -1,0 +1,8 @@
+# MANIFEST.in  (include non-Python assets)
+recursive-include amphi *
+include install.json
+include package.json
+recursive-include pipeline_scheduler/schema *
+recursive-include pipeline_scheduler/style *
+recursive-include pipeline_scheduler/src *
+include README.md LICENSE

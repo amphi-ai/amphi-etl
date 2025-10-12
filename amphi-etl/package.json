@@ -1,6 +1,6 @@
 {
     "name": "@amphi/amphi-etl",
-    "version": "0.8.30",
+    "version": "0.9.0a0",
     "private": true,
     "keywords": [
         "amphi",
@@ -26,8 +26,7 @@
     "workspaces": {
         "packages": [
             "packages/theme-light",
-            "packages/ui-component",
-            "packages/pipeline-scheduler"
+            "packages/ui-component"
         ]
     },
     "scripts": {

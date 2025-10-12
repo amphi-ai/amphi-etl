@@ -1,8 +1,10 @@
 jupyterlab==4.4.7
-#jupyterlab-amphi==0.8.30
+jupyterlab-amphi==0.9.0a0
 pandas==2.2.3
 polars==1.32.2
 duckdb==1.3.2
 pyarrow==21.0.0
-../jupyterlab-amphi
+amphi-scheduler==0.9.0a0
+#../jupyterlab-amphi
+#../amphi-scheduler 
 .
