@@ -30,8 +30,8 @@ setup(
     license='ELv2',
     install_requires=[
         'jupyterlab==4.4.7',
-        'jupyterlab-amphi==0.9.0a0',
-        'amphi-scheduler==0.9.0a0',
+        'jupyterlab-amphi==0.9.0',
+        'amphi-scheduler==0.9.0',
         'pandas>=2.0'
     ],
     keywords=[],  # Added an empty list for keywords to resolve the dynamic 'keywords' issue.
