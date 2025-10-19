@@ -321,16 +321,23 @@ def __amphi_display(obj, dfName=None, nodeId=None, runtime=None):
         except Exception:
             pass
 
-    # Try matplotlib Figure or Axes
     try:
         from matplotlib.figure import Figure
         from matplotlib.axes import Axes
+        import matplotlib.pyplot as plt
+
         if isinstance(obj, Figure):
             metadata["runtime"] = metadata["runtime"] or "matplotlib"
-            return display(obj, metadata=metadata)
+            display(obj, metadata=metadata)
+            plt.close(obj)          # key line
+            return None
+
         if isinstance(obj, Axes):
             metadata["runtime"] = metadata["runtime"] or "matplotlib"
-            return display(obj.figure, metadata=metadata)
+            fig = obj.figure
+            display(fig, metadata=metadata)
+            plt.close(fig)          # key line
+            return None
     except Exception:
         pass
 

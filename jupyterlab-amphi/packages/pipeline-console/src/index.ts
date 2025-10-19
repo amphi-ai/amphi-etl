@@ -252,10 +252,7 @@ const pipelines: JupyterFrontEndPlugin<void> = {
                       content.metadata
                     );
                     return;
-                  }
-
-                  // PNG image from matplotlib
-                  if (data['image/png']) {
+                  } else if (data['image/png']) {
                     const b64 = data['image/png'] as string;
                     const html = `<img alt="plot" style="max-width:100%;height:auto;" src="data:image/png;base64,${b64}" />`;
                     manager.panel.onNewLog(
@@ -266,10 +263,7 @@ const pipelines: JupyterFrontEndPlugin<void> = {
                       content.metadata
                     );
                     return;
-                  }
-
-                  // SVG image from matplotlib
-                  if (data['image/svg+xml']) {
+                  } if (data['image/svg+xml']) {
                     const svgRaw = data['image/svg+xml'];
                     const svg =
                       typeof svgRaw === 'string' ? svgRaw : (svgRaw as string[]).join('\n');
@@ -287,8 +281,22 @@ const pipelines: JupyterFrontEndPlugin<void> = {
                   return;
                 }
 
-                // Do not echo stdout/stderr text streams into the panel
+                
                 if (type === 'stream') {
+                  const streamMsg = msg as KernelMessage.IStreamMsg;
+                  const text = streamMsg.content?.text ?? '';
+                  if (!text || text === '\n') return;
+
+                  const level = streamMsg.content.name === 'stderr' ? 'warning' : 'info';
+
+                  const html = `<div>${text.replace(/\n/g, '<br>')}</div>`;
+                  manager.panel.onNewLog(
+                    formatLogDate(msg.header.date),
+                    session.name,
+                    level,
+                    html,
+                    null
+                  );
                   return;
                 }
 

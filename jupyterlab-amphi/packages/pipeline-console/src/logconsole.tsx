@@ -116,6 +116,7 @@ export class PipelineConsolePanel
     let dateTag;
     let pipelineNameTag = <Tag bordered={false} icon={<pipelineIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{pipelineName}</Tag>;
     let dataframeSizeTag = null;
+    let dfName = null;
     let nodeIdTag = null;
     let runtimeTag = null;
     let contentComponent;
@@ -147,7 +148,7 @@ export class PipelineConsolePanel
         break;
       case "data":
         dateTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{date}</Tag>;
-        nodeIdTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{metadata.nodeId}</Tag>;
+        nodeIdTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{metadata.dfName}</Tag>;
         runtimeTag = <Tag bordered={false} icon={<cpuIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{metadata.runtime}</Tag>;
         viewData = (
           <Tag
@@ -204,6 +205,7 @@ export class PipelineConsolePanel
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             {dateTag}
             {pipelineNameTag}
+            {nodeIdTag}
             {dataframeSizeTag}
             {runtimeTag}
           </div>
