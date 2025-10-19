@@ -8,6 +8,13 @@ import dateTimeIconSvgStr from '../style/icons/calendar-time.svg';
 import numberIconSvgStr from '../style/icons/number-123.svg';
 import decimalIconSvgStr from '../style/icons/decimal.svg';
 import stringIconSvgStr from '../style/icons/abc.svg';
+import labelIconSvgStr from '../style/icons/label.svg';
+
+export const labelIcon = new LabIcon({
+  name: 'amphi:label-icon',
+  svgstr: labelIconSvgStr
+
+});
 
 export const clockIcon = new LabIcon({
   name: 'amphi:clock-icon',
