@@ -5,8 +5,13 @@ import { FlattenJSON } from './FlattenJSON';
 
 export class JSONTools extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { toolType: "expandList" };
-
+    const defaultConfig = {
+		toolType: "expandList",
+		boolean_keepColumns: true,
+		boolean_alllevels: true,
+        selectCustomizable_levelseparator	: "."
+	};
+	//this tool is actually linked to two components
     const expandListComponent = new ExpandList();
     const flattenJSONComponent = new FlattenJSON();
 
