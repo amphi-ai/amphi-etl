@@ -5,11 +5,11 @@ import { FileUtils } from '../../common/FileUtils'; // Import the FileUtils clas
 
 export class ExcelFileInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { 
-	fileLocation: "local", 
-	connectionMethod: "env", 
-	excelOptions: {engine: "None",dtype_backend:"numpy_nullable" }
-	};
+    const defaultConfig = {
+      fileLocation: "local",
+      connectionMethod: "env",
+      excelOptions: { engine: "None", dtype_backend: "numpy_nullable" }
+    };
     const form = {
       idPrefix: "component__form",
       fields: [
@@ -40,7 +40,7 @@ export class ExcelFileInput extends BaseCoreComponent {
           id: "excelOptions.sheet_name",
           placeholder: "Default: 0 (first sheet)",
           tooltip: "Select one or multiple sheets. If multiple sheets are selected, the sheets are concatenated to output a single dataset.",
-          condition: { fileLocation: "local"}
+          condition: { fileLocation: "local" }
         },
         {
           type: "selectTokenization",
@@ -107,15 +107,15 @@ export class ExcelFileInput extends BaseCoreComponent {
           ],
           advanced: true
         },
-		{
+        {
           type: "select",
-          label: "Data type Backend",
+          label: "Data type backend",
           id: "excelOptions.dtype_backend",
-          tooltip: "Management of Data Type in Dataframe ",
+          tooltip: "Determines the backend used for data types.",
           options: [
             { value: "numpy_nullable", label: "numpy" },
             { value: "pyarrow", label: "pyarrow" },
-            { value: "", label: "none" }
+            { value: "numpy", label: "numpy" }
           ],
           advanced: true
         },
@@ -175,9 +175,9 @@ export class ExcelFileInput extends BaseCoreComponent {
     const excelOptions = { ...config.excelOptions };
     const storageOptionsString = excelOptions.storage_options ? JSON.stringify(excelOptions.storage_options) : '{}';
     let optionsString = this.generateOptionsCode(config);
-  
+
     let code = '';
-  
+
     // Handle sheet_name dynamically
     if (excelOptions.sheet_name && excelOptions.sheet_name.length > 0) {
       if (excelOptions.sheet_name.length === 1) {
@@ -186,7 +186,7 @@ export class ExcelFileInput extends BaseCoreComponent {
         optionsString += `, sheet_name=${JSON.stringify(excelOptions.sheet_name)}`;
       }
     }
-  
+
     // Check for wildcard input and generate appropriate code
     if (FileUtils.isWildcardInput(config.filePath)) {
       if (config.fileLocation === "s3") {
@@ -207,15 +207,15 @@ export class ExcelFileInput extends BaseCoreComponent {
         code += `${outputName} = pd.read_excel("${config.filePath}"${optionsString}).convert_dtypes()\n`;
       }
     }
-  
+
     return code;
   }
 
-  
+
   public generateOptionsCode(config): string {
     let excelOptions = { ...config.excelOptions };
     let storageOptions = excelOptions.storage_options || {};
-    
+
     // Transform storage_options array into the correct format
     if (Array.isArray(storageOptions)) {
       const transformedStorageOptions = storageOptions.reduce((acc, item: { key: string; value: any }) => {
@@ -235,7 +235,7 @@ export class ExcelFileInput extends BaseCoreComponent {
     if (Object.keys(storageOptions).length > 0) {
       excelOptions.storage_options = storageOptions;
     }
-    
+
     const options = Object.entries(excelOptions)
       .filter(([key, value]) => value !== null && value !== '' && key !== 'sheet_name') // Ignore sheet_name since it's handled separately
       .map(([key, value]) => {
@@ -253,7 +253,7 @@ export class ExcelFileInput extends BaseCoreComponent {
           return `${key}='${value}'`;
         }
       });
-  
+
     // Prepend a comma if there are options
     return options.length > 0 ? `, ${options.join(', ')}` : '';
   }
