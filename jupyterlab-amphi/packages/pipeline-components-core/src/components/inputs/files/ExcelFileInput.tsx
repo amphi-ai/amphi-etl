@@ -5,7 +5,11 @@ import { FileUtils } from '../../common/FileUtils'; // Import the FileUtils clas
 
 export class ExcelFileInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { fileLocation: "local", connectionMethod: "env", excelOptions: {engine: "None" } };
+    const defaultConfig = { 
+	fileLocation: "local", 
+	connectionMethod: "env", 
+	excelOptions: {engine: "None",dtype_backend:"numpy_nullable" }
+	};
     const form = {
       idPrefix: "component__form",
       fields: [
@@ -100,6 +104,18 @@ export class ExcelFileInput extends BaseCoreComponent {
             { value: "pyxlsb", label: "pyxlsb (for *.xlsb)" },
             { value: "xlrd", label: "xlrd (for *.xls)" },
             { value: "None", label: "Default" }
+          ],
+          advanced: true
+        },
+		{
+          type: "select",
+          label: "Data type Backend",
+          id: "excelOptions.dtype_backend",
+          tooltip: "Management of Data Type in Dataframe ",
+          options: [
+            { value: "numpy_nullable", label: "numpy" },
+            { value: "pyarrow", label: "pyarrow" },
+            { value: "", label: "none" }
           ],
           advanced: true
         },
