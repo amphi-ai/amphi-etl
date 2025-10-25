@@ -3,7 +3,12 @@ import { BaseCoreComponent } from '../BaseCoreComponent';// Adjust the import pa
 
 export class GenerateIDColumn extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { columnType: 'int64', insertPosition: 'first'};
+    const defaultConfig = {
+		columnType: 'int64',
+		insertPosition: 'first',
+		startingValue:1,
+		input_rowidname : 'ID'
+		};
     const form = {
       idPrefix: "component__form",
       fields: [
@@ -33,6 +38,15 @@ export class GenerateIDColumn extends BaseCoreComponent {
             { value: "last", label: "Last" }
           ]
         }
+		,
+        {
+          type: "input",
+          label: "Name",
+          id: "input_rowidname",
+		  placeholder: "default ID",
+          tooltip: "you may want to change that if you want a special name or no upper case, or id is already taken",
+          advanced: true
+        },
       ],
     };
     const description = "Use Row ID to assign a unique identifier to each row in a dataset.";
@@ -47,18 +61,25 @@ export class GenerateIDColumn extends BaseCoreComponent {
   public generateComponentCode({ config, inputName, outputName }): string {
 
     const prefix = config?.backend?.prefix ?? "pd";
-    const startingValue = config.startingValue || 0;
+    const startingValue = config.startingValue || 1;
     const columnType = config.columnType || "int64";
     const insertPosition = config.insertPosition || "last";
-
+	//if null, undefined or empty
+    const const_ts_rowidname =
+    config.input_rowidname && config.input_rowidname.length > 0
+        ? config.input_rowidname
+        : "ID";
     const idColumn = `range(${startingValue}, ${startingValue} + len(${inputName}))`;
-    const idColumnFirst = `['ID'] + ${inputName}.columns.tolist()`;
-    const idColumnLast = `${inputName}.columns.tolist() + ['ID']`;
+    const idColumnFirst = `['${const_ts_rowidname}'] + ${inputName}.columns.tolist()`;
+    const idColumnLast = `${inputName}.columns.tolist() + ['${const_ts_rowidname}']`;
 
     const code = `
 # Generate ID column
+#copy the df
 ${outputName} = ${inputName}.copy()
-${outputName}['ID'] = ${prefix}.Series(${idColumn}, dtype='${columnType}')
+#insert the new column with its type
+${outputName}['${const_ts_rowidname}'] = ${prefix}.Series(${idColumn}, dtype='${columnType}')
+#deal with the position
 ${outputName} = ${outputName}.reindex(columns=${insertPosition === "first" ? idColumnFirst : idColumnLast})
 `;
 
