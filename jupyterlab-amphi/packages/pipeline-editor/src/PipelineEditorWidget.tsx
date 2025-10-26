@@ -47,8 +47,6 @@ import ReactFlow, {
   useStoreApi
 } from 'reactflow';
 import posthog from 'posthog-js'
-import { PostHogProvider } from 'posthog-js/react'
-
 
 import { ConfigProvider, Modal, Button, Splitter, Dropdown } from 'antd';
 import { DownOutlined, LoadingOutlined } from '@ant-design/icons';
@@ -95,6 +93,16 @@ const InlineIcon: React.FC<{
   }
   return null;
 };
+
+function maskedSensitiveParams(url) {
+  try {
+    const parsedUrl = new URL(url);
+    return `${parsedUrl.protocol}//${parsedUrl.host}`;
+  } catch (error) {
+    // Return original URL if parsing fails
+    return url;
+  }
+}
 
 /**
  * Initialization: The class extends ReactWidget and initializes the pipeline editor widget. It sets up the initial properties and state for the widget.
@@ -195,7 +203,7 @@ const PipelineWrapper: React.FC<IProps> = ({
   componentService,
 }) => {
   const manager = defaultFileBrowser.model.manager;
-  
+
   // Add state for nodeTypes to make it reactive
   const [nodeTypes, setNodeTypes] = useState({});
   const [componentsRefreshKey, setComponentsRefreshKey] = useState(0);
@@ -265,17 +273,6 @@ const PipelineWrapper: React.FC<IProps> = ({
   let enableTelemetry = settings.get('enableTelemetry').composite as boolean;
   if (enableTelemetry) {
 
-    function maskedSensitiveParams(url) {
-      try {
-        const parsedUrl = new URL(url);
-        return `${parsedUrl.protocol}//${parsedUrl.host}`;
-      } catch (error) {
-        // Return original URL if parsing fails
-        return url;
-      }
-    }
-
-
     posthog.init('phc_V56mYhYAQdzJl5tMM2RFedJWbXlbyxDnSj2KMbUX8x3', {
       api_host: 'https://us.i.posthog.com',
       autocapture: false,
@@ -292,7 +289,6 @@ const PipelineWrapper: React.FC<IProps> = ({
         }
         return properties;
       }
-
     })
   }
 
@@ -772,6 +768,28 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       context.sessionContext.kernelPreference = { shouldStart: false, canStart: false, shutdownOnDispose: true };
     }
 
+    let enableTelemetry = this.settings.get('enableTelemetry').composite as boolean;
+    if (enableTelemetry) {
+
+      posthog.init('phc_V56mYhYAQdzJl5tMM2RFedJWbXlbyxDnSj2KMbUX8x3', {
+        api_host: 'https://us.i.posthog.com',
+        autocapture: false,
+        person_profiles: 'always',
+        sanitize_properties: function (properties, _event) {
+          // Sanitize current url
+          if (properties[`$current_url`]) {
+            properties[`$current_url`] = maskedSensitiveParams(properties[`$current_url`]);
+          }
+
+          // Remove path name
+          if (properties[`$path_name`]) {
+            properties[`$path_name`] = '';
+          }
+          return properties;
+        }
+      })
+    }
+
     const content = new PipelineEditorWidget(props);
     const widget = new DocumentWidget({ content, context });
 
@@ -911,7 +929,6 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       ReactDOM.render(<CodeModal />, container);
     }
 
-
     // Add generate code button
     const generateCodeButton = new ToolbarButton({
       label: 'Export to Python code',
@@ -953,7 +970,13 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
 
         // Second, generate code
         const code = CodeGenerator.generateCode(context.model.toString(), this.commands, this.componentService, true);
-
+        // Anonymous telemetry
+        if (enableTelemetry) {
+          posthog.capture('run_pipeline', {
+            pipeline_metadata: context.model.toString(),
+            run_type: "full_run"
+          })
+        }
         this.commands.execute('pipeline-editor:run-pipeline', { code }).catch(reason => {
           console.error(
             `An error occurred during the execution of 'pipeline-editor:run-pipeline'.\n${reason}`
@@ -999,7 +1022,6 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       },
       enabled: enableExecution
     });
-
 
     widget.toolbar.addItem('openlogconsole', logconsole);
 

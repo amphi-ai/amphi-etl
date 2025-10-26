@@ -1,4 +1,4 @@
-// ConfigForm.tsx
+// renderUtils.tsx
 
 // Import necessary hooks and other dependencies
 import { LabIcon } from '@jupyterlab/ui-components';
@@ -25,24 +25,27 @@ interface IHandleProps {
 
 export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, internals }) => {
 
-  const LimitedInputHandle = (props) => {
-    const { nodeInternals, edges, nodeId, componentService } = internals;
-    const isHandleConnectable = useMemo(() => {
+  const { nodeInternals, edges, nodeId } = internals;
 
-      if (typeof props.isConnectable === 'function') {
-        const node = nodeInternals.get(nodeId);
-        const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.target === nodeId && props.id === edge.targetHandle); // only count input edges
-        return props.isConnectable({ node, connectedEdges });
-      }
-      if (typeof props.isConnectable === 'number') {
-        const node = nodeInternals.get(nodeId);
-        const connectedEdges = getConnectedEdges([node], edges).filter(edge => edge.target === nodeId && props.id === edge.targetHandle); // only count input edges
-        return connectedEdges.length < props.isConnectable;
-      }
-      return props.isConnectable;
-    }, [nodeInternals, edges, nodeId, props.isConnectable, props.id]);
+  const LimitedInputHandle = (props: React.ComponentProps<typeof Handle> & {
+    isConnectable:
+    | boolean
+    | number
+    | ((args: { node: any; connectedEdges: any[] }) => boolean);
+  }) => {
+    const node = nodeInternals.get(nodeId);
+    const connectedEdges = edges.filter(
+      e => e.target === nodeId && e.targetHandle === props.id
+    );
 
-    return <Handle {...props} isConnectable={isHandleConnectable} />;
+    let connectable = props.isConnectable;
+    if (typeof connectable === 'function') {
+      connectable = connectable({ node, connectedEdges });
+    } else if (typeof connectable === 'number') {
+      connectable = connectedEdges.length < connectable;
+    }
+
+    return <Handle {...props} isConnectable={!!connectable} />;
   };
 
   switch (type) {
@@ -289,7 +292,6 @@ const MemoizedComponentUI = React.memo(
     );
   },
   (prevProps, nextProps) => {
-    // Enhanced comparison function that includes form data changes & variant
     return (
       prevProps.id === nextProps.id &&
       prevProps.showContent === nextProps.showContent &&
@@ -297,7 +299,8 @@ const MemoizedComponentUI = React.memo(
       JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data) &&
       prevProps.name === nextProps.name &&
       prevProps.configFormProps.modalOpen === nextProps.configFormProps.modalOpen &&
-      prevProps.variant === nextProps.variant
+      prevProps.variant === nextProps.variant &&
+      prevProps.handleVersion === nextProps.handleVersion
     );
   }
 );
@@ -318,8 +321,8 @@ export interface UIComponentProps {
   manager: any;
   commands: any;
   name: string;
-  ConfigForm: React.ComponentType<any>; // Update the type
-  configFormProps: any; // Add configFormProps
+  ConfigForm: React.ComponentType<any>;
+  configFormProps: any;
   Icon: LabIcon;
   showContent: boolean;
   handle: React.JSX.Element;
@@ -327,7 +330,8 @@ export interface UIComponentProps {
   setViewport: any;
   handleChange: any;
   isSelected: boolean;
-  variant?: ComponentVariant; // NEW optional prop
+  variant?: ComponentVariant;
+  handleVersion?: string;
 }
 
 interface ICustomHandleProps {

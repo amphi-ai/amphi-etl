@@ -29,6 +29,7 @@ import { viewData } from './ViewData'
 import { ComponentManager, CodeGenerator, CodeGeneratorDagster, PipelineService } from '@amphi/pipeline-components-manager';
 import { pipelineCategoryIcon, pipelineBrandIcon, componentIcon, gridAltIcon } from './icons';
 import { PipelineEditorFactory, commandIDs } from './PipelineEditorWidget';
+import posthog from 'posthog-js'
 
 import { LabIcon } from '@jupyterlab/ui-components';
 import React from 'react';
@@ -132,6 +133,16 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
       );
     }
 
+    function maskedSensitiveParams(url) {
+      try {
+        const parsedUrl = new URL(url);
+        return `${parsedUrl.protocol}//${parsedUrl.host}`;
+      } catch (error) {
+        // Return original URL if parsing fails
+        return url;
+      }
+    }
+
     Promise.all([app.restored, settings.load(EXTENSION_ID)])
       .then(([, settings]) => {
         // Read the settings
@@ -139,6 +150,29 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
 
         // Listen for your plugin setting changes using Signal
         settings.changed.connect(loadSetting);
+
+
+        let enableTelemetry = settings.get('enableTelemetry').composite as boolean;
+        if (enableTelemetry) {
+
+          posthog.init('phc_V56mYhYAQdzJl5tMM2RFedJWbXlbyxDnSj2KMbUX8x3', {
+            api_host: 'https://us.i.posthog.com',
+            autocapture: false,
+            person_profiles: 'always',
+            sanitize_properties: function (properties, _event) {
+              // Sanitize current url
+              if (properties[`$current_url`]) {
+                properties[`$current_url`] = maskedSensitiveParams(properties[`$current_url`]);
+              }
+
+              // Remove path name
+              if (properties[`$path_name`]) {
+                properties[`$path_name`] = '';
+              }
+              return properties;
+            }
+          })
+        }
 
         // Set up new widget Factory for .ampln files
         const pipelineEditorFactory = new PipelineEditorFactory({
@@ -352,7 +386,6 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           }
         });
 
-
         /**
          * Run Pipeline on Kernel linked to the current Editor
          */
@@ -444,7 +477,6 @@ ${args.code}
           isEnabled
         });
 
-
         commands.addCommand(CommandIDs.runPipelineUntil, {
           label: 'Run pipeline until ...',
 
@@ -469,6 +501,12 @@ ${args.code}
 
               await commands.execute('pipeline-editor:run-pipeline', { code });
 
+              if (enableTelemetry) {
+                posthog.capture('run_pipeline', {
+                  pipeline_metadata: current.context.model.toString(),
+                  run_type: "until_node",
+                })
+              }
               // Handle successful pipeline run
               console.log('Pipeline executed successfully');
 
@@ -657,7 +695,6 @@ ${code}
           label: 'Browse Data'
         });
 
-
         commands.addCommand('pipeline-editor-component:override', {
           execute: async args => {
 
@@ -684,7 +721,6 @@ ${code}
           },
           label: 'Override Code'
         });
-
 
         commands.addCommand('pipeline-editor-component:generate-ibis-code', {
           execute: async args => {

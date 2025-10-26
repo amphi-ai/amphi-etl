@@ -7,7 +7,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 
 import { Form, ConfigProvider, ColorPicker, Row, Col, Slider, Modal, InputNumber, Popconfirm } from 'antd';
 
-import { ComponentItem, PipelineComponent, InputFile, onChange, renderComponentUI, renderHandle, setDefaultConfig, createZoomSelector } from '@amphi/pipeline-components-manager';
+import { ComponentItem, PipelineComponent, onChange } from '@amphi/pipeline-components-manager';
 import { annotationIcon } from '../../icons';
 
 import { lockIcon, unlockIcon, xIcon, settingsIcon } from '../../icons';

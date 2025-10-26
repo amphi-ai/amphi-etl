@@ -68,7 +68,7 @@
     "@lumino/dragdrop": "^2.0.0",
     "antd": "5.24.4",
     "html-to-image": "^1.11.11",
-    "posthog-js": "^1.194.3",
+    "posthog-js": "^1.280.1",
     "reactflow": "^11.11.4"
   },
   "resolutions": {

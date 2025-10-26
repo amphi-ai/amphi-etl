@@ -111,9 +111,9 @@ export class ExcelFileInput extends BaseCoreComponent {
           type: "select",
           label: "Data type backend",
           id: "excelOptions.dtype_backend",
-          tooltip: "Determines the backend used for data types.",
+          tooltip: "Determines the backend used for data types. Leave default if you are unsure.",
           options: [
-            { value: "numpy_nullable", label: "numpy" },
+            { value: "numpy_nullable", label: "numpy (nullable)" },
             { value: "pyarrow", label: "pyarrow" },
             { value: "numpy", label: "numpy" }
           ],
