@@ -5,12 +5,12 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 export class InlineInput extends BaseCoreComponent {
     constructor() {
 
-        const inlineDataDefault: string = `FirstName,LastName,Age
-John,Doe,28
-Jane,Smith,34
-Emily,Jones,45
-Michael,Brown,22
-Sarah,Wilson,30`;
+        const inlineDataDefault: string = `First Name,Last Name,Age,🏅
+John,Doe,28,🥇
+Jane,Smith,34,🥈
+Emily,Jones,45,🥉
+Michael,Brown,22,🥉
+Sarah,Wilson,30,🥇`;
 
         const defaultConfig = { inlineData: inlineDataDefault };
         const form = {
