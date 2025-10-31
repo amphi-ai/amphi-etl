@@ -6,7 +6,7 @@ import { showBrowseFileDialog } from '../BrowseFileDialog';
 import { PathExt } from '@jupyterlab/coreutils';
 import type { GetProps } from 'antd';
 import { useVariableAutoComplete } from '../variablesUtils';
-
+import { onInputKeyDown} from '../formUtils';
 type CustomIconComponentProps = GetProps<typeof Icon>;
 
 export const InputFile = ({ field, value, handleChange, context, advanced, manager }) => {
@@ -14,8 +14,8 @@ export const InputFile = ({ field, value, handleChange, context, advanced, manag
   const allowedExts =
     Array.isArray(field.allowedExtensions) && field.allowedExtensions.length
       ? field.allowedExtensions.map(e =>
-          e.startsWith('.') ? e.toLowerCase() : `.${e.toLowerCase()}`
-        )
+        e.startsWith('.') ? e.toLowerCase() : `.${e.toLowerCase()}`
+      )
       : undefined;
 
   const {
@@ -55,6 +55,8 @@ export const InputFile = ({ field, value, handleChange, context, advanced, manag
           name={field.id}
           autoComplete="off"
           suffix={suffix}
+          onKeyDown={(e: any) => e.stopPropagation()}
+
         />
 
       </AutoComplete>

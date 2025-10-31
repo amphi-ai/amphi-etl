@@ -44,7 +44,9 @@ import ReactFlow, {
   useEdgesState,
   useNodesState,
   useReactFlow,
-  useStoreApi
+  useStoreApi,
+  useKeyPress,
+  type KeyCode  
 } from 'reactflow';
 import posthog from 'posthog-js'
 
@@ -57,6 +59,7 @@ import 'reactflow/dist/style.css';
 import CustomEdge from './customEdge';
 import { Dropzone } from './Dropzone';
 import { pipelineIcon, dagsterIcon, filePlusIcon } from './icons';
+import useCopyPaste from './useCopyPaste';
 
 import CodeEditor from './CodeEditor';
 
@@ -318,7 +321,7 @@ const PipelineWrapper: React.FC<IProps> = ({
 
 
     // Copy paste
-    // const { cut, copy, paste, bufferedNodes } = useCopyPaste();
+    const { cut, copy, paste, bufferedNodes } = useCopyPaste();
 
     // Undo and Redo
     const { undo, redo, canUndo, canRedo, takeSnapshot } = useUndoRedo();
@@ -682,8 +685,8 @@ const PipelineWrapper: React.FC<IProps> = ({
               deleteKeyCode={["Delete", "Backspace"]}
               proOptions={proOptions}
             >
-              <Panel position="top-right">
-              </Panel>
+            <Panel position="top-right">
+            </Panel>
               <Controls>
                 <DownloadImageButton pipelineName={context.context.sessionContext.path} pipelineId={pipelineId} />
               </Controls>

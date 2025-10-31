@@ -3,6 +3,7 @@ import { SmileOutlined, PlusOutlined } from '@ant-design/icons';
 import { Divider, Input, Select, Button, ConfigProvider } from 'antd';
 import type { InputRef } from 'antd';
 import { FieldDescriptor, Option } from '../configUtils';
+import { onInputKeyDown} from '../formUtils';
 
   interface SelectTokenizationProps {
     field: FieldDescriptor;

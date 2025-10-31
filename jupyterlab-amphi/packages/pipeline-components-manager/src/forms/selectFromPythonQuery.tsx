@@ -4,6 +4,7 @@ import { ConfigProvider, Divider, Input, Select, Space, Button, Tag, Empty } fro
 import type { InputRef } from 'antd';
 import { FieldDescriptor, Option } from '../configUtils';
 import { RequestService } from '../RequestService';
+import { onInputKeyDown} from '../formUtils';
 
 interface SelectFromPythonCodeProps {
   data: any;

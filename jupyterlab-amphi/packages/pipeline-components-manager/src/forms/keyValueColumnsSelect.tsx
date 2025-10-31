@@ -10,7 +10,7 @@ import { PipelineService } from '../PipelineService';
 import { KernelMessage } from '@jupyterlab/services';
 import { Option } from '../configUtils';
 import { RequestService } from '../RequestService';
-
+import { onInputKeyDown} from '../formUtils';
 
 // Define a type for your component's props
 interface KeyValueFormProps {

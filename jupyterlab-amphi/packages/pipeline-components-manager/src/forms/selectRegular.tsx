@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Select, Space, Tooltip, Divider, Button } from 'antd';
 import { FieldDescriptor, Option } from '../configUtils';
 import { QuestionCircleOutlined, CloseOutlined } from '@ant-design/icons';
-
+import { onInputKeyDown} from '../formUtils';
 
 interface SelectCustomizableProps {
   field: FieldDescriptor;

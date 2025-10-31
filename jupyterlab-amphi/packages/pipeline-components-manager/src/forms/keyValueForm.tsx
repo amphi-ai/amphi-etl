@@ -3,6 +3,7 @@ import { FieldDescriptor } from '../configUtils'
 import { minusIcon, plusIcon } from '../icons';
 import { Form, Divider, Input, Select, Space, Button } from 'antd';
 import { MinusCircleOutlined, PlusOutlined, MenuOutlined } from '@ant-design/icons';
+import { onInputKeyDown} from '../formUtils';
 
 // Define a type for your component's props
 interface KeyValueFormProps {
@@ -52,6 +53,7 @@ export const KeyValueForm: React.FC<KeyValueFormProps> = ({ field, handleChange,
                   id={`${field.id}_key_${index}`}
                   value={pair.key}
                   onChange={(e) => handleChangeKV(e, index, 'key')}
+                  onKeyDown={(e: any) => e.stopPropagation()}
                   autoComplete="off"
                 />
                 <Input
@@ -59,9 +61,10 @@ export const KeyValueForm: React.FC<KeyValueFormProps> = ({ field, handleChange,
                   placeholder={field.placeholder?.value || 'value'}
                   id={`${field.id}_value_${index}`}
                   value={pair.value}
-                  onChange={(e) => handleChangeKV(e, index, 'value')} 
+                  onChange={(e) => handleChangeKV(e, index, 'value')}
+                  onKeyDown={(e: any) => e.stopPropagation()}        
                   autoComplete="off"
-                  />
+                />
                 <MinusCircleOutlined onClick={() => handleRemovePair(index)} />
               </Space>
             ))}

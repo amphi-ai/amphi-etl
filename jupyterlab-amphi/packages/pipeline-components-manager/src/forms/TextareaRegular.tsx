@@ -1,9 +1,9 @@
 import { FieldDescriptor, Option } from '../configUtils';
 import React, { useState, useEffect, useRef } from 'react';
 import { Input } from 'antd';
+import { onInputKeyDown} from '../formUtils';
 
 const { TextArea } = Input;
-
 
 export const TextareaRegular = ({ field, value, handleChange, advanced, rows }) => {
   const [inputValue, setInputValue] = useState(value);
@@ -36,6 +36,7 @@ export const TextareaRegular = ({ field, value, handleChange, advanced, rows }) 
       name={field.id}
       placeholder={field.placeholder}
       onChange={handleInputChange}
+      onKeyDown={(e: any) => e.stopPropagation()}
       value={inputValue}
       autoComplete="off"
       rows={rows}

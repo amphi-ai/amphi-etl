@@ -6,7 +6,7 @@ import {
 import { Space, Button, Input, Select, Divider } from 'antd';
 import { PipelineService } from '../PipelineService';
 import { showBrowseFileDialog } from '../BrowseFileDialog';
-
+import { onInputKeyDown} from '../formUtils';
 export const InputFiles = ({ field, values, handleChange, context, advanced, manager }) => {
   
   // Initialize selectedFiles as array of { label, value } objects
@@ -92,6 +92,10 @@ export const InputFiles = ({ field, values, handleChange, context, advanced, man
                 value={name}
                 onChange={onNameChange}
                 onKeyDown={(e) => {
+                  // 1. Run the copy/paste/cut protection first (stops propagation)
+                  e.stopPropagation();
+                  
+                  // 2. Run the existing 'Enter' key submission logic
                   if (e.key === 'Enter') {
                     addItem(e);
                   }

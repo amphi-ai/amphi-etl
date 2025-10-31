@@ -1,6 +1,7 @@
 import { AutoComplete, Input } from 'antd';
 import React, { useEffect } from 'react';
 import { useVariableAutoComplete } from '../variablesUtils';
+import { onInputKeyDown} from '../formUtils';
 
 export const InputRegular = ({ field, value, handleChange, context, advanced }) => {
 
@@ -43,6 +44,7 @@ export const InputRegular = ({ field, value, handleChange, context, advanced }) 
           // iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
           value={inputValue}
           suffix={suffix}
+          onKeyDown={(e: any) => e.stopPropagation()}
         />
       ) : (
         <Input
@@ -54,6 +56,7 @@ export const InputRegular = ({ field, value, handleChange, context, advanced }) 
           name={field.id}
           autoComplete="off"
           suffix={suffix}
+          onKeyDown={(e: any) => e.stopPropagation()}
         />
       )}
     </AutoComplete>

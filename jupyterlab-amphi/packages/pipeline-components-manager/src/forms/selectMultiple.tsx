@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Select } from 'antd';
 import { FieldDescriptor, Option } from '../configUtils';
-
+import { onInputKeyDown} from '../formUtils';
 
 interface SelectMultipleProps {
   field: FieldDescriptor;

@@ -4,6 +4,7 @@ import { UserOutlined, CloseOutlined, EyeInvisibleOutlined, EyeTwoTone, SearchOu
 import { Checkbox, InputNumber, Space } from 'antd';
 import { PipelineService } from '../PipelineService';
 import type { CheckboxProps } from 'antd';
+import { onInputKeyDown} from '../formUtils';
 
 
 export const InputQuantity = ({ field, value, handleChange, context, advanced }) => {
@@ -26,7 +27,7 @@ export const InputQuantity = ({ field, value, handleChange, context, advanced })
         name={field.id}
         value={isChecked ? undefined : value}
         onChange={value => handleChange(value, field.id)}
-        disabled={isChecked}
+        onKeyDown={(e: any) => e.stopPropagation()}
         changeOnWheel
       />
       {field.noneOption && (

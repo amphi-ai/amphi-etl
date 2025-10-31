@@ -5,7 +5,7 @@ import { wandIcon, openaiIcon, claudeIcon, mistralIcon } from '../icons';
 import AceEditor from "react-ace";
 import { RequestService } from '../RequestService';
 import TextArea from 'antd/es/input/TextArea';
-
+import { onInputKeyDown } from '../formUtils';
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/mode-sql";
 import "ace-builds/src-noconflict/theme-xcode";
@@ -42,7 +42,7 @@ export const CodeTextarea = ({
     if (loading) return sampleData || '';
     // If aiDataSample is explicitly set to false, don't retrieve sample
     if (field.aiDataSample === false) return '';
-    
+
     setLoading(true);
     return new Promise((resolve) => {
       RequestService.retrieveDataSample(
@@ -67,7 +67,7 @@ export const CodeTextarea = ({
   const generatePrompt = (dataFromRetrieve) => {
     // Only include sample data if aiDataSample is not false and includeSample is true
     const shouldIncludeSample = field.aiDataSample !== false && includeSample && dataFromRetrieve;
-    
+
     return `${field.aiInstructions || 'Generate '}
 ${shouldIncludeSample ? `<Sample Data>\n${dataFromRetrieve}\n</Sample Data>` : ''}
 
@@ -127,6 +127,23 @@ ${instructions || 'No specific instructions provided'}
     },
   ];
 
+  const handleAceLoad = (editor: any) => {
+    const stop = (e: KeyboardEvent) => e.stopPropagation();
+    const el = editor.container as HTMLElement;
+
+    // Use capture so we intercept before parents
+    el.addEventListener('keydown', stop, true);
+    el.addEventListener('keypress', stop, true);
+    el.addEventListener('keyup', stop, true);
+
+    // Clean up when the editor is destroyed
+    editor.on('destroy', () => {
+      el.removeEventListener('keydown', stop, true);
+      el.removeEventListener('keypress', stop, true);
+      el.removeEventListener('keyup', stop, true);
+    });
+  };
+
   // Only show the sample data checkbox if aiDataSample is not explicitly false
   const showSampleCheckbox = field.aiDataSample !== false;
 
@@ -142,6 +159,7 @@ ${instructions || 'No specific instructions provided'}
             theme="xcode"
             name={field.id}
             onChange={handleInputChange}
+            onLoad={handleAceLoad}
             fontSize={14}
             lineHeight={19}
             showPrintMargin
@@ -186,6 +204,7 @@ ${instructions || 'No specific instructions provided'}
                 autoSize={{ minRows: 2, maxRows: 8 }}
                 placeholder="Enter instructions here"
                 bordered={false}
+                onKeyDown={(e: any) => e.stopPropagation()}
                 style={{
                   resize: 'none',
                   boxShadow: 'none',

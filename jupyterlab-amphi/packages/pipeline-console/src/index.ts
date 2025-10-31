@@ -1,3 +1,4 @@
+// index.ts
 import { ICommandPalette, IWidgetTracker, WidgetTracker } from '@jupyterlab/apputils';
 import { ILabShell, ILayoutRestorer, JupyterFrontEnd, JupyterFrontEndPlugin } from '@jupyterlab/application';
 import { Sanitizer } from '@jupyterlab/apputils';

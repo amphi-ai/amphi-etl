@@ -8,7 +8,7 @@ import { AddNewColumn } from './AddNewColumn'
 import { ConfigProvider, Divider, Input, Select, Space, Button, Tag, Empty } from 'antd';
 import type { InputRef } from 'antd';
 import { FieldDescriptor, Option } from '../configUtils';
-
+import { onInputKeyDown } from '../formUtils';
 
 interface SelectColumnsProps {
   field: FieldDescriptor;

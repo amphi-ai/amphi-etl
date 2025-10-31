@@ -7,7 +7,7 @@ import { FieldDescriptor, Option } from '../configUtils';
 import { AddNewColumn } from './AddNewColumn';
 import { RequestService } from '../RequestService';
 import { useMemo } from 'react';
-
+import { onInputKeyDown} from '../formUtils';
 
 interface SelectColumnsProps {
   field: FieldDescriptor;
