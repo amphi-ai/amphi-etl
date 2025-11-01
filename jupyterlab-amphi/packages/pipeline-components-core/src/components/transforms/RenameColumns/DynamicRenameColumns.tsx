@@ -11,81 +11,76 @@ export class DynamicRenameColumns extends BaseCoreComponent {
       idPrefix: "component__form",
       fields: [
         {
-          type: "info",
-          id: "instructions",
-          text: "Operations order as form",
-          advanced: true
-        },
-        {
           type: "columns",
           label: "Select Columns",
-          id: "combination_columns",
+          id: "combinationColumns",
           placeholder: "Default: all columns",
         },
         {
           type: "select",
           label: "Global case operation",
-          id: "select_global_case_operation",
+          id: "selectGlobalCaseOperation",
           options: [
-            { value: "none", label: "None", tooltip: "None" },
-            { value: "lower", label: "lower case", tooltip: "lower case" },
-            { value: "upper", label: "UPPER CASE", tooltip: "UPPER CASE" },
-            { value: "camel_lower", label: "lowerCamelCase", tooltip: "lowerCamelCase" },
-            { value: "camel_upper", label: "UpperCamelCase", tooltip: "UpperCamelCase" },
-            { value: "snake", label: "snake_case", tooltip: "snake_case" }
+            { value: "none", label: "None", tooltip: "Keep the text exactly as it is, with no changes to case or formatting." },
+            { value: "lower", label: "Lower case", tooltip: "Convert all letters to lowercase (e.g., 'Example Text' → 'example text')." },
+            { value: "upper", label: "Upper cqse", tooltip: "Convert all letters to uppercase (e.g., 'Example Text' → 'EXAMPLE TEXT')." },
+            { value: "camel_lower", label: "Lower camel case", tooltip: "Capitalize each word except the first, remove spaces (e.g., 'example text' → 'exampleText')." },
+            { value: "camel_upper", label: "Upper camel case", tooltip: "Capitalize each word including the first, remove spaces (e.g., 'example text' → 'ExampleText')." },
+            { value: "snake", label: "Snake case", tooltip: "Convert spaces to underscores and all letters to lowercase (e.g., 'Example Text' → 'example_text')." }
           ],
           advanced: true
         },
         {
           type: "select",
-          label: "Action on Special Characters ( _ will be keeped if snake case)",
-          id: "select_action_special_characters",
+          label: "Action on special characters",
+          tooltip: "Define how to handle special characters in column names. (_ will be keeped if snake case is selected)",
+          id: "selectActionSpecialCharacters",
           options: [
-            { value: "None", label: "None", tooltip: "Do nothing" },
+            { value: "None", label: "None", tooltip: "No action on special characters" },
             { value: "replace", label: "Replace", tooltip: "Replace all special characters" }
           ],
           advanced: true
         },
         {
           type: "input",
-          label: "Character of replacement",
-          id: "input_char_replacement",
+          label: "Replace special characters with",
+          id: "inputCharReplacement",
           tooltip: "Defines the character used to replace special characters",
           advanced: true,
-		  condition: { select_action_special_characters : ["replace"] },
+          condition: { selectActionSpecialCharacters: ["replace"] },
         },
         {
           type: "input",
           label: "Prefix to delete",
-          id: "input_prefix_delete",
+          id: "inputPrefixDelete",
           tooltip: "Prefix to delete",
           advanced: true
         },
         {
           type: "input",
           label: "Prefix to add",
-          id: "input_prefix_add",
+          id: "inputPrefixAdd",
           tooltip: "Prefix to add",
           advanced: true
         },
         {
           type: "input",
           label: "Suffix to delete",
-          id: "input_suffix_delete",
+          id: "inputSuffixDelete",
           tooltip: "Suffix to delete",
           advanced: true
         },
         {
           type: "input",
           label: "Suffix to add",
-          id: "input_suffix_add",
+          id: "inputSuffixAdd",
           tooltip: "Suffix to add",
           advanced: true
         },
       ],
     };
 
-    const description = "Find combination of fields for unique key";
+    const description = "Dynamically rename columns based on selected transformations such as case conversion, special character handling, and prefix/suffix modifications.";
 
     super("Dynamic Rename Columns", "DynamicRenameColumns", description, "pandas_df_processor", [], "transforms", renameIcon, defaultConfig, form);
   }
@@ -94,7 +89,7 @@ export class DynamicRenameColumns extends BaseCoreComponent {
     return [
       "import pandas as pd",
       "from itertools import combinations"
-      ];
+    ];
   }
 
   public provideFunctions({ config }): string[] {
@@ -107,10 +102,10 @@ def dynamic_rename_dataframe_columns(
     case: str = "none",
     special_chars: str = "none",
     replace_char: str = "_",
-    prefix_to_delete: str | None = None,
-    prefix_to_add: str | None = None,
-    suffix_to_delete: str | None = None,
-    suffix_to_add: str | None = None,
+    prefix_to_delete: str = None,
+    prefix_to_add: str = None,
+    suffix_to_delete: str = None,
+    suffix_to_add: str = None,
 ) -> pd.DataFrame:
     """
     Rename columns of a DataFrame according to specified transformations.
@@ -190,29 +185,29 @@ def dynamic_rename_dataframe_columns(
   }
 
   // Generate the Python execution script
-public generateComponentCode({ config, inputName, outputName }: { config: any; inputName: string; outputName: string }): string {
+  public generateComponentCode({ config, inputName, outputName }: { config: any; inputName: string; outputName: string }): string {
 
-    const combination_columns_step1=[];
-     // If no columns are selected, pass None so that the Python function uses all columns(default).
-    let combination_columns = "None";
-    if (config.combination_columns?.length > 0) {
-      combination_columns = `[${config.combination_columns
+    const combinationColumns_step1 = [];
+    // If no columns are selected, pass None so that the Python function uses all columns(default).
+    let combinationColumns = "None";
+    if (config.combinationColumns?.length > 0) {
+      combinationColumns = `[${config.combinationColumns
         .map((item: any) => (item.named ? `"${item.value}"` : item.value))
         .join(", ")}]`;
     }
-	
-	const const_ts_global_case_operation=config.select_global_case_operation?? "none";
-	const const_ts_action_special_characters=config.select_action_special_characters?? "";
-	const const_ts_char_replacement=config.input_char_replacement?? "";
-	const const_ts_prefix_delete=config.input_prefix_delete?? "";
-	const const_ts_prefix_add=config.input_prefix_add?? "";
-	const const_ts_suffix_delete=config.input_suffix_delete?? "";
-	const const_ts_suffix_add=config.input_suffix_add?? "";
-	
-	
+
+    const const_ts_global_case_operation = config.selectGlobalCaseOperation ?? "none";
+    const const_ts_action_special_characters = config.selectActionSpecialCharacters ?? "";
+    const const_ts_char_replacement = config.inputCharReplacement ?? "";
+    const const_ts_prefix_delete = config.inputPrefixDelete ?? "";
+    const const_ts_prefix_add = config.inputPrefixAdd ?? "";
+    const const_ts_suffix_delete = config.inputSuffixDelete ?? "";
+    const const_ts_suffix_add = config.inputSuffixAdd ?? "";
+
+
     return `
 
-${outputName} = dynamic_rename_dataframe_columns(df=${inputName},columns=${combination_columns},case = '${const_ts_global_case_operation}', special_chars='${const_ts_action_special_characters}',replace_char='${const_ts_char_replacement}',prefix_to_delete='${const_ts_prefix_delete}', prefix_to_add='${const_ts_prefix_add}',suffix_to_delete='${const_ts_suffix_delete}', suffix_to_add='${const_ts_suffix_add}')
+${outputName} = dynamic_rename_dataframe_columns(df=${inputName},columns=${combinationColumns},case = '${const_ts_global_case_operation}', special_chars='${const_ts_action_special_characters}',replace_char='${const_ts_char_replacement}',prefix_to_delete='${const_ts_prefix_delete}', prefix_to_add='${const_ts_prefix_add}',suffix_to_delete='${const_ts_suffix_delete}', suffix_to_add='${const_ts_suffix_add}')
     `;
   }
 }
