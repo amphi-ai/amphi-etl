@@ -1,9 +1,9 @@
-import { renameIcon } from '../../icons';
-import { BaseCoreComponent } from '../BaseCoreComponent';
+import { renameIcon } from '../../../icons';
+import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 
 
-export class RenameColumns extends BaseCoreComponent {
+export class ManualRenameColumns extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {};
     const form = {
@@ -20,7 +20,7 @@ export class RenameColumns extends BaseCoreComponent {
     };
     const description = "Use Rename Columns to rename one or more columns.";
 
-    super("Rename Columns", "rename", description, "pandas_df_processor", [], "transforms", renameIcon, defaultConfig, form);
+    super("Manual Rename Columns", "manual rename", description, "pandas_df_processor", [], "transforms", renameIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

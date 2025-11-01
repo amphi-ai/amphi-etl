@@ -42,7 +42,7 @@ export { JSONTools } from './transforms/JSON/JSONTools';
 
 export { Sample } from './transforms/Sample';
 export { Sort } from './transforms/Sort';
-export { RenameColumns } from './transforms/RenameColumns';
+export { RenameColumns } from './transforms/RenameColumns/RenameColumns';
 export { TypeConverter } from './transforms/TypeConverter';
 export { Extract } from './transforms/Extract';
 export { FilterColumns } from './transforms/FilterColumns';
