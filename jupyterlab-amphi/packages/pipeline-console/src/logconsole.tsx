@@ -5,7 +5,7 @@ import { JupyterFrontEnd } from '@jupyterlab/application';
 import { CommandRegistry } from '@lumino/commands';
 import { DocumentRegistry } from '@jupyterlab/docregistry';
 import { IPipelineConsole } from './tokens';
-
+import { Message } from '@lumino/messaging';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import DataView from './DataView';
@@ -33,15 +33,15 @@ export class PipelineConsolePanel
   private _source: IPipelineConsole.ILogging | null = null;
   private _console: HTMLTableElement;
   private _title: HTMLElement;
+  private _unbind: (() => void) | null = null;
 
-  constructor(app: JupyterFrontEnd, commands: CommandRegistry, context: DocumentRegistry.Context) {
+ constructor(app: JupyterFrontEnd, commands: CommandRegistry, context: DocumentRegistry.Context) {
     super();
-    this._app = app; // Assign the app object
+    this._app = app;
     this._commands = commands;
     this._context = context;
     this.addClass(PANEL_CLASS);
 
-    // Create a single container div with id="portal" that wraps all content.
     const portalDiv = document.createElement('div');
     portalDiv.id = 'portal';
     portalDiv.style.position = 'absolute';
@@ -55,12 +55,35 @@ export class PipelineConsolePanel
     this._title.className = TITLE_CLASS;
     this._console = Private.createConsole();
     this._console.className = TABLE_CLASS;
-    // Append title and console into the portal div.
+
     portalDiv.appendChild(this._title);
     portalDiv.appendChild(this._console);
-
-    // Append the portal div into the widget's node.
     this.node.appendChild(portalDiv);
+  }
+
+  protected onAfterAttach(msg: Message): void {
+    super.onAfterAttach(msg);
+
+    const stop = (e: Event) => e.stopPropagation();
+
+    // capture phase so it wins over higher-level listeners
+    this.node.addEventListener('keydown', stop, true);
+    this.node.addEventListener('copy', stop, true);
+    this.node.addEventListener('paste', stop, true);
+
+    this._unbind = () => {
+      this.node.removeEventListener('keydown', stop, true);
+      this.node.removeEventListener('copy', stop, true);
+      this.node.removeEventListener('paste', stop, true);
+    };
+  }
+
+  protected onBeforeDetach(msg: Message): void {
+    if (this._unbind) {
+      this._unbind();
+      this._unbind = null;
+    }
+    super.onBeforeDetach(msg);
   }
 
   get source(): IPipelineConsole.ILogging | null {

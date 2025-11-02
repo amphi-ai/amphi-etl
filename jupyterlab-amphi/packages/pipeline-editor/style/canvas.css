@@ -69,7 +69,7 @@ Editor components styles
 }
 
 .component {
-  position: relative; /* Ensures pseudo-element positioning works */
+  position: relative; 
   background-color: #F2F4F7;
   width: 180px;
   min-height: 120px;

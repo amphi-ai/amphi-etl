@@ -151,7 +151,7 @@ const Sidebar: React.FC<SidebarProps> = ({ componentService, onRefreshed }) => {
                 transition: 'all 0.2s ease'
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#f5f5f5';
+                e.currentTarget.style.backgroundColor = '#F2F4F7';
                 e.currentTarget.style.borderColor = '#778899';
                 e.currentTarget.style.transform = 'translateY(-1px)';
               }}

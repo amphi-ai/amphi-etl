@@ -9,7 +9,7 @@ export class SplitColumn extends BaseCoreComponent {
 	splitType: "columns",
 	regex: false,
 	keepOriginalColumn: false,
-	select_convert_result : "none"
+	selectConvertResult : "none"
 	};
     const form = {
       idPrefix: "component__form",
@@ -42,6 +42,7 @@ export class SplitColumn extends BaseCoreComponent {
             { value: "  ", label: "tab" },
             { value: "|", label: "pipe (|)" }
           ],
+          advanded: true
         },
         {
           type: "boolean",
@@ -59,8 +60,9 @@ export class SplitColumn extends BaseCoreComponent {
         },
         {
           type: "input",
-          label: "Name of the new column (mandatory if original column kept)",
-          id: "input_name_new_column",
+          label: "Name of new column",
+          tooltip: "Mandatory if original column is kept",
+          id: "inputNameNewColumn",
           condition: { splitType: "rows" }
         },
         {
@@ -72,9 +74,9 @@ export class SplitColumn extends BaseCoreComponent {
 		{
           type: "selectCustomizable",
           label: "Convert result",
-          id: "select_convert_result",
+          id: "selectConvertResult",
           options: [
-            { value: "none", label: "none" },
+            { value: "none", label: "None" },
             { value: "string", label: "string" },
             { value: "auto", label: "auto (numeric or string)" }
           ],
@@ -162,8 +164,14 @@ def split_dataframe_to_rows(
 
     return df
     `;
-    return [Split_Column_To_Row_Function];
+    if (config.splitType === "rows") {
+      return [Split_Column_To_Row_Function]; 
+    } else {
+      return [];
+    }
   }	
+
+
   public generateComponentCode({ config, inputName, outputName }): string {
     const prefix = config?.backend?.prefix ?? "pd";
     const columnName = config.column.value; // name of the column
@@ -217,12 +225,12 @@ def split_dataframe_to_rows(
       const const_ts_boolean_keepOriginalColumn= config.keepOriginalColumn ? "True" : "False";
 	  //if null, undefined or empty
       const const_ts_new_column_name =
-      config.input_name_new_column && config.input_name_new_column.length > 0
-        ? config.input_name_new_column
+      config.inputNameNewColumn && config.inputNameNewColumn.length > 0
+        ? config.inputNameNewColumn
         : const_ts_column_to_split;
 	  const const_ts_split_delimiter = config.delimiter;
 	  const const_ts_boolean_is_regex= config.regex ? "False" : "True";
-	  const const_ts_convert_result=config.select_convert_result;
+	  const const_ts_convert_result=config.selectConvertResult;
 	  code += `${outputName}=split_dataframe_to_rows(df=${inputName},keep_original_column=${const_ts_boolean_keepOriginalColumn},column_to_split='${const_ts_column_to_split}',new_column_name='${const_ts_new_column_name}',split_delimiter='${const_ts_split_delimiter}',is_regex=${const_ts_boolean_is_regex},convert_result='${const_ts_convert_result}')\n`;
     }
   
