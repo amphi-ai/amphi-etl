@@ -23,7 +23,7 @@ export class DynamicRenameColumns extends BaseCoreComponent {
           options: [
             { value: "none", label: "None", tooltip: "Keep the text exactly as it is, with no changes to case or formatting." },
             { value: "lower", label: "Lower case", tooltip: "Convert all letters to lowercase (e.g., 'Example Text' → 'example text')." },
-            { value: "upper", label: "Upper cqse", tooltip: "Convert all letters to uppercase (e.g., 'Example Text' → 'EXAMPLE TEXT')." },
+            { value: "upper", label: "Upper case", tooltip: "Convert all letters to uppercase (e.g., 'Example Text' → 'EXAMPLE TEXT')." },
             { value: "camel_lower", label: "Lower camel case", tooltip: "Capitalize each word except the first, remove spaces (e.g., 'example text' → 'exampleText')." },
             { value: "camel_upper", label: "Upper camel case", tooltip: "Capitalize each word including the first, remove spaces (e.g., 'example text' → 'ExampleText')." },
             { value: "snake", label: "Snake case", tooltip: "Convert spaces to underscores and all letters to lowercase (e.g., 'Example Text' → 'example_text')." }
