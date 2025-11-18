@@ -9,7 +9,10 @@ export class CompareDataframes extends BaseCoreComponent {
 		select_column_mismatch : "intersect",
 		boolean_index_data_for_compare : false,
 		boolean_index_metadata_for_compare : true,
-		boolean_check_forcount : true
+		boolean_check_forcount : true,
+		selectTimestampDateTimeRound : "None",
+		selectcol_key_fields: [],
+		selectcol_ignore_fields: []
 		};
     const form = {
       idPrefix: "component__form",
@@ -35,10 +38,10 @@ export class CompareDataframes extends BaseCoreComponent {
           options: [
             { value: "data", label: "Compare rows of both inputs, output is row-level", tooltip: "Compare rows of both inputs" },
             { value: "count_data", label: "Compare rows of both inputs, output the number of difference", tooltip: "Compare rows of both inputs" },
-            // { value: "field_data", label: "Compare rows of both inputs, output fields with their data in difference", tooltip: "Compare rows of both inputs (keys required)" },
-            // { value: "differing_fields", label: "Compare rows of both inputs, output list of fields where there is a difference", tooltip: "Compare rows of both inputs (keys required)"  },
-            { value: "metadata", label: "Compare columns of both inputs, output one row by column with difference", tooltip: "Compare columns of both inputs (name, type,...)" }//,
-            //{ value: "metadata+metrics", label: "Compare columns of both inputs+metrics of each column, output one row by column with difference", tooltip: "Compare columns of both inputs (name, type,min, etc...)" }
+            { value: "field_data", label: "Compare rows of both inputs, output fields with their data in difference", tooltip: "Compare rows of both inputs (keys required)" },
+            { value: "differing_fields", label: "Compare rows of both inputs, output list of fields where there is a difference", tooltip: "Compare rows of both inputs (keys required)"  },
+            { value: "metadata", label: "Compare columns of both inputs, output one row by column with difference", tooltip: "Compare columns of both inputs (name, type,...)" },
+            { value: "metadata+metrics", label: "Compare columns of both inputs+metrics of each column, output one row by column with difference", tooltip: "Compare columns of both inputs (name, type,min, etc...)" }
           ],
           advanced: true
         }
@@ -55,47 +58,70 @@ export class CompareDataframes extends BaseCoreComponent {
           advanced: true
         }
 		//for V2
-		// ,
-        // {
-          // type: "columns",
-          // label: "Key Fields",
-          // id: "selectcol_key_fields",
-          // placeholder: "Column name",
-		  // condition: { select_comparison_mode: ["field_data","differing_fields"]},
-		  // inputNb: 1,
-		  // advanced: true
-        // }
-		// ,
-        // {
-          // type: "columns",
-          // label: "Fields to be ignored",
-          // id: "selectcol_ignore_fields",
-          // placeholder: "Column name",
-		  // advanced: true
-        // }
-		// ,
-        // {
-          // type: "boolean",
-          // label: "Rows order to be considered",
-          // id: "boolean_index_data_for_compare",
-          // condition: { select_comparison_mode: ["data","count_data","field_data","differing_fields"]},
-          // advanced: true
-        // }
-        // ,
-        // {
-          // type: "boolean",
-          // label: "Columns order to be considered",
-          // id: "boolean_index_metadata_for_compare",
-          // condition: { select_comparison_mode: ["metadata","metadata+metrics"]},
-          // advanced: true
-        // },
-        // {
-          // type: "boolean",
-          // label: "Check for equal count",
-          // id: "boolean_check_forcount",
-          // condition: { select_comparison_mode: ["data","count_data"]},
-          // advanced: true
-        // },
+		,
+        {
+          type: "columns",
+          label: "Key Fields",
+          id: "selectcol_key_fields",
+          placeholder: "Column name",
+		  condition: { select_comparison_mode: ["field_data","differing_fields"]},
+		  inputNb: 1,
+		  advanced: true
+        }
+		,
+        {
+          type: "columns",
+          label: "Fields to be ignored",
+          id: "selectcol_ignore_fields",
+          placeholder: "Column name",
+		  advanced: true
+        }
+		,
+        {
+          type: "boolean",
+          label: "Rows order to be considered",
+          id: "boolean_index_data_for_compare",
+          condition: { select_comparison_mode: ["data","count_data","field_data","differing_fields"]},
+          advanced: true
+        }
+        ,
+        {
+          type: "boolean",
+          label: "Columns order to be considered",
+          id: "boolean_index_metadata_for_compare",
+          condition: { select_comparison_mode: ["metadata","metadata+metrics"]},
+          advanced: true
+        },
+        {
+          type: "boolean",
+          label: "Check for equal count",
+          id: "boolean_check_forcount",
+          condition: { select_comparison_mode: ["data","count_data"]},
+          advanced: true
+        },
+		{
+          type: "inputNumber",
+          tooltip: "Number of decimal for rounding (nothing=No rounding)",
+          label: "Decimal Rounding",
+          id: "inputNumberDecimalRound",
+          min: 0,
+          max: 20,
+          advanced: true
+        },
+		{
+          type: "select",
+          label: "Timestamp/DateTime Rounding",
+          id: "selectTimestampDateTimeRound",
+          placeholder: "Error: raise an Exception when a bad line is encountered",
+          options: [
+            { value: "None", label: "None", tooltip: "No rounding" },
+            { value: "s", label: "Second", tooltip: "Rounding to second" },
+            { value: "ms", label: "Millisecond", tooltip: "Rounding to millisecond" },
+            { value: "us", label: "Microsecond", tooltip: "Rounding to microsecond" },
+            { value: "ns", label: "Nanosecond", tooltip: "Rounding to nanosecond" }
+          ],
+          advanced: true
+        },
       ],
     };
     const description = "Compare dataframe of both inputs at several levels"
@@ -383,8 +409,8 @@ def get_metadata_metrics_as_df(df: pd.DataFrame, add_index: bool = False) -> pd.
     return pd.DataFrame(rows)
 
 def compare_pandas_metadata_and_metrics(df1: pd.DataFrame, df2: pd.DataFrame, index_metadata_for_compare: bool = False):
-    meta1 = get_metadata_metrics_as_df(df1, add_index=index_metadata_for_compare)
-    meta2 = get_metadata_metrics_as_df(df2, add_index=index_metadata_for_compare)
+    meta1 = get_metadata_metrics_as_df(df1, add_index=index_metadata_for_compare).astype("string")
+    meta2 = get_metadata_metrics_as_df(df2, add_index=index_metadata_for_compare).astype("string")
     return compare_pandas_data(meta1, meta2)
 
 def compare_pandas_data_field(
@@ -562,7 +588,19 @@ def polars_apply_rounding_by_type(
 ) -> pl.DataFrame:
     if not rounding:
         return df
-
+    # Convert datetime shorthand ("s") into duration string ("1s")
+    dt_round = None
+    if "datetime" in rounding:
+        val = rounding["datetime"]
+        if isinstance(val, str):
+            # If already looks like "1s" or "2ms", keep it
+            if val[0].isdigit():
+                dt_round_pl = val
+            else:
+                dt_round_pl = f"1{val}"
+        else:
+            dt_round_pl = val  # allow durations or other types
+            
     for col in df.columns:
         dtype = df.schema[col]
 
@@ -572,7 +610,7 @@ def polars_apply_rounding_by_type(
 
         # Check for datetime types
         elif isinstance(dtype, (pl.Datetime, pl.Date, pl.Time)) and "datetime" in rounding:
-            df = df.with_columns(pl.col(col).dt.round(rounding["datetime"]).alias(col))
+            df = df.with_columns(pl.col(col).dt.round(dt_round_pl).alias(col))
 
     return df
 
@@ -593,8 +631,8 @@ def compare_polars_data(
             i += 1
 
     if index_data_for_compare:
-        df1 = df1.with_row_count("_row_index_for_compare")
-        df2 = df2.with_row_count("_row_index_for_compare")
+        df1 = df1.with_row_index("_row_index_for_compare")
+        df2 = df2.with_row_index("_row_index_for_compare")
 
     cols1 = set(df1.columns)
     cols2 = set(df2.columns)
@@ -620,6 +658,9 @@ def compare_polars_data(
 
     df1 = df1.select(common_cols).with_columns(pl.lit("left").alias(origin_col))
     df2 = df2.select(common_cols).with_columns(pl.lit("right").alias(origin_col))
+
+    df1 = polars_apply_rounding_by_type(df1, rounding)
+    df2 = polars_apply_rounding_by_type(df2, rounding)
 
     combined = pl.concat([df1, df2], how="vertical_relaxed")
 
@@ -716,8 +757,8 @@ def compare_polars_data_field(
         raise ValueError("key_fields must be provided")
 
     if index_data_for_compare:
-        df1 = df1.with_row_count("_row_index_for_compare")
-        df2 = df2.with_row_count("_row_index_for_compare")
+        df1 = df1.with_row_index("_row_index_for_compare")
+        df2 = df2.with_row_index("_row_index_for_compare")
         key_fields = ["_row_index_for_compare"] + key_fields
 
     cols1 = set(df1.columns)
@@ -737,7 +778,7 @@ def compare_polars_data_field(
             raise ValueError(f"Key field {k} not in both datasets")
 
     value_fields = [col for col in common_cols if col not in key_fields]
-
+#rounding and common fields
     df1 = polars_apply_rounding_by_type(df1.select(common_cols), rounding)
     df2 = polars_apply_rounding_by_type(df2.select(common_cols), rounding)
 
@@ -745,13 +786,13 @@ def compare_polars_data_field(
     df2 = df2.with_columns(pl.lit("right").alias("origin"))
 
     combined = pl.concat([df1, df2], how="vertical_relaxed")
-
-    melted = combined.melt(id_vars=key_fields + ["origin"], value_vars=value_fields, variable_name="Field", value_name="Value")
-
+	#melt is deprecated
+    #melted = combined.melt(id_vars=key_fields + ["origin"], value_vars=value_fields, variable_name="Field", value_name="Value")
+    melted = combined.unpivot(index=key_fields + ["origin"], on=value_fields, variable_name="Field", value_name="Value")
     pivoted = melted.pivot(
         values="Value",
         index=key_fields + ["Field"],
-        columns="origin"
+        on="origin"
     )
 
     # Keep rows where left and right differ
@@ -822,19 +863,20 @@ def get_polars_metadata_metrics(df: pl.DataFrame, add_index: bool = False) -> pl
         if add_index:
             base["index"] = idx
 
-        rows.append({**base, "key": "type", "value": dtype})
-        rows.append({**base, "key": "count", "value": col_data.height})
-        rows.append({**base, "key": "count_distinct", "value": col_data.select(pl.col(col).n_unique()).item()})
+        rows.append({**base, "key": "type", "value": str(dtype)})
+        rows.append({**base, "key": "count", "value": str(col_data.height)})
+        rows.append({**base, "key": "count_distinct", "value": str(col_data.select(pl.col(col).n_unique()).item())})
 
         if df.schema[col] in (pl.Float32, pl.Float64, pl.Int32, pl.Int64, pl.Datetime, pl.Date, pl.Time):
             stats = col_data.select([
               pl.col(col).min().alias("min_val"),
               pl.col(col).max().alias("max_val")
-              ])
+            ])
+            rows.append({**base, "key": "min", "value": str(stats[0, "min_val"])})
+            rows.append({**base, "key": "max", "value": str(stats[0, "max_val"])})
 
-            rows.append({**base, "key": "min", "value": stats[0, "min_val"]})
-            rows.append({**base, "key": "max", "value": stats[0, "max_val"]})
     return pl.DataFrame(rows)
+
     
 def compare_polars_metadata_and_metrics(
     df1: pl.DataFrame,
@@ -877,7 +919,12 @@ def compare_polars(
         raise NotImplementedError(f"Polars mode '{mode}' not yet implemented")
 
 ####duckdb#########
+def quote_identifier(col: str) -> str:
+    #bs = chr(92)  # backslash
+    #return bs + '"' + col + bs + '"'
+    return '"' + col + '"'
 
+#old version rounding in pandas
 # def duckdb_apply_rounding_by_type(
     # df: pd.DataFrame,
     # rounding: Optional[Dict[str, Union[int, str]]]
@@ -891,34 +938,46 @@ def compare_polars(
         # elif pd.api.types.is_datetime64_any_dtype(df[col]) and "datetime" in rounding:
             # df[col] = df[col].dt.round(rounding["datetime"])
     # return df
+
+#newer version rounding directly in duckdb
 def duckdb_apply_rounding_by_type(
     df: pd.DataFrame,
     rounding: Optional[Dict[str, Union[int, str]]],
-    table_name: str = "_rounding_input"
 ) -> pd.DataFrame:
     if not rounding:
         return df
 
     conn = duckdb.connect()
-    conn.register(table_name, df)
+    conn.register("df", df)
 
     select_exprs = []
+
     for col in df.columns:
         dtype = df[col].dtype
-		#here we do not use f string because the backslash is broken when building
-        if pd.api.types.is_numeric_dtype(dtype) and "float" in rounding:
-            digits = rounding["float"]
-            select_exprs.append('round("' + col + '", ' + str(float) + ') AS "' + col + '"')
-        elif pd.api.types.is_datetime64_any_dtype(dtype) and "datetime" in rounding:
-            unit = rounding["datetime"]
-            select_exprs.append("date_trunc('" + unit + "', \"" + col + "\") AS \"" + col + "\"")
-        else:
-            select_exprs.append('"' + col + '"')
 
-    query = f"SELECT {', '.join(select_exprs)} FROM {table_name}"
+        # FLOAT / NUMERIC rounding
+        if pd.api.types.is_float_dtype(dtype) and "float" in rounding:
+            digits = rounding["float"]
+            expr = f'round("{col}", {digits}) AS "{col}"'
+            select_exprs.append(expr)
+
+        # DATETIME rounding
+        elif pd.api.types.is_datetime64_any_dtype(dtype) and "datetime" in rounding:
+            unit = rounding["datetime"]  # use as given: "s", "ms", "month", etc.
+            #expr = f"date_trunc('{unit}', \"{col}\") AS \"{col}\""
+			#to avoid backslash issue when building the code
+            expr = "date_trunc('" + unit + "', " + quote_identifier(col) + ") AS " + quote_identifier(col)
+            select_exprs.append(expr)
+
+        # NO CHANGE
+        else:
+            select_exprs.append(f'"{col}"')
+
+    query = f"SELECT {', '.join(select_exprs)} FROM df"
+
     result = conn.execute(query).fetchdf()
     conn.close()
-    return result    
+    return result
     
 def compare_duckdb_data(
     df1: pd.DataFrame,
@@ -968,7 +1027,7 @@ def compare_duckdb_data(
     conn.register("df2", df2)
 
     quoted_cols = ", ".join(f'"{c}"' for c in common_cols)
-    #⚠during dev, Amphi added a f right in the middle of the query so we split th  query in two strings
+    #⚠during dev, Amphi added a f right in the middle of the query so we split the  query in two strings
     query = f"""
         WITH unioned AS (
             SELECT {quoted_cols}, {origin_col} FROM df1
@@ -1089,22 +1148,9 @@ def compare_duckdb_data_field(
     else:
         raise ValueError(f"Invalid column_mismatch: {column_mismatch}")
 
-    # Apply rounding manually to float and datetime columns
-    def apply_rounding(df):
-        if not rounding:
-            return df
-        df = df.copy()
-        for col in df.columns:
-            if col not in rounding:
-                continue
-            if pd.api.types.is_numeric_dtype(df[col]) and "float" in rounding:
-                df[col] = df[col].round(rounding["float"])
-            elif pd.api.types.is_datetime64_any_dtype(df[col]) and "datetime" in rounding:
-                df[col] = df[col].dt.round(rounding["datetime"])
-        return df
-
-    df1 = apply_rounding(df1[list(common_cols)])
-    df2 = apply_rounding(df2[list(common_cols)])
+    # Apply rounding
+    df1 = duckdb_apply_rounding_by_type(df1[list(common_cols)],rounding)
+    df2 = duckdb_apply_rounding_by_type(df2[list(common_cols)],rounding)
 
     value_fields = [col for col in common_cols if col not in key_fields]
 
@@ -1294,7 +1340,7 @@ def compare_datasets(
     #Returns:
         #pd.DataFrame: result of comparison result
 	#empty list or None
-    if key_fields is None or len(fields) == 0:
+    if key_fields is None or len(key_fields) == 0:
         key_fields = None
     if ignore_fields is None or len(ignore_fields) == 0:
         ignore_fields = None
@@ -1359,21 +1405,65 @@ def compare_datasets(
 	const const_ts_comparison_mode = config.select_comparison_mode ?? "data";
 	const const_ts_column_mismatch = config.select_column_mismatch ?? "intersect";	
 	//for V2
-	//const const_ts_rounding = '{"float": 4, "datetime": "s"}'; //No UI right now
-    //const const_ts_key_fields = config.selectcol_key_fields.map(column => column.named ? `"${column.value}"` : column.value);
-    //const const_ts_ignore_fields = config.selectcol_ignore_fields.map(column => column.named ? `"${column.value}"` : column.value);
-	//const const_ts_index_data_for_compare = config.boolean_index_data_for_compare ? "False" : "True";
-	//const const_ts_index_metadata_for_compare = config.boolean_index_metadata_for_compare ? "True" : "False";
-	//const const_ts_check_forcount = config.boolean_check_forcount ? "True" : "False";
+	
+	function buildRoundingString(
+  selectTimestampDateTimeRound: string | null, // "None", "s", "ms"
+  inputNumberDecimalRound?: number // 0–20 ou undefined
+): string {
+  // Case 1 : both aren't present or "None"
+  if ((selectTimestampDateTimeRound === "None" || selectTimestampDateTimeRound == null) && (inputNumberDecimalRound === undefined || inputNumberDecimalRound== null)) {
+    return "None";
+  }
+
+  // Construction dynamique de l'objet
+  const rounding: Record<string, string | number> = {};
+
+  if ((inputNumberDecimalRound !== undefined)  &&  (inputNumberDecimalRound !== null)) {
+    rounding["float"] = inputNumberDecimalRound;
+  }
+
+  if (selectTimestampDateTimeRound !== "None" && selectTimestampDateTimeRound != null) {
+    rounding["datetime"] = selectTimestampDateTimeRound;
+  }
+
+  return JSON.stringify(rounding);
+}
+
+////Exemple d’utilisation :
+// console.log(buildRoundingString("s", 4));       // '{"float":4,"datetime":"s"}'
+// console.log(buildRoundingString("None", 4));    // '{"float":4}'
+// console.log(buildRoundingString("s", undefined)); // '{"datetime":"s"}'
+// console.log(buildRoundingString("None", undefined)); // 'None'
+
+//	const const_ts_rounding = '{"float": 4, "datetime": "s"}'; //No UI right now
+	const const_ts_rounding = buildRoundingString(config.selectTimestampDateTimeRound,config.inputNumberDecimalRound);
+    const const_ts_key_fields = config.selectcol_key_fields.map(column => column.named ? `"${column.value}"` : column.value);
+    const const_ts_ignore_fields = config.selectcol_ignore_fields.map(column => column.named ? `"${column.value}"` : column.value);
+	const const_ts_index_data_for_compare = config.boolean_index_data_for_compare ? "False" : "True";
+	const const_ts_index_metadata_for_compare = config.boolean_index_metadata_for_compare ? "True" : "False";
+	const const_ts_check_forcount = config.boolean_check_forcount ? "True" : "False";
 	
     // Join the keys into a string for the Python code
-    //const const_ts_key_fieldsstr = `[${const_ts_key_fields.join(', ')}]`;
-	//const const_ts_ignore_fieldsstr = `[${const_ts_ignore_fields.join(', ')}]`;
+    const const_ts_key_fieldsstr = `[${const_ts_key_fields.join(', ')}]`;
+	const const_ts_ignore_fieldsstr = `[${const_ts_ignore_fields.join(', ')}]`;
+	
+	
 	//Comment for Python
     let code = `# Compare ${inputName1} and ${inputName2}\n`;
-    code += `${outputName}=compare_datasets(execution_engine='${const_ts_execution_engine}',df1=${inputName1}, df2=${inputName2},mode='${const_ts_comparison_mode}',column_mismatch='${const_ts_column_mismatch}')`
-   //for VZ	
-  // code += `${outputName}=compare_datasets(execution_engine='${const_ts_execution_engine}',df1=${inputName1}, df2=${inputName2},mode='${const_ts_comparison_mode}',column_mismatch='${const_ts_column_mismatch}',rounding=${const_ts_rounding},key_fields=${const_ts_key_fieldsstr},ignore_fields=${const_ts_ignore_fieldsstr},index_data_for_compare=${const_ts_index_data_for_compare},index_metadata_for_compare=${const_ts_index_metadata_for_compare},check_forcount=${const_ts_check_forcount} )`
+    //code += `${outputName}=compare_datasets(execution_engine='${const_ts_execution_engine}',df1=${inputName1}, df2=${inputName2},mode='${const_ts_comparison_mode}',column_mismatch='${const_ts_column_mismatch}')`
+   //for V2	
+   code += `${outputName}=compare_datasets(execution_engine='${const_ts_execution_engine}',
+  df1=${inputName1},
+  df2=${inputName2},
+  mode='${const_ts_comparison_mode}',
+  column_mismatch='${const_ts_column_mismatch}',
+  rounding=${const_ts_rounding},
+  key_fields=${const_ts_key_fieldsstr},
+  ignore_fields=${const_ts_ignore_fieldsstr},
+  index_data_for_compare=${const_ts_index_data_for_compare},
+  index_metadata_for_compare=${const_ts_index_metadata_for_compare},
+  check_forcount=${const_ts_check_forcount}
+  )`
   
 
     return code;
