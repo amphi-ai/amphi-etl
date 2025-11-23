@@ -89,7 +89,7 @@ export class CustomTransformations extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    // We only remove import lines from config.code, as config.imports is backward-compat
+    // 1. Filter out import lines from config.code
     let userCode = (config.code || '')
       .split('\n')
       .filter(line => {
@@ -98,10 +98,15 @@ export class CustomTransformations extends BaseCoreComponent {
       })
       .join('\n');
 
-    // Replace 'input' and 'output' with provided names
-    userCode = userCode
-      .replace(/input/g, inputName)
-      .replace(/output/g, outputName);
+    // 2. Replace 'input' and 'output' with provided names, using regex for WHOLE WORD matching
+
+    // Pattern for whole word 'input' - \b ensures word boundaries
+    const inputRegex = new RegExp('\\binput\\b', 'g');
+    userCode = userCode.replace(inputRegex, inputName);
+
+    // Pattern for whole word 'output' - \b ensures word boundaries
+    const outputRegex = new RegExp('\\boutput\\b', 'g');
+    userCode = userCode.replace(outputRegex, outputName);
 
     return `\n${userCode}`;
   }

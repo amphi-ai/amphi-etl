@@ -97,8 +97,10 @@ export class CustomInput extends BaseCoreComponent {
       })
       .join('\n');
 
-    // Replace 'output' with the provided outputName
-    userCode = userCode.replace(/output/g, outputName);
+    // Replace 'output' with the provided outputName, using regex for WHOLE WORD matching
+    // Pattern for whole word 'output' - \b ensures word boundaries
+    const outputRegex = new RegExp('\\boutput\\b', 'g');
+    userCode = userCode.replace(outputRegex, outputName);
 
     return `\n${userCode}`;
   }

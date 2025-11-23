@@ -95,8 +95,8 @@ export class CustomOutput extends BaseCoreComponent {
       })
       .join('\n');
 
-    // Replace 'input' with provided inputName
-    userCode = userCode.replace(/input/g, inputName);
+    const inputRegex = new RegExp('\\binput\\b', 'g');
+    userCode = userCode.replace(inputRegex, inputName);
 
     return `\n${userCode}`;
   }
