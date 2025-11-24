@@ -1,5 +1,5 @@
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import { Card, Cascader, Flex, Form, Modal, Drawer,  Radio, Switch, Typography, Select, Divider, Space, Button } from 'antd';
+import { Card, Cascader, Flex, Form, Modal, Drawer, Radio, Switch, Typography, Select, Divider, Space, Button } from 'antd';
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { renderFormItem } from './formUtils'
 import CodeTextarea from './forms/CodeTextarea';
@@ -352,7 +352,7 @@ export const GenerateUIInputs = React.memo(({
       case "textarea":
         return renderFormItem(field, <TextareaRegular {...commonProps} value={value} rows={field.rows} />);
       case "codeTextarea":
-        return renderFormItem(field, <CodeTextarea {...commonProps} value={value} componentService={componentService} commands={commands} nodeId={nodeId}/>);
+        return renderFormItem(field, <CodeTextarea {...commonProps} value={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "boolean":
         return renderFormItem(field, (
           <Switch

@@ -1,7 +1,7 @@
 import { AutoComplete, Input } from 'antd';
 import React, { useEffect } from 'react';
 import { useVariableAutoComplete } from '../variablesUtils';
-import { onInputKeyDown} from '../formUtils';
+import { onInputKeyDown } from '../formUtils';
 
 export const InputRegular = ({ field, value, handleChange, context, advanced }) => {
 
