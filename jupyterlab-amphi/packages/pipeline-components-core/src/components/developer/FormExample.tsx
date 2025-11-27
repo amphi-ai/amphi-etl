@@ -25,13 +25,19 @@ export class FormExample extends BaseCoreComponent {
         {
           type: "info",
           id: "description",
-          text: "This component serves as an example showcasing all types of data entry forms available with Amphi. ⚠️ It is not intended for use as part of a pipeline.",
+          text: "This component serves as an example showcasing all types of data entry forms available with Amphi.⚠️It is not intended for use as part of a pipeline.",
           advanced: false
         },
         {
           type: "info",
+          id: "misc_info",
+          text: "You can find the types in amphi-etl/jupyterlab-amphi/packages/pipeline-components-manager/src/configUtils.tsx",
+          advanced: true
+        },
+        {
+          type: "info",
           id: "instructions",
-          text: "1. Informational text to show in the component. File path (3), Separator (4) and sheet name (18) are mandatory to run, meaning you also need File Location (2) set to Local",
+          text: "1. Informational text to show in the component. File path (3), Separator (4) and sheet name (18) are mandatory to run, meaning you also need File Location (2) set to Local. An input is also required.",
           advanced: true
         },
         {
@@ -384,10 +390,27 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
           advanced: true
         },
 		{
-          type: "DatePicker",
-          label: "28. Select a Date (DatePicker)",
+          type: "date",
+          label: "28. Select a Date (date)",
           id: "date_picker",
           advanced: true
+        },
+        {
+          type: "codeTextarea",
+          label: "29. Code with AI (codeTextarea)",
+          tooltip: "Use the dataframe 'output' as output, and 'input' as input",
+          id: "code_with_ai",
+          mode: "python",
+          height: '300px',
+          placeholder: "your amazing code here",
+          aiInstructions: "Generate a Pandas script that return a DataFrame named 'output'. IMPORTANT: Ensure the code does not print or display anything. Include short comments for clarity.",
+          aiGeneration: true,
+          aiDataSample: false,
+          aiPromptExamples: [
+            { label: "Create input with dummy data", value: "Create a simple input with columns A,B,C and fill them with dummy data." },
+            { label: "Size of my data", value: "Give me the size of my 'input' dataframe" }
+          ],
+          advanced: true,
         },
       ]
           
@@ -404,6 +427,31 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
     return [];
   }
 
+  // Define the Python function. Not mandatory but can help.
+  public provideFunctions({ config }): string[] {
+    const prefix = config?.backend?.prefix ?? "pd";
+
+    const ExampleTSFunction = `
+
+def example_python_function(
+    df: pd.DataFrame,
+    example_kwarg_int: int, 
+    example_kwarg_string: str = "mydefaultvalue",#here the default value of the function.In Python, arguments with default values must come after non-default arguments.
+) -> pd.DataFrame:
+
+    result_df = df.copy()  # avoid mutating original DataFrame
+    result_df["new_int_column"] = example_kwarg_int
+    result_df["new_string_column"] = example_kwarg_string
+	#convert to string (else object)
+    result_df["new_string_column"] = result_df["new_string_column"].astype("string")
+    return result_df
+
+    `;
+
+    return [ExampleTSFunction];
+  }
+
+
   // Generates the Python code for processing the form input
   //please note a few things : 
   //-that typescript const/var will also be interpretated on commented lines
@@ -411,6 +459,8 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
   public generateComponentCode({ config, inputName, outputName }): string {
     //constant declaration
     const default_value_column_value=config.default_value_column.value;
+	const constTswith_default_value_inputNumber=config.with_default_value_inputNumber;
+	const constTsfileLocation=config.fileLocation;	
     let columnsParam = "{";
     if (config.columns && config.columns.length > 0) {
       columnsParam += config.columns.map(column => {
@@ -425,7 +475,7 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
       columnsParam = "{}"; // Ensure columnsParam is always initialized
     }
 
-    // Template for outputting the input data
+    // Template for outputting the input data. This is where you place your Python code.
     const code = `
 print("example of print in Amphi console")
 print("2 config.fileLocation : ")
@@ -486,13 +536,24 @@ print("27 config.default_value_column.value: ")
 print("${config.default_value_column.value}")
 print("27 default_value_column_value: ")
 print("${default_value_column_value}")
-${outputName} = ${inputName}
 print("${config.dataType}")
-print("28 date_picker : ")
+print("28 config.date_picker : ")
 print("${config.date_picker}")
+print("29. config.code_with_ai : ")
+print("${config.code_with_ai}")
+
+#A comment in Python. The code generator will replace outputName by the output real name, same for inputName.
+
+#You can do without a python function however if your code is very simple.
+#kwarg is for key word argument, it allows a more understandable syntax than just writing the argument.
+#new line for each argument improve readability
+${outputName} = example_python_function(
+  df=${inputName},
+  example_kwarg_int=${constTswith_default_value_inputNumber},
+  example_kwarg_string='${constTsfileLocation}')
 `;
 
-//test console : it will appear in your browser console
+//test console : it will appear in your browser console. This is TypeScript code.
 console.log("2 config.fileLocation : ");
 console.log(config.fileLocation);
 console.log("3 config.filePath : ");
@@ -551,8 +612,11 @@ console.log("27 config.default_value_column.value: ");
 console.log(config.default_value_column.value);
 console.log("27 default_value_column_value: ");
 console.log(default_value_column_value);
-console.log("28 date_picker: ");
+console.log("28 config.date_picker: ");
 console.log(config.date_picker);
+console.log("29 config.code_with_ai: ");
+console.log(config.code_with_ai);
+
     return code;
   }
 }
