@@ -95,7 +95,7 @@ def packages_list():
     return result
 
 # Example usage
-output = packages_list()
+#output = packages_list()
     `;
 
     return [PackagesListFunction];
