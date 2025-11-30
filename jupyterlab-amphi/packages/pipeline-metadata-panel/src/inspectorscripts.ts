@@ -21,6 +21,7 @@ import sys
 import types
 import re
 from warnings import filterwarnings
+import subprocess
 
 filterwarnings("ignore", category=UserWarning, message='.*pandas only supports SQLAlchemy connectable.*')
 
@@ -29,9 +30,25 @@ from IPython import get_ipython
 from IPython.core.magics.namespace import NamespaceMagics
 from IPython.display import display, HTML
 
-!pip install --quiet pandas>=2.0 --disable-pip-version-check
-!pip install --quiet sqlalchemy>=2.0 --disable-pip-version-check
-!pip install --quiet python-dotenv --disable-pip-version-check
+def safe_pip_install(*args):
+    """
+    Run 'python -m pip install ...' but never crash the script
+    if installation fails for any reason.
+    """
+    try:
+        subprocess.run(
+            [sys.executable, "-m", "pip", "install", "--quiet", *args, "--disable-pip-version-check"],
+            check=False,  # do not raise on non-zero exit
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+        )
+    except Exception:
+        # Completely swallow any unexpected error (no crash)
+        pass
+
+safe_pip_install("pandas>=2.0")
+safe_pip_install("sqlalchemy>=2.0")
+safe_pip_install("python-dotenv")
 
 _amphi_metadatapanel_nms = NamespaceMagics()
 _amphi_metadatapanel_Jupyter = get_ipython()

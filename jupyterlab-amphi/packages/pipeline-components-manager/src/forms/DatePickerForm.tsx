@@ -50,31 +50,17 @@ export const DatePickerForm: React.FC<DatePickerFormProps> = ({
 
   // Sync when parent actually changes the value (e.g. load defaults / reset)
   React.useEffect(() => {
-    console.log('[DatePickerForm] syncing from parent value:', value);
     setInternalValue(value || '');
   }, [value]);
 
-  console.log('[DatePickerForm] render:', {
-    fieldId: field.id,
-    propValue: value,
-    internalValue,
-  });
 
   const onChange: DatePickerProps['onChange'] = (date) => {
     if (date) {
       const formatted = date.format('YYYY-MM-DD');
-      console.log('[DatePickerForm] onChange -> formatted string:', formatted);
-
-      // Update local state so UI changes even if parent is slow / miswired
       setInternalValue(formatted);
-
-      // ✅ FIXED: Swap the argument order to match parent's expectation
       handleChange(formatted, field.id);
     } else {
-      console.log('[DatePickerForm] onChange -> cleared');
-
       setInternalValue('');
-      // ✅ FIXED: Swap the argument order
       handleChange('', field.id);
     }
   };

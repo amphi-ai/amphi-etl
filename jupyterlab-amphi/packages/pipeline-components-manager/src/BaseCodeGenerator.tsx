@@ -280,16 +280,28 @@ export abstract class BaseCodeGenerator {
 
   static formatVariables(code: string): string {
     const lines = code.split('\n');
+
     const transformed = lines.map(line => {
       if (/r(['"]).*\1/.test(line) || /f(['"])/.test(line) || /f("""|''')/.test(line)) {
         return line;
       }
       return line
+        .replace(/(['"])\{(os\.[^}]+)\}\1/g, '$2')
         .replace(/(['"])\{(\w+)\}\1/g, '$2')
         .replace(/(['"])(.*\{.*\}.*)\1/g, 'f$1$2$1')
         .replace(/(f?"""\s*)(.*\{.*\}.*)(\s*""")/g, 'f"""$2"""');
     });
-    return transformed.join('\n');
+
+    let result = transformed.join('\n');
+
+    //    Extra narrow pass: only fix plain strings containing {os.getenv(...)}
+    //    even if they are on a line that already has another f-string
+    result = result.replace(
+      /(?<![fr])(['"])([^'"\n]*\{os\.getenv\([^}]+\)\}[^'"\n]*)\1/g,
+      'f$1$2$1'
+    );
+
+    return result;
   }
 
   static getEnvironmentVariableCode(
