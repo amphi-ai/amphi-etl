@@ -10,6 +10,12 @@
       "description": "Enable pipeline execution and kernel usage.",
       "default": true
     },
+    "componentPalette": {
+      "type": "boolean",
+      "title": "Enable Top Component Palette",
+      "description": "Enabling this option places the component palette at the top of the pipeline canvas.",
+      "default": false
+    },
     "enableDebugMode": {
       "type": "boolean",
       "title": "Enable Debug Mode",

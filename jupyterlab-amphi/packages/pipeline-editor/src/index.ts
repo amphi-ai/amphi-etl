@@ -150,8 +150,10 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
 
         // Listen for your plugin setting changes using Signal
         settings.changed.connect(loadSetting);
-
-
+        let componentPalette = settings.get('componentPalette').composite as boolean;
+        console.log(
+          `Settings extension: componentPalette is set to '${componentPalette}'`
+        );
         let enableTelemetry = settings.get('enableTelemetry').composite as boolean;
         if (enableTelemetry) {
 

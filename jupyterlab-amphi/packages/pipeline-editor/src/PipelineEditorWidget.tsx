@@ -26,6 +26,7 @@ import { Widget } from '@lumino/widgets';
 import { useUndoRedo } from './Commands';
 import DownloadImageButton from './ExportToImage';
 import Sidebar from './Sidebar';
+import ComponentPalette from './Palette';
 
 import React, { useEffect, useCallback, useRef, useState, Profiler } from 'react';
 import ReactFlow, {
@@ -46,7 +47,7 @@ import ReactFlow, {
   useReactFlow,
   useStoreApi,
   useKeyPress,
-  type KeyCode  
+  type KeyCode
 } from 'reactflow';
 import posthog from 'posthog-js'
 
@@ -685,8 +686,8 @@ const PipelineWrapper: React.FC<IProps> = ({
               deleteKeyCode={["Delete", "Backspace"]}
               proOptions={proOptions}
             >
-            <Panel position="top-right">
-            </Panel>
+              <Panel position="top-right">
+              </Panel>
               <Controls>
                 <DownloadImageButton pipelineName={context.context.sessionContext.path} pipelineId={pipelineId} />
               </Controls>
@@ -698,6 +699,7 @@ const PipelineWrapper: React.FC<IProps> = ({
     );
   }
 
+  const enableHorizontalPalette = settings.get('componentPalette').composite as boolean;
 
   return (
     <div className="canvas" id="pipeline-panel">
@@ -710,14 +712,30 @@ const PipelineWrapper: React.FC<IProps> = ({
         }}
       >
         <ReactFlowProvider>
-          <Splitter>
-            <Splitter.Panel min="50%">
-              <PipelineFlow context={context} />
-            </Splitter.Panel>
-            <Splitter.Panel collapsible defaultSize={327} min={241}>
-              <Sidebar componentService={componentService} onRefreshed={handleComponentsRefresh} />
-            </Splitter.Panel>
-          </Splitter>
+          {enableHorizontalPalette ? (
+            // Horizontal Layout (Top Bar)
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
+              <ComponentPalette
+                componentService={componentService}
+                onRefreshed={handleComponentsRefresh}
+              />
+              <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
+                <PipelineFlow context={context} />
+              </div>
+            </div>
+          ) : (
+            <Splitter>
+              <Splitter.Panel min="50%">
+                <PipelineFlow context={context} />
+              </Splitter.Panel>
+              <Splitter.Panel collapsible defaultSize={327} min={241}>
+                <Sidebar
+                  componentService={componentService}
+                  onRefreshed={handleComponentsRefresh}
+                />
+              </Splitter.Panel>
+            </Splitter>
+          )}
         </ReactFlowProvider>
       </ConfigProvider>
     </div>
