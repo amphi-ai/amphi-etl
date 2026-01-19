@@ -21,21 +21,57 @@ export const CodeTextarea = ({
   componentService,
   nodeId
 }) => {
-  const [inputValue, setInputValue] = useState(value);
+
+  const getInitialValues = () => {
+    try {
+      if (!value) return { code: '', instructions: '' };
+      const parsed = JSON.parse(value);
+      // If it's a JSON object, return its parts
+      if (parsed && typeof parsed === 'object') {
+        return {
+          code: parsed.code || '',
+          instructions: parsed.instructions || ''
+        };
+      }
+    } catch (e) {
+      // Fallback: if value is just a plain string (legacy code), treat it as code
+      return { code: value, instructions: '' };
+    }
+    return { code: '', instructions: '' };
+  };
+
+  const initialValues = getInitialValues();
+  const [code, setCode] = useState(initialValues.code);
+  const [instructions, setInstructions] = useState(initialValues.instructions);
   const [loading, setLoading] = useState(false);
-  const [instructions, setInstructions] = useState('');
   const [sampleData, setSampleData] = useState(null);
   const [includeSample, setIncludeSample] = useState(true);
   const [copyStatus, setCopyStatus] = useState('idle');
   const [activeOpenKey, setActiveOpenKey] = useState(null);
 
+
   useEffect(() => {
-    setInputValue(value);
+    const updated = getInitialValues();
+    setCode(updated.code);
+    setInstructions(updated.instructions);
   }, [value]);
 
-  const handleInputChange = (val) => {
-    setInputValue(val);
-    handleChange(val, field.id);
+  const triggerUpdate = (newCode, newInstructions) => {
+    const combined = JSON.stringify({
+      code: newCode,
+      instructions: newInstructions
+    });
+    handleChange(combined, field.id);
+  };
+
+  const handleCodeChange = (val) => {
+    setCode(val);
+    triggerUpdate(val, instructions);
+  };
+
+  const handleInstructionsChange = (val) => {
+    setInstructions(val);
+    triggerUpdate(code, val);
   };
 
   const retrieveSample = async () => {
@@ -158,14 +194,14 @@ ${instructions || 'No specific instructions provided'}
             mode={field.mode}
             theme="xcode"
             name={field.id}
-            onChange={handleInputChange}
+            onChange={handleCodeChange}
             onLoad={handleAceLoad}
             fontSize={14}
             lineHeight={19}
             showPrintMargin
             showGutter
             highlightActiveLine
-            value={inputValue}
+            value={code}
             setOptions={{
               enableBasicAutocompletion: true,
               enableLiveAutocompletion: true,
@@ -200,7 +236,7 @@ ${instructions || 'No specific instructions provided'}
             }}>
               <TextArea
                 value={instructions}
-                onChange={(e) => setInstructions(e.target.value)}
+                onChange={(e) => handleInstructionsChange(e.target.value)} // Call the persistent handler
                 autoSize={{ minRows: 2, maxRows: 8 }}
                 placeholder="Enter instructions here"
                 bordered={false}

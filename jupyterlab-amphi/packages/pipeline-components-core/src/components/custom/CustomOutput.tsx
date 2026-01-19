@@ -51,12 +51,31 @@ export class CustomOutput extends BaseCoreComponent {
     super("Python Output", "customOutput", description, "pandas_df_output", [], "outputs", pythonIcon, defaultConfig, form);
   }
 
-  public provideImports({ config }): string[] {
-    const imports: string[] = [];
-    // Always include 'import pandas as pd'
-    imports.push("import pandas as pd");
+  private getEffectiveCode(config: any): string {
+    const rawValue = config.code;
+    if (!rawValue) return "";
 
-    // Backward compatibility: if config.imports exists, parse it too
+    // If already an object
+    if (typeof rawValue === 'object') return rawValue.code || "";
+
+    try {
+      const parsed = JSON.parse(rawValue);
+      if (parsed && typeof parsed === 'object' && 'code' in parsed) {
+        return parsed.code;
+      }
+    } catch (e) {
+      // Backward compatibility: value is a plain Python string
+      return rawValue;
+    }
+    return rawValue;
+  }
+
+public provideImports({ config }): string[] {
+    const imports: string[] = ["import pandas as pd"];
+    
+    // Extract real Python code for parsing imports
+    const effectiveCode = this.getEffectiveCode(config);
+
     if (config.imports) {
       const importLinesFromImports = config.imports
         .split('\n')
@@ -65,9 +84,8 @@ export class CustomOutput extends BaseCoreComponent {
       imports.push(...importLinesFromImports);
     }
 
-    // Extract any import lines from the user's code
-    if (config.code) {
-      const importLinesFromCode = config.code
+    if (effectiveCode) {
+      const importLinesFromCode = effectiveCode
         .split('\n')
         .map(line => line.trim())
         .filter(line => line.startsWith('import ') || line.startsWith('from '));
@@ -78,16 +96,15 @@ export class CustomOutput extends BaseCoreComponent {
   }
 
   public provideDependencies({ config }): string[] {
-    let deps: string[] = [];
-    if (Array.isArray(config.librariesToInstall)) {
-      deps.push(...config.librariesToInstall);
-    }
-    return deps;
+    return Array.isArray(config.librariesToInstall) ? config.librariesToInstall : [];
   }
 
   public generateComponentCode({ config, inputName }): string {
-    // Remove import lines from user code
-    let userCode = (config.code || '')
+    // 1. Get the actual Python code from the JSON structure
+    const effectiveCode = this.getEffectiveCode(config);
+
+    // 2. Remove import lines from the user code
+    let userCode = effectiveCode
       .split('\n')
       .filter(line => {
         const trimmed = line.trim();
@@ -95,6 +112,7 @@ export class CustomOutput extends BaseCoreComponent {
       })
       .join('\n');
 
+    // 3. Replace 'input' with the dynamic variable name provided by the orchestrator
     const inputRegex = new RegExp('\\binput\\b', 'g');
     userCode = userCode.replace(inputRegex, inputName);
 

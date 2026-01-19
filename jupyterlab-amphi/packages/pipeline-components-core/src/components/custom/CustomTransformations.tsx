@@ -53,7 +53,26 @@ export class CustomTransformations extends BaseCoreComponent {
     super("Python Transforms", "customTransformations", description, "pandas_df_processor", [], "transforms", pythonIcon, defaultConfig, form);
   }
 
-  public provideDependencies({ config }): string[] {
+  private getEffectiveCode(config: any): string {
+    const rawValue = config.code;
+    if (!rawValue) return "";
+
+    // If the framework already parsed the JSON into an object
+    if (typeof rawValue === 'object') return rawValue.code || "";
+
+    try {
+      const parsed = JSON.parse(rawValue);
+      if (parsed && typeof parsed === 'object' && 'code' in parsed) {
+        return parsed.code;
+      }
+    } catch (e) {
+      // BACKWARD COMPATIBILITY: It's a plain Python string from an older version
+      return rawValue;
+    }
+    return rawValue;
+  }
+
+public provideDependencies({ config }): string[] {
     let deps: string[] = [];
     if (Array.isArray(config.librariesToInstall)) {
       deps.push(...config.librariesToInstall);
@@ -62,12 +81,11 @@ export class CustomTransformations extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    const imports: string[] = [];
+    const imports: string[] = ["import pandas as pd"];
+    
+    // Extract real code to find additional user imports
+    const effectiveCode = this.getEffectiveCode(config);
 
-    // Always include 'import pandas as pd'
-    imports.push("import pandas as pd");
-
-    // Backward compatibility: if config.imports exists, parse it too
     if (config.imports) {
       const importLinesFromImports = config.imports
         .split('\n')
@@ -76,9 +94,8 @@ export class CustomTransformations extends BaseCoreComponent {
       imports.push(...importLinesFromImports);
     }
 
-    // Now parse any import lines in config.code
-    if (config.code) {
-      const importLinesFromCode = config.code
+    if (effectiveCode) {
+      const importLinesFromCode = effectiveCode
         .split('\n')
         .map(line => line.trim())
         .filter(line => line.startsWith('import ') || line.startsWith('from '));
@@ -89,8 +106,11 @@ export class CustomTransformations extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    // 1. Filter out import lines from config.code
-    let userCode = (config.code || '')
+    // 1. Unpack the actual Python logic from the config
+    const effectiveCode = this.getEffectiveCode(config);
+
+    // 2. Filter out import lines so they can be hoisted to the top of the file
+    let userCode = effectiveCode
       .split('\n')
       .filter(line => {
         const trimmed = line.trim();
@@ -98,13 +118,11 @@ export class CustomTransformations extends BaseCoreComponent {
       })
       .join('\n');
 
-    // 2. Replace 'input' and 'output' with provided names, using regex for WHOLE WORD matching
-
-    // Pattern for whole word 'input' - \b ensures word boundaries
+    // 3. Replace 'input' and 'output' placeholders with actual variable names
+    // Using \b for word boundaries prevents replacing things like 'input_data'
     const inputRegex = new RegExp('\\binput\\b', 'g');
     userCode = userCode.replace(inputRegex, inputName);
 
-    // Pattern for whole word 'output' - \b ensures word boundaries
     const outputRegex = new RegExp('\\boutput\\b', 'g');
     userCode = userCode.replace(outputRegex, outputName);
 

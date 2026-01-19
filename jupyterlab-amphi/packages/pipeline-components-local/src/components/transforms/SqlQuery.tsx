@@ -31,10 +31,27 @@ export class SQLQuery extends BaseCoreComponent {
     super("SQL Query", "sqlQuery", description, "pandas_df_processor", [], "transforms", sqlIcon, defaultConfig, form);
   }
 
+  private getEffectiveQuery(config: any): string {
+    const rawValue = config.query;
+    if (!rawValue) return "";
+
+    // If already an object
+    if (typeof rawValue === 'object') return rawValue.code || "";
+
+    try {
+      const parsed = JSON.parse(rawValue);
+      if (parsed && typeof parsed === 'object' && 'code' in parsed) {
+        return parsed.code;
+      }
+    } catch (e) {
+      // Backward compatibility: value is a plain SQL string
+      return rawValue;
+    }
+    return rawValue;
+  }
+
   public provideDependencies({ config }): string[] {
-    let deps: string[] = [];
-    deps.push('duckdb');
-    return deps;
+    return ['duckdb'];
   }
 
   public provideImports({ config }): string[] {
@@ -42,15 +59,21 @@ export class SQLQuery extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    // Escape triple quotes in the query to prevent syntax errors
-    const escapedQuery = config.query.replace(/"""/g, '\\"""');
+    // 1. Extract the real SQL query from the metadata wrapper
+    const effectiveQuery = this.getEffectiveQuery(config);
 
-    // Template for the pandas query code using triple quotes for multi-line SQL queries
-    const code = `
+    // 2. Escape triple quotes to ensure the Python f-string/triple-quote block doesn't break
+    const escapedQuery = effectiveQuery.replace(/"""/g, '\\"""');
+
+    // 3. Replace the placeholder 'input_df1' with the actual variable name from the pipeline
+    // We use a regex with word boundaries (\b) to be safe
+    const tableRegex = new RegExp('\\binput_df1\\b', 'g');
+    const finalQuery = escapedQuery.replace(tableRegex, inputName);
+
+    // 4. Generate the DuckDB execution wrapper
+    return `
 # Execute SQL Query using DuckDB
-${outputName} = duckdb.query("""${escapedQuery.replace('input_df1', inputName)}""").to_df().convert_dtypes()
+${outputName} = duckdb.query("""${finalQuery}""").to_df().convert_dtypes()
 `;
-    return code;
   }
-
 }
