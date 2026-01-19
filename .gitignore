@@ -3,3 +3,4 @@
 *.ampln
 *.ipynb
 .jupyter_ystore.db
+.venv

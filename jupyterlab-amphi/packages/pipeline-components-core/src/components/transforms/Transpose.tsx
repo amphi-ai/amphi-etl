@@ -4,11 +4,12 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 export class Transpose extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-		inputVariableFieldName: "Variable",
-		inputValueFieldName: "Value",
-		selectTypeVariableField: "type as string",
-		selectTypeValueField: "do nothing"
-		};
+      inputVariableFieldName: "Column",
+      inputValueFieldName: "Value",
+      selectTypeVariableField: "type as string",
+      selectTypeValueField: "do nothing",
+    };
+
     const form = {
       idPrefix: "component__form",
       fields: [
@@ -16,65 +17,106 @@ export class Transpose extends BaseCoreComponent {
           type: "info",
           label: "Information",
           id: "information",
-          text: "Transforms transposed columns into rows, replaced by a variable and value columns."
+          text:
+            "Transforms transposed columns into rows, replaced by a variable and value columns.",
         },
         {
           type: "columns",
-          label: "Key Columns",
+          label: "ID columns (keep as-is)",
           id: "columnsKeyTranspose",
           selectAll: true,
-          advanced: true
+          advanced: true,
+          tooltip:
+            "Columns that identify each row and should remain unchanged. These columns are repeated for each unpivoted value.",
         },
         {
           type: "columns",
-          label: "Columns to transpose",
+          label: "Columns to unpivot",
           id: "columnsColumnsToTranspose",
-		  tooltip: "if none provided, all columns except the keys columns",
           selectAll: true,
-          advanced: true
-        }
-		,
-		{
+          advanced: true,
+          tooltip:
+            "Columns that will be converted into rows. If empty, all columns except the ID columns are unpivoted.",
+        },
+        {
           type: "input",
-          label: "Variable field name",
+          label: "Output column for original column name",
           id: "inputVariableFieldName",
-          tooltip: "Variable field name",
-          advanced: true
+          advanced: true,
+          tooltip:
+            "Name of the output column that stores the source column name (default: Column). Example values: Jan, Revenue, Cost.",
         },
-		{
+        {
           type: "input",
-          label: "Value field name",
+          label: "Output column for values",
           id: "inputValueFieldName",
-          tooltip: "Value field name",
-          advanced: true
+          advanced: true,
+          tooltip:
+            "Name of the output column that stores the cell values from the unpivoted columns (default: Value).",
         },
-		{
+        {
           type: "select",
-          label: "Type of Variable field",
+          label: "Type for original column name column",
           id: "selectTypeVariableField",
           options: [
-            { value: "type as string", label: "Type as string", tooltip: "Type the variable field as string" },
-            { value: "do nothing", label: "Do nothing", tooltip: "Do nothing, let default behaviour" },
-            { value: "infer type", label: "Infer Type", tooltip: "Try to find best type according values" }
+            {
+              value: "type as string",
+              label: "String (recommended)",
+              tooltip: "Force the original column name output to be a string.",
+            },
+            {
+              value: "do nothing",
+              label: "Keep default",
+              tooltip: "Keep default behaviour.",
+            },
           ],
-          advanced: true
+          advanced: true,
+          tooltip:
+            "Controls how the output column containing original column names is typed.",
         },
-		{
+        {
           type: "select",
-          label: "Type of Value field",
+          label: "Type for values column",
           id: "selectTypeValueField",
           options: [
-            { value: "type as string", label: "Type as string", tooltip: "Type the variable field as string" },
-            { value: "do nothing", label: "Do nothing", tooltip: "Do nothing, let default behaviour" },
-            { value: "infer type", label: "Infer Type", tooltip: "Try to find best type according values" }
+            {
+              value: "do nothing",
+              label: "Keep default (recommended)",
+              tooltip: "Keep default behaviour.",
+            },
+            {
+              value: "type as string",
+              label: "String",
+              tooltip: "Force all values to be strings.",
+            },
+            {
+              value: "infer numeric",
+              label: "Infer numeric",
+              tooltip:
+                "Try to convert values to numbers when possible; non-numeric become NaN.",
+            },
           ],
-          advanced: true
+          advanced: true,
+          tooltip: "Controls how the output values column is typed.",
         },
       ],
     };
-    const description = "Use Transpose Dataset to transform the columns into rows of a dataset. It simply repositions the data without aggregation. If you're looking for rearranging and aggregating the data, check out the Pivot Dataset component."
 
-    super("Transpose Dataset", "transpose", description, "pandas_df_processor", [], "transforms", transposeIcon, defaultConfig, form);
+    const description =
+      "Convert selected columns into rows (unpivot). It creates two output columns: one for the original column name and one for the value. No aggregation is performed. For aggregation, use Pivot Dataset.";
+
+    // Keep internal id "transpose" for backward compatibility, update display name for clarity.
+    super(
+      "Transpose Dataset",
+      "transpose",
+      description,
+      "pandas_df_processor",
+      [],
+      "transforms",
+      transposeIcon,
+      defaultConfig,
+      form
+    );
   }
 
   public provideImports({ config }): string[] {
@@ -82,19 +124,18 @@ export class Transpose extends BaseCoreComponent {
   }
 
   public provideFunctions({ config }): string[] {
-    const prefix = config?.backend?.prefix ?? "pd";
     const TSTransposeFunctionFunction = `
 def pyfn_transpose_dataframe(
     df: pd.DataFrame,
     transpose_key_columns: list | None = None,
     transpose_value_columns: list | None = None,
-    transpose_variable_name: str = "Variable",
+    transpose_variable_name: str = "Column",
     transpose_value_name: str = "Value",
-    transpose_variable_field_type: str = "type as string",  # options: "type as string", "do nothing", "infer type"
-    transpose_value_field_type: str = "do nothing"           # options: "type as string", "do nothing", "infer type"
+    transpose_variable_field_type: str = "type as string",  # options: "type as string", "do nothing"
+    transpose_value_field_type: str = "do nothing"          # options: "type as string", "do nothing", "infer numeric" (or legacy: "infer type")
 ) -> pd.DataFrame:
     """
-    Transpose (melt) a pandas DataFrame with flexible options.
+    Unpivot (melt) a pandas DataFrame with flexible options.
 
     Parameters
     ----------
@@ -103,34 +144,26 @@ def pyfn_transpose_dataframe(
     transpose_key_columns : list or None, optional
         Columns to keep as identifiers (like id_vars in pandas.melt).
     transpose_value_columns : list or None, optional
-        Columns to transpose (like value_vars in pandas.melt).
-    transpose_variable_name : str, default "Variable"
-        Name for the variable column in the transposed result.
+        Columns to unpivot (like value_vars in pandas.melt).
+    transpose_variable_name : str, default "Column"
+        Name for the output column that stores the original column name.
     transpose_value_name : str, default "Value"
-        Name for the value column in the transposed result.
+        Name for the output column that stores the values.
     transpose_variable_field_type : str, default "type as string"
-        How to handle the variable column type:
         - "type as string": force all values to str
         - "do nothing": keep as-is
-        - "infer type": use pandas to infer dtype automatically
     transpose_value_field_type : str, default "do nothing"
-        How to handle the value column type:
         - "type as string": force all values to str
         - "do nothing": keep as-is
-        - "infer type": use pandas to infer dtype automatically
+        - "infer numeric" (or legacy "infer type"): convert to numeric where possible
 
     Returns
     -------
     pd.DataFrame
-        Transposed DataFrame.
+        Unpivoted DataFrame.
     """
-    
-    #note that for transpose_key_columns, the behaviour of no columns or all columns provided is not the same
-    #on the other hand, for transpose_value_field_type, the result is the same
-    #both at None means there is only the variable and value columns in output
-    #for both, [] is equivalent to None in python function
-	
-    # Perform melt (like transposition), pandas standard
+
+    # Perform melt (unpivot)
     transposed = pd.melt(
         df,
         id_vars=transpose_key_columns,
@@ -139,66 +172,55 @@ def pyfn_transpose_dataframe(
         value_name=transpose_value_name
     )
 
-    # Handle variable field type. No need to handle the case "do nothing".
+    # Variable column typing
     if transpose_variable_field_type == "type as string":
         transposed[transpose_variable_name] = transposed[transpose_variable_name].astype("string").fillna("None")
-    elif variable_field_type == "infer type":
-        transposed[transpose_variable_name] = pd.to_numeric(transposed[transpose_variable_name], errors="coerce")
 
-    # Handle value field type No need to handle the case "do nothing".
+    # Value column typing
     if transpose_value_field_type == "type as string":
         transposed[transpose_value_name] = transposed[transpose_value_name].astype("string").fillna("None")
-    elif transpose_value_field_type == "infer type":
+    elif transpose_value_field_type in ("infer numeric", "infer type"):
         transposed[transpose_value_name] = pd.to_numeric(transposed[transpose_value_name], errors="coerce")
 
     return transposed
-
     `;
     return [TSTransposeFunctionFunction];
   }
-  
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    
-	const constTSVariableFieldName=config.inputVariableFieldName;
-	const constTSValueFieldName=config.inputValueFieldName;
-	const constTSTypeVariableField=config.selectTypeVariableField;
-	const constTSTypeValueField=config.selectTypeValueField;
-	
-	//note that for transpose_key_columns, the behaviour of no columns or all columns provided is not the same
-	//on the other hand, for transpose_value_field_type, the result is the same
-	//both at None means there is only the variable and value columns in output
-	//for both, [] is equivalent to None in python function
-	
-	let vTSKeyColumns = "None";
+    const constTSVariableFieldName = config.inputVariableFieldName?.trim() || "Column";
+    const constTSValueFieldName = config.inputValueFieldName?.trim() || "Value";
+    const constTSTypeVariableField = config.selectTypeVariableField || "type as string";
+    const constTSTypeValueField = config.selectTypeValueField || "do nothing";
+
+    // note: None vs [] can differ for id_vars/value_vars; we preserve current behavior
+    let vTSKeyColumns = "None";
     if (config.columnsKeyTranspose?.length > 0) {
       vTSKeyColumns = `[${config.columnsKeyTranspose
         .map((item: any) => (item.named ? `"${item.value}"` : item.value))
         .join(", ")}]`;
     }
-	
+
     let vTSDataColumns = "None";
     if (config.columnsColumnsToTranspose?.length > 0) {
       vTSDataColumns = `[${config.columnsColumnsToTranspose
         .map((item: any) => (item.named ? `"${item.value}"` : item.value))
         .join(", ")}]`;
     }
-	
-    // Construct the Python code using template literals
+
     const code = `
-# Transpose Dataset Component
+# Unpivot (Columns to Rows) Component
 
 ${outputName} = pyfn_transpose_dataframe(
     df=${inputName},
     transpose_key_columns=${vTSKeyColumns},
     transpose_value_columns=${vTSDataColumns},
     transpose_variable_name='${constTSVariableFieldName}',
-    transpose_value_name= '${constTSValueFieldName}',
+    transpose_value_name='${constTSValueFieldName}',
     transpose_variable_field_type='${constTSTypeVariableField}',
     transpose_value_field_type='${constTSTypeValueField}'
 )
-`
+`;
     return code;
   }
-
 }

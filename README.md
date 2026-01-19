@@ -22,6 +22,8 @@
 </a>
 <a href="https://badge.fury.io/py/amphi-etl"><img src="https://badge.fury.io/py/amphi-etl.svg" alt="PyPI version"></a>
 <a href="https://pepy.tech/projects/amphi-etl"><img src="https://static.pepy.tech/badge/amphi-etl" alt="PyPI Downloads"></a>
+<img alt="PyPI - Downloads" src="https://img.shields.io/pypi/dm/amphi-etl">
+
 </p>
 
 ![amphi-github-banner](https://github.com/user-attachments/assets/e13ac7e9-4c6f-47f6-b48e-f62e098cef82)

@@ -5,7 +5,7 @@ dist
 lib
 *_env
 *_venv
-
+.venv
 
 node_modules
 .cache
