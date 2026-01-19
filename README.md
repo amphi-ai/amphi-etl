@@ -156,4 +156,4 @@ Amphi is available as an extension for Jupyterlab, and Amphi ETL is based on Jup
 
 #### 📝 License
 
-Copyright © 2024-2025 - present [Amphi Labs](https://amphi.ai). <br/> This project is [ELv2](./LICENSE) licensed.
+Copyright © 2024-2026 - present [Amphi Labs](https://amphi.ai). <br/> This project is [ELv2](./LICENSE) licensed.

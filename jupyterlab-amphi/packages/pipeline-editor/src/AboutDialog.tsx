@@ -32,7 +32,7 @@ export function createAboutDialog(versionNumber) {
   );
 
   const copyright = (
-    <span className="jp-About-copyright" >© 2024-2025 Amphi</span>
+    <span className="jp-About-copyright" >© 2024-2026 Amphi</span>
   );
 
   const body = (

@@ -23,15 +23,15 @@ data_files = (
 
 setup(
     name='amphi-etl',
-    version='0.9.1a3',
+    version='0.9.2a3',
     description='Open-source and Python-based ETL',
     author='Thibaut Gourdel',
     author_email='tgourdel@amphi.ai',
     license='ELv2',
     install_requires=[
-        'jupyterlab==4.4.7',
-        'jupyterlab-amphi==0.9.1',
-        'amphi-scheduler==0.9.0',
+        'jupyterlab==4.5.2',
+        'jupyterlab-amphi==0.9.2',
+        'amphi-scheduler==0.9.2',
         'pandas>=2.0'
     ],
     keywords=[],  # Added an empty list for keywords to resolve the dynamic 'keywords' issue.
