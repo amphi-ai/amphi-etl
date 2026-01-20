@@ -3,9 +3,9 @@
 <img height="60" src="https://amphi.ai/icons/amphi_logo_paths.svg">
 
 <p align="center">
-    Visual Data Transformation Powered by Python
+    Visual Data Preparation Powered by Python
     <br/><br/>
-    Designed for data preparation, reporting, and ETL.
+    Simple, intutive and easy to use with AI.
 </p>
 <br/>
 
@@ -26,7 +26,7 @@
 
 </p>
 
-![amphi-github-banner](https://github.com/user-attachments/assets/e13ac7e9-4c6f-47f6-b48e-f62e098cef82)
+![amphi-github-banner](https://github.com/user-attachments/assets/01832e09-3e8a-4d7b-987b-311f3af72071)
 
 English · [Try the demo](https://demo.amphi.ai) · [Report Bug](https://github.com/amphi-ai/amphi-etl/issues) · [Request Feature](https://github.com/amphi-ai/amphi-etl/issues)
 
@@ -107,17 +107,75 @@ pip install --upgrade amphi-etl
 
 > \[!NOTE]
 >
-> Amphi focuses on data transformation for data preparation, reporting and ETL. It aims to empower data analysts, scientists and data engineers to easily develop pipelines with an intuitive low-code interface while generating Python code you can deploy anywhere.
+> Amphi focuses on data transformation for data preparation, reporting and lightweight ETL. It's designed to be super simple to use, quick to ramp up and easy to use with AI (ChatGTP, Claude, Mistra, etc).
 
-**Data Transformation solution for the AI age:**
+**Data Preparation:**
 
-**Modern ETL for the AI age:**
+- **Visual Interface / Low-code**: Accelerate data pipeline development and reduce maintenance time.
+- **Python-code Generation**: Generate native Python code leveraging common libraries such as [pandas](https://github.com/pandas-dev/pandas), [DuckDB](https://github.com/duckdb/duckdb) that you can run anywhere.
+- **Private and Secure**: Self-host Amphi on your laptop or in the cloud for complete privacy and security over your data.
 
-- 🧑‍💻 **Visual Interface / Low-code**: Accelerate data pipeline development and reduce maintenance time.
-- 🐍 **Python-code Generation**: Generate native Python code leveraging common libraries such as [pandas](https://github.com/pandas-dev/pandas), [DuckDB](https://github.com/duckdb/duckdb) that you can run anywhere.
-- 🔒 **Private and Secure**: Self-host Amphi on your laptop or in the cloud for complete privacy and security over your data.
+## 🧩 Extensability:
 
-![generate-python-code-amphi](https://github.com/user-attachments/assets/67410947-caea-45b4-a8fc-4ceb7bb3dbce)
+Amphi is extremely flexible and extensible.
+- **Custom code**: Directly use Python or SQL in your pipelines.
+- **Custom components**: Add custom components directly from the interface.
+
+How to add a component:
+```javascript
+// Component file: HelloDate.tsx
+
+class HelloDate extends (globalThis as any).Amphi.BaseCoreComponent {
+  constructor() {
+    const description = 'Takes a date and outputs a pandas DataFrame with a message including that date.';
+    const defaultConfig = { selectedDate: "" }; 
+    
+    const form = {
+      idPrefix: 'component__form',
+      fields: [
+        { 
+            type: 'date', 
+            id: 'selectedDate', 
+            label: 'Select a Date', 
+            placeholder: 'Choose a date' 
+        }
+      ]
+    };
+    
+    const icon = {
+      name: 'amphi-date-input-hello',
+      svgstr:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2Zm0 16H5V9h14v11Z"/><path d="M12 11h2v2h-2zM8 11h2v2H8zM16 11h2v2H8zM8 15h2v2H8zM12 15h2v2h-2zM16 15h2v2h-2z"/></svg>'
+    };
+
+    // Parameters: Display Name, Technical ID, Description, Output Type, Inputs, Category, Icon, DefaultConfig, Form
+    super('Hello Date', 'helloDate', description, 'pandas_df_input', [], 'inputs', icon, defaultConfig, form);
+  }
+
+  provideImports() {
+    return ['import pandas as pd'];
+  }
+
+  generateComponentCode({ config, outputName }) {
+    const date = String(config?.selectedDate ?? '').trim() || 'No Date Selected';
+    
+    // We create a DataFrame and assign it to the outputName variable
+    return `
+data = {
+    'event': ['Date Selection'],
+    'selected_date': ['${date}'],
+    'message': ['The user selected the date: ${date}']
+}
+${outputName} = pd.DataFrame(data)
+`;
+  }
+}
+
+export default new HelloDate();
+```
+
+Create a new file in your workspace, such as `HelloDate.tsx` and then right-click and select "Add Component". You should see a notification "ent "Hello Date" (helloDate) updated successfully."
+Then either open a new pipeline or refresh the component palette to see the new component appear in the Inputs.
 
 <br/>
 
@@ -132,10 +190,10 @@ TBA
 ## 🤝 Contributing
 
 - **Use and Innovate**: Try Amphi and share your use case with us. Your real-world usage and feedback help us improve our product.
-- **Voice Your Insights**: Encounter a glitch? Have a query? Share them by submitting [issues](https://github.com/amphi-ai/amphi-etl/issues) and help us enhance the user experience.
+- **Voice Your Insights**: Encounter a bug? Have a question? Share them by submitting [issues](https://github.com/amphi-ai/amphi-etl/issues) and help us enhance the user experience.
 - **Shape the Future**: Have code enhancements or feature ideas? We invite you to propose [pull requests](https://github.com/amphi-ai/amphi-etl/pulls) and contribute directly.
 
-Every contribution, big or small, is celebrated. Join us in our mission to refine and elevate the world of ETL for data and AI. 😃
+Every contribution is helpful.
 
 <br/>
 
@@ -144,13 +202,6 @@ Every contribution, big or small, is celebrated. Join us in our mission to refin
 Amphi collects **anonymous telemetry data** to help us understand users and their use-cases better to improve the product. You can of course **opt out** in the settings and disable any telemetry data collection.
 
 <br/>
-
-## 🛣️ Ecosystem
-
-Amphi is available as an extension for Jupyterlab, and Amphi ETL is based on Jupyterlab. Therefore Jupyterlab extensions can be installed on Amphi ETL.
-
-- **[Jupyterlab](https://github.com/jupyterlab/jupyterlab)** - JupyterLab computational environment.
-- **[jupyterlab-git](https://github.com/jupyterlab/jupyterlab-git)** - A Git extension for JupyterLab.
 
 ---
 
