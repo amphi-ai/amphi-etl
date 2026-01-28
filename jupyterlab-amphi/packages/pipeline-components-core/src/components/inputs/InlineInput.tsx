@@ -39,23 +39,48 @@ Sarah,Wilson,30,🥇`;
         super("Inline Input", "inlineInput", description, "pandas_df_input", [], "inputs", editIcon, defaultConfig, form);
     }
 
+    private getEffectiveData(config: any): string {
+        const rawValue = config.inlineData;
+        if (!rawValue) return "";
+
+        // If it's already an object
+        if (typeof rawValue === 'object') return rawValue.code || "";
+
+        try {
+            const parsed = JSON.parse(rawValue);
+            // Even if the field ID is 'inlineData', CodeTextarea saves the text in 'code'
+            if (parsed && typeof parsed === 'object' && 'code' in parsed) {
+                return parsed.code;
+            }
+        } catch (e) {
+            // Backward compatibility: value is just the raw CSV string
+            return rawValue;
+        }
+        return rawValue;
+    }
+
     public provideImports({ config }): string[] {
         return ["import pandas as pd", "from io import StringIO"];
     }
 
     public generateComponentCode({ config, outputName }): string {
-        const inlineData = config.inlineData.trim();
+        // 1. Extract the actual CSV content from the wrapper
+        const effectiveData = this.getEffectiveData(config).trim();
 
-        if (!inlineData) {
+        if (!effectiveData) {
             throw new Error("No inline data provided.");
         }
 
+        // 2. Escape triple quotes in case the user's data contains them
+        const escapedData = effectiveData.replace(/"""/g, '\\"""');
+
+        // 3. Generate the Pandas loading code
+        // We wrap the raw string in triple quotes and pass it to StringIO
         const code = `
-${outputName}_data = """${inlineData}
+${outputName}_data = """${escapedData}
 """
 ${outputName} = pd.read_csv(StringIO(${outputName}_data)).convert_dtypes()
 `;
         return code;
     }
-
 }
