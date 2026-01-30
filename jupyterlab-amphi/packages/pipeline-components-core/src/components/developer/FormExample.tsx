@@ -412,6 +412,17 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
           ],
           advanced: true,
         },
+        {
+          type: "selectMultiple",
+          label: "30. Date type (selectMultiple)",
+          id: "datetype",
+          options: [
+            { value: "days", label: "Days" },
+            { value: "years", label: "Years" },
+            { value: "months", label: "Months" }
+          ],
+          advanced: true
+        },		
       ]
           
     };
@@ -461,6 +472,9 @@ def example_python_function(
     const default_value_column_value=config.default_value_column.value;
 	const constTswith_default_value_inputNumber=config.with_default_value_inputNumber;
 	const constTsfileLocation=config.fileLocation;	
+	const tsConsdatetype = JSON.stringify(config.datetype);
+	const tsConsremoveUnwantedCharacters = JSON.stringify(config.removeUnwantedCharacters);
+
     let columnsParam = "{";
     if (config.columns && config.columns.length > 0) {
       columnsParam += config.columns.map(column => {
@@ -522,6 +536,7 @@ print("21 columnAndOrder : ")
 print("${config.columnAndOrder}")
 print("22 config.removeUnwantedCharacters : ")
 print("${config.removeUnwantedCharacters}")
+print("${tsConsremoveUnwantedCharacters}")
 print("23 config.columnsOperations : ")
 print("${config.columnsOperations}")
 print("24 config.column : ")
@@ -541,6 +556,10 @@ print("28 config.date_picker : ")
 print("${config.date_picker}")
 print("29. config.code_with_ai : ")
 print("${config.code_with_ai}")
+print("30.config.datetype : ")
+print("${config.datetype}")
+print("${tsConsdatetype}")
+
 
 #A comment in Python. The code generator will replace outputName by the output real name, same for inputName.
 
@@ -598,6 +617,7 @@ console.log("21 columnAndOrder : ");
 console.log(config.columnAndOrder);
 console.log("22 config.removeUnwantedCharacters : ");
 console.log(config.removeUnwantedCharacters);
+console.log(tsConsremoveUnwantedCharacters);
 console.log("23 config.columnsOperations : ");
 console.log(config.columnsOperations);
 console.log("24 config.column : ");
@@ -616,7 +636,9 @@ console.log("28 config.date_picker: ");
 console.log(config.date_picker);
 console.log("29 config.code_with_ai: ");
 console.log(config.code_with_ai);
-
+console.log("30 config.datetype : ");
+console.log(config.datetype);
+console.log(tsConsdatetype);
     return code;
   }
 }
