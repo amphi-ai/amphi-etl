@@ -76,7 +76,7 @@ export class PostgresInput extends BaseCoreComponent {
         {
           type: "codeTextarea",
           label: "SQL Query",
-          height: '50px',
+          height: '450px',
           mode: "sql",
           placeholder: 'SELECT * FROM table_name',
           id: "sqlQuery",
@@ -112,12 +112,25 @@ ${connectionName} = sqlalchemy.create_engine("${connectionString}")
 
   public generateComponentCode({ config, outputName }): string {
     const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
+ 
+    // check if schema and tableName are provided, then use it to form the table reference
+    const tableReference = config.schema && config.tableName && config.tableName.value ? `"${config.schema}"."${config.tableName.value}"` : `""`
 
-    const tableReference = `"${config.schema}"."${config.tableName.value}"`
+    let sqlQuery;
 
-    const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim()
-      ? config.sqlQuery
-      : `SELECT * FROM ${tableReference}`;
+    if (config.queryMethod === 'query' && config.sqlQuery) {
+      try {
+        // Parse the JSON string to get the object
+        const parsedQuery = JSON.parse(config.sqlQuery);
+        sqlQuery = parsedQuery.code?.trim() || `SELECT * FROM ${tableReference}`;
+      } catch (e) {
+        // If parsing fails, fall back to default query
+        console.error("Failed to parse SQL query:", e);
+        sqlQuery = `SELECT * FROM ${tableReference}`;
+      }
+    } else {
+      sqlQuery = `SELECT * FROM ${tableReference}`;
+    } 
 
     const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName });
 
@@ -138,4 +151,5 @@ finally:
 `;
     return code;
   }
+  
 }
