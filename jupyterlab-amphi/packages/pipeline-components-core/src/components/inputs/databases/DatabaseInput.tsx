@@ -77,6 +77,16 @@ export class DatabaseInput extends BaseCoreComponent {
     return imports.filter(i => (seen.has(i) ? false : (seen.add(i), true)));
   }
 
+  public generateDatabaseConnectionCode({ config, connectionName }): string {
+    switch (config.provider) {
+      case "mysql": return new MySQLInput().generateDatabaseConnectionCode({ config, connectionName });
+      case "postgres": return new PostgresInput().generateDatabaseConnectionCode({ config, connectionName });
+      case "sqlserver": return new SqlServerInput().generateDatabaseConnectionCode({ config, connectionName }); 
+      case "snowflake": return new SnowflakeInput().generateDatabaseConnectionCode({ config, connectionName });
+      default: return "";
+    }
+  }
+
   public generateComponentCode({ config, outputName }): string {
     switch (config.provider) {
       case "mysql": return new MySQLInput().generateComponentCode({ config, outputName });

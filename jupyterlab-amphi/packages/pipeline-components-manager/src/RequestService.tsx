@@ -338,7 +338,7 @@ export class RequestService {
 
     // Get component and data for the node
     const { component, data } = CodeGenerator.getComponentAndDataForNode(nodeId, componentService, context.model.toString());
-
+ 
     if (!component) {
       console.error("Component or data not found.");
       setLoadings(false);
@@ -346,8 +346,8 @@ export class RequestService {
     }
 
     // Get the dependencies and imports from the component
-    const dependencies = component.provideDependencies(data);
-    const imports = component.provideImports(data);
+    const dependencies = component.provideDependencies({ config: data });
+    const imports = component.provideImports({ config: data }); 
 
     // Generate the dependencies string
     const dependencyString = dependencies.join(' ');
