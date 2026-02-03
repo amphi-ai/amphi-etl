@@ -28,7 +28,7 @@ export class CsvFileInput extends BaseCoreComponent {
           ],
           advanced: true
         },
-        ...S3OptionsHandler.getAWSFields(),        
+        ...S3OptionsHandler.getAWSFields(),
         ...FTPOptionsHandler.getFTPFields(),
         {
           type: "file",
@@ -61,21 +61,21 @@ export class CsvFileInput extends BaseCoreComponent {
           placeholder: "Default: utf-8",
           tooltip: "Select the character encoding of the file.",
           options: [
-              { value: "utf-8", label: "UTF-8" },
-              { value: "latin-1", label: "latin-1" },
-              { value: "iso-8859-1", label: "ISO-8859-1" },
-              { value: "cp1252", label: "cp1252" },
-              { value: "utf-16", label: "UTF-16" },
-              { value: "ascii", label: "ASCII" },
-              { value: "iso-8859-15", label: "ISO‑8859‑15" },
-              { value: "windows-1250", label: "Windows‑1250 (Central Europe)" },
-              { value: "windows-1251", label: "Windows‑1251 (Cyrillic)" },
-              { value: "koi8-r", label: "KOI8‑R (Russian Cyrillic)" },
-              { value: "koi8-u", label: "KOI8‑U (Ukrainian Cyrillic)" },
-              { value: "gbk", label: "GBK (Simplified Chinese)" },
-              { value: "big5", label: "Big5 (Traditional Chinese)" },
-              { value: "shift_jis", label: "Shift_JIS (Japanese)" },
-              { value: "euc-kr", label: "EUC‑KR (Korean)" },
+            { value: "utf-8", label: "UTF-8" },
+            { value: "latin-1", label: "latin-1" },
+            { value: "iso-8859-1", label: "ISO-8859-1" },
+            { value: "cp1252", label: "cp1252" },
+            { value: "utf-16", label: "UTF-16" },
+            { value: "ascii", label: "ASCII" },
+            { value: "iso-8859-15", label: "ISO‑8859‑15" },
+            { value: "windows-1250", label: "Windows‑1250 (Central Europe)" },
+            { value: "windows-1251", label: "Windows‑1251 (Cyrillic)" },
+            { value: "koi8-r", label: "KOI8‑R (Russian Cyrillic)" },
+            { value: "koi8-u", label: "KOI8‑U (Ukrainian Cyrillic)" },
+            { value: "gbk", label: "GBK (Simplified Chinese)" },
+            { value: "big5", label: "Big5 (Traditional Chinese)" },
+            { value: "shift_jis", label: "Shift_JIS (Japanese)" },
+            { value: "euc-kr", label: "EUC‑KR (Korean)" },
           ],
           advanced: true
         },
@@ -219,47 +219,57 @@ ${outputName} = pd.read_csv("${config.filePath}"${optionsString}).convert_dtypes
 
   public generateOptionsCode({ config }): string {
     let csvOptions = { ...config.csvOptions };
-  
+
     if (csvOptions.sep === 'infer') {
       csvOptions.sep = 'None';
       csvOptions.engine = 'python';
     }
-  
+
     if (config.header === '0' || config.header === '1' || config.header === 'None') {
       csvOptions.header = config.header;
     }
-  
+
     if (csvOptions.names && csvOptions.names.length > 0) {
       csvOptions.names = `['${csvOptions.names.join("', '")}']`;
       csvOptions.header = 0;
     }
-  
+
     let storageOptions = csvOptions.storage_options || {};
 
-    // Transform storage_options array into the correct format
+    // Start with an empty object for final storage options
+    let finalStorageOptions = {};
+
+    // Step 1: Transform manual storage_options array if it exists
     if (Array.isArray(storageOptions)) {
-      const transformedStorageOptions = storageOptions.reduce((acc, item: { key: string; value: any }) => {
-        acc[item.key] = item.value;
+      finalStorageOptions = storageOptions.reduce((acc, item: { key: string; value: any }) => {
+        if (item.key) {  // Only add if key exists
+          acc[item.key] = item.value;
+        }
         return acc;
       }, {});
-
-      // Merge transformed options with the S3-specific options
-      const s3Options = S3OptionsHandler.handleS3SpecificOptions(config, {});
-      storageOptions = { ...transformedStorageOptions, ...s3Options };
-
-      // Merge transformed options with the FTP-specific options
-      const ftpOptions = FTPOptionsHandler.handleFTPSpecificOptions(config, {});
-      storageOptions = { ...transformedStorageOptions, ...ftpOptions };
-    } else {
-      // Ensure S3-specific options are handled when storageOptions is not an array
-      storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
-      // Ensure FTP-specific options are handled when storageOptions is not an array
-      storageOptions = FTPOptionsHandler.handleFTPSpecificOptions(config, storageOptions);
+    } else if (typeof storageOptions === 'object') {
+      // If it's already an object, use it as base
+      finalStorageOptions = { ...storageOptions };
     }
 
-    // Update the storage_options in csvOptions
-    if (Object.keys(storageOptions).length > 0) {
-      csvOptions.storage_options = storageOptions;
+    // Step 2: Always apply S3-specific options (these will override manual entries if needed)
+    if (config.fileLocation === 's3') {
+      const s3Options = S3OptionsHandler.handleS3SpecificOptions(config, finalStorageOptions);
+      finalStorageOptions = { ...finalStorageOptions, ...s3Options };
+    }
+
+    // Step 3: Always apply FTP-specific options (these will override manual entries if needed)
+    if (config.fileLocation === 'ftp') {
+      const ftpOptions = FTPOptionsHandler.handleFTPSpecificOptions(config, finalStorageOptions);
+      finalStorageOptions = { ...finalStorageOptions, ...ftpOptions };
+    }
+
+    // Update the storage_options in csvOptions only if there are actual options
+    if (Object.keys(finalStorageOptions).length > 0) {
+      csvOptions.storage_options = finalStorageOptions;
+    } else {
+      // Clean up - remove storage_options if empty
+      delete csvOptions.storage_options;
     }
 
     const optionsEntries = Object.entries(csvOptions)
@@ -284,11 +294,10 @@ ${outputName} = pd.read_csv("${config.filePath}"${optionsString}).convert_dtypes
           return `${key}=${value}`;
         }
       });
-  
+
     // Prepend a comma if there are options
     return optionsEntries.length > 0 ? `, ${optionsEntries.join(', ')}` : '';
   }
-
   public generateSampledComponentCode({ config, outputName, nrows }): string {
     config = {
       ...config,

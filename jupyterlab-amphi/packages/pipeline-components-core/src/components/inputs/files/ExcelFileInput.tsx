@@ -211,29 +211,39 @@ export class ExcelFileInput extends BaseCoreComponent {
     return code;
   }
 
-
   public generateOptionsCode(config): string {
     let excelOptions = { ...config.excelOptions };
+
     let storageOptions = excelOptions.storage_options || {};
 
-    // Transform storage_options array into the correct format
+    // Start with an empty object for final storage options
+    let finalStorageOptions = {};
+
+    // Step 1: Transform manual storage_options array if it exists
     if (Array.isArray(storageOptions)) {
-      const transformedStorageOptions = storageOptions.reduce((acc, item: { key: string; value: any }) => {
-        acc[item.key] = item.value;
+      finalStorageOptions = storageOptions.reduce((acc, item: { key: string; value: any }) => {
+        if (item.key) {  // Only add if key exists
+          acc[item.key] = item.value;
+        }
         return acc;
       }, {});
-
-      // Merge transformed options with the S3-specific options
-      const s3Options = S3OptionsHandler.handleS3SpecificOptions(config, {});
-      storageOptions = { ...transformedStorageOptions, ...s3Options };
-    } else {
-      // Ensure S3-specific options are handled when storageOptions is not an array
-      storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
+    } else if (typeof storageOptions === 'object') {
+      // If it's already an object, use it as base
+      finalStorageOptions = { ...storageOptions };
     }
 
-    // Update the storage_options in excelOptions
-    if (Object.keys(storageOptions).length > 0) {
-      excelOptions.storage_options = storageOptions;
+    // Step 2: Always apply S3-specific options (these will override manual entries if needed)
+    if (config.fileLocation === 's3') {
+      const s3Options = S3OptionsHandler.handleS3SpecificOptions(config, finalStorageOptions);
+      finalStorageOptions = { ...finalStorageOptions, ...s3Options };
+    }
+
+    // Update the storage_options in excelOptions only if there are actual options
+    if (Object.keys(finalStorageOptions).length > 0) {
+      excelOptions.storage_options = finalStorageOptions;
+    } else {
+      // Clean up - remove storage_options if empty
+      delete excelOptions.storage_options;
     }
 
     const options = Object.entries(excelOptions)

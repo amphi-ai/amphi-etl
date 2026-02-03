@@ -43,7 +43,7 @@ export class S3OptionsHandler {
           secret: config.awsSecretKey
         };
     
-        if (config.useCustomEndpoint && config.customEndpoint == true) {
+        if (config.useCustomEndpoint && config.customEndpoint) {
           updatedStorageOptions.client_kwargs = {
             ...updatedStorageOptions.client_kwargs, // Preserve any existing client_kwargs
             endpoint_url: config.customEndpoint
