@@ -126,16 +126,51 @@ ${connectionName} = sqlalchemy.create_engine(URL(
   }
 
   public generateComponentCode({ config, outputName }): string {
-    const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
-    const tableReference = (config.schema && config.schema.toLowerCase() !== 'public')
-      ? `"${config.schema}"."${config.tableName.value}"`
-      : `"${config.tableName.value}"`;
+    const uniqueEngineName = `${outputName}_Engine`;
 
-    const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim()
-      ? config.sqlQuery
-      : `SELECT * FROM ${tableReference}`;
+    // Build table reference with optional schema
+    const tableReference = config.tableName?.value
+      ? (config.schema && config.schema.toLowerCase() !== 'public')
+        ? `"${config.schema}"."${config.tableName.value}"`
+        : `"${config.tableName.value}"`
+      : null;
 
-    const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName })
+    let sqlQuery: string;
+
+    if (config.queryMethod === 'query' && config.sqlQuery) {
+      try {
+        const parsedQuery = JSON.parse(config.sqlQuery);
+        sqlQuery = parsedQuery.code?.trim();
+
+        // Only fall back to table reference if it exists
+        if (!sqlQuery) {
+          if (tableReference) {
+            sqlQuery = `SELECT * FROM ${tableReference}`;
+          } else {
+            throw new Error('No SQL query provided and table name is missing');
+          }
+        }
+      } catch (e) {
+        console.error("Failed to parse SQL query:", e);
+
+        if (tableReference) {
+          sqlQuery = `SELECT * FROM ${tableReference}`;
+        } else {
+          throw new Error('Invalid SQL query and no valid table name available');
+        }
+      }
+    } else {
+      // Default to table query
+      if (!tableReference) {
+        throw new Error('Table name is missing');
+      }
+      sqlQuery = `SELECT * FROM ${tableReference}`;
+    }
+
+    const connectionCode = this.generateDatabaseConnectionCode({
+      config,
+      connectionName: uniqueEngineName
+    });
 
     const code = `
 ${connectionCode}
@@ -152,6 +187,7 @@ try:
 finally:
     ${uniqueEngineName}.dispose()
 `;
+
     return code;
   }
 
