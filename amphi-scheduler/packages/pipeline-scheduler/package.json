@@ -1,6 +1,6 @@
 {
   "name": "@amphi/pipeline-scheduler",
-  "version": "0.9.2",
+  "version": "0.9.4",
   "description": "Amphi Pipeline Scheduler",
   "homepage": "https://github.com/amphi-ai/jupyterlab-amphi",
   "bugs": {

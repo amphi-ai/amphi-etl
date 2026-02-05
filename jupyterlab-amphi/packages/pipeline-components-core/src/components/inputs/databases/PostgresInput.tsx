@@ -76,7 +76,7 @@ export class PostgresInput extends BaseCoreComponent {
         {
           type: "codeTextarea",
           label: "SQL Query",
-          height: '450px',
+          height: '150px',
           mode: "sql",
           placeholder: 'SELECT * FROM table_name',
           id: "sqlQuery",
