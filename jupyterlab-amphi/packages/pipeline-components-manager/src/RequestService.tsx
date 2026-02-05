@@ -38,7 +38,15 @@ export class RequestService {
         if (lastExecuted >= lastUpdated) {
           console.log("Skip generation")
           const dataframeVar = nameId || refNodeId;
-          const codeToFetchContent = `print(_amphi_metadatapanel_getcontentof(${dataframeVar}))`;
+
+          let codeToFetchContent = "";
+          if( refNode.type === "conditionalSwitch" ) {
+            //codeToFetchContent = `print(_amphi_metadatapanel_getcontentof(${dataframeVar}_path_a if condition_met else ${dataframeVar}_path_b))`;
+             codeToFetchContent = `print(_amphi_metadatapanel_getcontentof(${dataframeVar}_path_a if not ${dataframeVar}_path_a.empty else ${dataframeVar}_path_b))`;
+          }
+          else {
+            codeToFetchContent = `print(_amphi_metadatapanel_getcontentof(${dataframeVar}))`;
+          } 
 
           const future = context.sessionContext.session.kernel!.requestExecute({ code: codeToFetchContent });
           future.onIOPub = msg => {
@@ -356,22 +364,63 @@ export class RequestService {
     const importStatements = imports.map((imp: string) => `${imp}`).join('\n');
 
     // Build the Python code string
-    let code = `
-!pip install --quiet ${dependencyString} --disable-pip-version-check
+    let code = "";
+  
+    if( data.provider == "clickhouse" ) {   
+       
+      const port = parseInt(data.port, 10);
+      const safePort = isNaN(port) ? 8123 : port;
+ 
+      code =  `
+#!pip install --quiet ${dependencyString} --disable-pip-version-check
 ${importStatements}
 ${envVariableCode}
 ${connectionCode}
 
+client = clickhouse_connect.get_client(
+    host="${data.host}",
+    port=${safePort},
+    username="${data.username}",
+    password="${data.password}",
+    database="${data.databaseName}"
+)
+      
+try:
+    # Use ClickHouse native query_df method
+    #tables = client.query_df("${escapedQuery}")
+    tables = client.query_df(f"SELECT name FROM system.tables where database='${data.databaseName}';")
+    if len(tables) > 0:
+        tables.iloc[:, 0] = tables.iloc[:, 0].astype(str).str.strip()
+        formatted_output = ", ".join(tables.iloc[:, 0].tolist())
+    else:
+        formatted_output = ""
+    print(formatted_output)
+except Exception as e:
+    print(f"Error querying ClickHouse: {e}")
+    formatted_output = ""
+finally:
+    client.close() 
+`;
+   
+    }
+    else {
+      code =  `
+#!pip install --quiet ${dependencyString} --disable-pip-version-check
+${importStatements}
+${envVariableCode}
+${connectionCode}
+      
 query = """
 ${escapedQuery}
 """
 ${component.generateDatabaseConnectionCode({ config: data, connectionName: "engine" })}
-
+      
 tables = pd.read_sql(query, con=engine)
 tables.iloc[:, 0] = tables.iloc[:, 0].str.strip()  # Strip leading/trailing spaces
 formatted_output = ", ".join(tables.iloc[:, 0].tolist())
 print(formatted_output)
 `;
+    }
 
     // Format any remaining variables in the code
     code = CodeGenerator.formatVariables(code);
@@ -480,8 +529,50 @@ print(formatted_output)
     const importStatements = imports.map((imp: string) => `${imp}`).join('\n');
 
     // Build the Python code string
-    let code = `
-!pip install --quiet ${dependencyString} --disable-pip-version-check
+    let code = "";
+    //if (component._name === "ClickHouse Output" || component._name === "ClickHouse Event") { 
+    if( data.provider == "clickhouse" ) {
+      const port = parseInt(data.port, 10);
+      const safePort = isNaN(port) ? 8123 : port;
+
+      code =  `
+#!pip install --quiet ${dependencyString} --disable-pip-version-check
+${importStatements}
+${envVariableCode}
+${connectionCode}
+
+client = clickhouse_connect.get_client(
+    host="${data.host}",
+    port=${safePort},
+    username="${data.username}",
+    password="${data.password}",
+    database="${data.databaseName}"
+)
+      
+try:
+    # Use ClickHouse native query_df method
+    tables = client.query_df("${escapedQuery}")
+except Exception as e:
+    print(f"Error querying ClickHouse: {e}")
+    #formatted_output = ""
+finally:
+    client.close() 
+    schema = pd.DataFrame(tables)  
+    
+    # Exclude 'id' and 'created_on' columns
+    schema = schema[~schema['field'].isin(['id', 'updated_on'])]
+    
+    print("Available columns in ClickHouse table:")
+    print(schema.columns.tolist())  # Print the column names
+    print("Available columns in ClickHouse table 2:")
+    print(schema)
+    ${pythonExtraction}
+`; 
+    } 
+
+    else { 
+      code = `
+#!pip install --quiet ${dependencyString} --disable-pip-version-check
 ${importStatements}
 ${envVariableCode}
 ${connectionCode}
@@ -494,8 +585,8 @@ schema = pd.read_sql(query, con=engine)
 
 ${pythonExtraction}
 `;
-
-
+    }
+ 
     // Format any remaining variables in the code
     code = CodeGenerator.formatVariables(code);
 
