@@ -95,30 +95,39 @@ ${outputName} = pd.read_json("${config.filePath}"${optionsString}).convert_dtype
 
   public generateJsonOptionsCode({ config }): string {
     let jsonOptions = { ...config.jsonOptions };
-  
-    // Initialize storage_options if not already present
+
     let storageOptions = jsonOptions.storage_options || {};
-  
-    // Transform storage_options array into the correct format
+
+    // Start with an empty object for final storage options
+    let finalStorageOptions = {};
+
+    // Step 1: Transform manual storage_options array if it exists
     if (Array.isArray(storageOptions)) {
-      const transformedStorageOptions = storageOptions.reduce((acc, item: { key: string; value: any }) => {
-        acc[item.key] = item.value;
+      finalStorageOptions = storageOptions.reduce((acc, item: { key: string; value: any }) => {
+        if (item.key) {  // Only add if key exists
+          acc[item.key] = item.value;
+        }
         return acc;
       }, {});
+    } else if (typeof storageOptions === 'object') {
+      // If it's already an object, use it as base
+      finalStorageOptions = { ...storageOptions };
+    }
 
-      // Merge transformed options with the S3-specific options
-      const s3Options = S3OptionsHandler.handleS3SpecificOptions(config, {});
-      storageOptions = { ...transformedStorageOptions, ...s3Options };
+    // Step 2: Always apply S3-specific options (these will override manual entries if needed)
+    if (config.fileLocation === 's3') {
+      const s3Options = S3OptionsHandler.handleS3SpecificOptions(config, finalStorageOptions);
+      finalStorageOptions = { ...finalStorageOptions, ...s3Options };
+    }
+
+    // Update the storage_options in jsonOptions only if there are actual options
+    if (Object.keys(finalStorageOptions).length > 0) {
+      jsonOptions.storage_options = finalStorageOptions;
     } else {
-      // Ensure S3-specific options are handled when storageOptions is not an array
-      storageOptions = S3OptionsHandler.handleS3SpecificOptions(config, storageOptions);
+      // Clean up - remove storage_options if empty
+      delete jsonOptions.storage_options;
     }
 
-    // Update the storage_options in csvOptions
-    if (Object.keys(storageOptions).length > 0) {
-      jsonOptions.storage_options = storageOptions;
-    }
-  
     // Helper function to convert JavaScript values to Python literals
     const toPythonLiteral = (value: any): string => {
       if (typeof value === 'boolean') {
@@ -133,7 +142,7 @@ ${outputName} = pd.read_json("${config.filePath}"${optionsString}).convert_dtype
         return String(value); // Handle numbers and other types
       }
     };
-  
+
     // Process jsonOptions into a string
     let optionsEntries = Object.entries(jsonOptions)
       .filter(([key, value]) => value !== null && value !== '')
@@ -144,7 +153,7 @@ ${outputName} = pd.read_json("${config.filePath}"${optionsString}).convert_dtype
           return `${key}=${toPythonLiteral(value)}`;
         }
       });
-  
-      return optionsEntries.length > 0 ? `, ${optionsEntries.join(', ')}` : '';
+
+    return optionsEntries.length > 0 ? `, ${optionsEntries.join(', ')}` : '';
   }
 }

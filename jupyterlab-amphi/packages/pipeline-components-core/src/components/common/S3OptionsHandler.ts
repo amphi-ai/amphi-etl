@@ -1,7 +1,40 @@
 // S3OptionsHandler.ts
 
 export class S3OptionsHandler {
-    // Static method to handle S3-specific options
+    
+  public static getStorageOptions(config): object {
+    let storageOptions = config.csvOptions?.storage_options || {};
+    let finalOptions: any = {};
+
+    // 1. Transform manual key-value UI array into a standard object
+    if (Array.isArray(storageOptions)) {
+      finalOptions = storageOptions.reduce((acc, item: { key: string; value: any }) => {
+        if (item.key) acc[item.key] = item.value;
+        return acc;
+      }, {});
+    } else {
+      finalOptions = { ...storageOptions };
+    }
+
+    // 2. Inject S3 Credentials if method is 'storage_options'
+    if (config.fileLocation === 's3' && config.connectionMethod === 'storage_options') {
+      finalOptions.key = config.awsAccessKey;
+      finalOptions.secret = config.awsSecretKey;
+
+      if (config.useCustomEndpoint && config.customEndpoint) {
+        // Ensure client_kwargs exists and preserve existing sub-keys
+        finalOptions.client_kwargs = {
+          ...(finalOptions.client_kwargs || {}),
+          endpoint_url: config.customEndpoint
+        };
+      }
+    }
+
+    return finalOptions;
+  }
+  
+  
+  // Static method to handle S3-specific options
     public static handleS3SpecificOptions(config, storageOptions): object {
       if (config.fileLocation === 's3' && config.connectionMethod === 'storage_options') {
         const updatedStorageOptions = {
@@ -10,7 +43,7 @@ export class S3OptionsHandler {
           secret: config.awsSecretKey
         };
     
-        if (config.useCustomEndpoint && config.customEndpoint == true) {
+        if (config.useCustomEndpoint && config.customEndpoint) {
           updatedStorageOptions.client_kwargs = {
             ...updatedStorageOptions.client_kwargs, // Preserve any existing client_kwargs
             endpoint_url: config.customEndpoint

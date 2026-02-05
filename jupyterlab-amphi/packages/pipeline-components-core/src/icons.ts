@@ -77,7 +77,8 @@ import fileSpreadsheetIconSvgStr from '../style/icons/file-spreadsheet.svg';
 import mongodbIconSvgStr from '../style/icons/mongodb.svg';
 import PackagesListIconSvgStr from '../style/icons/package.svg';
 import CompareDataframesIconSvgStr from '../style/icons/congruent-to.svg';
-
+import generateCalendarIconSvgStr from '../style/icons/generateCalendarIcon.svg';
+import dynamicGenerateCalendarIconSvgStr from '../style/icons/dynamicGenerateCalendarIcon.svg';
 export const mongodbIcon = new LabIcon({
   name: 'amphi:mongodb-icon',
   svgstr: mongodbIconSvgStr
@@ -465,4 +466,14 @@ export const PackagesListIcon = new LabIcon({
 export const CompareDataframesIcon = new LabIcon({
   name: 'amphi:compare-dataframes-icon',
   svgstr: CompareDataframesIconSvgStr
+});
+
+export const generateCalendarIcon = new LabIcon({
+  name: 'amphi:generate-calendar-icon',
+  svgstr: generateCalendarIconSvgStr
+});
+
+export const dynamicGenerateCalendarIcon = new LabIcon({
+  name: 'amphi:dynamic-generate-calendar-icon',
+  svgstr: dynamicGenerateCalendarIconSvgStr
 });

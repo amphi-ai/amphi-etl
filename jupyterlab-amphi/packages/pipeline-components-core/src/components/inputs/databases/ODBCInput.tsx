@@ -77,9 +77,40 @@ export class ODBCInput extends BaseCoreComponent {
         const connectionString = config.connectionString.replace(/'/g, "\\'");
         const autoCommit = config.autoCommit;
 
-        const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim()
-            ? config.sqlQuery
-            : `SELECT * FROM ${config.tableName}`;
+        // Build table reference if tableName exists
+        const tableReference = config.tableName || null;
+
+        let sqlQuery: string;
+
+        if (config.queryMethod === 'query' && config.sqlQuery) {
+            try {
+                const parsedQuery = JSON.parse(config.sqlQuery);
+                sqlQuery = parsedQuery.code?.trim();
+
+                // Only fall back to table reference if it exists
+                if (!sqlQuery) {
+                    if (tableReference) {
+                        sqlQuery = `SELECT * FROM ${tableReference}`;
+                    } else {
+                        throw new Error('No SQL query provided and table name is missing');
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to parse SQL query:", e);
+
+                if (tableReference) {
+                    sqlQuery = `SELECT * FROM ${tableReference}`;
+                } else {
+                    throw new Error('Invalid SQL query and no valid table name available');
+                }
+            }
+        } else {
+            // Default to table query
+            if (!tableReference) {
+                throw new Error('Table name is missing');
+            }
+            sqlQuery = `SELECT * FROM ${tableReference}`;
+        }
 
         const code = `
 # Connect to the database using ODBC
@@ -96,6 +127,7 @@ try:
 finally:
     conn.close()
 `;
+
         return code;
     }
 }

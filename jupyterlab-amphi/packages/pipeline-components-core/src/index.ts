@@ -70,6 +70,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     // componentService.addComponent(ODBCInput.getInstance())
     componentService.addComponent(DatabaseInput.getInstance())
     componentService.addComponent(CustomInput.getInstance())
+    componentService.addComponent(GenerateCalendar.getInstance())
     // componentService.addComponent(PyGWalker.getInstance())
     // componentService.addComponent(Slider.getInstance())
 
@@ -96,6 +97,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(JSONTools.getInstance());
     componentService.addComponent(HierarchyPath.getInstance());
 	componentService.addComponent(CompareDataframes.getInstance());
+	componentService.addComponent(DynamicGenerateCalendar.getInstance());
 
     // Outputs
     componentService.addComponent(CsvFileOutput.getInstance())

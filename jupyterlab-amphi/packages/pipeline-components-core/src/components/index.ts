@@ -28,6 +28,8 @@ export { DatabaseInput } from './inputs/databases/DatabaseInput';
 export { DatabaseOutput } from './outputs/databases/DatabaseOutput';
 // export { MongoDBOutput } from './outputs/databases/MongoDBOutput';
 
+export { GenerateCalendar } from './inputs/GenerateCalendar';
+export { DynamicGenerateCalendar } from './transforms/DynamicGenerateCalendar';
 
 // Transforms
 export { Filter } from './transforms/Filter';

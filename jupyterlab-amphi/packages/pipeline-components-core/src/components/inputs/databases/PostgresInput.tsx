@@ -76,7 +76,7 @@ export class PostgresInput extends BaseCoreComponent {
         {
           type: "codeTextarea",
           label: "SQL Query",
-          height: '450px',
+          height: '150px',
           mode: "sql",
           placeholder: 'SELECT * FROM table_name',
           id: "sqlQuery",
@@ -111,28 +111,49 @@ ${connectionName} = sqlalchemy.create_engine("${connectionString}")
   }
 
   public generateComponentCode({ config, outputName }): string {
-    const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
- 
-    // check if schema and tableName are provided, then use it to form the table reference
-    const tableReference = config.schema && config.tableName && config.tableName.value ? `"${config.schema}"."${config.tableName.value}"` : `""`
+    const uniqueEngineName = `${outputName}_Engine`;
 
-    let sqlQuery;
+    // Build table reference only if both schema and tableName exist
+    const tableReference = config.schema && config.tableName?.value
+      ? `"${config.schema}"."${config.tableName.value}"`
+      : null;
+
+    let sqlQuery: string;
 
     if (config.queryMethod === 'query' && config.sqlQuery) {
       try {
-        // Parse the JSON string to get the object
         const parsedQuery = JSON.parse(config.sqlQuery);
-        sqlQuery = parsedQuery.code?.trim() || `SELECT * FROM ${tableReference}`;
+        sqlQuery = parsedQuery.code?.trim();
+
+        // Only fall back to table reference if it exists
+        if (!sqlQuery) {
+          if (tableReference) {
+            sqlQuery = `SELECT * FROM ${tableReference}`;
+          } else {
+            throw new Error('No SQL query provided and table reference is incomplete');
+          }
+        }
       } catch (e) {
-        // If parsing fails, fall back to default query
         console.error("Failed to parse SQL query:", e);
-        sqlQuery = `SELECT * FROM ${tableReference}`;
+
+        if (tableReference) {
+          sqlQuery = `SELECT * FROM ${tableReference}`;
+        } else {
+          throw new Error('Invalid SQL query and no valid table reference available');
+        }
       }
     } else {
+      // Default to table query
+      if (!tableReference) {
+        throw new Error('Table reference is incomplete (missing schema or tableName)');
+      }
       sqlQuery = `SELECT * FROM ${tableReference}`;
-    } 
+    }
 
-    const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName });
+    const connectionCode = this.generateDatabaseConnectionCode({
+      config,
+      connectionName: uniqueEngineName
+    });
 
     const code = `
 ${connectionCode}
@@ -149,7 +170,8 @@ try:
 finally:
     ${uniqueEngineName}.dispose()
 `;
+
     return code;
   }
-  
+
 }
