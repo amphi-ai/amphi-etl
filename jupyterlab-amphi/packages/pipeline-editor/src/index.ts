@@ -268,8 +268,6 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
                 const pipelineJson = {
                   doc_type: 'Amphi Pipeline',
                   version: '1',
-                  json_schema:
-                    'http://docs.amphi.ai/schemas/pipeline-v1-schema.json',
                   id: getPipelineId(),
                   pipelines: [
                     {
