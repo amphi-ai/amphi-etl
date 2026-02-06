@@ -115,7 +115,7 @@ pip install --upgrade amphi-etl
 - **Python-code Generation**: Generate native Python code leveraging common libraries such as [pandas](https://github.com/pandas-dev/pandas), [DuckDB](https://github.com/duckdb/duckdb) that you can run anywhere.
 - **Private and Secure**: Self-host Amphi on your laptop or in the cloud for complete privacy and security over your data.
 
-## 🧩 Extensability:
+## 🧩 Extensibility:
 
 Amphi is extremely flexible and extensible.
 - **Custom code**: Directly use Python or SQL in your pipelines.

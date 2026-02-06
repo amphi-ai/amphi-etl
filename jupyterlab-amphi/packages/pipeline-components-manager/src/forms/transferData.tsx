@@ -64,24 +64,28 @@ export const TransferData: React.FC<TransferDataProps> = ({
 
   const DragableBodyRow = ({ index, rowDrop, className, style, ...restProps }) => {
     const ref = React.useRef();
-    const [{ isOver, dropClassName }, drop] = useDrop({
+    const [{ isOver, canDrop, dropPosition }, drop] = useDrop({
       accept: 'DragableBodyRow',
+      canDrop: (item: DragItem) => item.index !== index,
       collect: (monitor) => {
-        const item = monitor.getItem() as DragItem; // Cast to DragItem
-        if (item && item.index === index) {
-          return {};
+        const item = monitor.getItem() as DragItem;
+        if (!item || item.index === index) {
+          return { isOver: false, canDrop: false, dropPosition: null };
         }
         return {
-          isOver: monitor.isOver(),
-          dropClassName: item && item.index < index ? ' drop-over-downward' : ' drop-over-upward',
+          isOver: monitor.isOver({ shallow: true }),
+          canDrop: monitor.canDrop(),
+          dropPosition: item.index < index ? 'below' : 'above',
         };
       },
       drop: (item: DragItem) => {
-        rowDrop(item.index, index);
+        if (item.index !== index) {
+          rowDrop(item.index, index);
+        }
       },
     });
 
-    const [, drag] = useDrag<DragItem>({
+    const [{ isDragging }, drag] = useDrag<DragItem, unknown, { isDragging: boolean }>({
       type: 'DragableBodyRow',
       item: { type: 'DragableBodyRow', index },
       collect: (monitor) => ({
@@ -91,11 +95,25 @@ export const TransferData: React.FC<TransferDataProps> = ({
 
     drag(drop(ref));
 
+    // Create more visible styles based on drop position
+    const dropIndicatorStyle = isOver && canDrop ? {
+      boxShadow: dropPosition === 'above'
+        ? 'inset 0 3px 0 0 #5f9b97'
+        : 'inset 0 -3px 0 0 #5f9b97',
+      backgroundColor: 'rgba(95, 155, 151, 0.05)',
+    } : {};
+
     return (
       <tr
         ref={ref}
-        className={`${className}${isOver ? dropClassName : ''} draggable`}
-        style={{ cursor: 'move', opacity: isOver ? 0.5 : 1, ...style }} // Added opacity change
+        className={`${className} draggable`}
+        style={{
+          cursor: 'move',
+          opacity: isDragging ? 0.3 : 1,
+          transition: 'opacity 0.2s ease',
+          ...dropIndicatorStyle,
+          ...style
+        }}
         {...restProps}
       />
     );
@@ -131,7 +149,10 @@ export const TransferData: React.FC<TransferDataProps> = ({
               columns={columns}
               dataSource={filteredItems}
               size="small"
+              className="always-show-scrollbar"
               style={{ pointerEvents: listDisabled ? 'none' : undefined }}
+              pagination={false}
+              scroll={{ y: 400 }}
               onRow={({ key, disabled: itemDisabled }) => ({
                 onClick: () => {
                   if (itemDisabled || listDisabled) {
@@ -176,7 +197,10 @@ export const TransferData: React.FC<TransferDataProps> = ({
                   },
                 }}
                 size="small"
+                className="always-show-scrollbar"
                 style={{ pointerEvents: listDisabled ? 'none' : undefined }}
+                pagination={false}
+                scroll={{ y: 400 }}
                 onRow={(record, idx) => ({
                   index: idx, // Pass the correct index to the row
                   rowDrop,

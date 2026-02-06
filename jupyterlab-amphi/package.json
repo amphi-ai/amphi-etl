@@ -64,7 +64,11 @@
         "quickstart": "npm run setup:py && jlpm && jlpm deduplicate && jlpm clean:all && jlpm lint && jlpm build:prod && jlpm dist && jlpm docs && jlpm test",
         "setup:py": "python -m pip install -e \".[dev,lint,test,docs]\"",
         "test:py": "pytest",
-        "test": "jlpm test:py"
+        "test": "jlpm test:py",
+        "install:extension": "jupyter labextension develop --overwrite .",
+        "watch": "run-p watch:src watch:labextension",
+        "watch:src": "tsc -w",
+        "watch:labextension": "jupyter labextension watch ."
     },
     "devDependencies": {
         "@jupyterlab/builder": "^4.1.5",

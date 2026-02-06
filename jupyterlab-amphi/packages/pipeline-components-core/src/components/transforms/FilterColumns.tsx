@@ -10,6 +10,12 @@ export class FilterColumns extends BaseCoreComponent {
       idPrefix: "component__form",
       fields: [
         {
+          type: "info",
+          label: "Instructions",
+          id: "instructions",
+          text: "Select the columns you want to keep, and drag and drop them to reorder.",
+        },
+        {
           type: "transferData",
           label: "Filter columns",
           id: "columns",

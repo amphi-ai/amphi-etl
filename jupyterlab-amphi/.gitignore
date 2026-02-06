@@ -53,4 +53,6 @@ junit.xml
 # dev
 build.sh
 start.sh
+dev.sh
+watch.sh
 # requirements.txt
