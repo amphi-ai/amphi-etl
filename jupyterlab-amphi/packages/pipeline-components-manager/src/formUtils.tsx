@@ -32,5 +32,4 @@ export const onInputKeyDown = (
       event.stopPropagation();
     }
   }
-  event.preventDefault(); 
 };

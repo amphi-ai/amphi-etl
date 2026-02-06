@@ -66,14 +66,25 @@ export class PipelineConsolePanel
 
     const stop = (e: Event) => e.stopPropagation();
 
+    // Allow copy if there's a text selection in the console
+    const handleCopy = (e: ClipboardEvent) => {
+      const selection = window.getSelection();
+      if (selection && selection.toString().length > 0) {
+        // There's a text selection, allow the copy event to proceed
+        return;
+      }
+      // No selection, stop propagation to prevent conflict with visual editor
+      e.stopPropagation();
+    };
+
     // capture phase so it wins over higher-level listeners
     this.node.addEventListener('keydown', stop, true);
-    this.node.addEventListener('copy', stop, true);
+    this.node.addEventListener('copy', handleCopy, true);
     this.node.addEventListener('paste', stop, true);
 
     this._unbind = () => {
       this.node.removeEventListener('keydown', stop, true);
-      this.node.removeEventListener('copy', stop, true);
+      this.node.removeEventListener('copy', handleCopy, true);
       this.node.removeEventListener('paste', stop, true);
     };
   }
@@ -168,6 +179,25 @@ export class PipelineConsolePanel
           />
         );
         break;
+      case "warning":
+        dateTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{date}</Tag>;
+        // Extract just the warning message, removing file path and warning type
+        let warningMessage = content;
+        // Try to extract text after "UserWarning:" or similar warning types
+        const typeMatch = content.match(/:\s*(\w+Warning|Warning):\s*(.+?)(?:\s*warnings\.warn\(|$)/s);
+        if (typeMatch) {
+          warningMessage = typeMatch[2].trim();
+        }
+        contentComponent = (
+          <Alert
+            message="Warning"
+            banner
+            showIcon
+            description={<div dangerouslySetInnerHTML={{ __html: warningMessage.replace(/\n/g, '<br>').replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;') }} />}
+            type="warning"
+          />
+        );
+        break;
       case "data":
         dateTag = <Tag bordered={false} icon={<clockIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{date}</Tag>;
         dfNameTag = <Tag bordered={false} icon={<labelIcon.react className="anticon amphi-Console-icon-size" />} style={{ whiteSpace: 'normal', wordWrap: 'break-word' }}>{metadata.dfName}</Tag>;
@@ -197,6 +227,20 @@ export class PipelineConsolePanel
 
           if (sizeElement && sizeElement.textContent.includes('rows ×')) {
             dataframeSize = sizeElement.textContent.trim();
+          } else {
+            // If no size paragraph found, calculate from the HTML table
+            const table = doc.querySelector('table');
+            if (table) {
+              const tbody = table.querySelector('tbody');
+              const thead = table.querySelector('thead');
+              if (tbody && thead) {
+                const numRows = tbody.querySelectorAll('tr').length;
+                const headerRow = thead.querySelector('tr');
+                // Subtract 1 to exclude the index column
+                const numCols = headerRow ? headerRow.querySelectorAll('th').length - 1 : 0;
+                dataframeSize = `${numRows} rows × ${numCols} columns`;
+              }
+            }
           }
 
           if (dataframeSize) {

@@ -186,7 +186,7 @@ ${instructions || 'No specific instructions provided'}
   return (
     <Flex style={{ height: field.height || 400 }}>
       <Splitter style={{ width: '100%' }}>
-        <Splitter.Panel min="50%">
+        <Splitter.Panel min="50%" className="nodrag nopan nowheel">
           <AceEditor
             width="100%"
             height="100%"

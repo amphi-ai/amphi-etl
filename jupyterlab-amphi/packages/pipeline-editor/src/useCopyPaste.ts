@@ -26,18 +26,60 @@ function isEditingText(): boolean {
   return false;
 }
 
+// check if focus is within the React Flow canvas or canvas-related
+function isFocusInCanvas(rfDomNode: HTMLElement | null): boolean {
+  if (!rfDomNode) return false;
+
+  const activeEl = document.activeElement as HTMLElement | null;
+  if (!activeEl) return false;
+
+  // check if the active element is the canvas itself or a descendant of it
+  return rfDomNode === activeEl || rfDomNode.contains(activeEl);
+}
+
+// check if we should allow canvas operations based on context
+function shouldAllowCanvasOperation(
+  rfDomNode: HTMLElement | null,
+  mousePos: XYPosition
+): boolean {
+  // if editing text, never allow
+  if (isEditingText()) return false;
+
+  // if focus is explicitly in the canvas, always allow
+  if (isFocusInCanvas(rfDomNode)) return true;
+
+  // if mouse is over the canvas, allow (for paste after clicking background)
+  if (rfDomNode) {
+    const rect = rfDomNode.getBoundingClientRect();
+    const isMouseOverCanvas =
+      mousePos.x >= rect.left &&
+      mousePos.x <= rect.right &&
+      mousePos.y >= rect.top &&
+      mousePos.y <= rect.bottom;
+
+    if (isMouseOverCanvas) return true;
+  }
+
+  // otherwise, don't allow (mouse and focus are both outside canvas)
+  return false;
+}
+
 /**
  * Copy / Cut / Paste for React Flow canvas
- * - Cmd/Ctrl + C/X/V still clones graph selections
+ * - Cmd/Ctrl + C/X/V clones graph selections when interacting with canvas
  * - Inputs, textareas, code editors keep native clipboard 100 percent
+ * - Other panels and UI elements are unaffected
  *
- * Key change: we NO LONGER block the browser 'copy'/'paste'/'cut' events at all.
- * We only listen for keyboard shortcuts and run our own logic when focus is NOT in a text field.
+ * Smart context detection:
+ * - Operations work when focus is in the canvas OR mouse is over the canvas
+ * - This allows paste to work after clicking canvas background
+ * - Text fields always get native behavior regardless of mouse position
+ * - Operations are blocked when both mouse and focus are outside canvas
  */
 export function useCopyPaste() {
   const mousePosRef = useRef<XYPosition>({ x: 0, y: 0 });
 
-  // React Flow root dom node (for mouse tracking only now)
+  // React Flow root dom node (for mouse tracking and focus detection)
   const rfDomNode = useStore((state) => state.domNode);
 
   // React Flow API
@@ -88,16 +130,16 @@ export function useCopyPaste() {
 
   // COPY
   const copy = useCallback(() => {
-    if (isEditingText()) return; // don't hijack text fields
+    if (!shouldAllowCanvasOperation(rfDomNode, mousePosRef.current)) return;
 
     const { selectedNodes, internalEdges } = getSelectionSnapshot();
     setBufferedNodes(selectedNodes);
     setBufferedEdges(internalEdges);
-  }, [getSelectionSnapshot]);
+  }, [getSelectionSnapshot, rfDomNode]);
 
   // CUT
   const cut = useCallback(() => {
-    if (isEditingText()) return;
+    if (!shouldAllowCanvasOperation(rfDomNode, mousePosRef.current)) return;
 
     const { selectedNodes, internalEdges } = getSelectionSnapshot();
 
@@ -107,7 +149,7 @@ export function useCopyPaste() {
     // remove them from the graph
     setNodes((nodes) => nodes.filter((node) => !node.selected));
     setEdges((edges) => edges.filter((edge) => !internalEdges.includes(edge)));
-  }, [getSelectionSnapshot, setNodes, setEdges]);
+  }, [getSelectionSnapshot, setNodes, setEdges, rfDomNode]);
 
   // PASTE
   const paste = useCallback(
@@ -117,7 +159,7 @@ export function useCopyPaste() {
         y: mousePosRef.current.y
       })
     ) => {
-      if (isEditingText()) return;
+      if (!shouldAllowCanvasOperation(rfDomNode, mousePosRef.current)) return;
       if (!bufferedNodes.length) return;
 
       // anchor = top-left of copied selection
@@ -165,7 +207,7 @@ export function useCopyPaste() {
         ...newEdges
       ]);
     },
-    [bufferedNodes, bufferedEdges, screenToFlowPosition, setNodes, setEdges]
+    [bufferedNodes, bufferedEdges, screenToFlowPosition, setNodes, setEdges, rfDomNode]
   );
 
   // bind Cmd/Ctrl + X / C / V
