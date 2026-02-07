@@ -350,10 +350,33 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
               return;
             }
 
+            // Show pending notification
+            const notificationId = Notification.emit(
+              'Restarting environment...',
+              'in-progress',
+              { autoClose: false }
+            );
+
             try {
               await current.context.sessionContext.restartKernel();
+
+              // Dismiss pending notification
+              Notification.dismiss(notificationId);
+
+              // Show success notification
+              Notification.success('Environment restarted successfully.', {
+                autoClose: 3000
+              });
             } catch (error) {
               console.error("Failed to restart runtime: ", error);
+
+              // Dismiss pending notification
+              Notification.dismiss(notificationId);
+
+              // Show error notification
+              Notification.error('Failed to restart environment.', {
+                autoClose: 5000
+              });
             }
           },
           isEnabled

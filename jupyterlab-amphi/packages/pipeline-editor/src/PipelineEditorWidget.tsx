@@ -59,7 +59,7 @@ import ReactDOM from 'react-dom';
 import 'reactflow/dist/style.css';
 import CustomEdge from './customEdge';
 import { Dropzone } from './Dropzone';
-import { pipelineIcon, dagsterIcon, filePlusIcon } from './icons';
+import { pipelineIcon, dagsterIcon, filePlusIcon, refreshIcon } from './icons';
 import useCopyPaste from './useCopyPaste';
 
 import CodeEditor from './CodeEditor';
@@ -1053,25 +1053,23 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
     widget.toolbar.addItem('spacer', spacer);
     widget.toolbar.addItem('kernelName', kernelName);
 
-    // add restart runtime button
-    /*
+    // Add restart kernel button
     const restartButton = new ToolbarButton({
-        label: 'Restart Runtime',
-        iconLabel: 'Restart Runtime',
-        icon: refreshIcon,
-        onClick: async () => {
-          // Call the command execution
-          const command = 'pipeline-editor:restart-kernel';
-          this.commands.execute(command, {}).catch(reason => {
-          
+      label: 'Restart Environment',
+      iconLabel: 'Restart Environment',
+      icon: refreshIcon,
+      onClick: async () => {
+        // Call the command execution
+        const command = 'pipeline-editor:restart-kernel';
+        this.commands.execute(command, {}).catch(reason => {
           console.error(
             `An error occurred during the execution of ${command}.\n${reason}`
           );
         });
-        }
+      },
+      enabled: enableExecution
     });
     widget.toolbar.addItem('restartKernel', restartButton);
-    */
 
     widget.addClass(PIPELINE_CLASS);
     widget.title.icon = pipelineIcon;
