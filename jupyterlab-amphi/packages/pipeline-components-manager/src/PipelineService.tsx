@@ -7,7 +7,8 @@ export class PipelineService {
     const pipeline = JSON.parse(pipelineJson);
     const pipelineFlow = pipeline.pipelines[0].flow;
     const filteredNodes = pipelineFlow.nodes.map(({ id, type, data }) => ({ id, type, data }));
-    const filteredEdges = pipelineFlow.edges.map(({ id, source, target, targetHandle }) => ({ id, source, target, targetHandle }));
+    //const filteredEdges = pipelineFlow.edges.map(({ id, source, target, targetHandle }) => ({ id, source, target, targetHandle }));
+    const filteredEdges = pipelineFlow.edges.map(({ id, source, target, sourceHandle, targetHandle }) => ({ id, source, target, sourceHandle, targetHandle }));
 
     const flow: Flow = {
       "nodes": filteredNodes,

@@ -95,3 +95,10 @@ export { FormExample } from './developer/FormExample';
 export { DataframeList } from './developer/DataframeList';
 export { DataframeDelete } from './developer/DataframeDelete';
 export { PackagesList } from './developer/PackagesList';
+
+// new components
+export { ClickhouseOutput } from './outputs/databases/ClickhouseOutput';
+export { PostgresSQLLookup } from './transforms/PostgresSQLLookup';
+export { JsonRange } from './transforms/JsonRange';
+export { EndOfBranch } from './custom/EndOfBranch';
+export { SwitchComponent } from './custom/SwitchComponent';
