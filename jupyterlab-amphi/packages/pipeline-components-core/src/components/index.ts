@@ -39,6 +39,7 @@ export { SplitColumn } from './transforms/SplitColumn';
 export { Deduplicate } from './transforms/Deduplicate';
 export { ExpandList } from './transforms/JSON/ExpandList';
 export { FlattenJSON } from './transforms/JSON/FlattenJSON';
+export { ExplodeJSON } from './transforms/JSON/ExplodeJSON';
 export { JSONTools } from './transforms/JSON/JSONTools';
 
 
