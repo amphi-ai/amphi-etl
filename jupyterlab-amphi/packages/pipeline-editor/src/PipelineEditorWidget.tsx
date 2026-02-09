@@ -51,7 +51,7 @@ import ReactFlow, {
 } from 'reactflow';
 import posthog from 'posthog-js'
 
-import { ConfigProvider, Modal, Button, Splitter, Dropdown } from 'antd';
+import { ConfigProvider, Modal, Button, Splitter, Dropdown, Radio } from 'antd';
 import { DownOutlined, LoadingOutlined } from '@ant-design/icons';
 
 import { CodeGenerator, CodeGeneratorDagster, PipelineService } from '@amphi/pipeline-components-manager';
@@ -63,6 +63,7 @@ import { pipelineIcon, dagsterIcon, filePlusIcon, refreshIcon } from './icons';
 import useCopyPaste from './useCopyPaste';
 
 import CodeEditor from './CodeEditor';
+import { showErrorModal } from './ErrorModal';
 
 const PIPELINE_CLASS = 'amphi-PipelineEditor';
 
@@ -885,10 +886,12 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
             });
             const doc = await commands.execute('docmanager:open', { path: file.path });
             doc.context.model.fromString(dagsterCode);
+            handleClose();
           } catch (error) {
             console.error('Failed to export to Dagster:', error);
+            handleClose();
+            showErrorModal(error as Error, 'Failed to generate Dagster code');
           }
-          handleClose();
         };
 
         const menuItems = [
@@ -956,8 +959,13 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       iconLabel: 'Export to Python code',
       icon: codeIcon,
       onClick: async () => {
-        const code = await CodeGenerator.generateCode(context.model.toString(), this.commands, this.componentService, true);
-        showCodeModal(code, this.commands, this.componentService, false);
+        try {
+          const code = await CodeGenerator.generateCode(context.model.toString(), this.commands, this.componentService, true);
+          showCodeModal(code, this.commands, this.componentService, false);
+        } catch (error) {
+          console.error('Code generation failed:', error);
+          showErrorModal(error as Error, 'Failed to export pipeline to Python code');
+        }
       }
     });
     widget.toolbar.addItem('generateCode', generateCodeButton);
@@ -980,29 +988,115 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
     */
 
 
+    // Capture class instance for use in modal
+    const commands = this.commands;
+    const componentService = this.componentService;
+
+    // Function to show run mode selection modal
+    const showRunModeModal = () => {
+      const container = document.createElement('div');
+      document.body.appendChild(container);
+
+      function RunModeModal() {
+        const [executionMode, setExecutionMode] = React.useState('full');
+
+        const handleClose = () => {
+          ReactDOM.unmountComponentAtNode(container);
+          container.remove();
+        };
+
+        const handleRun = async () => {
+          handleClose();
+
+          try {
+            // First save document
+            await commands.execute('docmanager:save');
+
+            if (executionMode === 'full') {
+              // Full pipeline execution
+              const code = CodeGenerator.generateCode(context.model.toString(), commands, componentService, true);
+              if (enableTelemetry) {
+                posthog.capture('run_pipeline', {
+                  pipeline_metadata: context.model.toString(),
+                  run_type: "full_run"
+                });
+              }
+              commands.execute('pipeline-editor:run-pipeline', { code }).catch((reason: any) => {
+                console.error(
+                  `An error occurred during the execution of 'pipeline-editor:run-pipeline'.\n${reason}`
+                );
+              });
+            } else {
+              // Incremental execution
+              await commands.execute('pipeline-editor:run-incremental-pipeline', { context });
+            }
+          } catch (error) {
+            console.error('Pipeline execution failed:', error);
+            showErrorModal(error as Error, 'Failed to generate code for pipeline execution');
+          }
+        };
+
+        const options = [
+          {
+            label: 'Run Full Pipeline',
+            value: 'full',
+            title: 'Execute all components at once'
+          },
+          {
+            label: 'Run Step-by-Step',
+            value: 'incremental',
+            title: 'Execute each component one by one.'
+          }
+        ];
+
+        return (
+          <ConfigProvider theme={{ token: { colorPrimary: '#5F9B97' } }}>
+            <Modal
+              title="Run Pipeline"
+              visible
+              onOk={handleRun}
+              onCancel={handleClose}
+              okText="Run"
+              cancelText="Cancel"
+              width="500px"
+            >
+              <div style={{ marginBottom: '16px' }}>
+                <strong>Select execution mode:</strong>
+              </div>
+              <Radio.Group
+                options={options}
+                onChange={(e) => setExecutionMode(e.target.value)}
+                value={executionMode}
+                optionType="button"
+                buttonStyle="solid"
+                style={{ width: '100%', display: 'flex', gap: '8px' }}
+              />
+              <div style={{ marginTop: '16px', fontSize: '13px', color: '#666' }}>
+                {executionMode === 'full' ? (
+                  <div>
+                    <strong>Full Pipeline:</strong> The entire pipeline executes at once.
+                  </div>
+                ) : (
+                  <div>
+                    <strong>Step-by-Step:</strong> Each component executes one by one and shows results in the console. Easier to identify where errors occur.
+                  </div>
+                )}
+              </div>
+            </Modal>
+          </ConfigProvider>
+        );
+      }
+
+      ReactDOM.render(<RunModeModal />, container);
+    }
+
     // Add run button
     const runButton = new ToolbarButton({
       label: 'Run Pipeline',
       iconLabel: 'Run Pipeline',
       icon: runIcon,
-      onClick: async () => {
-        // First save document
-        this.commands.execute('docmanager:save');
-
-        // Second, generate code
-        const code = CodeGenerator.generateCode(context.model.toString(), this.commands, this.componentService, true);
-        // Anonymous telemetry
-        if (enableTelemetry) {
-          posthog.capture('run_pipeline', {
-            pipeline_metadata: context.model.toString(),
-            run_type: "full_run"
-          })
-        }
-        this.commands.execute('pipeline-editor:run-pipeline', { code }).catch(reason => {
-          console.error(
-            `An error occurred during the execution of 'pipeline-editor:run-pipeline'.\n${reason}`
-          );
-        });
+      onClick: () => {
+        showRunModeModal();
       },
       enabled: enableExecution
     });

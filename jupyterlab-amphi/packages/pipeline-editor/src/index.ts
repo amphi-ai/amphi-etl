@@ -29,6 +29,7 @@ import { viewData } from './ViewData'
 import { ComponentManager, CodeGenerator, CodeGeneratorDagster, PipelineService } from '@amphi/pipeline-components-manager';
 import { pipelineCategoryIcon, pipelineBrandIcon, componentIcon, gridAltIcon } from './icons';
 import { PipelineEditorFactory, commandIDs } from './PipelineEditorWidget';
+import { showErrorModal } from './ErrorModal';
 import posthog from 'posthog-js'
 
 import { LabIcon } from '@jupyterlab/ui-components';
@@ -42,6 +43,7 @@ namespace CommandIDs {
   export const restartPipelineKernel = 'pipeline-editor:restart-kernel';
   export const runPipeline = 'pipeline-editor:run-pipeline';
   export const runPipelineUntil = 'pipeline-editor:run-pipeline-until';
+  export const runIncrementalPipeline = 'pipeline-editor:run-incremental-pipeline';
   export const runIncrementalPipelineUntil = 'pipeline-editor:run-incremental-pipeline-until';
   export const generateCode = 'pipeline-editor:generate-code';
 
@@ -504,15 +506,20 @@ ${args.code}
           label: 'Run pipeline until ...',
 
           execute: async args => {
-            try {
-              const current = getCurrent(args);
-              if (!current) {
-                throw new Error('No current context available.');
-              }
+            const current = getCurrent(args);
+            if (!current) {
+              throw new Error('No current context available.');
+            }
 
-              const nodeId = args.nodeId.toString();
-              const context = args.context;
-              const codeList = CodeGenerator.generateCodeUntil(
+            const nodeId = args.nodeId.toString();
+            const context = args.context;
+
+            let codeList;
+            let code;
+
+            // Only catch code generation errors for the error modal
+            try {
+              codeList = CodeGenerator.generateCodeUntil(
                 current.context.model.toString(),
                 commands,
                 componentService,
@@ -520,23 +527,23 @@ ${args.code}
                 false,
                 false
               );
-              const code = codeList.join('\n');
-
-              await commands.execute('pipeline-editor:run-pipeline', { code });
-
-              if (enableTelemetry) {
-                posthog.capture('run_pipeline', {
-                  pipeline_metadata: current.context.model.toString(),
-                  run_type: "until_node",
-                })
-              }
-              // Handle successful pipeline run
-              console.log('Pipeline executed successfully');
-
-            } catch (reason) {
-              console.error(`An error occurred during pipeline execution: ${reason}`);
-              throw reason;
+              code = codeList.join('\n');
+            } catch (error) {
+              console.error(`Code generation failed:`, error);
+              showErrorModal(error as Error, 'Failed to generate code for running pipeline until selected component');
+              throw error;
             }
+
+            // Execute the pipeline (runtime errors will be shown via notifications, not error modal)
+            await commands.execute('pipeline-editor:run-pipeline', { code });
+
+            if (enableTelemetry) {
+              posthog.capture('run_pipeline', {
+                pipeline_metadata: current.context.model.toString(),
+                run_type: "until_node",
+              })
+            }
+            console.log('Pipeline executed successfully');
           }
         });
 
@@ -553,15 +560,22 @@ ${args.code}
             const nodeId = args.nodeId.toString();
             const context = args.context;
 
-            // Generate the incremental list of code to run
-            const incrementalCodeList = CodeGenerator.generateCodeUntil(
-              current.context.model.toString(),
-              commands,
-              componentService,
-              nodeId,
-              true,
-              false
-            );
+            let incrementalCodeList;
+            try {
+              // Generate the incremental list of code to run
+              incrementalCodeList = CodeGenerator.generateCodeUntil(
+                current.context.model.toString(),
+                commands,
+                componentService,
+                nodeId,
+                true,
+                false
+              );
+            } catch (error) {
+              console.error('Code generation failed for incremental pipeline execution:', error);
+              showErrorModal(error as Error, 'Failed to generate code for running incremental pipeline until selected component');
+              return;
+            }
 
             // Notification options
             const notificationOptions = {
@@ -603,6 +617,95 @@ ${code}
               }
             }
           }
+        });
+
+        commands.addCommand(CommandIDs.runIncrementalPipeline, {
+          label: 'Run Incremental Pipeline',
+          execute: async args => {
+            const current = getCurrent(args);
+            if (!current) {
+              return;
+            }
+
+            // Open console to show progress
+            RunService.executeCommand(commands, 'pipeline-console:open');
+
+            // Get all nodes in the pipeline
+            const flow = PipelineService.filterPipeline(current.context.model.toString());
+            const { nodesToTraverse } = CodeGenerator.computeNodesToTraverse(
+              flow,
+              'none', // 'none' means all nodes
+              componentService
+            );
+
+            // Track total components and current progress
+            const totalComponents = nodesToTraverse.length;
+            let currentComponent = 0;
+            let executionFailed = false;
+
+            // Iterate over each node and execute it
+            for (const nodeId of nodesToTraverse) {
+              currentComponent++;
+
+              console.log(`[${currentComponent}/${totalComponents}] Executing component: ${nodeId}`);
+
+              let code;
+              try {
+                // Generate code up to this node (like runPipelineUntil does)
+                const codeList = CodeGenerator.generateCodeUntil(
+                  current.context.model.toString(),
+                  commands,
+                  componentService,
+                  nodeId,
+                  false,
+                  false
+                );
+                code = codeList.join('\n');
+              } catch (error) {
+                console.error(`[${currentComponent}/${totalComponents}] Code generation failed for component ${nodeId}:`, error);
+                showErrorModal(error as Error, `Failed to generate code for component ${currentComponent}/${totalComponents}`);
+                executionFailed = true;
+                break;
+              }
+
+              try {
+                // Execute the component using the same mechanism as runPipeline
+                await commands.execute('pipeline-editor:run-pipeline', { code, datapanel: false });
+
+                console.log(`[${currentComponent}/${totalComponents}] Component ${nodeId} executed successfully`);
+              } catch (error) {
+                console.error(`[${currentComponent}/${totalComponents}] Execution failed for component ${nodeId}:`, error);
+                Notification.error(`Pipeline stopped at component ${currentComponent}/${totalComponents}`, {
+                  actions: [{
+                    label: 'View Console',
+                    callback: () => RunService.executeCommand(commands, 'pipeline-console:open')
+                  }],
+                  autoClose: 8000
+                });
+                executionFailed = true;
+                break;
+              }
+            }
+
+            // Show completion notification if all components executed successfully
+            if (!executionFailed && currentComponent === totalComponents) {
+              Notification.success(`Pipeline completed: ${totalComponents} components executed successfully`, {
+                autoClose: 5000
+              });
+            }
+
+            // Anonymous telemetry
+            if (enableTelemetry) {
+              posthog.capture('run_pipeline', {
+                pipeline_metadata: current.context.model.toString(),
+                run_type: "incremental_full",
+                total_components: totalComponents,
+                executed_components: currentComponent,
+                success: !executionFailed
+              });
+            }
+          },
+          isEnabled
         });
 
         commands.addCommand('pipeline-editor:version', {
