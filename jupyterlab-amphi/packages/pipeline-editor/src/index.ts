@@ -26,10 +26,11 @@ import { Dialog, showDialog } from '@jupyterlab/apputils';
 import { createAboutDialog } from './AboutDialog';
 import { RunService } from './RunService'
 import { viewData } from './ViewData'
-import { ComponentManager, CodeGenerator, CodeGeneratorDagster, PipelineService } from '@amphi/pipeline-components-manager';
+import { ComponentManager, CodeGenerator, CodeGeneratorDagster, PipelineService, IPipelineExecutionToken, IPipelineExecutionService } from '@amphi/pipeline-components-manager';
 import { pipelineCategoryIcon, pipelineBrandIcon, componentIcon, gridAltIcon } from './icons';
 import { PipelineEditorFactory, commandIDs } from './PipelineEditorWidget';
 import { showErrorModal } from './ErrorModal';
+import { PipelineExecutionService } from './ExecutionService';
 import posthog from 'posthog-js'
 
 import { LabIcon } from '@jupyterlab/ui-components';
@@ -79,7 +80,8 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
     IToolbarWidgetRegistry,
     ISessionContextDialogs,
     IDocumentManager,
-    ComponentManager
+    ComponentManager,
+    IPipelineExecutionToken
   ],
   provides: IPipelineTracker,
   activate: (
@@ -96,7 +98,8 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
     toolbarRegistry: IToolbarWidgetRegistry,
     sessionDialogs: ISessionContextDialogs,
     manager: IDocumentManager,
-    componentService: any
+    componentService: any,
+    executionService: any
   ): WidgetTracker<DocumentWidget> => {
     console.log("Amphi Pipeline Extension activation...")
 
@@ -195,7 +198,8 @@ const pipelineEditor: JupyterFrontEndPlugin<WidgetTracker<DocumentWidget>> = {
           defaultFileBrowser: defaultFileBrowser,
           // serviceManager: app.serviceManager,
           settings: settings,
-          componentService: componentService
+          componentService: componentService,
+          executionService: executionService
         });
 
         // Add the widget to the tracker when it's created
@@ -627,6 +631,9 @@ ${code}
               return;
             }
 
+            // Clear all execution badges before starting
+            executionService.clearAllExecutionData();
+
             // Open console to show progress
             RunService.executeCommand(commands, 'pipeline-console:open');
 
@@ -649,6 +656,14 @@ ${code}
 
               console.log(`[${currentComponent}/${totalComponents}] Executing component: ${nodeId}`);
 
+              // Report that execution is starting
+              executionService.reportExecution({
+                nodeId,
+                status: 'running',
+                timestamp: Date.now(),
+                metadata: {}
+              });
+
               let code;
               try {
                 // Generate code up to this node (like runPipelineUntil does)
@@ -663,18 +678,60 @@ ${code}
                 code = codeList.join('\n');
               } catch (error) {
                 console.error(`[${currentComponent}/${totalComponents}] Code generation failed for component ${nodeId}:`, error);
+
+                const errorMessage = (error as Error).message || String(error) || 'Code generation failed';
+
+                // Report failure
+                executionService.reportExecution({
+                  nodeId,
+                  status: 'failed',
+                  timestamp: Date.now(),
+                  metadata: {
+                    errorMessage,
+                    errorType: 'CodeGenerationError'
+                  }
+                });
+
                 showErrorModal(error as Error, `Failed to generate code for component ${currentComponent}/${totalComponents}`);
                 executionFailed = true;
                 break;
               }
 
+              const startTime = Date.now();
               try {
                 // Execute the component using the same mechanism as runPipeline
                 await commands.execute('pipeline-editor:run-pipeline', { code, datapanel: false });
 
-                console.log(`[${currentComponent}/${totalComponents}] Component ${nodeId} executed successfully`);
+                const executionTime = (Date.now() - startTime) / 1000;
+                console.log(`[${currentComponent}/${totalComponents}] Component ${nodeId} executed successfully in ${executionTime.toFixed(2)}s`);
+
+                // Report success with execution time
+                executionService.reportExecution({
+                  nodeId,
+                  status: 'success',
+                  timestamp: Date.now(),
+                  metadata: {
+                    executionTime
+                  }
+                });
               } catch (error) {
+                const executionTime = (Date.now() - startTime) / 1000;
                 console.error(`[${currentComponent}/${totalComponents}] Execution failed for component ${nodeId}:`, error);
+
+                const errorMessage = (error as Error).message || String(error) || 'Execution failed';
+
+                // Report failure
+                executionService.reportExecution({
+                  nodeId,
+                  status: 'failed',
+                  timestamp: Date.now(),
+                  metadata: {
+                    errorMessage,
+                    errorType: 'ExecutionError',
+                    executionTime
+                  }
+                });
+
                 Notification.error(`Pipeline stopped at component ${currentComponent}/${totalComponents}`, {
                   actions: [{
                     label: 'View Console',
@@ -965,10 +1022,25 @@ ${code}
 };
 
 /**
+ * Plugin that provides the execution service for tracking component execution status
+ */
+const executionServicePlugin: JupyterFrontEndPlugin<IPipelineExecutionService> = {
+  id: '@amphi/pipeline-editor:execution-service',
+  autoStart: true,
+  provides: IPipelineExecutionToken,
+  activate: (app: JupyterFrontEnd) => {
+    console.log('Pipeline Execution Service activated');
+    const executionService = new PipelineExecutionService();
+    return executionService;
+  }
+};
+
+/**
  * Export the plugins as default.
  */
 const extensions: JupyterFrontEndPlugin<any>[] = [
-  pipelineEditor
+  pipelineEditor,
+  executionServicePlugin
 ];
 
 export default extensions;

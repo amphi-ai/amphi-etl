@@ -109,7 +109,7 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
         componentService
       );
 
-      commands.execute('pipeline-editor:run-pipeline-until', { nodeId: nodeId, context: context }).then(result => {
+      commands.execute('pipeline-editor:run-incremental-pipeline-until', { nodeId: nodeId, context: context }).then(result => {
 
         setNodes(prevNodes =>
           prevNodes.map(node =>

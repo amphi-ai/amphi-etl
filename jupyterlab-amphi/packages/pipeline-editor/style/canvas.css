@@ -68,8 +68,9 @@ Editor components styles
   border-left: none;
 }
 
-.component {
-  position: relative; 
+.component,
+.component-card {
+  position: relative;
   background-color: #F2F4F7;
   width: 180px;
   min-height: 120px;
@@ -81,7 +82,8 @@ Editor components styles
   transition: box-shadow 0.2s;
 }
 
-.component::before {
+.component::before,
+.component-card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -159,47 +161,22 @@ Editor components styles
   background-color: #F2F4F7;
 }
 
-.component--success {
-  box-shadow: 0 4px 8px rgba(0, 255, 0, 0.6); /* Green shadow */
-}
-
 .component__header--default {
   border-bottom-color: #e2e8f0;
 }
 
-/* Snowflake-specific styles */
-.component--snowflake {
-  background-color: #F2F4F7;
+/* Execution status styles */
+.component--running {
+  --border-color: #1890ff; /* Blue */
 }
 
-.component--snowflake {
-  --border-color: #00ADEF;
+.component--success {
+  --border-color: #52c41a; /* Green */
 }
 
-.component--duckdb {
-  --border-color: #EDDF00;
+.component--failed {
+  --border-color: #ff4d4f; /* Red */
 }
-
-.component--duckdb::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px; /* Total height for two half-height layers */
-  background: linear-gradient(
-    to bottom,
-    var(--border-color, #EDDF00) 50%, /* Top half color */
-    black 50% /* Bottom half color */
-  );
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
-}
-
-.component--postgres {
-  --border-color: #336691;
-}
-
 
 .component__header--snowflake {
   background-color: #F6F6F7;

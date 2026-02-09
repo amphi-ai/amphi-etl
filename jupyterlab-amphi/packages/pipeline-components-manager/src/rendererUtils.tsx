@@ -140,26 +140,28 @@ const MemoizedComponentUI = React.memo(
       setFormState(data);
     }, [data]);
 
-    const modifier = useMemo(() => {
-      const engine = data.backend?.engine?.toLowerCase() || '';
-      if (engine.includes("snowflake")) return "--snowflake";
-      if (engine.includes("duckdb")) return "--duckdb";
-      if (engine.includes("postgres")) return "--postgres";
-      return "--default";
-    }, [data.backend?.engine]);
-
     const colorPrimary = useMemo(() => {
-      switch (modifier) {
-        case "--snowflake": return "#00ADEF";
-        case "--duckdb": return "#45421D";
-        case "--postgres": return "#336691";
-        default: return "#5F9B97";
-      }
-    }, [modifier]);
+      return '#5F9B97'; // Default teal - execution status only affects top border
+    }, []);
 
-    const isIbis = useMemo(() => {
-      return ["--snowflake", "--duckdb", "--postgres"].includes(modifier);
-    }, [modifier]);
+    const executionStatusClass = useMemo(() => {
+      if (data.execution) {
+        switch (data.execution.status) {
+          case 'running':
+            return 'component--running';
+          case 'success':
+            return 'component--success';
+          case 'failed':
+            return 'component--failed';
+          default:
+            return '';
+        }
+      }
+      return '';
+    }, [data.execution]);
+
+    const modifier = '--default';
+    const isIbis = false;
 
     const handleDoubleClick = useCallback(() => {
       setViewport({ zoom: 1.1, duration: 500 });
@@ -203,10 +205,14 @@ const MemoizedComponentUI = React.memo(
     }), [colorPrimary]);
 
     const componentClassName = useMemo(() => {
-      return variant === 'card'
+      const baseClass = variant === 'card'
         ? `component-card component${modifier} ${isIbis ? "ibis" : ""}`
         : `component component${modifier} ${isIbis ? "ibis" : ""}`;
-    }, [modifier, isIbis, variant]);
+
+      return executionStatusClass
+        ? `${baseClass} ${executionStatusClass}`.trim()
+        : baseClass;
+    }, [modifier, isIbis, variant, executionStatusClass]);
 
     const { Text } = Typography;
 

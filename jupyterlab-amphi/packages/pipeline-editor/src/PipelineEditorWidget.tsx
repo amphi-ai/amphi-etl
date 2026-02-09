@@ -123,6 +123,7 @@ export class PipelineEditorWidget extends ReactWidget {
   context: Context;
   settings: ISettingRegistry.ISettings;
   componentService: any;
+  executionService: any;
 
   // Constructor
   constructor(options: any) {
@@ -137,6 +138,7 @@ export class PipelineEditorWidget extends ReactWidget {
     this.context = options.context;
     this.settings = options.settings;
     this.componentService = options.componentService;
+    this.executionService = options.executionService;
     let nullPipeline = this.context.model.toJSON() === null;
     this.context.model.contentChanged.connect(() => {
       if (nullPipeline) {
@@ -170,13 +172,14 @@ export class PipelineEditorWidget extends ReactWidget {
         widgetId={this.parent?.id}
         settings={this.settings}
         componentService={this.componentService}
+        executionService={this.executionService}
       />
     );
   }
 }
 
 /*
- * 
+ *
  * The IProps interface in the PipelineEditorWidget.tsx file defines the expected properties (props)
  * that the PipelineEditorWidget component should receive when it's instantiated or used within another component.
  */
@@ -192,6 +195,7 @@ interface IProps {
   settings?: ISettingRegistry.ISettings;
   widgetId?: string;
   componentService: any;
+  executionService: any;
 }
 
 const PipelineWrapper: React.FC<IProps> = ({
@@ -206,6 +210,7 @@ const PipelineWrapper: React.FC<IProps> = ({
   settings,
   widgetId,
   componentService,
+  executionService,
 }) => {
   const manager = defaultFileBrowser.model.manager;
 
@@ -328,6 +333,58 @@ const PipelineWrapper: React.FC<IProps> = ({
     // Undo and Redo
     const { undo, redo, canUndo, canRedo, takeSnapshot } = useUndoRedo();
 
+    // Listen to execution updates and update node data
+    useEffect(() => {
+      if (!executionService) return;
+
+      const updateNodeExecution = (sender: any, result: any) => {
+        console.log(`[PipelineFlow] Received execution update for ${result.nodeId}: ${result.status}`);
+
+        setNodes((nds) =>
+          nds.map((node) =>
+            node.id === result.nodeId
+              ? {
+                  ...node,
+                  data: {
+                    ...node.data,
+                    execution: {
+                      status: result.status,
+                      timestamp: result.timestamp,
+                      executionTime: result.metadata.executionTime,
+                      rowCount: result.metadata.rowCount,
+                      columnCount: result.metadata.columnCount,
+                      errorMessage: result.metadata.errorMessage,
+                      errorType: result.metadata.errorType
+                    }
+                  }
+                }
+              : node
+          )
+        );
+      };
+
+      const clearAllExecutions = () => {
+        console.log(`[PipelineFlow] Clearing all execution data from nodes`);
+        setNodes((nds) =>
+          nds.map((node) => ({
+            ...node,
+            data: {
+              ...node.data,
+              execution: undefined
+            }
+          }))
+        );
+      };
+
+      executionService.executionUpdated.connect(updateNodeExecution);
+      executionService.executionCleared.connect(clearAllExecutions);
+
+      return () => {
+        executionService.executionUpdated.disconnect(updateNodeExecution);
+        executionService.executionCleared.disconnect(clearAllExecutions);
+      };
+    }, [executionService, setNodes]);
+
     const onNodeDragStart: NodeDragHandler = useCallback(() => {
       // 👇 make dragging a node undoable
       takeSnapshot();
@@ -345,7 +402,17 @@ const PipelineWrapper: React.FC<IProps> = ({
     }, [takeSnapshot]);
 
     const updatedPipeline = pipeline;
-    updatedPipeline['pipelines'][0]['flow']['nodes'] = nodes;
+
+    // Filter out execution data before saving (runtime only, not persisted)
+    const nodesToSave = nodes.map(node => {
+      const { execution, ...dataWithoutExecution } = node.data;
+      return {
+        ...node,
+        data: dataWithoutExecution
+      };
+    });
+
+    updatedPipeline['pipelines'][0]['flow']['nodes'] = nodesToSave;
     updatedPipeline['pipelines'][0]['flow']['edges'] = edges;
     updatedPipeline['pipelines'][0]['flow']['viewport'] = getViewport();
 
@@ -752,6 +819,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
   commands: any;
   settings: ISettingRegistry.ISettings;
   componentService: any;
+  executionService: any;
 
   constructor(options: any) {
     super(options);
@@ -763,6 +831,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
     this.commands = options.app.commands;
     this.settings = options.settings;
     this.componentService = options.componentService;
+    this.executionService = options.executionService;
   }
 
   protected createNewWidget(context: DocumentRegistry.Context): DocumentWidget {
@@ -778,6 +847,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
       context: context,
       settings: this.settings,
       componentService: this.componentService,
+      executionService: this.executionService,
     };
 
     let enableExecution = this.settings.get('enableExecution').composite as boolean;
@@ -1069,7 +1139,7 @@ export class PipelineEditorFactory extends ABCWidgetFactory<DocumentWidget> {
                 value={executionMode}
                 optionType="button"
                 buttonStyle="solid"
-                style={{ width: '100%', display: 'flex', gap: '8px' }}
+                style={{ width: '100%', display: 'flex' }}
               />
               <div style={{ marginTop: '16px', fontSize: '13px', color: '#666' }}>
                 {executionMode === 'full' ? (
