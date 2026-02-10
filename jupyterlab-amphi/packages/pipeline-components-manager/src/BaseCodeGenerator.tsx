@@ -301,6 +301,13 @@ export abstract class BaseCodeGenerator {
       'f$1$2$1'
     );
 
+    //    Handle multi-line triple-quoted strings containing Python expressions
+    //    This catches cases like SQL queries with {os.getenv(...)} or {variable} across multiple lines
+    result = result.replace(
+      /(?<![fr])("""[\s\S]*?\{[\s\S]*?\}[\s\S]*?""")/g,
+      'f$1'
+    );
+
     return result;
   }
 
