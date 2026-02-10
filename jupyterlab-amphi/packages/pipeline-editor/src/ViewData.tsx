@@ -385,7 +385,6 @@ export async function viewData(
                 // Clean up the escaping
                 content = content.replace(/^'|'$/g, '');
                 content = content.replace(/\\"/g, '"');
-                content = content.replace(/\\'/g, "\\\\'");
                 // Parse as JSON
                 const modelOptions = JSON.parse(content);
 

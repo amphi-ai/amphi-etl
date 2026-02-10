@@ -167,15 +167,15 @@ Editor components styles
 
 /* Execution status styles */
 .component--running {
-  --border-color: #1890ff; /* Blue */
+  --border-color: #005DC8; /* Blue */
 }
 
 .component--success {
-  --border-color: #52c41a; /* Green */
+  --border-color: #1f883d; /* Green */
 }
 
 .component--failed {
-  --border-color: #ff4d4f; /* Red */
+  --border-color: #D1242F; /* Red */
 }
 
 .component__header--snowflake {
