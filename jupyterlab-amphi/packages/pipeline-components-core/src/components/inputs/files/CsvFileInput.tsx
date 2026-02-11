@@ -43,6 +43,7 @@ export class CsvFileInput extends BaseCoreComponent {
           type: "selectCustomizable",
           label: "Separator",
           id: "csvOptions.sep",
+          columnId: 1, 
           placeholder: "default: ,",
           tooltip: "Select or provide a custom delimiter.",
           options: [
@@ -58,6 +59,7 @@ export class CsvFileInput extends BaseCoreComponent {
           type: "selectCustomizable",
           label: "Encoding",
           id: "csvOptions.encoding",
+          columnId: 1,
           placeholder: "Default: utf-8",
           tooltip: "Select the character encoding of the file.",
           options: [
@@ -84,6 +86,7 @@ export class CsvFileInput extends BaseCoreComponent {
           tooltip: "Number of rows of file to read. Useful for reading pieces of large files.",
           label: "Rows number",
           id: "csvOptions.nrows",
+          columnId: 2,
           placeholder: "Default: all",
           min: 0,
           advanced: true
@@ -92,6 +95,7 @@ export class CsvFileInput extends BaseCoreComponent {
           type: "selectCustomizable",
           label: "Decimal separator",
           id: "csvOptions.decimal",
+          columnId: 2,
           placeholder: "Default: .",
           tooltip: "Character to recognize as decimal point for parsing string columns to numeric. Note that this parameter is only necessary for columns stored as TEXT in Excel, any numeric columns will automatically be parsed, regardless of display format.(e.g. use , for European data).",
           options: [
@@ -113,6 +117,7 @@ export class CsvFileInput extends BaseCoreComponent {
           type: "input",
           label: "Wrapper Character",
           id: "csvOptions.quotechar",
+          columnId: 2,
           tooltip: "Defines the character used to wrap fields containing special characters like the delimiter or newline.",
           advanced: true
         },
@@ -120,6 +125,7 @@ export class CsvFileInput extends BaseCoreComponent {
           type: "input",
           label: "Escaped character",
           id: "csvOptions.escapechar",
+          columnId: 2,
           tooltip: "Character used to escape other characters.",
           advanced: true
         },

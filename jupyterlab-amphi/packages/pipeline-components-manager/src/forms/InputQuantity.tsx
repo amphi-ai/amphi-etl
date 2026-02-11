@@ -1,10 +1,6 @@
-import { FieldDescriptor, Option } from '../configUtils';
-import React, { useState, useEffect, useRef } from 'react';
-import { UserOutlined, CloseOutlined, EyeInvisibleOutlined, EyeTwoTone, SearchOutlined, SettingOutlined } from '@ant-design/icons';
-import { Checkbox, InputNumber, Space } from 'antd';
-import { PipelineService } from '../PipelineService';
+import React, { useState } from 'react';
+import { Checkbox, InputNumber } from 'antd';
 import type { CheckboxProps } from 'antd';
-import { onInputKeyDown} from '../formUtils';
 
 
 export const InputQuantity = ({ field, value, handleChange, context, advanced }) => {
@@ -19,23 +15,24 @@ export const InputQuantity = ({ field, value, handleChange, context, advanced })
   };
 
   return (
-    <Space>
+    <div style={{ display: 'flex', width: '100%', alignItems: 'center', gap: 8 }}>
       <InputNumber
-        {...(field.min ? { min: field.min } : {})}
-        {...(field.max ? { max: field.max } : {})}
+        {...(field.min !== undefined ? { min: field.min } : {})}
+        {...(field.max !== undefined ? { max: field.max } : {})}
         id={field.id}
         name={field.id}
         value={isChecked ? undefined : value}
         onChange={value => handleChange(value, field.id)}
         onKeyDown={(e: any) => e.stopPropagation()}
         changeOnWheel
+        style={{ flex: 1, width: '100%' }}
       />
       {field.noneOption && (
         <Checkbox checked={isChecked} onChange={onChange}>
           None
         </Checkbox>
       )}
-    </Space>
+    </div>
   );
 }
 

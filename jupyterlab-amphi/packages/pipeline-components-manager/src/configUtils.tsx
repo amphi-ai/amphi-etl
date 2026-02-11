@@ -1,5 +1,5 @@
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import { Card, Cascader, Flex, Form, Modal, Drawer, Radio, Switch, Typography, Select, Divider, Space, Button } from 'antd';
+import { Card, Cascader, Col, Flex, Form, Modal, Drawer, Radio, Row, Switch, Typography, Select, Divider, Space, Button } from 'antd';
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { renderFormItem } from './formUtils'
 import CodeTextarea from './forms/CodeTextarea';
@@ -268,6 +268,30 @@ export const GenerateUIInputs = React.memo(({
     return acc;
   }, {}), [form.fields]);
 
+  const groupFieldsIntoRows = useCallback((fields: FieldDescriptor[]) => {
+    const rows: FieldDescriptor[][] = [];
+    const rowByColumnId = new Map<string | number, FieldDescriptor[]>();
+
+    fields.forEach((field) => {
+      if (field.columnId === undefined || field.columnId === null) {
+        rows.push([field]);
+        return;
+      }
+
+      const existingRow = rowByColumnId.get(field.columnId);
+      if (existingRow) {
+        existingRow.push(field);
+        return;
+      }
+
+      const newRow = [field];
+      rowByColumnId.set(field.columnId, newRow);
+      rows.push(newRow);
+    });
+
+    return rows;
+  }, []);
+
   const renderField = useCallback((field: FieldDescriptor, index: number) => {
 
     if (!advanced && field.advanced) {
@@ -399,6 +423,41 @@ export const GenerateUIInputs = React.memo(({
     }
   }, [data, handleChange, componentService, commands, manager, advanced]);
 
+  const renderFieldRows = useCallback((fields: FieldDescriptor[], groupKeyPrefix: string) => {
+    const rows = groupFieldsIntoRows(fields);
+
+    return rows.map((rowFields, rowIndex) => {
+      const renderedFields = rowFields
+        .map((field, fieldIndex) => ({
+          field,
+          content: renderField(field, fieldIndex)
+        }))
+        .filter(item => item.content !== null);
+
+      if (renderedFields.length === 0) {
+        return null;
+      }
+
+      if (renderedFields.length === 1) {
+        return (
+          <React.Fragment key={`${groupKeyPrefix}-row-${rowIndex}`}>
+            {renderedFields[0].content}
+          </React.Fragment>
+        );
+      }
+
+      return (
+        <Row key={`${groupKeyPrefix}-row-${rowIndex}`} gutter={8} align="top" wrap>
+          {renderedFields.map(({ field, content }) => (
+            <Col key={`${groupKeyPrefix}-${field.id}`} flex="1 1 0">
+              {content}
+            </Col>
+          ))}
+        </Row>
+      );
+    });
+  }, [groupFieldsIntoRows, renderField]);
+
   // Helper function to check if any field in a connection should be displayed
   const shouldDisplayConnection = (fields: FieldDescriptor[]) => {
     return fields.some(field => shouldDisplayField(field, data));
@@ -449,11 +508,11 @@ export const GenerateUIInputs = React.memo(({
             extra={selectConnection}
             type="inner"
           >
-            {connectionFields.map(renderField)}
+            {renderFieldRows(connectionFields, `connection-${connection}-${groupIndex}`)}
           </Card>
         );
       })}
-      {groupedFields.default && groupedFields.default.map(renderField)}
+      {groupedFields.default && renderFieldRows(groupedFields.default, 'default')}
     </>
   );
 });
@@ -628,6 +687,7 @@ export interface FieldDescriptor {
   selectionRemovable?: boolean;
   allowedTypes?: string[];
   allowedExtensions?: string[];
+  columnId?: string | number;
 }
 
 interface ConfigModalProps {

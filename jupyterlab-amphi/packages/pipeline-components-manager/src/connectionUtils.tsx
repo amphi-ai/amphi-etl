@@ -330,6 +330,7 @@ export interface FieldDescriptor {
   rows?: number;
   outputType?: string;
   drivers?: string;
+  columnId?: string | number;
 }
 
 interface ConfigModalProps {
