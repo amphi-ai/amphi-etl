@@ -344,7 +344,7 @@ export const GenerateUIInputs = React.memo(({
       case "radio":
         return renderFormItem(field, (
           <Flex vertical gap="middle">
-            <Radio.Group defaultValue={value} onChange={(e: any) => handleChange(e.target.value, field.id)} buttonStyle="solid">
+            <Radio.Group defaultValue={value} size={advanced ? "middle" : "small"} onChange={(e: any) => handleChange(e.target.value, field.id)} buttonStyle="solid">
               {field.options.map((option: any) => (
                 <Radio.Button value={option.value}>{option.label}</Radio.Button>
               ))}

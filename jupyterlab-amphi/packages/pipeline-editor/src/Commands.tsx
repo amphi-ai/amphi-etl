@@ -12,6 +12,14 @@ import {
 
 const Format = "application/react-flow-format";
 
+function isEditingTextTarget(el: HTMLElement | null): boolean {
+  if (!el) return false;
+  if (el.closest('.ace_editor, .ace_text-input')) return true;
+  if (el.closest('input, textarea, [contenteditable="true"], [role="textbox"]')) return true;
+  if (el.isContentEditable) return true;
+  return false;
+}
+
 export function useCopyPaste<NodeData, EdgeData>() {
   const mousePosRef = useRef<XYPosition>({ x: 0, y: 0 });
   const rfDomNode = useStore((state) => state.domNode);
@@ -264,6 +272,10 @@ export const useUndoRedo: UseUndoRedo = ({
     }
 
     const keyDownHandler = (event: KeyboardEvent) => {
+      if (isEditingTextTarget(event.target as HTMLElement | null)) {
+        return;
+      }
+
       if (
         event.key === 'z' &&
         (event.ctrlKey || event.metaKey) &&
@@ -294,5 +306,4 @@ export const useUndoRedo: UseUndoRedo = ({
 
 
 export default { useUndoRedo, useCopyPaste };
-
 

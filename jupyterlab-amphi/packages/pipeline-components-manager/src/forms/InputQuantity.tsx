@@ -24,6 +24,7 @@ export const InputQuantity = ({ field, value, handleChange, context, advanced })
         value={isChecked ? undefined : value}
         onChange={value => handleChange(value, field.id)}
         onKeyDown={(e: any) => e.stopPropagation()}
+        size={advanced ? "middle" : "small"}
         changeOnWheel
         style={{ flex: 1, width: '100%' }}
       />
