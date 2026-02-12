@@ -20,8 +20,7 @@ export class Join extends BaseCoreComponent {
             { value: "cross", label: "Cross", tooltip: "Creates the cartesian product from both datasets, preserves the order of the left keys." },
             { value: "anti-left", label: "Anti Left", tooltip: "Return rows from the left dataset that do not have matching rows in the right dataset." },
             { value: "anti-right", label: "Anti Right", tooltip: "Return rows from the right dataset that do not have matching rows in the left dataset." }
-          ],
-          advanced: true
+          ]
         },
         {
           type: "columnOperationColumn",
@@ -37,7 +36,8 @@ export class Join extends BaseCoreComponent {
           ],
           operatorControlFieldId: "selectExecutionEngine",
           operatorLockedValues: ["pandas"],
-          operatorLockedWhenMissing: true
+          operatorLockedWhenMissing: true,
+          advanced: true
         }
       ],
     };
