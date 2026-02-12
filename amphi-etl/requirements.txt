@@ -1,3 +1,4 @@
+#please change setup.py when changing requirements
 jupyterlab==4.5.3
 # jupyterlab-amphi==0.9.4
 pandas==2.2.3

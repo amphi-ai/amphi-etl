@@ -3,7 +3,11 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class Console extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { type: "Data", dataFormat: "text"};
+    const defaultConfig = { 
+	type: "Data",
+	dataFormat: "text",
+	message:""
+	};
     const form = {
       idPrefix: "component__form",
       fields: [
@@ -14,7 +18,7 @@ export class Console extends BaseCoreComponent {
           placeholder: "Select type",
           options: [
             { value: "Info", label: "Info", tooltip: "Display a regular message in console." },
-            // { value: "Warning", label: "Warning", tooltip: "Display a warning message in the console." },
+            { value: "Warning", label: "Warning", tooltip: "Display a warning message in the console." },
             { value: "Error", label: "Error", tooltip: "Raise an error and display error message in console." },
             { value: "Data", label: "Data", tooltip: "Display data from input component." },
             // { value: "Markdown", label: "Markdown", tooltip: "Display Markdown in the console. The markdown might not be rendered outside Amphi console." },
@@ -27,7 +31,7 @@ export class Console extends BaseCoreComponent {
           id: "message",
           placeholder: "Write text message",
           advanced: true,
-          condition: { type: ["Info", "Error"] }
+          condition: { type: ["Info", "Error","Warning"] }
         },
         {
           type: "inputNumber",
