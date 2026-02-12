@@ -5,6 +5,7 @@ import schemaIconSvgStr from '../style/icons/layout-24.svg';
 
 import tableIconSvgStr from '../style/icons/hard-drive-24.svg';
 import schedulerIconSvgStr from '../style/icons/scheduler.svg';
+import pipelineBrandIconSvgStr from '../style/icons/pipeline-brand-16.svg';
 
 
 export const databaseIcon = new LabIcon({
@@ -27,6 +28,10 @@ export const schedulerIcon = new LabIcon({
   svgstr: schedulerIconSvgStr
 });
 
+export const pipelineBrandIcon = new LabIcon({
+  name: 'amphi:pipeline-brand-icon',
+  svgstr: pipelineBrandIconSvgStr
+});
 
 
 

@@ -23,7 +23,7 @@ import {
   CloseCircleOutlined,
   FolderOpenOutlined
 } from '@ant-design/icons';
-import { schedulerIcon } from './icons';
+import { pipelineBrandIcon, schedulerIcon } from './icons';
 import {
   Button,
   Card,
@@ -246,7 +246,7 @@ const useStyle = createStyles(({ token, css }) => ({
   content: css`
     flex: 1;
     overflow: auto;
-    padding: 16px;
+    padding: 6px 16px 16px;
   `,
   jobCard: css`
     margin-bottom: 12px;
@@ -867,7 +867,7 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
                                 description={
                                   <div>
                                     <div className={styles.jobMeta}>
-                                      <ScheduleOutlined className={styles.jobMetaIcon} />
+                                      <pipelineBrandIcon.react className={styles.jobMetaIcon} />
                                       <span>Pipeline: {job.pipeline_path}</span>
                                     </div>
                                     {job.schedule_type !== 'trigger' && job.next_run_time && (
@@ -929,13 +929,26 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
                               <span style={{ fontWeight: 600 }}>
                                 {run.job_name || jobNameById.get(run.job_id || '') || run.job_id || 'Unknown Task'}
                               </span>
+                              {(() => {
+                                const sourceJob = run.job_id ? jobs.find(job => job.id === run.job_id) : undefined;
+                                if (!sourceJob) return null;
+                                const badge = getScheduleBadge(sourceJob);
+                                return (
+                                  <Tag icon={badge.icon} color="default">
+                                    {badge.label}
+                                  </Tag>
+                                );
+                              })()}
                               <Tag
                                 icon={run.status === 'success' ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
-                                color={run.status === 'success' ? 'success' : 'error'}
+                                style={
+                                  run.status === 'success'
+                                    ? { color: '#1f883d', borderColor: '#1f883d', background: '#eef8f2' }
+                                    : { color: '#D1242F', borderColor: '#D1242F', background: '#fff1f2' }
+                                }
                               >
                                 {run.status === 'success' ? 'Succeeded' : 'Failed'}
                               </Tag>
-                              <Tag>{run.triggered_by}</Tag>
                             </Space>
                           }
                           description={`Time: ${dayjs(run.finished_at).format('YYYY-MM-DD HH:mm:ss')}`}

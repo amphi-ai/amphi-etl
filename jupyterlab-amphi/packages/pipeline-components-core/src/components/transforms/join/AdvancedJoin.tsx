@@ -50,8 +50,9 @@ export class AdvancedJoin extends BaseCoreComponent {
                     label: "Cartesian Product",
                     tooltip: "If the join keys contain duplicates, the result may multiply rows (Cartesian product). Choose how to handle this situation: continue, raise an error, or raise a warning.",
                     id: "selectActionIfCartesianProduct",
+                    columnId: 1,
                     options: [
-                        { value: "0", label: "Do nothing", tooltip: "Execution will continue." },
+                        { value: "0", label: "Default", tooltip: "No action, execution of the join will continue." },
                         { value: "2", label: "Raise error if Cartesian product is detected", tooltip: "Execution will be stopped." },
                         { value: "3", label: "Raise warning if Cartesian product is detected", tooltip: "Execution will continue." }
                     ],
@@ -63,10 +64,11 @@ export class AdvancedJoin extends BaseCoreComponent {
                     type: "select",
                     label: "Strategy for same names",
                     id: "selectSameNameStrategy",
+                    columnId: 1,
                     options: [
-                        { value: "suffix_right", label: "Add _right to duplicate columns from right dataset", tooltip: "If both datasets have columns with the same name, add '_right' to the columns from the right dataset." },
-                        { value: "suffix_both", label: "Add _left and _right suffixes to duplicate columns", tooltip: "If both datasets have columns with the same name, add '_left' to the columns from the left dataset and '_right' to the columns from the right dataset." },
-                        { value: "coalesce", label: "Coalesce fields both datasets", tooltip: "If both datasets have columns with the same name, keep only one column. Fill missing values with data from the right dataset when the left one is empty." }
+                        { value: "suffix_right", label: "Add _right suffix", tooltip: "If both datasets have columns with the same name, add '_right' to the columns from the right dataset." },
+                        { value: "suffix_both", label: "Add _left and _right suffixes", tooltip: "If both datasets have columns with the same name, add '_left' to the columns from the left dataset and '_right' to the columns from the right dataset." },
+                        { value: "coalesce", label: "Coalesce", tooltip: "If both datasets have columns with the same name, keep only one column. Fill missing values with data from the right dataset when the left one is empty." }
                     ],
                     condition: { selectJoinType: ["inner", "left", "right", "outer", "cross"] },
                     advanced: true
@@ -76,6 +78,7 @@ export class AdvancedJoin extends BaseCoreComponent {
                     type: "select",
                     label: "Execution Engine",
                     id: "selectExecutionEngine",
+                    placeholder: "Default: Pandas",
                     options: [
                         { value: "pandas", label: "Pandas", tooltip: "Mature, easy-to-use, great for small-to-medium datasets." },
                         { value: "polars", label: "Polars", tooltip: "Fast, memory-efficient, great for large-scale in-memory analytics." },
