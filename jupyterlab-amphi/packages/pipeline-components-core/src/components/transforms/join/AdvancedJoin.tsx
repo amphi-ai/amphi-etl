@@ -13,22 +13,6 @@ export class AdvancedJoin extends BaseCoreComponent {
             idPrefix: "component__form",
             fields: [
                 {
-                    type: "columns",
-                    label: "Left Input Column(s)",
-                    id: "leftKeyColumn",
-                    placeholder: "Column name",
-                    tooltip: "If you're joining by multiple columns, make sure the column lists are ordered to match the corresponding columns in the right dataset.",
-                    inputNb: 1
-                },
-                {
-                    type: "columns",
-                    label: "Right Input Column(s)",
-                    id: "rightKeyColumn",
-                    placeholder: "Column name",
-                    tooltip: "If you're joining by multiple columns, make sure the column lists are ordered to match the corresponding columns in the left dataset.",
-                    inputNb: 2
-                },
-                {
                     type: "select",
                     label: "Join type",
                     id: "selectJoinType",
@@ -45,6 +29,22 @@ export class AdvancedJoin extends BaseCoreComponent {
                     advanced: true
                 }
                 ,
+                {
+                    type: "columnOperationColumn",
+                    label: "Join Conditions",
+                    id: "joinConditions",
+                    tooltip: "Define one or more join conditions with left column, operator, and right column.",
+                    options: [
+                        { value: "=", label: "=" },
+                        { value: ">", label: ">" },
+                        { value: "<", label: "<" },
+                        { value: ">=", label: ">=" },
+                        { value: "<=", label: "<=" }
+                    ],
+                    operatorControlFieldId: "selectExecutionEngine",
+                    operatorLockedValues: ["pandas"],
+                    operatorLockedWhenMissing: true
+                },
                 {
                     type: "select",
                     label: "Cartesian Product",
@@ -90,23 +90,23 @@ export class AdvancedJoin extends BaseCoreComponent {
         super("Join Datasets", "join", description, "pandas_df_double_processor", [], "transforms", joinIcon, defaultConfig, form);
     }
 
-//now always available through requirements.txt
-//    public provideDependencies({ config }): string[] {
-//        const engine = config?.selectExecutionEngine ?? "pandas";
-//        const deps: string[] = [];
-//
-//        if (engine === "polars") {
-//            deps.push("polars", "pyarrow");
-//        } else if (engine === "duckdb") {
-//            deps.push("duckdb", "pyarrow");
-//        }
-//        // pandas assumed available, no extra deps
-//        return deps;
-//    }
+    //now always available through requirements.txt
+    //    public provideDependencies({ config }): string[] {
+    //        const engine = config?.selectExecutionEngine ?? "pandas";
+    //        const deps: string[] = [];
+    //
+    //        if (engine === "polars") {
+    //            deps.push("polars", "pyarrow");
+    //        } else if (engine === "duckdb") {
+    //            deps.push("duckdb", "pyarrow");
+    //        }
+    //        // pandas assumed available, no extra deps
+    //        return deps;
+    //    }
 
     public provideImports({ config }): string[] {
         const engine = config?.selectExecutionEngine ?? "pandas";
-		//pandas always necessary, since output and input are still pandas df
+        //pandas always necessary, since output and input are still pandas df
         const imports = ["import pandas as pd", "import warnings"];
 
         if (engine === "polars") {
@@ -235,12 +235,18 @@ def perform_join(execution_engine, df1, df2, key_left, key_right, join_type, sam
         raise ValueError(f"Unsupported same_name_strategy: {same_name_strategy}")
 
     if execution_engine == "pandas":
-        if join_type in ['inner', 'left', 'right', 'outer', 'cross']:
+        if join_type in ['inner', 'left', 'right', 'outer']:
             result = pd.merge(
                 df1, df2, 
                 how=join_type, 
                 left_on=key_left, 
                 right_on=key_right,
+                suffixes=(left_suffix, right_suffix)
+            )
+        elif join_type == 'cross':
+            result = pd.merge(
+                df1, df2,
+                how='cross',
                 suffixes=(left_suffix, right_suffix)
             )
         elif join_type == 'anti-left':
@@ -303,7 +309,9 @@ def perform_join(execution_engine, df1, df2, key_left, key_right, join_type, sam
             'cross': 'cross'
         }
 
-        if join_type in join_map_pandas_polars:
+        if join_type == 'cross':
+            result = pl_df1.join(pl_df2, how='cross')
+        elif join_type in join_map_pandas_polars:
             result = pl_df1.join(pl_df2, left_on=[rename_map_left.get(k, k) for k in key_left],
                                  right_on=[rename_map_right.get(k, k) for k in key_right],
                                  how=join_map_pandas_polars[join_type])
@@ -433,6 +441,112 @@ def advanced_join(execution_engine,df1, df2, key_left, key_right, join_type, act
 
     return perform_join(execution_engine,df1, df2, key_left, key_right, join_type, same_name_strategy)
 
+def advanced_join_with_operations(df1, df2, conditions, join_type='inner', same_name_strategy='suffix_right'):
+    if same_name_strategy == 'suffix_right':
+        left_suffix, right_suffix = "", "_right"
+    elif same_name_strategy == 'suffix_both':
+        left_suffix, right_suffix = "_left", "_right"
+    elif same_name_strategy == 'coalesce':
+        left_suffix, right_suffix = "_left", "_right"
+    else:
+        raise ValueError(f"Unsupported same_name_strategy: {same_name_strategy}")
+
+    if join_type == "cross":
+        result = pd.merge(df1, df2, how="cross", suffixes=(left_suffix, right_suffix))
+        return result.convert_dtypes()
+
+    if not conditions:
+        raise ValueError("At least one join condition is required.")
+
+    left_idx = "__amphi_left_idx__"
+    right_idx = "__amphi_right_idx__"
+    while left_idx in df1.columns:
+        left_idx = f"_{left_idx}"
+    while right_idx in df2.columns:
+        right_idx = f"_{right_idx}"
+
+    left = df1.copy()
+    right = df2.copy()
+    left[left_idx] = range(len(left))
+    right[right_idx] = range(len(right))
+
+    overlap_cols = set(df1.columns).intersection(df2.columns)
+    left_renamed = {c: (f"{c}{left_suffix}" if c in overlap_cols and left_suffix else c) for c in df1.columns}
+    right_renamed = {c: (f"{c}{right_suffix}" if c in overlap_cols else c) for c in df2.columns}
+
+    cross = pd.merge(left, right, how="cross", suffixes=(left_suffix, right_suffix))
+    output_cols = [c for c in cross.columns if c not in [left_idx, right_idx]]
+
+    mask = pd.Series(True, index=cross.index)
+    for cond in conditions:
+        left_col = left_renamed.get(cond["left"], cond["left"])
+        right_col = right_renamed.get(cond["right"], cond["right"])
+        op = cond.get("op", "=")
+        if op == "=":
+            mask &= (cross[left_col] == cross[right_col])
+        elif op == ">":
+            mask &= (cross[left_col] > cross[right_col])
+        elif op == "<":
+            mask &= (cross[left_col] < cross[right_col])
+        elif op == ">=":
+            mask &= (cross[left_col] >= cross[right_col])
+        elif op == "<=":
+            mask &= (cross[left_col] <= cross[right_col])
+        else:
+            raise ValueError(f"Unsupported operator: {op}")
+
+    matched = cross[mask].copy()
+    matched_left = set(matched[left_idx].tolist()) if not matched.empty else set()
+    matched_right = set(matched[right_idx].tolist()) if not matched.empty else set()
+
+    def build_unmatched_rows(unmatched_df, side):
+        frame = pd.DataFrame({col: [pd.NA] * len(unmatched_df) for col in output_cols})
+        for c in df1.columns:
+            target = left_renamed.get(c, c)
+            if side == "left":
+                frame[target] = unmatched_df[c].values
+        for c in df2.columns:
+            target = right_renamed.get(c, c)
+            if side == "right":
+                frame[target] = unmatched_df[c].values
+        return frame
+
+    if join_type == "inner":
+        result = matched
+    elif join_type == "left":
+        unmatched_left = left[~left[left_idx].isin(matched_left)]
+        result = pd.concat([matched, build_unmatched_rows(unmatched_left, "left")], ignore_index=True)
+    elif join_type == "right":
+        unmatched_right = right[~right[right_idx].isin(matched_right)]
+        result = pd.concat([matched, build_unmatched_rows(unmatched_right, "right")], ignore_index=True)
+    elif join_type == "outer":
+        unmatched_left = left[~left[left_idx].isin(matched_left)]
+        unmatched_right = right[~right[right_idx].isin(matched_right)]
+        result = pd.concat(
+            [matched, build_unmatched_rows(unmatched_left, "left"), build_unmatched_rows(unmatched_right, "right")],
+            ignore_index=True
+        )
+    elif join_type == "anti-left":
+        unmatched_left = left[~left[left_idx].isin(matched_left)]
+        result = build_unmatched_rows(unmatched_left, "left")
+    elif join_type == "anti-right":
+        unmatched_right = right[~right[right_idx].isin(matched_right)]
+        result = build_unmatched_rows(unmatched_right, "right")
+    else:
+        raise ValueError(f"Unsupported join type: {join_type}")
+
+    result = result.drop(columns=[c for c in [left_idx, right_idx] if c in result.columns], errors="ignore")
+
+    if same_name_strategy == "coalesce":
+        for col in overlap_cols:
+            left_col = f"{col}{left_suffix}"
+            right_col = f"{col}{right_suffix}"
+            if left_col in result.columns and right_col in result.columns:
+                result[col] = result[left_col].combine_first(result[right_col])
+                result = result.drop(columns=[left_col, right_col])
+
+    return result.convert_dtypes()
+
     `;
         return [JoinFunction];
     }
@@ -440,21 +554,43 @@ def advanced_join(execution_engine,df1, df2, key_left, key_right, join_type, act
 
     public generateComponentCode({ config, inputName1, inputName2, outputName }): string {
 
-        const prefix = config?.backend?.prefix ?? "pd";
-        // Extract and map leftKeyColumn and rightKeyColumn arrays
         const const_ts_execution_engine = config.selectExecutionEngine ?? "pandas";
-        const const_ts_leftKeys = config.leftKeyColumn.map(column => column.named ? `"${column.value}"` : column.value);
-        const const_ts_rightKeys = config.rightKeyColumn.map(column => column.named ? `"${column.value}"` : column.value);
+        const rawJoinConditions =
+            config.joinConditions && config.joinConditions.length > 0
+                ? config.joinConditions
+                : (config.leftKeyColumn || []).map((leftColumn, index) => ({
+                    leftColumn,
+                    operation: "=",
+                    rightColumn: config.rightKeyColumn?.[index]
+                }));
+
+        const joinConditions = rawJoinConditions.filter(condition => condition?.leftColumn?.value && condition?.rightColumn?.value);
+        const hasNonEqualityOperation = joinConditions.some(condition => (condition.operation || "=") !== "=");
+        const formatColumnReference = (column: any) => (column?.named === false ? `${column.value}` : `"${column.value}"`);
+
+        const const_ts_leftKeys = joinConditions.map(condition => formatColumnReference(condition.leftColumn));
+        const const_ts_rightKeys = joinConditions.map(condition => formatColumnReference(condition.rightColumn));
         const const_ts_joinType = config.selectJoinType ?? "left";
         const const_ts_action_if_cartesian_product = config.selectActionIfCartesianProduct ?? "0";
         const const_ts_selectSameNameStrategy = config.selectSameNameStrategy ?? "suffix_right";
-        // Join the keys into a string for the Python code
         const const_ts_leftKeysStr = `[${const_ts_leftKeys.join(', ')}]`;
         const const_ts_rightKeysStr = `[${const_ts_rightKeys.join(', ')}]`;
-        //Comment for Python
+        const conditionsStr = `[${joinConditions
+            .map(
+                condition =>
+                    `{"left": ${formatColumnReference(condition.leftColumn)}, "op": "${condition.operation || "="}", "right": ${formatColumnReference(condition.rightColumn)}}`
+            )
+            .join(", ")}]`;
+
         let code = `# Join ${inputName1} and ${inputName2}\n`;
 
-        code += `${outputName}=advanced_join(execution_engine='${const_ts_execution_engine}',df1=${inputName1}, df2=${inputName2}, key_left=${const_ts_leftKeysStr}, key_right=${const_ts_rightKeysStr}, join_type='${const_ts_joinType}', action_if_cartesian_product=${const_ts_action_if_cartesian_product},same_name_strategy='${const_ts_selectSameNameStrategy}')`
+        if (const_ts_joinType !== "cross" && joinConditions.length === 0) {
+            code += `raise ValueError("At least one join condition is required.")\n`;
+        } else if (hasNonEqualityOperation) {
+            code += `${outputName}=advanced_join_with_operations(df1=${inputName1}, df2=${inputName2}, conditions=${conditionsStr}, join_type='${const_ts_joinType}', same_name_strategy='${const_ts_selectSameNameStrategy}')`;
+        } else {
+            code += `${outputName}=advanced_join(execution_engine='${const_ts_execution_engine}',df1=${inputName1}, df2=${inputName2}, key_left=${const_ts_leftKeysStr}, key_right=${const_ts_rightKeysStr}, join_type='${const_ts_joinType}', action_if_cartesian_product=${const_ts_action_if_cartesian_product},same_name_strategy='${const_ts_selectSameNameStrategy}')`;
+        }
 
 
         return code;

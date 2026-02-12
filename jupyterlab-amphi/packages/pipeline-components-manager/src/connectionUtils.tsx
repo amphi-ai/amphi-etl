@@ -313,7 +313,7 @@ export interface Option {
 }
 
 export interface FieldDescriptor {
-  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'select' | 'textarea' | 'radio' | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'dataMapping';
+  type: 'file' | 'column' | 'columns' | 'keyvalue' | 'valuesList' | 'input' | 'select' | 'textarea' | 'radio' | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'columnOperationColumn' | 'dataMapping';
   label: string;
   id: string;
   placeholder?: any;
@@ -330,6 +330,9 @@ export interface FieldDescriptor {
   rows?: number;
   outputType?: string;
   drivers?: string;
+  operatorControlFieldId?: string;
+  operatorLockedValues?: string[];
+  operatorLockedWhenMissing?: boolean;
   columnId?: string | number;
 }
 
