@@ -23,20 +23,20 @@ amphi-etl-git/
 1. **jupyterlab-amphi** (Foundation Layer)
    - Core JupyterLab extension providing the visual pipeline editor
    - Can be installed independently in any JupyterLab environment
-   - Version: 0.9.4
+   - Version: 0.9.5
    - License: ELv2 (Elastic License 2.0)
 
 2. **amphi-etl** (Complete Application)
    - A distribution of JupyterLab with jupyterlab-amphi pre-installed
    - Adds custom Amphi theme and UI changes
    - Provides standalone application with CLI: `amphi start`
-   - Version: 0.9.4
+   - Version: 0.9.5
 
 3. **amphi-scheduler** (Scheduling Extension)
    - Separate JupyterLab extension for scheduling pipeline execution
    - Allows pipelines to run at specific times/intervals
    - Uses APScheduler with SQLite persistence
-   - Version: 0.9.4
+   - Version: 0.9.5
 
 ## Technology Stack
 
