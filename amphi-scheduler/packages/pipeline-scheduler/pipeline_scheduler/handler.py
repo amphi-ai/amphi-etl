@@ -230,6 +230,28 @@ def _get_run(run_id: int):
         ).fetchone()
         return dict(row) if row else None
 
+def _delete_run(run_id: int) -> bool:
+    if not _RUNS_DB_PATH:
+        return False
+    with sqlite3.connect(_RUNS_DB_PATH) as conn:
+        cur = conn.execute(
+            """
+            DELETE FROM scheduler_runs
+            WHERE id = ?
+            """,
+            (run_id,),
+        )
+        conn.commit()
+        return cur.rowcount > 0
+
+def _clear_runs() -> int:
+    if not _RUNS_DB_PATH:
+        return 0
+    with sqlite3.connect(_RUNS_DB_PATH) as conn:
+        cur = conn.execute("DELETE FROM scheduler_runs")
+        conn.commit()
+        return int(cur.rowcount or 0)
+
 def _evaluate_trigger_jobs(changed_job_id: str):
     for job in scheduler.get_jobs():
         if job.id == changed_job_id:
@@ -478,6 +500,16 @@ class SchedulerRunsHandler(APIHandler):
             self.set_status(500)
             self.finish(json.dumps({"error": str(e)}))
 
+    @tornado.web.authenticated
+    async def delete(self):
+        try:
+            deleted = _clear_runs()
+            self.finish(json.dumps({"success": True, "deleted": deleted}))
+        except Exception as e:
+            logger.exception("Error clearing runs")
+            self.set_status(500)
+            self.finish(json.dumps({"error": str(e)}))
+
 class SchedulerRunDetailHandler(APIHandler):
     @tornado.web.authenticated
     async def get(self, run_id):
@@ -490,6 +522,20 @@ class SchedulerRunDetailHandler(APIHandler):
             self.finish(json.dumps(run))
         except Exception as e:
             logger.exception("Error fetching run details")
+            self.set_status(500)
+            self.finish(json.dumps({"error": str(e)}))
+
+    @tornado.web.authenticated
+    async def delete(self, run_id):
+        try:
+            deleted = _delete_run(int(run_id))
+            if not deleted:
+                self.set_status(404)
+                self.finish(json.dumps({"error": "Run not found"}))
+                return
+            self.finish(json.dumps({"success": True}))
+        except Exception as e:
+            logger.exception("Error deleting run")
             self.set_status(500)
             self.finish(json.dumps({"error": str(e)}))
 

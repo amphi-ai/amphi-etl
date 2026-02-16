@@ -13,6 +13,7 @@ import {
   CheckCircleOutlined,
   CalendarOutlined,
   ClockCircleOutlined,
+  CloseOutlined,
   DeleteOutlined,
   EditOutlined,
   FileTextOutlined,
@@ -219,6 +220,18 @@ class SchedulerAPI {
 
   static getRun(id: number): Promise<RunEntry> {
     return this.makeRequest(`runs/${id}`);
+  }
+
+  static deleteRun(id: number): Promise<{ success: boolean }> {
+    return this.makeRequest(`runs/${id}`, {
+      method: 'DELETE'
+    });
+  }
+
+  static clearRuns(): Promise<{ success: boolean; deleted: number }> {
+    return this.makeRequest('runs', {
+      method: 'DELETE'
+    });
   }
 }
 
@@ -776,6 +789,43 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
     }
   };
 
+  const handleDeleteRun = (runId: number) => {
+    const promise = SchedulerAPI.deleteRun(runId);
+
+    Notification.promise(promise, {
+      pending: { message: 'Deleting monitoring entry…' },
+      success: {
+        message: () => {
+          fetchRuns();
+          return 'Monitoring entry removed';
+        }
+      },
+      error: {
+        message: (err: unknown) =>
+          `Failed to remove monitoring entry: ${err instanceof Error ? err.message : String(err)}`
+      }
+    });
+  };
+
+  const handleClearRuns = () => {
+    const promise = SchedulerAPI.clearRuns();
+
+    Notification.promise(promise, {
+      pending: { message: 'Clearing monitoring entries…' },
+      success: {
+        message: (_result: unknown, data?: { success: boolean; deleted: number }) => {
+          fetchRuns();
+          const deleted = data?.deleted ?? 0;
+          return `Cleared ${deleted} monitoring entr${deleted === 1 ? 'y' : 'ies'}`;
+        }
+      },
+      error: {
+        message: (err: unknown) =>
+          `Failed to clear monitoring entries: ${err instanceof Error ? err.message : String(err)}`
+      }
+    });
+  };
+
   return (
     <ConfigProvider
       theme={{
@@ -896,66 +946,79 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
               {
                 key: 'monitoring',
                 label: 'Monitoring',
-                children: monitoringLoading ? (
-                  <div style={{ textAlign: 'center', padding: '40px 0' }}>
-                    <Spin size="large" />
-                  </div>
-                ) : runs.length === 0 ? (
-                  <Empty
-                    description="No runs recorded yet"
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                  />
-                ) : (
-                  <List
-                    itemLayout="horizontal"
-                    dataSource={runs}
-                    renderItem={run => (
-                      <List.Item
-                        key={run.id}
-                        actions={[
-                          <Button
-                            key={`logs-${run.id}`}
-                            type="text"
-                            icon={<FileTextOutlined />}
-                            onClick={() => openRunLogs(run)}
+                children: (
+                  <>
+                    <Space style={{ marginBottom: 12 }}>
+                      <Button
+                        icon={<ReloadOutlined />}
+                        onClick={() => fetchRuns()}
+                      />
+                      <Button danger icon={<DeleteOutlined />} onClick={handleClearRuns}>
+                        Clear
+                      </Button>
+                    </Space>
+                    {monitoringLoading ? (
+                      <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                        <Spin size="large" />
+                      </div>
+                    ) : runs.length === 0 ? (
+                      <Empty
+                        description="No runs recorded yet"
+                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                      />
+                    ) : (
+                      <List
+                        itemLayout="horizontal"
+                        dataSource={runs}
+                        renderItem={run => (
+                          <List.Item
+                            key={run.id}
+                            actions={[
+                              <Tooltip title="View logs" key={`logs-tooltip-${run.id}`}>
+                                <Button
+                                  key={`logs-${run.id}`}
+                                  type="text"
+                                  icon={<FileTextOutlined />}
+                                  onClick={() => openRunLogs(run)}
+                                />
+                              </Tooltip>,
+                              <Tooltip title="Remove from monitoring" key={`remove-tooltip-${run.id}`}>
+                                <Button
+                                  key={`remove-${run.id}`}
+                                  type="text"
+                                  danger
+                                  icon={<CloseOutlined />}
+                                  onClick={() => handleDeleteRun(run.id)}
+                                />
+                              </Tooltip>
+                            ]}
                           >
-                            Logs
-                          </Button>
-                        ]}
-                      >
-                        <List.Item.Meta
-                          title={
-                            <Space wrap>
-                              <span style={{ fontWeight: 600 }}>
-                                {run.job_name || jobNameById.get(run.job_id || '') || run.job_id || 'Unknown Task'}
-                              </span>
-                              {(() => {
-                                const sourceJob = run.job_id ? jobs.find(job => job.id === run.job_id) : undefined;
-                                if (!sourceJob) return null;
-                                const badge = getScheduleBadge(sourceJob);
-                                return (
-                                  <Tag icon={badge.icon} color="default">
-                                    {badge.label}
+                            <List.Item.Meta
+                              title={
+                                <Space wrap>
+                                  <span style={{ fontWeight: 600 }}>
+                                    {run.job_name || jobNameById.get(run.job_id || '') || run.job_id || 'Unknown Task'}
+                                  </span>
+                                  {run.triggered_by === 'manual' && <Tag color="default">Manual</Tag>}
+                                  <Tag
+                                    icon={run.status === 'success' ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
+                                    style={
+                                      run.status === 'success'
+                                        ? { color: '#1f883d', borderColor: '#1f883d', background: '#eef8f2' }
+                                        : { color: '#D1242F', borderColor: '#D1242F', background: '#fff1f2' }
+                                    }
+                                  >
+                                    {run.status === 'success' ? 'Succeeded' : 'Failed'}
                                   </Tag>
-                                );
-                              })()}
-                              <Tag
-                                icon={run.status === 'success' ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
-                                style={
-                                  run.status === 'success'
-                                    ? { color: '#1f883d', borderColor: '#1f883d', background: '#eef8f2' }
-                                    : { color: '#D1242F', borderColor: '#D1242F', background: '#fff1f2' }
-                                }
-                              >
-                                {run.status === 'success' ? 'Succeeded' : 'Failed'}
-                              </Tag>
-                            </Space>
-                          }
-                          description={`Time: ${dayjs(run.finished_at).format('YYYY-MM-DD HH:mm:ss')}`}
-                        />
-                      </List.Item>
+                                </Space>
+                              }
+                              description={`Time: ${dayjs(run.finished_at).format('YYYY-MM-DD HH:mm:ss')}`}
+                            />
+                          </List.Item>
+                        )}
+                      />
                     )}
-                  />
+                  </>
                 )
               }
             ]}
