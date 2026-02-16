@@ -1044,4 +1044,3 @@ const extensions: JupyterFrontEndPlugin<any>[] = [
 ];
 
 export default extensions;
-
