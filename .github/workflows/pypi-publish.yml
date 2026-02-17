@@ -78,7 +78,11 @@ jobs:
       - name: Build jupyterlab-amphi
         working-directory: jupyterlab-amphi
         run: |
-          jlpm install
+          if [ -f yarn.lock ]; then
+            jlpm install --immutable
+          else
+            YARN_ENABLE_IMMUTABLE_INSTALLS=false jlpm install
+          fi
           jlpm lint:check || echo "Linting warnings - continuing"
           jlpm build:prod
           python -m build
@@ -86,7 +90,11 @@ jobs:
       - name: Build amphi-scheduler
         working-directory: amphi-scheduler
         run: |
-          jlpm install
+          if [ -f yarn.lock ]; then
+            jlpm install --immutable
+          else
+            YARN_ENABLE_IMMUTABLE_INSTALLS=false jlpm install
+          fi
           jlpm lint:check || echo "Linting warnings - continuing"
           jlpm build:prod
           python -m build
@@ -94,7 +102,11 @@ jobs:
       - name: Build amphi-etl
         working-directory: amphi-etl
         run: |
-          jlpm install
+          if [ -f yarn.lock ]; then
+            jlpm install --immutable
+          else
+            YARN_ENABLE_IMMUTABLE_INSTALLS=false jlpm install
+          fi
           jlpm lint:check || echo "Linting warnings - continuing"
           jlpm build:prod
           python -m build
