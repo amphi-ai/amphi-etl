@@ -49,7 +49,7 @@
     "watch:src": "tsc -w"
   },
   "dependencies": {
-    "@amphi/pipeline-components-manager": "file:/Users/thibaut/Documents/amphi-etl-git/amphi-etl/jupyterlab-amphi/packages/pipeline-components-manager",
+    "@amphi/pipeline-components-manager": "file:../../../jupyterlab-amphi/packages/pipeline-components-manager",
     "@jupyterlab/application": "^4.0.9",
     "@jupyterlab/apputils": "^4.0.9",
     "@jupyterlab/ui-components": "^4.0.9",
