@@ -3,5 +3,8 @@
     "jpserver_extensions": {
       "pipeline_scheduler": true
     }
+  },
+  "ContentsManager": {
+    "allow_hidden": true
   }
 }

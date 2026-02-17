@@ -27,7 +27,7 @@
         "packages": [
             "packages/theme-light",
             "packages/ui-component",
-            "packages/pipeline-components-panel"
+            "packages/components-panel"
         ]
     },
     "scripts": {

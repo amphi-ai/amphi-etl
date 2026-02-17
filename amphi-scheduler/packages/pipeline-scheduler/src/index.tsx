@@ -592,8 +592,10 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
   const [logsLoading, setLogsLoading] = useState(false);
   const [selectedRun, setSelectedRun] = useState<RunEntry | null>(null);
 
-  const fetchJobs = async () => {
-    setLoading(true);
+  const fetchJobs = async (showLoader = false) => {
+    if (showLoader) {
+      setLoading(true);
+    }
     try {
       const data = await SchedulerAPI.listJobs();
       setJobs(data.jobs || []);
@@ -601,12 +603,16 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
       console.error('Error fetching jobs:', error);
       Notification.error('Failed to fetch scheduled jobs');
     } finally {
-      setLoading(false);
+      if (showLoader) {
+        setLoading(false);
+      }
     }
   };
 
-  const fetchRuns = async () => {
-    setMonitoringLoading(true);
+  const fetchRuns = async (showLoader = false) => {
+    if (showLoader) {
+      setMonitoringLoading(true);
+    }
     try {
       const data = await SchedulerAPI.listRuns();
       setRuns(data.runs || []);
@@ -614,13 +620,15 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
       console.error('Error fetching runs:', error);
       Notification.error('Failed to fetch run monitoring data');
     } finally {
-      setMonitoringLoading(false);
+      if (showLoader) {
+        setMonitoringLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchJobs();
-    fetchRuns();
+    fetchJobs(true);
+    fetchRuns(true);
     // Set up a refresh interval
     const intervalId = setInterval(() => {
       fetchJobs();
@@ -679,7 +687,7 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
       }
     });
 
-    promise.then(fetchJobs).catch(console.error);
+    promise.then(() => fetchJobs()).catch(console.error);
   };
 
   const handleRunJob = async (jobId: string) => {
@@ -949,13 +957,13 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
                 children: (
                   <>
                     <Space style={{ marginBottom: 12 }}>
+                      <Button danger icon={<DeleteOutlined />} onClick={handleClearRuns}>
+                        Clear
+                      </Button>
                       <Button
                         icon={<ReloadOutlined />}
                         onClick={() => fetchRuns()}
                       />
-                      <Button danger icon={<DeleteOutlined />} onClick={handleClearRuns}>
-                        Clear
-                      </Button>
                     </Space>
                     {monitoringLoading ? (
                       <div style={{ textAlign: 'center', padding: '40px 0' }}>

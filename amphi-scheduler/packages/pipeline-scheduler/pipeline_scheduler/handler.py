@@ -697,6 +697,88 @@ class SchedulerRunHandler(APIHandler):
         _evaluate_trigger_jobs(job.id)
         self.finish(json.dumps(result))
 
+class ComponentsConfigHandler(APIHandler):
+    """API handler for components config.toml file operations."""
+    @tornado.web.authenticated
+    async def get(self):
+        """Read config.toml content."""
+        try:
+            config_path = os.path.join(_amphi_dir(), ".amphi", "config.toml")
+            if os.path.exists(config_path):
+                with open(config_path, 'r') as f:
+                    content = f.read()
+                self.finish(json.dumps({"content": content}))
+            else:
+                self.finish(json.dumps({"content": ""}))
+        except Exception as e:
+            logger.exception("Error reading config.toml")
+            self.set_status(500)
+            self.finish(json.dumps({"error": str(e)}))
+
+    @tornado.web.authenticated
+    async def post(self):
+        """Write config.toml content."""
+        try:
+            body = self.get_json_body() or {}
+            content = body.get("content", "")
+            config_path = os.path.join(_amphi_dir(), ".amphi", "config.toml")
+            with open(config_path, 'w') as f:
+                f.write(content)
+            self.finish(json.dumps({"success": True}))
+        except Exception as e:
+            logger.exception("Error writing config.toml")
+            self.set_status(500)
+            self.finish(json.dumps({"error": str(e)}))
+
+class ComponentsFileHandler(APIHandler):
+    """API handler for saving component files to .amphi/components/."""
+    @tornado.web.authenticated
+    async def post(self):
+        """Save a component file."""
+        try:
+            body = self.get_json_body() or {}
+            filename = body.get("filename")
+            content = body.get("content")
+
+            if not filename or not content:
+                raise ValueError("filename and content are required")
+
+            # Sanitize filename to prevent directory traversal
+            filename = os.path.basename(filename)
+            file_path = os.path.join(_amphi_dir(), ".amphi", "components", filename)
+
+            with open(file_path, 'w') as f:
+                f.write(content)
+
+            self.finish(json.dumps({"success": True, "path": file_path}))
+        except Exception as e:
+            logger.exception("Error saving component file")
+            self.set_status(500)
+            self.finish(json.dumps({"error": str(e)}))
+
+    @tornado.web.authenticated
+    async def delete(self):
+        """Delete a component file."""
+        try:
+            filename = self.get_argument("filename")
+            if not filename:
+                raise ValueError("filename parameter is required")
+
+            # Sanitize filename to prevent directory traversal
+            filename = os.path.basename(filename)
+            file_path = os.path.join(_amphi_dir(), ".amphi", "components", filename)
+
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                self.finish(json.dumps({"success": True}))
+            else:
+                self.set_status(404)
+                self.finish(json.dumps({"error": "File not found"}))
+        except Exception as e:
+            logger.exception("Error deleting component file")
+            self.set_status(500)
+            self.finish(json.dumps({"error": str(e)}))
+
 # ── extension wiring ────────────────────────────────────────────────────────
 def setup_handlers(web_app):
     base = web_app.settings["base_url"]
@@ -707,7 +789,9 @@ def setup_handlers(web_app):
         (url_path_join(base, "pipeline-scheduler", "run",  "(.+)"), SchedulerRunHandler),
         (url_path_join(base, "pipeline-scheduler", "runs"), SchedulerRunsHandler),
         (url_path_join(base, "pipeline-scheduler", "runs", "(.+)"), SchedulerRunDetailHandler),
-        (url_path_join(base, "pipeline-scheduler", "config"), SchedulerConfigHandler)
+        (url_path_join(base, "pipeline-scheduler", "config"), SchedulerConfigHandler),
+        (url_path_join(base, "pipeline-scheduler", "components-config"), ComponentsConfigHandler),
+        (url_path_join(base, "pipeline-scheduler", "components-file"), ComponentsFileHandler)
     ])
 
 def _jupyter_server_extension_paths():
@@ -738,8 +822,20 @@ def load_jupyter_server_extension(nb_server_app):
 
     nb_server_app.log.info("🚀 _AMPHI_ROOT resolved to %s", _AMPHI_ROOT)
 
+    # Create .amphi directory structure
     amphi_data_dir = os.path.join(_AMPHI_ROOT, ".amphi")
     os.makedirs(amphi_data_dir, exist_ok=True)
+
+    # Create components subdirectory for components-panel
+    components_dir = os.path.join(amphi_data_dir, "components")
+    os.makedirs(components_dir, exist_ok=True)
+
+    # Initialize config.toml if it doesn't exist
+    config_path = os.path.join(amphi_data_dir, "config.toml")
+    if not os.path.exists(config_path):
+        with open(config_path, 'w') as f:
+            f.write("[components]\nsources = [\n]\n\nmanaged_sources = [\n]\n")
+
     sqlite_path = os.path.join(amphi_data_dir, "scheduler.sqlite")
     scheduler.configure(
         executors={

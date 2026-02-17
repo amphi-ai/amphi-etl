@@ -62,12 +62,12 @@ build-function = "hatch_jupyter_builder.npm_builder"
 ensured-targets = [
     "amphi/ui-component/static/style.js",
     "amphi/ui-component/package.json",
-    "amphi/pipeline-components-panel/static/style.js",
-    "amphi/pipeline-components-panel/package.json",
+    "amphi/components-panel/static/style.js",
+    "amphi/components-panel/package.json",
 ]
 skip-if-exists = [
     "amphi/ui-component/static/style.js",
-    "amphi/pipeline-components-panel/static/style.js",
+    "amphi/components-panel/static/style.js",
 ]
 
 [tool.hatch.build.hooks.jupyter-builder.build-kwargs]

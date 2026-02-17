@@ -8,10 +8,10 @@ include ts*.json
 include yarn.lock
 include share/jupyter/labextensions/@amphi/theme-light/*
 include share/jupyter/labextensions/@amphi/ui-component/*
-include share/jupyter/labextensions/@amphi/pipeline-components-panel/*
+include share/jupyter/labextensions/@amphi/components-panel/*
 recursive-include share/jupyter/labextensions/@amphi/theme-light *
 recursive-include share/jupyter/labextensions/@amphi/ui-component *
-recursive-include share/jupyter/labextensions/@amphi/pipeline-components-panel *
+recursive-include share/jupyter/labextensions/@amphi/components-panel *
 
 graft amphi/*
 

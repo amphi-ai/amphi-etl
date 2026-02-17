@@ -28,7 +28,8 @@ def main():
             f'--notebook-dir={args.workspace}',
             f'--port={args.port}',
             f'--ip={args.ip}',
-            '--ContentManager.allow_hidden=true'
+            '--ContentManager.allow_hidden=True',
+            '--FileContentsManager.allow_hidden=True'
         ]
         if args.allow_root:
             jupyter_command.append('--allow-root')
