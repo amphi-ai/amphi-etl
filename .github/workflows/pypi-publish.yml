@@ -41,7 +41,7 @@ jobs:
       - name: Install build tools
         run: |
           npm install -g yarn
-          python -m pip install --upgrade pip build
+          python -m pip install --upgrade pip build "jupyterlab>=4.0.0,<5"
 
       - name: Update version in jupyterlab-amphi
         working-directory: jupyterlab-amphi
