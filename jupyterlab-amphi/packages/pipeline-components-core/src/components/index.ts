@@ -95,3 +95,6 @@ export { FormExample } from './developer/FormExample';
 export { DataframeList } from './developer/DataframeList';
 export { DataframeDelete } from './developer/DataframeDelete';
 export { PackagesList } from './developer/PackagesList';
+
+// Custom
+export { SwitchComponent } from './custom/SwitchComponent';
