@@ -5,6 +5,7 @@ import { PostgresOutput } from './PostgresOutput';
 import { SqlServerOutput } from './SqlServerOutput';
 import { SnowflakeOutput } from './SnowflakeOutput';
 import { OracleOutput } from './OracleOutput';
+import { ClickhouseOutput } from './ClickhouseOutput';
 
 export class DatabaseOutput extends BaseCoreComponent {
   constructor() {
@@ -15,6 +16,7 @@ export class DatabaseOutput extends BaseCoreComponent {
     const mssql = new SqlServerOutput();
     const snowflake = new SnowflakeOutput();
     const oracle = new OracleOutput();
+    const clickhouse = new ClickhouseOutput();
 
     const getFields = (comp: BaseCoreComponent): any[] => {
       const form = (comp as any)._form as any;
@@ -36,7 +38,8 @@ export class DatabaseOutput extends BaseCoreComponent {
             { value: "postgres", label: "PostgreSQL" },
             { value: "sqlserver", label: "SQL Server" },
             { value: "snowflake", label: "Snowflake" },
-            { value: "oracle", label: "Oracle" }
+            { value: "oracle", label: "Oracle" },
+            { value: "clickhouse", label: "Clickhouse" }
           ]
         },
         ...wrapFields(getFields(mysql), "mysql"),
@@ -44,6 +47,7 @@ export class DatabaseOutput extends BaseCoreComponent {
         ...wrapFields(getFields(mssql), "sqlserver"),
         ...wrapFields(getFields(snowflake), "snowflake"),
         ...wrapFields(getFields(oracle), "oracle"),
+        ...wrapFields(getFields(clickhouse), "clickhouse"),
       ]
     };
 
@@ -60,6 +64,7 @@ export class DatabaseOutput extends BaseCoreComponent {
       case "sqlserver": return new SqlServerOutput().provideDependencies({ config });
       case "snowflake": return new SnowflakeOutput().provideDependencies({ config });
       case "oracle": return new OracleOutput().provideDependencies({ config });
+      case "clickhouse": return new ClickhouseOutput().provideDependencies({ config });
       default: return [];
     }
   }
@@ -71,6 +76,7 @@ export class DatabaseOutput extends BaseCoreComponent {
       config.provider === "sqlserver" ? new SqlServerOutput().provideImports({ config }) :
       config.provider === "snowflake" ? new SnowflakeOutput().provideImports({ config }) :
       config.provider === "oracle" ? new OracleOutput().provideImports({ config }) :
+      config.provider === "clickhouse" ? new ClickhouseOutput().provideImports({ config }) :
       [];
 
     const seen = new Set<string>();
@@ -84,6 +90,7 @@ export class DatabaseOutput extends BaseCoreComponent {
       case "sqlserver": return new SqlServerOutput().generateComponentCode({ config, inputName });
       case "snowflake": return new SnowflakeOutput().generateComponentCode({ config, inputName });
       case "oracle": return new OracleOutput().generateComponentCode({ config, inputName });
+      case "clickhouse": return new ClickhouseOutput().generateComponentCode({ config, inputName });
       default: return "";
     }
   }

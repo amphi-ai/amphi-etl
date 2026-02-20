@@ -108,6 +108,32 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
           />
         </>
       );
+    case "pandas_df_switch":
+      return (
+        <>
+          <LimitedInputHandle type="target" position={Position.Left} isConnectable={1} className="handle-left" id="in" />
+          <Handle
+            className="handle-right"
+            type="source"
+            position={Position.Right}
+            id="path_a"
+            style={{ 
+              top: '30%',
+              background: 'green' 
+            }}
+          />
+          <Handle
+            className="handle-right"
+            type="source"
+            position={Position.Right}
+            id="path_b"
+            style={{ 
+              top: '70%',
+              background: 'red'
+            }}
+          />
+        </>
+      );  
     default:
       return null;
   }

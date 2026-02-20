@@ -187,7 +187,7 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
         {(showContent || isSelected) && (
           <NodeToolbar isVisible position={Position.Bottom}>
             <button onClick={() => setModalOpen(true)}><settingsIcon.react /></button>
-            {(this._type.includes('input') || this._type.includes('processor') || this._type.includes('output')) && (
+            {(this._type.includes('input') || this._type.includes('processor') || this._type.includes('output') || this._type.includes('switch')) && (
               <button onClick={() => executeUntilComponent()} disabled={!enableExecution}
                 style={{ opacity: enableExecution ? 1 : 0.5, cursor: enableExecution ? 'pointer' : 'not-allowed' }}>
                 <playCircleIcon.react /></button>
