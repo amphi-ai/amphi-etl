@@ -64,6 +64,7 @@ export { UniqueKeyDetector } from './transforms/UniqueKeyDetector';
 export { FileAction } from './transforms/files/FileAction';
 export { HierarchyPath } from './transforms/HierarchyPath';
 export { CompareDataframes } from './transforms/CompareDataframes';
+export { PostgresSQLLookup } from './transforms/PostgresSQLLookup';
 
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';
