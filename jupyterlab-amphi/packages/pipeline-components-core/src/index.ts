@@ -14,7 +14,14 @@ import {
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput, 
   SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample,UniqueKeyDetector,FileAction,DataframeList,DataframeDelete,HierarchyPath,PackagesList, JSONTools,
-  DatabaseInput, DatabaseOutput, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar
+  DatabaseInput, DatabaseOutput, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar,
+
+
+
+
+
+  ClickhouseOutput,  TransformInput
+
 } from './components';
 
 // Export allow the component to be used as a base component in different packages
@@ -23,7 +30,16 @@ export { Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonF
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, DateTimeConverter,
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
-  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample,UniqueKeyDetector,FileAction,DataframeList,DataframeDelete,HierarchyPath,PackagesList,CompareDataframes,GenerateCalendar,DynamicGenerateCalendar 
+  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample,UniqueKeyDetector,FileAction,DataframeList,DataframeDelete,HierarchyPath,PackagesList,CompareDataframes,GenerateCalendar,DynamicGenerateCalendar,
+
+
+
+
+
+
+
+
+  ClickhouseOutput,  TransformInput
   }
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -120,7 +136,21 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(FormExample.getInstance())
     componentService.addComponent(DataframeList.getInstance())
     componentService.addComponent(DataframeDelete.getInstance())
-	componentService.addComponent(PackagesList.getInstance())
+	  componentService.addComponent(PackagesList.getInstance())
+
+
+
+
+
+
+
+
+
+    
+    // new components can be added here
+
+    componentService.addComponent(ClickhouseOutput.getInstance()) 
+    componentService.addComponent(TransformInput.getInstance()) 
   }
 };
 

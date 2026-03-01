@@ -40,6 +40,7 @@ export { Deduplicate } from './transforms/Deduplicate';
 export { ExpandList } from './transforms/JSON/ExpandList';
 export { FlattenJSON } from './transforms/JSON/FlattenJSON';
 export { JSONTools } from './transforms/JSON/JSONTools';
+export { Expressions } from './transforms/Expressions';
 
 
 export { Sample } from './transforms/Sample';
@@ -95,3 +96,32 @@ export { FormExample } from './developer/FormExample';
 export { DataframeList } from './developer/DataframeList';
 export { DataframeDelete } from './developer/DataframeDelete';
 export { PackagesList } from './developer/PackagesList';
+
+// New Components
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export { TransformInput } from './inputs/TransformInput';
+export { ClickhouseOutput } from './outputs/databases/ClickhouseOutput';
+ 

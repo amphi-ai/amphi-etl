@@ -326,12 +326,35 @@ export class RequestService {
     setLoadings: any,
     nodeId: any,
   ): any {
-    setLoadings(true);
+    setLoadings(true); 
 
+    let correctSchemaName = schemaName; 
+    if(correctSchemaName.startsWith('{') && correctSchemaName.endsWith('}')) {
+
+      const allConnections = PipelineService.getConnections(context.model.toString());
+      console.log("allConnections:", allConnections); 
+
+      const escapedSchemaName = schemaName.substring(1, schemaName.length-1)
+      console.log("escapedSchemaName:", escapedSchemaName); 
+
+      for( const connection of allConnections ) {  
+        let stopLoop = false;
+        for( const variable of connection.variables ) { 
+          if (variable.name == escapedSchemaName && connection.connectionType === "Postgres" ) {
+            correctSchemaName = variable.value;
+            stopLoop = true; 
+            break;
+          }  
+        }
+        if( stopLoop ) break;
+      } 
+    }
+ 
     // Escape and replace schema in the query
-    let escapedQuery = query.replace(/"/g, '\\"');
-    escapedQuery = escapedQuery.replace(/{{schema}}/g, schemaName);
-
+    let escapedQuery = query.replace(/"/g, '\\"'); 
+ 
+    escapedQuery = escapedQuery.replace(/{{schema}}/g, correctSchemaName); 
+ 
     // Get environment and connection code
     const envVariableCode = CodeGenerator.getEnvironmentVariableCode(context.model.toString(), componentService);
     const connectionCode = CodeGenerator.getConnectionCode(context.model.toString(), componentService);
@@ -354,25 +377,65 @@ export class RequestService {
 
     // Generate the import statements string (one per line)
     const importStatements = imports.map((imp: string) => `${imp}`).join('\n');
-
+  
     // Build the Python code string
-    let code = `
+    let code = ""; 
+ 
+    if( data.provider == "clickhouse" || component._name == "ClickHouse Output" ) {   
+       
+      const port = parseInt(data.port, 10);
+      const safePort = isNaN(port) ? 8123 : port;
+ 
+      code =  `
 !pip install --quiet ${dependencyString} --disable-pip-version-check
 ${importStatements}
 ${envVariableCode}
 ${connectionCode}
 
+client = clickhouse_connect.get_client(
+    host="${data.host}",
+    port=${safePort},
+    username="${data.username}",
+    password="${data.password}",
+    database="${data.databaseName}"
+)
+      
+try:
+    # Use ClickHouse native query_df method
+    #tables = client.query_df("${escapedQuery}")
+    tables = client.query_df(f"SELECT name FROM system.tables where database='${data.databaseName}';")
+    if len(tables) > 0:
+        tables.iloc[:, 0] = tables.iloc[:, 0].astype(str).str.strip()
+        formatted_output = ", ".join(tables.iloc[:, 0].tolist())
+    else:
+        formatted_output = ""
+    print(formatted_output)
+except Exception as e:
+    print(f"Error querying ClickHouse: {e}")
+    formatted_output = ""
+finally:
+    client.close() 
+`;
+   
+    }
+    else {
+      code =  `
+!pip install --quiet ${dependencyString} --disable-pip-version-check
+${importStatements}
+${envVariableCode}
+${connectionCode}
+      
 query = """
 ${escapedQuery}
 """
 ${component.generateDatabaseConnectionCode({ config: data, connectionName: "engine" })}
-
 tables = pd.read_sql(query, con=engine)
 tables.iloc[:, 0] = tables.iloc[:, 0].str.strip()  # Strip leading/trailing spaces
 formatted_output = ", ".join(tables.iloc[:, 0].tolist())
 print(formatted_output)
 `;
-
+    }
+   
     // Format any remaining variables in the code
     code = CodeGenerator.formatVariables(code);
 
@@ -438,7 +501,7 @@ print(formatted_output)
     setLoadings: any,
     nodeId: any,
   ): any {
-    setLoadings(true);
+    setLoadings(true); 
 
     // Escape and replace schema and table in the query
     let escapedQuery = query.replace(/"/g, '\\"');
@@ -477,10 +540,51 @@ print(formatted_output)
     const dependencyString = dependencies.join(' ');
 
     // Generate the import statements string (one per line)
-    const importStatements = imports.map((imp: string) => `${imp}`).join('\n');
+    const importStatements = imports.map((imp: string) => `${imp}`).join('\n'); 
 
     // Build the Python code string
-    let code = `
+    let code = ""; 
+    if( data.provider == "clickhouse"  || component._name == "ClickHouse Output" ) {
+      const port = parseInt(data.port, 10);
+      const safePort = isNaN(port) ? 8123 : port;
+
+      code =  `
+!pip install --quiet ${dependencyString} --disable-pip-version-check
+${importStatements}
+${envVariableCode}
+${connectionCode}
+
+client = clickhouse_connect.get_client(
+    host="${data.host}",
+    port=${safePort},
+    username="${data.username}",
+    password="${data.password}",
+    database="${data.databaseName}"
+)
+      
+try:
+    # Use ClickHouse native query_df method
+    tables = client.query_df("${escapedQuery}")
+except Exception as e:
+    print(f"Error querying ClickHouse: {e}")
+    #formatted_output = ""
+finally:
+    client.close() 
+    schema = pd.DataFrame(tables)  
+    
+    # Exclude 'id' and 'created_on' columns
+    schema = schema[~schema['field'].isin(['id', 'updated_on'])]
+    
+    print("Available columns in ClickHouse table:")
+    print(schema.columns.tolist())  # Print the column names
+    print("Available columns in ClickHouse table 2:")
+    print(schema)
+    ${pythonExtraction}
+`; 
+    } 
+
+    else { 
+      code = `
 !pip install --quiet ${dependencyString} --disable-pip-version-check
 ${importStatements}
 ${envVariableCode}
@@ -494,13 +598,13 @@ schema = pd.read_sql(query, con=engine)
 
 ${pythonExtraction}
 `;
-
-
+    }
+    
     // Format any remaining variables in the code
     code = CodeGenerator.formatVariables(code);
-
+ 
     const future = context.sessionContext.session.kernel!.requestExecute({ code: code });
-
+ 
     future.onReply = (reply) => {
       if (reply.content.status == 'ok') {
         // Execution was successful
