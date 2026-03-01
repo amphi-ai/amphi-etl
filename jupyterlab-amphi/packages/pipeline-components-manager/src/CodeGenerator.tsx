@@ -74,7 +74,7 @@ export class CodeGenerator extends BaseCodeGenerator {
       // If it's the target node, handle display code or final try-catch
       if (nodeObj.id === targetNodeId) {
         let displayCode = '';
-        if (nodeObj.type.includes('processor') || nodeObj.type.includes('input')) {
+        if (nodeObj.type.includes('processor') || nodeObj.type.includes('input') || nodeObj.type.includes('pandas_df_switch')) {
           if (nodeObj.type.includes('documents')) {
             if (!fromStart) {
               codeList.length = 0;
@@ -90,7 +90,18 @@ export class CodeGenerator extends BaseCodeGenerator {
               executedNodes.clear();
               executedNodes.add(nodeObj.id);
             }
-            displayCode = `\__amphi_display(${nodeObj.outputName}, dfName="${nodeObj.outputName}", nodeId="${targetNodeId}"${nodeObj.runtime !== "local" ? `, runtime="${nodeObj.runtime}"` : ''})`;
+            // Handle pandas_df_switch nodes - determine which path to display
+if (nodeObj.type === 'pandas_df_switch') { 
+  displayCode = `
+# Display the non-empty path 
+if not ${nodeObj.outputName}_path_b.empty: 
+    __amphi_display(${nodeObj.outputName}_path_b, dfName="${nodeObj.outputName}_path_b", nodeId="${targetNodeId}"${nodeObj.runtime !== "local" ? `, runtime="${nodeObj.runtime}"` : ''})
+else:  
+    __amphi_display(${nodeObj.outputName}_path_a, dfName="${nodeObj.outputName}_path_a", nodeId="${targetNodeId}"${nodeObj.runtime !== "local" ? `, runtime="${nodeObj.runtime}"` : ''})
+`;
+} else {
+  displayCode = `__amphi_display(${nodeObj.outputName}, dfName="${nodeObj.outputName}", nodeId="${targetNodeId}"${nodeObj.runtime !== "local" ? `, runtime="${nodeObj.runtime}"` : ''})`;
+}
           }
           codeList.push(displayCode);
           if (incrementalCodeList.length > 0) {
