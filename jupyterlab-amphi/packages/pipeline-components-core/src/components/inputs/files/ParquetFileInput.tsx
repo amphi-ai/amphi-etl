@@ -5,7 +5,11 @@ import { FileUtils } from '../../common/FileUtils'; // Import the FileUtils clas
 
 export class ParquetFileInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { fileLocation: "local", connectionMethod: "env" };
+    const defaultConfig = {
+		fileLocation: "local",
+	    connectionMethod: "env",
+        parquetOptions: { engine: "auto"}//, dtype_backend: "pyarrow" }
+		};
     const form = {
       idPrefix: "component__form",
       fields: [
