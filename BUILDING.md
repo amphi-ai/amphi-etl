@@ -57,7 +57,7 @@ cd jupyterlab-amphi
 pip install -r requirements.txt
 jlpm install
 jlpm run build
-python3 -m pip install .
+python3 -m pip install
 ```
 
 **On Windows:**
