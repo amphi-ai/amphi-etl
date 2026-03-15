@@ -12,6 +12,7 @@ import DataMapping from './forms/dataMapping';
 import KeyValueColumns from './forms/keyValueColumns';
 import KeyValueColumnsSelect from './forms/keyValueColumnsSelect';
 import KeyValueColumnsRadio from './forms/keyValueColumnsRadio';
+import ColumnOperationColumn from './forms/ColumnOperationColumn';
 import KeyValueForm from './forms/keyValueForm';
 import SelectColumn from './forms/selectColumn';
 import SelectColumns from './forms/selectColumns';
@@ -402,6 +403,8 @@ export const GenerateUIInputs = React.memo(({
         return renderFormItem(field, <KeyValueColumns {...commonProps} initialValues={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "keyvalueColumnsSelect":
         return renderFormItem(field, <KeyValueColumnsSelect {...commonProps} initialValues={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
+      case "columnOperationColumn":
+        return renderFormItem(field, <ColumnOperationColumn {...commonProps} initialValues={values} data={{ ...data, ...(formValues || {}) }} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "keyvalueColumnsRadio":
         return renderFormItem(field, <KeyValueColumnsRadio {...commonProps} initialValues={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "valuesList":
@@ -421,7 +424,7 @@ export const GenerateUIInputs = React.memo(({
       default:
         return null;
     }
-  }, [data, handleChange, componentService, commands, manager, advanced]);
+  }, [data, formValues, handleChange, componentService, commands, manager, advanced]);
 
   const renderFieldRows = useCallback((fields: FieldDescriptor[], groupKeyPrefix: string) => {
     const rows = groupFieldsIntoRows(fields);
@@ -652,7 +655,7 @@ export interface Option {
 
 export interface FieldDescriptor {
   type: 'file' | 'files' | 'column' | 'columns' | 'table' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio'
-  | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'sheets'
+  | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'columnOperationColumn' | 'sheets'
   | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable' | 'formulaColumns' | 'keyvalueColumnsRadio' | 'date' | 'collection';
   label: string;
   id: string;
@@ -687,6 +690,9 @@ export interface FieldDescriptor {
   selectionRemovable?: boolean;
   allowedTypes?: string[];
   allowedExtensions?: string[];
+  operatorControlFieldId?: string;
+  operatorLockedValues?: string[];
+  operatorLockedWhenMissing?: boolean;
   columnId?: string | number;
 }
 

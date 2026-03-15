@@ -165,3 +165,117 @@ The privileged icon library is now https://tabler.io/icons (formerly https://hel
 6. Tips : check your output. Usually on transforms and input, it must be a dataframe (not a list). The output types are also important (string, integer, etc.. instead of object). You can check the Python part with the Python Transforms tool. Also be careful when your python code use backslash in your component code (like to escape a double quote), it may disapear when using it and useful to build properly a string (cf compare dataframe tool as an example to handle it)
 
 7. Here an example of dev routine : 7.1 : start with some python code in a python input/transforms. you may use a LLM for that. 7.2 Continue with a custom component. 7.3 Ends with building the Core component (there are only a few things to change between custom and core such as the 3 first rows, the last one, the super function). Such a routine is made to validate each component and to iterate the fastest possible.
+
+## 👮Development rules & norms👮
+### Context : 
+Without rules, "good" or "common" practices set for the developer team, leading to misunderstanging or rework/correction by the project leader would occur.
+
+First of all, we have to identify the Amphi structure. For this document, we can divide into two main parts : 
+-the core which is the brain and backbone of Amphi, providing the UI framework, the console, the scheduler, etc..
+-the components. (to simplify, one component is one tool such as _Transpose Dataset_ or _JSON tools_
+Right now, as a first attempt, we will adress only the second part.
+
+In a component, you have a mix of different languages such as :
+-TypeScript (for the UI)
+-Python (for the calculation/processing)
+-SQL when applied
+
+And a lot of things such as :
+| Language | Item |
+|--------|--------|
+| TypeScript | Component Forms |
+| TypeScript | Function |
+| TypeScript | Const |
+| Python | Function |
+| Python | Input/Output Dataframe|
+| Python | Temporary Dataframe|
+| Python | Temporary const/var|
+
+### Naming Convention
+Even if not stated clearly, the de facto standard is lower camel case (eg : hasDataColumns) and that's all. However, a few things have to be considered.
+About the case itself :
+- it's a standard for Typescript
+- it's based on the difference between upper and lower case but sometimes, lower cases char may looks like other characters in upper case : utilIdiot  
+- it's hard to parse for a machine since there is no separator
+- the plus side is that's dense
+
+We can also consider for Python code the famous PEP 8 https://peps.python.org/pep-0008/
+To sum it up, snake case for Python, except for class.
+
+Therefore, a proposition could be the use of snake case (eg : has_data_columns)
+- it respects the PEP 8 for python (except for class)
+- all characters can be easily read, no doubt, no confusion posible
+- easy to parse for a machine
+- 1 minor minus side : it means a few more characters
+- 1 major minus side : rework
+
+The other thing is to identify what kind of item it is. Today, you have to search all the code to understand where it comes from.
+
+What is proposed here : 
+-snake case for Python except for class
+-lower camel case for Typescript
+-usage of prefix
+
+Here an illustration :
+
+| Language | Item | Type of case |Prefix |
+|--------|--------|--------|--------|
+| TypeScript | Component Forms | Camel Case | tsCF{type of form} |
+| TypeScript | Function | Camel Case | tsFn |
+| TypeScript | Const | Camel Case | tsConst |
+| Python | Function | Snake Case | py_fn_  |
+| Python | Input/Output Dataframe| Snake Case | py_fn_ |
+| Python | Temporary Dataframe | Snake Case | py_df_ |
+| Python | Temporary const/var/arg | Snake Case | py_const_ / py_var_ / py_arg_ |
+
+
+### Python code
+Indentation is done with 4 spaces, not tab.
+
+### Python function
+In Python function, you can use args or kwargs (key-words arguments) when using it
+args
+```python
+toto=py_fn_myfunction('titi','tutu',3)
+``` 
+As you can see, the readibility is the not the best, meaning you have to refer to the documentation or the function definition to understand it.
+
+Always use kwargs such as
+```python
+toto=py_fn_myfunction(py_v_myvar1='titi',py_v_myvar2='tutu',py_v_myvar3=3)
+``` 
+
+For documentation, a docstring is mandatory
+-Declared using triple quotes (' ' ' or " " ").
+-Written just below the definition of a function, class, or module.
+-Unlike comments (#), docstrings can be accessed at runtime using __doc__ or help().
+```python
+def py_fn_greet(name):
+    """This function greets the user by their name."""
+    return f"Hello, {name}!"
+
+help(py_fn_greet)
+Help on function py_fn_greet in module __main__:
+
+py_fn_greet(name)
+    This function greets the user by their name.
+``` 
+
+The type of the arguments must also been specified such as 
+
+```python
+def py_fn_example(
+    py_arg_url: str,
+    py_arg_method: str = "GET",
+    py_arg_params: Optional[Dict[str, str]] = None,    
+    py_arg_headers: Optional[Dict[str, str]] = None,
+    py_arg_body_form: Optional[Dict[str, str]] = None,
+    py_arg_body_raw: Optional[Union[str, object]] = None,
+    py_arg_cert: Optional[Union[str, Tuple[str, str]]] = None,
+    py_arg_timeout: Optional[Tuple[int, int]] = None,
+    py_arg_response_as_string: bool = False,
+    py_arg_save_path: Optional[str] = None
+) -> pd.DataFrame:
+``` 
+### Components
+a. When you have a select form, a boolean, a radio..., always put a default value (even none or do nothing..). Do not let it undefined.
