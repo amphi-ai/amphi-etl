@@ -175,6 +175,21 @@ export abstract class BaseCodeGenerator {
           case 'documents_processor': {
             const previousNodeId = PipelineService.findPreviousNodeId(flow, nodeId);
             inputName = getInputName(previousNodeId, componentType);
+
+            // Handle switch component output
+            const previousNode = nodesMap.get(previousNodeId);
+            if (previousNode) {
+              const previousComponent = componentService.getComponent(previousNode.type); 
+              if (previousComponent && previousComponent._type === 'pandas_df_switch') {
+                const edge = flow.edges.find(e => e.source === previousNodeId && e.target === nodeId);
+                if (edge?.sourceHandle === 'path_a') {
+                  inputName += '_path_a';
+                } else if (edge?.sourceHandle === 'path_b') {
+                  inputName += '_path_b';
+                }
+              }
+            } 
+
             outputName = getOutputName(node, componentId, variablesAutoNaming)
             nodeOutputs.set(nodeId, outputName);
             code += component.generateComponentCode({ config, inputName, outputName });
@@ -248,7 +263,31 @@ export abstract class BaseCodeGenerator {
           case 'documents_output': {
             const previousNodeId = PipelineService.findPreviousNodeId(flow, nodeId);
             inputName = getInputName(previousNodeId, componentType);
+
+            // Handle switch component output
+            const previousNode = nodesMap.get(previousNodeId);
+            if (previousNode) {
+              const previousComponent = componentService.getComponent(previousNode.type); 
+              if (previousComponent &&  previousComponent._type === 'pandas_df_switch') {
+                const edge = flow.edges.find(e => e.source === previousNodeId && e.target === nodeId);
+                if (edge?.sourceHandle === 'path_a') {
+                  inputName += '_path_a';
+                } else if (edge?.sourceHandle === 'path_b') {
+                  inputName += '_path_b';
+                }
+              }
+            }
+
             code += component.generateComponentCode({ config, inputName });
+            break;
+          }
+          case 'pandas_df_switch': {
+            const previousNodeId = PipelineService.findPreviousNodeId(flow, nodeId);
+            inputName = getInputName(previousNodeId, componentType);
+            outputName = getOutputName(node, componentId, variablesAutoNaming);
+            nodeOutputs.set(nodeId, outputName);
+
+            code += component.generateComponentCode({ config, inputName, outputName }); 
             break;
           }
           default:
@@ -299,13 +338,6 @@ export abstract class BaseCodeGenerator {
     result = result.replace(
       /(?<![fr])(['"])([^'"\n]*\{os\.getenv\([^}]+\)\}[^'"\n]*)\1/g,
       'f$1$2$1'
-    );
-
-    //    Handle multi-line triple-quoted strings containing Python expressions
-    //    This catches cases like SQL queries with {os.getenv(...)} or {variable} across multiple lines
-    result = result.replace(
-      /(?<![fr])("""[\s\S]*?\{[\s\S]*?\}[\s\S]*?""")/g,
-      'f$1'
     );
 
     return result;
