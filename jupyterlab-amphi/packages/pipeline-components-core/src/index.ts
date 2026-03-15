@@ -14,7 +14,7 @@ import {
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput, 
   SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample,UniqueKeyDetector,FileAction,DataframeList,DataframeDelete,HierarchyPath,PackagesList, JSONTools,
-  DatabaseInput, DatabaseOutput, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar
+  DatabaseInput, DatabaseOutput, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar, CorrelationMatrix
 } from './components';
 
 // Export allow the component to be used as a base component in different packages
@@ -23,7 +23,7 @@ export { Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonF
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, DateTimeConverter,
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
-  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample,UniqueKeyDetector,FileAction,DataframeList,DataframeDelete,HierarchyPath,PackagesList,CompareDataframes,GenerateCalendar,DynamicGenerateCalendar 
+  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample,UniqueKeyDetector,FileAction,DataframeList,DataframeDelete,HierarchyPath,PackagesList,CompareDataframes,GenerateCalendar,DynamicGenerateCalendar, CorrelationMatrix 
   }
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -40,25 +40,25 @@ const plugin: JupyterFrontEndPlugin<void> = {
     g.Amphi.BaseCoreComponent = BaseCoreComponent;
 
     // Input
-    componentService.addComponent(InlineInput.getInstance())
-    componentService.addComponent(CsvFileInput.getInstance())
-    componentService.addComponent(ExcelFileInput.getInstance())
-    componentService.addComponent(ParquetFileInput.getInstance())
-    componentService.addComponent(JsonFileInput.getInstance())
-    componentService.addComponent(XmlFileInput.getInstance())
-    componentService.addComponent(PdfTablesInput.getInstance())
-    componentService.addComponent(S3FileInput.getInstance())
-    componentService.addComponent(RestInput.getInstance())
-    componentService.addComponent(GoogleSheetsInput.getInstance())
+    componentService.addComponent(InlineInput.getInstance());
+    componentService.addComponent(CsvFileInput.getInstance());
+    componentService.addComponent(ExcelFileInput.getInstance());
+    componentService.addComponent(ParquetFileInput.getInstance());
+    componentService.addComponent(JsonFileInput.getInstance());
+    componentService.addComponent(XmlFileInput.getInstance());
+    componentService.addComponent(PdfTablesInput.getInstance());
+    componentService.addComponent(S3FileInput.getInstance());
+    componentService.addComponent(RestInput.getInstance());
+    componentService.addComponent(GoogleSheetsInput.getInstance());
     // componentService.addComponent(MySQLInput.getInstance())
     // componentService.addComponent(PostgresInput.getInstance())
     // componentService.addComponent(OracleInput.getInstance())
     // componentService.addComponent(SqlServerInput.getInstance())
     // componentService.addComponent(SnowflakeInput.getInstance())
     // componentService.addComponent(ODBCInput.getInstance())
-    componentService.addComponent(DatabaseInput.getInstance())
-    componentService.addComponent(CustomInput.getInstance())
-    componentService.addComponent(GenerateCalendar.getInstance())
+    componentService.addComponent(DatabaseInput.getInstance());
+    componentService.addComponent(CustomInput.getInstance());
+    componentService.addComponent(GenerateCalendar.getInstance());
     // componentService.addComponent(PyGWalker.getInstance())
     // componentService.addComponent(Slider.getInstance())
 
@@ -88,39 +88,41 @@ const plugin: JupyterFrontEndPlugin<void> = {
 	componentService.addComponent(DynamicGenerateCalendar.getInstance());
 
     // Outputs
-    componentService.addComponent(CsvFileOutput.getInstance())
-    componentService.addComponent(JsonFileOutput.getInstance())
-    componentService.addComponent(ExcelFileOutput.getInstance())
-    componentService.addComponent(ParquetFileOutput.getInstance())
-    componentService.addComponent(XmlFileOutput.getInstance())
-    componentService.addComponent(GoogleSheetsOutput.getInstance())
-    componentService.addComponent(S3FileOutput.getInstance())
-    componentService.addComponent(DatabaseOutput.getInstance())
-    componentService.addComponent(Console.getInstance())
-    componentService.addComponent(CustomOutput.getInstance())
+    componentService.addComponent(CsvFileOutput.getInstance());
+    componentService.addComponent(JsonFileOutput.getInstance());
+    componentService.addComponent(ExcelFileOutput.getInstance());
+    componentService.addComponent(ParquetFileOutput.getInstance());
+    componentService.addComponent(XmlFileOutput.getInstance());
+    componentService.addComponent(GoogleSheetsOutput.getInstance());
+    componentService.addComponent(S3FileOutput.getInstance());
+    componentService.addComponent(DatabaseOutput.getInstance());
+    componentService.addComponent(Console.getInstance());
+    componentService.addComponent(CustomOutput.getInstance());
 
     // Settings
-    componentService.addComponent(EnvVariables.getInstance())
-    componentService.addComponent(EnvFile.getInstance())
-    componentService.addComponent(Connection.getInstance())
+    componentService.addComponent(EnvVariables.getInstance());
+    componentService.addComponent(EnvFile.getInstance());
+    componentService.addComponent(Connection.getInstance());
 
     // Misc
     componentService.addComponent(Summary.getInstance());
     componentService.addComponent(FrequencyAnalysis.getInstance());
     componentService.addComponent(UniqueKeyDetector.getInstance());
     componentService.addComponent(FileAction.getInstance());
-    componentService.addComponent(Annotation.getInstance())
+    componentService.addComponent(Annotation.getInstance());
+	componentService.addComponent(Annotation.getInstance());
+	componentService.addComponent(CorrelationMatrix.getInstance());	
 
     // Settings
-    componentService.addComponent(EnvVariables.getInstance())
-    componentService.addComponent(EnvFile.getInstance())
-    componentService.addComponent(Connection.getInstance())
+    componentService.addComponent(EnvVariables.getInstance());
+    componentService.addComponent(EnvFile.getInstance());
+    componentService.addComponent(Connection.getInstance());
 
     // Developer
-    componentService.addComponent(FormExample.getInstance())
-    componentService.addComponent(DataframeList.getInstance())
-    componentService.addComponent(DataframeDelete.getInstance())
-	componentService.addComponent(PackagesList.getInstance())
+    componentService.addComponent(FormExample.getInstance());
+    componentService.addComponent(DataframeList.getInstance());
+    componentService.addComponent(DataframeDelete.getInstance());
+	componentService.addComponent(PackagesList.getInstance());
   }
 };
 
