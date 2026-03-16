@@ -13,18 +13,21 @@ import {
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, DateTimeConverter,
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
-  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample,UniqueKeyDetector,FileAction,DataframeList,DataframeDelete,HierarchyPath,PackagesList, JSONTools,
-  DatabaseInput, DatabaseOutput, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar, CorrelationMatrix, SwitchComponent
+  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample, UniqueKeyDetector, FileAction, DataframeList, DataframeDelete, HierarchyPath, PackagesList, JSONTools,
+  DatabaseInput, DatabaseOutput, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar, CorrelationMatrix,
+  Switch
 } from './components';
 
 // Export allow the component to be used as a base component in different packages
-export { Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
+export {
+  Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
   SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join, CombinedJoin,
   ParquetFileInput, ParquetFileOutput, PostgresInput, PostgresOutput, MySQLInput, MySQLOutput, XmlFileInput, XmlFileOutput, DateTimeConverter,
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
-  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample,UniqueKeyDetector,FileAction,DataframeList,DataframeDelete,HierarchyPath,PackagesList,CompareDataframes,GenerateCalendar,DynamicGenerateCalendar,
-  SwitchComponent, CorrelationMatrix }
+  SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample, UniqueKeyDetector, FileAction, DataframeList, DataframeDelete, HierarchyPath, PackagesList, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar,
+  Switch, CorrelationMatrix
+}
 
 const plugin: JupyterFrontEndPlugin<void> = {
   id: '@amphi/pipeline-components-core',
@@ -38,9 +41,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
     const g: any = globalThis as any;
     g.Amphi = g.Amphi || {};
     g.Amphi.BaseCoreComponent = BaseCoreComponent;
-
-    // Custom components
-    componentService.addComponent(SwitchComponent.getInstance())
 
     // Input
     componentService.addComponent(InlineInput.getInstance());
@@ -87,8 +87,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(GenerateIDColumn.getInstance());
     componentService.addComponent(JSONTools.getInstance());
     componentService.addComponent(HierarchyPath.getInstance());
-	componentService.addComponent(CompareDataframes.getInstance());
-	componentService.addComponent(DynamicGenerateCalendar.getInstance());
+    componentService.addComponent(CompareDataframes.getInstance());
+    componentService.addComponent(DynamicGenerateCalendar.getInstance());
+    componentService.addComponent(Switch.getInstance())
 
     // Outputs
     componentService.addComponent(CsvFileOutput.getInstance());
@@ -113,8 +114,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(UniqueKeyDetector.getInstance());
     componentService.addComponent(FileAction.getInstance());
     componentService.addComponent(Annotation.getInstance());
-	componentService.addComponent(Annotation.getInstance());
-	componentService.addComponent(CorrelationMatrix.getInstance());	
+    componentService.addComponent(Annotation.getInstance());
+    componentService.addComponent(CorrelationMatrix.getInstance());
 
     // Settings
     componentService.addComponent(EnvVariables.getInstance());
@@ -125,7 +126,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(FormExample.getInstance());
     componentService.addComponent(DataframeList.getInstance());
     componentService.addComponent(DataframeDelete.getInstance());
-	componentService.addComponent(PackagesList.getInstance());
+    componentService.addComponent(PackagesList.getInstance());
   }
 };
 

@@ -182,10 +182,10 @@ export abstract class BaseCodeGenerator {
               const previousComponent = componentService.getComponent(previousNode.type); 
               if (previousComponent && previousComponent._type === 'pandas_df_switch') {
                 const edge = flow.edges.find(e => e.source === previousNodeId && e.target === nodeId);
-                if (edge?.sourceHandle === 'path_a') {
-                  inputName += '_path_a';
-                } else if (edge?.sourceHandle === 'path_b') {
-                  inputName += '_path_b';
+                if (edge?.sourceHandle === 'true') {
+                  inputName += '_True';
+                } else if (edge?.sourceHandle === 'false') {
+                  inputName += '_False';
                 }
               }
             } 
@@ -338,6 +338,13 @@ export abstract class BaseCodeGenerator {
     result = result.replace(
       /(?<![fr])(['"])([^'"\n]*\{os\.getenv\([^}]+\)\}[^'"\n]*)\1/g,
       'f$1$2$1'
+    );
+
+    //    Handle multi-line triple-quoted strings containing Python expressions
+    //    This catches cases like SQL queries with {os.getenv(...)} or {variable} across multiple lines
+    result = result.replace(
+      /(?<![fr])("""[\s\S]*?\{[\s\S]*?\}[\s\S]*?""")/g,
+      'f$1'
     );
 
     return result;

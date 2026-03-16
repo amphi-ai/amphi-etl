@@ -31,15 +31,15 @@ export class CodeGenerator extends BaseCodeGenerator {
     const connMap = new Map<string, Node>();
 
     const { nodesToTraverse, nodesMap } = this.computeNodesToTraverse(
-      flow, 
-      targetNodeId, 
+      flow,
+      targetNodeId,
       componentService
     );
 
     // Identify special nodes
     flow.nodes.forEach(node => {
       const type = componentService.getComponent(node.type)._type;
-      if (['env_variables','env_file'].includes(type)) {
+      if (['env_variables', 'env_file'].includes(type)) {
         envMap.set(node.id, node);
       } else if (type === 'connection') {
         connMap.set(node.id, node);
@@ -48,10 +48,10 @@ export class CodeGenerator extends BaseCodeGenerator {
 
     // Build node objects
     const nodeObjects = this.createNodeObjects(
-      flow, 
-      componentService, 
-      nodesToTraverse, 
-      nodesMap, 
+      flow,
+      componentService,
+      nodesToTraverse,
+      nodesMap,
       variablesAutoNaming
     );
 
@@ -91,17 +91,11 @@ export class CodeGenerator extends BaseCodeGenerator {
               executedNodes.add(nodeObj.id);
             }
             // Handle pandas_df_switch nodes - determine which path to display
-if (nodeObj.type === 'pandas_df_switch') { 
-  displayCode = `
-# Display the non-empty path 
-if not ${nodeObj.outputName}_path_b.empty: 
-    __amphi_display(${nodeObj.outputName}_path_b, dfName="${nodeObj.outputName}_path_b", nodeId="${targetNodeId}"${nodeObj.runtime !== "local" ? `, runtime="${nodeObj.runtime}"` : ''})
-else:  
-    __amphi_display(${nodeObj.outputName}_path_a, dfName="${nodeObj.outputName}_path_a", nodeId="${targetNodeId}"${nodeObj.runtime !== "local" ? `, runtime="${nodeObj.runtime}"` : ''})
-`;
-} else {
-  displayCode = `__amphi_display(${nodeObj.outputName}, dfName="${nodeObj.outputName}", nodeId="${targetNodeId}"${nodeObj.runtime !== "local" ? `, runtime="${nodeObj.runtime}"` : ''})`;
-}
+            if (nodeObj.type === 'pandas_df_switch') {
+              displayCode = `__amphi_display(${nodeObj.outputName}_True, dfName="${nodeObj.outputName}_True", nodeId="${targetNodeId}"${nodeObj.runtime !== "local" ? `, runtime="${nodeObj.runtime}"` : ''})`;
+            } else {
+              displayCode = `__amphi_display(${nodeObj.outputName}, dfName="${nodeObj.outputName}", nodeId="${targetNodeId}"${nodeObj.runtime !== "local" ? `, runtime="${nodeObj.runtime}"` : ''})`;
+            }
           }
           codeList.push(displayCode);
           if (incrementalCodeList.length > 0) {
@@ -163,9 +157,9 @@ else:
   }
 
   static generateCode(
-    pipelineJson: string, 
-    commands: any, 
-    componentService: any, 
+    pipelineJson: string,
+    commands: any,
+    componentService: any,
     variablesAutoNaming: boolean
   ): string {
     const { codeList } = this.generateCodeForNodes(

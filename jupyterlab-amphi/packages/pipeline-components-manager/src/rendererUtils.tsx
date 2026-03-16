@@ -116,20 +116,16 @@ export const renderHandle: React.FC<IHandleProps> = ({ type, Handle, Position, i
             className="handle-right"
             type="source"
             position={Position.Right}
-            id="path_a"
-            style={{
-              top: '30%',
-              background: 'green'
-            }}
+            id="true"
           />
           <Handle
             className="handle-right"
             type="source"
             position={Position.Right}
-            id="path_b"
+            id="false"
             style={{
               top: '70%',
-              background: 'red'
+              background: 'DA1F26'
             }}
           />
         </>
