@@ -19,6 +19,7 @@ import SelectColumns from './forms/selectColumns';
 import SelectFromSQLQuery from './forms/selectFromSQLQuery';
 import SelectFromPythonQuery from './forms/selectFromPythonQuery';
 import SelectCustomizable from './forms/selectCustomizable';
+import SelectMultiple from './forms/selectMultiple';
 import SelectMultipleCustomizable from './forms/selectMultipleCustomizable';
 import SelectRegular from './forms/selectRegular';
 import SelectTokenization from './forms/selectTokenization';
@@ -368,6 +369,8 @@ export const GenerateUIInputs = React.memo(({
         return renderFormItem(field, <SelectSheetFromExcel {...commonProps} data={data} defaultValue={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "selectCustomizable":
         return renderFormItem(field, <SelectCustomizable {...commonProps} defaultValue={value} />);
+      case "selectMultiple":
+        return renderFormItem(field, <SelectMultiple {...commonProps} defaultValues={values} />);
       case "selectMultipleCustomizable":
         return renderFormItem(field, <SelectMultipleCustomizable {...commonProps} defaultValues={values} />);
       case "selectTokenization":
@@ -656,7 +659,7 @@ export interface Option {
 export interface FieldDescriptor {
   type: 'file' | 'files' | 'column' | 'columns' | 'table' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio'
   | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'columnOperationColumn' | 'sheets'
-  | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable' | 'formulaColumns' | 'keyvalueColumnsRadio' | 'date' | 'collection';
+  | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultiple' | 'selectMultipleCustomizable' | 'formulaColumns' | 'keyvalueColumnsRadio' | 'date' | 'collection';
   label: string;
   id: string;
   placeholder?: any;
