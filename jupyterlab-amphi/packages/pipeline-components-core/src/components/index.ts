@@ -64,6 +64,7 @@ export { HierarchyPath } from './transforms/HierarchyPath';
 export { CompareDataframes } from './transforms/CompareDataframes';
 export { CorrelationMatrix } from './transforms/CorrelationMatrix';
 export { Switch } from './transforms/Switch';
+export { AutoColumnPosition } from './transforms/AutoColumnPosition';
 
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';
