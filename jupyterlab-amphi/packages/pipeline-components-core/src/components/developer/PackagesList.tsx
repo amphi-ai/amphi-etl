@@ -16,7 +16,7 @@ export class PackagesList extends BaseCoreComponent {
         {
           type: "info",  // Form type
           label: "Info", // Display label
-          id: "description",
+          id: "tsCFinfoDescription",
           text: "List of the installed python packages",
           advanced: false // No expandable options
         }
@@ -55,9 +55,9 @@ export class PackagesList extends BaseCoreComponent {
   public provideFunctions({ config }): string[] {
     const prefix = config?.backend?.prefix ?? "pd";
 
-    const PackagesListFunction = `
+    const tsPackagesListFunction = `
 
-def packages_list():
+def py_fn_packages_list():
     rows = []
     for dist in importlib.metadata.distributions():
         name = dist.metadata.get("Name") or ""
@@ -98,7 +98,7 @@ def packages_list():
 #output = packages_list()
     `;
 
-    return [PackagesListFunction];
+    return [tsPackagesListFunction];
   }
 
   // Generate the Python execution script
@@ -108,7 +108,7 @@ def packages_list():
     return `
 # Execute the function
 ${outputName} = []
-${outputName} = packages_list()
+${outputName} = py_fn_packages_list()
     `;
   }
 }

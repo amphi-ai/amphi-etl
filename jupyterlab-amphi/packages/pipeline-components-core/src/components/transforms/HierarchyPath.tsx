@@ -4,7 +4,8 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 export class HierarchyPath extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-                           hierarchy_path_columnoperations : []
+                           tsCFkeyvalueColumnsSelectHierarchyPathColumnOperations : [],
+						   tsCFselectCustomizableHierarchySep : " > "
     };
     const form = {
       idPrefix: "component__form",
@@ -12,21 +13,21 @@ export class HierarchyPath extends BaseCoreComponent {
         {
           type: "column",
           label: "Select the parent column",
-          id: "hierarchy_parent_column",
+          id: "tsCFcolumnHierarchyParentColumn",
           placeholder: "Column name",
           advanced: false
         },
         {
           type: "column",
           label: "Select the child column",
-          id: "hierarchy_child_column",
+          id: "tsCFcolumnHierarchyChildColumn",
           placeholder: "Column name",
           advanced: false
         },
         {
           type: "selectCustomizable",
           label: "Separator",
-          id: "hierarchy_sep",
+          id: "tsCFselectCustomizableHierarchySep",
           placeholder: "default: > (with spaces)",
           tooltip: "Select or provide a custom delimiter.",
           options: [
@@ -44,7 +45,7 @@ export class HierarchyPath extends BaseCoreComponent {
         {
           type: "keyvalueColumnsSelect",
           label: "Operations along path (optional)",
-          id: "hierarchy_path_columnoperations",
+          id: "tsCFkeyvalueColumnsSelectHierarchyPathColumnOperations",
           placeholder: "Select column",
           options: [
             { value: "min", label: "Min", tooltip: "Returns the minimum value in the group." },
@@ -80,8 +81,8 @@ export class HierarchyPath extends BaseCoreComponent {
   public provideFunctions({ config }): string[] {
     const prefix = config?.backend?.prefix ?? "pd";
     // Functions to find the path of each node of hierarchy
-    const HierarchyPathFunction = `
-def build_all_hierarchy_paths(df, parent_col, child_col, separator=" > ", aggregations=None):
+    const tsHierarchyPathFunction = `
+def py_fn_build_all_hierarchy_paths(df, parent_col, child_col, separator=" > ", aggregations=None):
     child_to_parents = defaultdict(set)
     for _, row in df.iterrows():
         child_to_parents[row[child_col]].add(row[parent_col])
@@ -168,40 +169,39 @@ def build_all_hierarchy_paths(df, parent_col, child_col, separator=" > ", aggreg
 
     return result_df.drop(columns="_path_nodes")
     `;
-    return [HierarchyPathFunction];
+    return [tsHierarchyPathFunction];
   }
   public generateComponentCode({ config, inputName, outputName }: { config: any; inputName: string; outputName: string }): string {
-    const parent_column=config.hierarchy_parent_column.value;
-    const child_column=config.hierarchy_child_column.value;
-    const aggregations=config.hierarchy_path_columnoperations;
-    const aggregations_value=config.hierarchy_path_columnoperations.value;
-    let aggregations_param=`aggregations=None`;
+    const tsConstParentColumn=config.tsCFcolumnHierarchyParentColumn.value;
+    const tsConstChildColumn=config.tsCFcolumnHierarchyChildColumn.value;
+    const tsConstAggregations=config.tsCFkeyvalueColumnsSelectHierarchyPathColumnOperations;
+    const tsConstAggregationsValue=config.tsCFkeyvalueColumnsSelectHierarchyPathColumnOperations.value;
+    let tsConstAggregationsParam=`aggregations=None`;
     // Start constructing the aggregation arguments dynamically
-    let agg_Args = "[";
+    let tsConstAggArgs = "[";
 
-    if (config.hierarchy_path_columnoperations && config.hierarchy_path_columnoperations.length > 0) {
-      config.hierarchy_path_columnoperations.forEach((op, index) => {
+    if (config.tsCFkeyvalueColumnsSelectHierarchyPathColumnOperations && config.tsCFkeyvalueColumnsSelectHierarchyPathColumnOperations.length > 0) {
+      config.tsCFkeyvalueColumnsSelectHierarchyPathColumnOperations.forEach((op, index) => {
         // Determine how to reference the column based on 'named'
-        const agg_columnReference = op.key.named ? `${op.key.value}` : op.key.value;
-        const agg_operation = op.value.value;
-        const agg_columnName = op.key.named ? op.key.value : `col${op.key.value}`;
-        const agg_operationName = `${agg_columnName}_${agg_operation}`;
-
-        const sanitize_agg_ColumnName = (name: string) => name.replace(/[^a-zA-Z0-9_]/g, '_');
-        const agg_operationNameReference = sanitize_agg_ColumnName(agg_operationName);
+        const tsConstAggColumnReference = op.key.named ? `${op.key.value}` : op.key.value;
+        const tsConstAggOperation = op.value.value;
+        const tsConstAggColumnName = op.key.named ? op.key.value : `col${op.key.value}`;
+        const tsConstAggOperationName = `${tsConstAggColumnName}_${tsConstAggOperation}`;
+        const tsConstSanitizeAggColumnName = (name: string) => name.replace(/[^a-zA-Z0-9_]/g, '_');
+        const tsConstAggOperationNameReference = tsConstSanitizeAggColumnName(tsConstAggOperationName);
 
         // Construct each aggregation argument. The 
-        agg_Args += `("${agg_operationNameReference}","${agg_columnReference}", "${agg_operation}")`;
-        if (index < config.hierarchy_path_columnoperations.length - 1) {
-          agg_Args += ", ";
+        tsConstAggArgs += `("${tsConstAggOperationNameReference}","${tsConstAggColumnReference}", "${tsConstAggOperation}")`;
+        if (index < config.tsCFkeyvalueColumnsSelectHierarchyPathColumnOperations.length - 1) {
+          tsConstAggArgs += ", ";
         }
       });
-     agg_Args += "]";
-     aggregations_param=`aggregations=${agg_Args}`;
+     tsConstAggArgs += "]";
+     tsConstAggregationsParam=`aggregations=${tsConstAggArgs}`;
     }
     else
     {
-     aggregations_param=`aggregations=None`;
+     tsConstAggregationsParam=`aggregations=None`;
     }
     ;
 
@@ -219,7 +219,7 @@ def build_all_hierarchy_paths(df, parent_col, child_col, separator=" > ", aggreg
     code +=` 
 # Execute the hierarchy path function
 ${outputName} = []
-${outputName} =build_all_hierarchy_paths(${inputName}, '${parent_column}', '${child_column}', '${config.hierarchy_sep}', ${aggregations_param})
+${outputName} =py_fn_build_all_hierarchy_paths(${inputName}, '${tsConstParentColumn}', '${tsConstChildColumn}', '${config.tsCFselectCustomizableHierarchySep}', ${tsConstAggregationsParam})
     `;
     return code + '\n';
   }
