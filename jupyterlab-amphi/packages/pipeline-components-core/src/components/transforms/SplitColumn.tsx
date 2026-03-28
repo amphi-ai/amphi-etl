@@ -97,8 +97,8 @@ export class SplitColumn extends BaseCoreComponent {
  public provideFunctions({ config }): string[] {
     const prefix = config?.backend?.prefix ?? "pd";
     // Function to compare data
-    const Split_Column_To_Row_Function = `
-def split_dataframe_to_rows(
+    const tsSplit_Column_To_Row_Function = `
+def py_fn_split_dataframe_to_rows(
     df: pd.DataFrame,
     column_to_split: str,
     new_column_name: str,
@@ -165,7 +165,7 @@ def split_dataframe_to_rows(
     return df
     `;
     if (config.splitType === "rows") {
-      return [Split_Column_To_Row_Function]; 
+      return [tsSplit_Column_To_Row_Function]; 
     } else {
       return [];
     }
@@ -231,7 +231,7 @@ def split_dataframe_to_rows(
 	  const const_ts_split_delimiter = config.delimiter;
 	  const const_ts_boolean_is_regex= config.regex ? "False" : "True";
 	  const const_ts_convert_result=config.selectConvertResult;
-	  code += `${outputName}=split_dataframe_to_rows(df=${inputName},keep_original_column=${const_ts_boolean_keepOriginalColumn},column_to_split='${const_ts_column_to_split}',new_column_name='${const_ts_new_column_name}',split_delimiter='${const_ts_split_delimiter}',is_regex=${const_ts_boolean_is_regex},convert_result='${const_ts_convert_result}')\n`;
+	  code += `${outputName}=py_fn_split_dataframe_to_rows(df=${inputName},keep_original_column=${const_ts_boolean_keepOriginalColumn},column_to_split='${const_ts_column_to_split}',new_column_name='${const_ts_new_column_name}',split_delimiter='${const_ts_split_delimiter}',is_regex=${const_ts_boolean_is_regex},convert_result='${const_ts_convert_result}')\n`;
     }
   
     // Return the generated code

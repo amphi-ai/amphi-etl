@@ -5,7 +5,12 @@ import { AdvancedJoin } from './AdvancedJoin';
 
 export class CombinedJoin extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { mode: 'basic', selectJoinType: 'left', selectActionIfCartesianProduct: '0', selectSameNameStrategy: "suffix_right" };
+    const defaultConfig = {
+		mode: 'basic',
+		selectJoinType: 'left',
+		selectActionIfCartesianProduct: '0',
+		selectSameNameStrategy: "suffix_right"
+		};
 
     const basic = new Join();
     const advanced = new AdvancedJoin();

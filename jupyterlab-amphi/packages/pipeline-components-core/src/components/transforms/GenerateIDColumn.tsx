@@ -4,10 +4,10 @@ import { BaseCoreComponent } from '../BaseCoreComponent';// Adjust the import pa
 export class GenerateIDColumn extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-      columnType: 'int64',
-      insertPosition: 'first',
-      startingValue: 1,
-      rowIdName: 'ID'
+      tsCFselectCustomizableColumnType: 'int64',
+      tsCFradioInsertPosition: 'first',
+      tsCFinputNumberStartingValue: 1,
+      tsCFinputRowIdName: 'ID'
     };
     const form = {
       idPrefix: "component__form",
@@ -15,14 +15,14 @@ export class GenerateIDColumn extends BaseCoreComponent {
         {
           type: "inputNumber",
           label: "Starting Value",
-          id: "startingValue",
+          id: "tsCFinputNumberStartingValue",
           placeholder: "0",
           min: 0
         },
         {
           type: "radio",
           label: "Insert Position",
-          id: "insertPosition",
+          id: "tsCFradioInsertPosition",
           options: [
             { value: "first", label: "First" },
             { value: "last", label: "Last" }
@@ -31,7 +31,7 @@ export class GenerateIDColumn extends BaseCoreComponent {
         {
           type: "input",
           label: "Name",
-          id: "rowIdName",
+          id: "tsCFinputRowIdName",
           placeholder: "default ID",
           tooltip: "you may want to change that if you want a special name or no upper case, or id is already taken",
           advanced: true
@@ -39,7 +39,7 @@ export class GenerateIDColumn extends BaseCoreComponent {
         {
           type: "selectCustomizable",
           label: "Column Type",
-          id: "columnType",
+          id: "tsCFselectCustomizableColumnType",
           options: [
             { value: "int64", label: "int64", tooltip: "Integer (int64)" },
             { value: "float64", label: "float64", tooltip: "Float (float64)" }
@@ -60,26 +60,26 @@ export class GenerateIDColumn extends BaseCoreComponent {
   public generateComponentCode({ config, inputName, outputName }): string {
 
     const prefix = config?.backend?.prefix ?? "pd";
-    const startingValue = config.startingValue || 1;
-    const columnType = config.columnType || "int64";
-    const insertPosition = config.insertPosition || "last";
+    const tsConstStartingValue = config.tsCFinputNumberStartingValue || 1;
+    const tsConstColumnType = config.tsCFselectCustomizableColumnType || "int64";
+    const tsConstInsertPosition = config.tsCFradioInsertPosition || "last";
     //if null, undefined or empty
-    const const_ts_rowidname =
-      config.rowIdName && config.rowIdName.length > 0
-        ? config.rowIdName
+    const tsConstRowIdName =
+      config.tsCFinputRowIdName && config.tsCFinputRowIdName.length > 0
+        ? config.tsCFinputRowIdName
         : "ID";
-    const idColumn = `range(${startingValue}, ${startingValue} + len(${inputName}))`;
-    const idColumnFirst = `['${const_ts_rowidname}'] + ${inputName}.columns.tolist()`;
-    const idColumnLast = `${inputName}.columns.tolist() + ['${const_ts_rowidname}']`;
+    const tsConstIdColumn = `range(${tsConstStartingValue}, ${tsConstStartingValue} + len(${inputName}))`;
+    const tsConstIdColumnFirst = `['${tsConstRowIdName}'] + ${inputName}.columns.tolist()`;
+    const tsConstIdColumnLast = `${inputName}.columns.tolist() + ['${tsConstRowIdName}']`;
 
     const code = `
 # Generate ID column
 #copy the df
 ${outputName} = ${inputName}.copy()
 #insert the new column with its type
-${outputName}['${const_ts_rowidname}'] = ${prefix}.Series(${idColumn}, dtype='${columnType}')
+${outputName}['${tsConstRowIdName}'] = ${prefix}.Series(${tsConstIdColumn}, dtype='${tsConstColumnType}')
 #deal with the position
-${outputName} = ${outputName}.reindex(columns=${insertPosition === "first" ? idColumnFirst : idColumnLast})
+${outputName} = ${outputName}.reindex(columns=${tsConstInsertPosition === "first" ? tsConstIdColumnFirst : tsConstIdColumnLast})
 `;
 
     return code;

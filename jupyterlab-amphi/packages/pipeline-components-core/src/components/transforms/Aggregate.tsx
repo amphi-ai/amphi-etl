@@ -10,13 +10,13 @@ export class Aggregate extends BaseCoreComponent {
         {
           type: "columns",
           label: "Group by",
-          id: "groupByColumns",
+          id: "tsCFcolumnsGroupByColumns",
           placeholder: "Default: all columns"
         },
         {
           type: "keyvalueColumnsSelect",
           label: "Operations",
-          id: "columnsOperations",
+          id: "tsCFkeyvalueColumnsSelectOperations",
           placeholder: "Select column",
           options: [
             { value: "min", label: "Min", tooltip: "Returns the minimum value in the group." },
@@ -46,13 +46,13 @@ export class Aggregate extends BaseCoreComponent {
 
   public generateComponentCode({ config, inputName, outputName }) {
     //conditional because can be empty
-    const groupColumns = config.groupByColumns?.map(col => col.value) || [];
+    const groupColumns = config.tsCFcolumnsGroupByColumns?.map(col => col.value) || [];
 
     // Start constructing the aggregation arguments dynamically
     let aggArgs = "";
 
-    if (config.columnsOperations && config.columnsOperations.length > 0) {
-      config.columnsOperations.forEach((op, index) => {
+    if (config.tsCFkeyvalueColumnsSelectOperations && config.tsCFkeyvalueColumnsSelectOperations.length > 0) {
+      config.tsCFkeyvalueColumnsSelectOperations.forEach((op, index) => {
         // Determine how to reference the column based on 'named'
         const columnReference = op.key.named ? `'${op.key.value}'` : op.key.value;
         const operation = op.value.value;
@@ -64,7 +64,7 @@ export class Aggregate extends BaseCoreComponent {
 
         // Construct each aggregation argument
         aggArgs += `${operationNameReference}=(${columnReference}, '${operation}')`;
-        if (index < config.columnsOperations.length - 1) {
+        if (index < config.tsCFkeyvalueColumnsSelectOperations.length - 1) {
           aggArgs += ", ";
         }
       });

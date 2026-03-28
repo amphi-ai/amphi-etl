@@ -4,14 +4,20 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class Sample extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { numberType: "number", rows: 1, percentage: 1, mode: "random", groupBy: [] };
+    const defaultConfig = {
+    	tsCFradioNumberType: "number",
+		tsCFinputNumberRows: 1,
+		tsCFinputPercentage: 1,
+		tsCFradioMode: "random",
+		tsCFcolumnsGroupByColumns: [] 
+		};
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "radio",
           label: "Type",
-          id: "numberType",
+          id: "tsCFradioNumberType",
           options: [
             { value: "number", label: "Fixed Number" },
             { value: "percentage", label: "Percentage" }
@@ -21,24 +27,24 @@ export class Sample extends BaseCoreComponent {
         {
           type: "inputNumber",
           label: "Rows number",
-          id: "rows",
+          id: "tsCFinputNumberRows",
           placeholder: "0",
           min: 0,
-          condition: { numberType: "number" }
+          condition: { tsCFradioNumberType: "number" }
         },
         {
           type: "inputNumber",
           label: "Percentage",
-          id: "percentage",
+          id: "tsCFinputPercentage",
           placeholder: "0",
           min: 0,
           max: 100,
-          condition: { numberType: "percentage" }
+          condition: { tsCFradioNumberType: "percentage" }
         },
         {
           type: "radio",
           label: "Mode",
-          id: "mode",
+          id: "tsCFradioMode",
           options: [
             { value: "random", label: "Random" },
             { value: "head", label: "First" },
@@ -49,7 +55,7 @@ export class Sample extends BaseCoreComponent {
         {
           type: "columns",
           label: "Group By Columns",
-          id: "groupBy",
+          id: "tsCFcolumnsGroupByColumns",
           selectAll: true,
           advanced: true
         }
@@ -71,45 +77,45 @@ export class Sample extends BaseCoreComponent {
   public generateComponentCode({ config, inputName, outputName }): string {
     let sampleCode = "";
 
-    const groupByColumns = config.groupBy && config.groupBy.length > 0 
-      ? `[${this.formatGroupByColumns(config.groupBy)}]` 
+    const groupByColumns = config.tsCFcolumnsGroupByColumns && config.tsCFcolumnsGroupByColumns.length > 0 
+      ? `[${this.formatGroupByColumns(config.tsCFcolumnsGroupByColumns)}]` 
       : null;
 
-    if (config.numberType === "number") {
-      if (config.mode === "random") {
+    if (config.tsCFradioNumberType === "number") {
+      if (config.tsCFradioMode === "random") {
         if (groupByColumns) {
-          sampleCode = `${outputName} = ${inputName}.groupby(${groupByColumns}).sample(n=${config.rows})`;
+          sampleCode = `${outputName} = ${inputName}.groupby(${groupByColumns}).sample(n=${config.tsCFinputNumberRows})`;
         } else {
-          sampleCode = `${outputName} = ${inputName}.sample(n=${config.rows})`;
+          sampleCode = `${outputName} = ${inputName}.sample(n=${config.tsCFinputNumberRows})`;
         }
-      } else if (config.mode === "tail") {
+      } else if (config.tsCFradioMode === "tail") {
         if (groupByColumns) {
-          sampleCode = `${outputName} = ${inputName}.groupby(${groupByColumns}).tail(${config.rows})`;
+          sampleCode = `${outputName} = ${inputName}.groupby(${groupByColumns}).tail(${config.tsCFinputNumberRows})`;
         } else {
-          sampleCode = `${outputName} = ${inputName}.tail(${config.rows})`;
+          sampleCode = `${outputName} = ${inputName}.tail(${config.tsCFinputNumberRows})`;
         }
-      } else if (config.mode === "head") {
+      } else if (config.tsCFradioMode === "head") {
         if (groupByColumns) {
-          sampleCode = `${outputName} = ${inputName}.groupby(${groupByColumns}).head(${config.rows})`;
+          sampleCode = `${outputName} = ${inputName}.groupby(${groupByColumns}).head(${config.tsCFinputNumberRows})`;
         } else {
-          sampleCode = `${outputName} = ${inputName}.head(${config.rows})`;
+          sampleCode = `${outputName} = ${inputName}.head(${config.tsCFinputNumberRows})`;
         }
       }
-    } else if (config.numberType === "percentage") {
-      const frac = config.percentage / 100;
-      if (config.mode === "random") {
+    } else if (config.tsCFradioNumberType === "percentage") {
+      const frac = config.tsCFinputPercentage / 100;
+      if (config.tsCFradioMode === "random") {
         if (groupByColumns) {
           sampleCode = `${outputName} = ${inputName}.groupby(${groupByColumns}).sample(frac=${frac})`;
         } else {
           sampleCode = `${outputName} = ${inputName}.sample(frac=${frac})`;
         }
-      } else if (config.mode === "tail") {
+      } else if (config.tsCFradioMode === "tail") {
         if (groupByColumns) {
           sampleCode = `${outputName} = ${inputName}.groupby(${groupByColumns}).apply(lambda x: x.tail(int(len(x) * ${frac}))).reset_index(drop=True)`;
         } else {
           sampleCode = `${outputName} = ${inputName}.iloc[-int(len(${inputName}) * ${frac}):]`;
         }
-      } else if (config.mode === "head") {
+      } else if (config.tsCFradioMode === "head") {
         if (groupByColumns) {
           sampleCode = `${outputName} = ${inputName}.groupby(${groupByColumns}).apply(lambda x: x.head(int(len(x) * ${frac}))).reset_index(drop=True)`;
         } else {

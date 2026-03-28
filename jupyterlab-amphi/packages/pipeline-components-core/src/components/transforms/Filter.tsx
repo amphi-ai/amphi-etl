@@ -5,7 +5,10 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class Filter extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { filterType: "basic", condition: "==" };
+    const defaultConfig = {
+		filterType: "basic",
+		condition: "==" 
+		};
     const form = {
       idPrefix: "component__form",
       fields: [
