@@ -4,15 +4,15 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 export class CompareDataframes extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-		select_execution_engine : "pandas",
-		select_comparison_mode : "data",
-		select_column_mismatch : "intersect",
-		boolean_index_data_for_compare : false,
-		boolean_index_metadata_for_compare : true,
-		boolean_check_forcount : true,
-		selectTimestampDateTimeRound : "None",
-		selectcol_key_fields: [],
-		selectcol_ignore_fields: []
+		tsCFselectExecutionEngine : "pandas",
+		tsCFselectComparisonMode : "data",
+		tsCFselectColumnMismatch : "intersect",
+		tsCFbooleanIndexDataForCompare : false,
+		tsCFbooleanIndexMetadataForCompare : true,
+		tsCFbooleanCheckForCount : true,
+		tsCFselectTimestampDateTimeRound : "None",
+		tsCFcolumnsKeyFields: [],
+		tsCFcolumnsFieldsToIgnore: []
 		};
     const form = {
       idPrefix: "component__form",
@@ -20,7 +20,7 @@ export class CompareDataframes extends BaseCoreComponent {
         {
           type: "select",
           label: "Execution Engine",
-          id: "select_execution_engine",
+          id: "tsCFselectExecutionEngine",
           //placeholder: "Default: Pandas", (no placeholder because defined in defaultConfig)
           options: [
             { value: "pandas", label: "Pandas", tooltip: "Mature, easy-to-use, great for small-to-medium datasets." },
@@ -33,8 +33,7 @@ export class CompareDataframes extends BaseCoreComponent {
         {
           type: "select",
           label: "Comparison mode",
-          id: "select_comparison_mode",
-          //placeholder: "Default: Do nothing", (no placeholder because defined in defaultConfig)
+          id: "tsCFselectComparisonMode",
           options: [
             { value: "data", label: "Compare rows of both inputs, output is row-level", tooltip: "Compare rows of both inputs" },
             { value: "count_data", label: "Compare rows of both inputs, output the number of difference", tooltip: "Compare rows of both inputs" },
@@ -49,7 +48,7 @@ export class CompareDataframes extends BaseCoreComponent {
         {
           type: "select",
           label: "When columns differ in dataframe",
-          id: "select_column_mismatch",
+          id: "tsCFselectColumnMismatch",
 		  //placeholder: "Default: suffix_right", (no placeholder because defined in defaultConfig)
           options: [
             { value: "intersect", label: "Take only common columns", tooltip: "Take only common columns" },
@@ -62,9 +61,9 @@ export class CompareDataframes extends BaseCoreComponent {
         {
           type: "columns",
           label: "Key Fields",
-          id: "selectcol_key_fields",
+          id: "tsCFcolumnsKeyFields",
           placeholder: "Column name",
-		  condition: { select_comparison_mode: ["field_data","differing_fields"]},
+		  condition: { tsCFselectComparisonMode: ["field_data","differing_fields"]},
 		  inputNb: 1,
 		  advanced: true
         }
@@ -72,7 +71,7 @@ export class CompareDataframes extends BaseCoreComponent {
         {
           type: "columns",
           label: "Fields to be ignored",
-          id: "selectcol_ignore_fields",
+          id: "tsCFcolumnsFieldsToIgnore",
           placeholder: "Column name",
 		  advanced: true
         }
@@ -80,30 +79,30 @@ export class CompareDataframes extends BaseCoreComponent {
         {
           type: "boolean",
           label: "Rows order to be considered",
-          id: "boolean_index_data_for_compare",
-          condition: { select_comparison_mode: ["data","count_data","field_data","differing_fields"]},
+          id: "tsCFbooleanIndexDataForCompare",
+          condition: { tsCFselectComparisonMode: ["data","count_data","field_data","differing_fields"]},
           advanced: true
         }
         ,
         {
           type: "boolean",
           label: "Columns order to be considered",
-          id: "boolean_index_metadata_for_compare",
-          condition: { select_comparison_mode: ["metadata","metadata+metrics"]},
+          id: "tsCFbooleanIndexMetadataForCompare",
+          condition: { tsCFselectComparisonMode: ["metadata","metadata+metrics"]},
           advanced: true
         },
         {
           type: "boolean",
           label: "Check for equal count",
-          id: "boolean_check_forcount",
-          condition: { select_comparison_mode: ["data","count_data"]},
+          id: "tsCFbooleanCheckForCount",
+          condition: { tsCFselectComparisonMode: ["data","count_data"]},
           advanced: true
         },
 		{
           type: "inputNumber",
           tooltip: "Number of decimal for rounding (nothing=No rounding)",
           label: "Decimal Rounding",
-          id: "inputNumberDecimalRound",
+          id: "tsCFinputNumberDecimalRound",
           min: 0,
           max: 20,
           advanced: true
@@ -111,7 +110,7 @@ export class CompareDataframes extends BaseCoreComponent {
 		{
           type: "select",
           label: "Timestamp/DateTime Rounding",
-          id: "selectTimestampDateTimeRound",
+          id: "tsCFselectTimestampDateTimeRound",
           placeholder: "Error: raise an Exception when a bad line is encountered",
           options: [
             { value: "None", label: "None", tooltip: "No rounding" },
@@ -128,20 +127,6 @@ export class CompareDataframes extends BaseCoreComponent {
 
     super("Compare Dataframes", "CompareDataframes", description, "pandas_df_double_processor", [], "Misc", CompareDataframesIcon, defaultConfig, form);
   }
-
-//now always available through requirements.txt
-//    public provideDependencies({ config }): string[] {
-//        const engine = config?.selectExecutionEngine ?? "pandas";
-//        const deps: string[] = [];
-//
-//        if (engine === "polars") {
-//            deps.push("polars", "pyarrow");
-//        } else if (engine === "duckdb") {
-//            deps.push("duckdb", "pyarrow");
-//        }
-//        // pandas assumed available, no extra deps
-//        return deps;
-//    }
 
 //condition import does not work because there are functions.
     // public provideImports({ config }): string[] {
@@ -170,7 +155,7 @@ export class CompareDataframes extends BaseCoreComponent {
  public provideFunctions({ config }): string[] {
     const prefix = config?.backend?.prefix ?? "pd";
     // Function to compare data
-    const CompareFunction = `
+    const tsCompareFunction = `
 def pandas_align_dtypes(
     source: pd.DataFrame,
     target: pd.DataFrame,
@@ -1312,7 +1297,7 @@ def compare_duckdb(
         raise ValueError(f"Unsupported DuckDB mode: {mode}")
 #########general function####################
 
-def compare_datasets(
+def py_fn_compare_datasets(
     df1,
     df2,
     execution_engine: str = "pandas",
@@ -1394,75 +1379,73 @@ def compare_datasets(
     else:
         raise ValueError(f"Unsupported engine: {engine}")
     `;
-    return [CompareFunction];
+    return [tsCompareFunction];
   }
   
   
   public generateComponentCode({ config, inputName1, inputName2, outputName }): string {
 
     const prefix = config?.backend?.prefix ?? "pd";
-	const const_ts_execution_engine = config.select_execution_engine ?? "pandas";
-	const const_ts_comparison_mode = config.select_comparison_mode ?? "data";
-	const const_ts_column_mismatch = config.select_column_mismatch ?? "intersect";	
+	const tsConstExecutionEngine = config.tsCFselectExecutionEngine ?? "pandas";
+	const tsConstComparisonMode = config.tsCFselectComparisonMode ?? "data";
+	const tsConstColumnMismatch = config.tsCFselectColumnMismatch ?? "intersect";	
 	//for V2
 	
-	function buildRoundingString(
-  selectTimestampDateTimeRound: string | null, // "None", "s", "ms"
-  inputNumberDecimalRound?: number // 0–20 ou undefined
+	function tsFnBuildRoundingString(
+  tsArgSelectTimestampDateTimeRound: string | null, // "None", "s", "ms"
+  tsArgInputNumberDecimalRound?: number // 0–20 ou undefined
 ): string {
   // Case 1 : both aren't present or "None"
-  if ((selectTimestampDateTimeRound === "None" || selectTimestampDateTimeRound == null) && (inputNumberDecimalRound === undefined || inputNumberDecimalRound== null)) {
+  if ((tsArgSelectTimestampDateTimeRound === "None" || tsArgSelectTimestampDateTimeRound == null) && (tsArgInputNumberDecimalRound === undefined || tsArgInputNumberDecimalRound == null)) {
     return "None";
   }
 
   // Construction dynamique de l'objet
-  const rounding: Record<string, string | number> = {};
-
-  if ((inputNumberDecimalRound !== undefined)  &&  (inputNumberDecimalRound !== null)) {
-    rounding["float"] = inputNumberDecimalRound;
+  const tsConstRounding: Record<string, string | number> = {};
+  if ((tsArgInputNumberDecimalRound !== undefined)  &&  (tsArgInputNumberDecimalRound !== null)) {
+    tsConstRounding["float"] = tsArgInputNumberDecimalRound;
+  }
+  if (tsArgSelectTimestampDateTimeRound !== "None" && tsArgSelectTimestampDateTimeRound != null) {
+    tsConstRounding["datetime"] = tsArgSelectTimestampDateTimeRound;
   }
 
-  if (selectTimestampDateTimeRound !== "None" && selectTimestampDateTimeRound != null) {
-    rounding["datetime"] = selectTimestampDateTimeRound;
-  }
-
-  return JSON.stringify(rounding);
+  return JSON.stringify(tsConstRounding);
 }
 
-////Exemple d’utilisation :
-// console.log(buildRoundingString("s", 4));       // '{"float":4,"datetime":"s"}'
-// console.log(buildRoundingString("None", 4));    // '{"float":4}'
-// console.log(buildRoundingString("s", undefined)); // '{"datetime":"s"}'
-// console.log(buildRoundingString("None", undefined)); // 'None'
+////Examples :
+// console.log(tsFnBuildRoundingString("s", 4));       // '{"float":4,"datetime":"s"}'
+// console.log(tsFnBuildRoundingString("None", 4));    // '{"float":4}'
+// console.log(tsFnBuildRoundingString("s", undefined)); // '{"datetime":"s"}'
+// console.log(tsFnBuildRoundingString("None", undefined)); // 'None'
 
-//	const const_ts_rounding = '{"float": 4, "datetime": "s"}'; //No UI right now
-	const const_ts_rounding = buildRoundingString(config.selectTimestampDateTimeRound,config.inputNumberDecimalRound);
-    const const_ts_key_fields = config.selectcol_key_fields.map(column => column.named ? `"${column.value}"` : column.value);
-    const const_ts_ignore_fields = config.selectcol_ignore_fields.map(column => column.named ? `"${column.value}"` : column.value);
-	const const_ts_index_data_for_compare = config.boolean_index_data_for_compare ? "False" : "True";
-	const const_ts_index_metadata_for_compare = config.boolean_index_metadata_for_compare ? "True" : "False";
-	const const_ts_check_forcount = config.boolean_check_forcount ? "True" : "False";
+//	const tsConstrounding = '{"float": 4, "datetime": "s"}'; //No UI right now
+	const tsConstRounding = tsFnBuildRoundingString(config.tsCFselectTimestampDateTimeRound,config.tsCFinputNumberDecimalRound);
+    const tsConstKeyFields = config.tsCFcolumnsKeyFields.map(column => column.named ? `"${column.value}"` : column.value);
+    const tsConstFieldsToIgnore = config.tsCFcolumnsFieldsToIgnore.map(column => column.named ? `"${column.value}"` : column.value);
+	const tsConstIndexDataForCompare = config.tsCFbooleanIndexDataForCompare ? "True" : "False";
+	const tsConstIndexMetadataForCompare = config.tsCFbooleanIndexMetadataForCompare ? "True" : "False";
+	const tsConstCheckForCount = config.tsCFbooleanCheckForCount ? "True" : "False";
 	
     // Join the keys into a string for the Python code
-    const const_ts_key_fieldsstr = `[${const_ts_key_fields.join(', ')}]`;
-	const const_ts_ignore_fieldsstr = `[${const_ts_ignore_fields.join(', ')}]`;
+    const tsConstKeyFieldsStr = `[${tsConstKeyFields.join(', ')}]`;
+	const tsConstFieldsToIgnoreStr = `[${tsConstFieldsToIgnore.join(', ')}]`;
 	
 	
 	//Comment for Python
     let code = `# Compare ${inputName1} and ${inputName2}\n`;
-    //code += `${outputName}=compare_datasets(execution_engine='${const_ts_execution_engine}',df1=${inputName1}, df2=${inputName2},mode='${const_ts_comparison_mode}',column_mismatch='${const_ts_column_mismatch}')`
+    //code += `${outputName}=compare_datasets(execution_engine='${tsConstExecutionEngine}',df1=${inputName1}, df2=${inputName2},mode='${tsConstComparisonMode}',column_mismatch='${tsConstColumnMismatch}')`
    //for V2	
-   code += `${outputName}=compare_datasets(execution_engine='${const_ts_execution_engine}',
+   code += `${outputName}=py_fn_compare_datasets(execution_engine='${tsConstExecutionEngine}',
   df1=${inputName1},
   df2=${inputName2},
-  mode='${const_ts_comparison_mode}',
-  column_mismatch='${const_ts_column_mismatch}',
-  rounding=${const_ts_rounding},
-  key_fields=${const_ts_key_fieldsstr},
-  ignore_fields=${const_ts_ignore_fieldsstr},
-  index_data_for_compare=${const_ts_index_data_for_compare},
-  index_metadata_for_compare=${const_ts_index_metadata_for_compare},
-  check_forcount=${const_ts_check_forcount}
+  mode='${tsConstComparisonMode}',
+  column_mismatch='${tsConstColumnMismatch}',
+  rounding=${tsConstRounding},
+  key_fields=${tsConstKeyFieldsStr},
+  ignore_fields=${tsConstFieldsToIgnoreStr},
+  index_data_for_compare=${tsConstIndexDataForCompare},
+  index_metadata_for_compare=${tsConstIndexMetadataForCompare},
+  check_forcount=${tsConstCheckForCount}
   )`
   
 

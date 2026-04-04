@@ -4,8 +4,8 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 export class UniqueKeyDetector extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-      columns: [],
-      combination_nfield : 1
+      tsCFcolumnsCombinationColumns: [],
+      tsCFinputNumberCombinationNField : 1
     };
 
     const form = {
@@ -14,14 +14,14 @@ export class UniqueKeyDetector extends BaseCoreComponent {
         {
           type: "columns",
           label: "Select Columns",
-          id: "combination_columns",
+          id: "tsCFcolumnsCombinationColumns",
           placeholder: "Default: all columns",
         },
         {
           type: "inputNumber",
           tooltip: "Maximum Number of Fields in Combination",
           label: "Maximum Number of Fields in Combination",
-          id: "combination_nfield",
+          id: "tsCFinputNumberCombinationNField",
           placeholder: "Default: 1",
           min: 1,
           advanced: false
@@ -44,8 +44,8 @@ export class UniqueKeyDetector extends BaseCoreComponent {
   public provideFunctions({ config }): string[] {
     const prefix = config?.backend?.prefix ?? "pd";
     // Function to perform frequency analysis
-    const UniqueKeyDetectorFunction = `
-def detect_unique_key(df, fields=None, max_combination=0):
+    const tsUniqueKeyDetectorFunction = `
+def py_fn_detect_unique_key(df, fields=None, max_combination=0):
     #Detect unique keys in a DataFrame based on field combinations.
     #Parameters:
     #df (pd.DataFrame): The DataFrame to analyze.
@@ -86,25 +86,23 @@ def detect_unique_key(df, fields=None, max_combination=0):
     return result
 
     `;
-    return [UniqueKeyDetectorFunction];
+    return [tsUniqueKeyDetectorFunction];
   }
 
   // Generate the Python execution script
 public generateComponentCode({ config, inputName, outputName }: { config: any; inputName: string; outputName: string }): string {
-    console.log("Generated outputName:", outputName);  // Debugging output
-    const combination_nfield = config.combination_nfield ?? 1;
-    const combination_columns_step1=[];
+    const tsConstCombinationNField = config.tsCFinputNumberCombinationNField ?? 1;
      // If no columns are selected, pass None so that the Python function uses all columns(default).
-    let combination_columns = "None";
-    if (config.combination_columns?.length > 0) {
-      combination_columns = `[${config.combination_columns
+    let tsConstCombinationColumns = "None";
+    if (config.tsCFcolumnsCombinationColumns?.length > 0) {
+      tsConstCombinationColumns = `[${config.tsCFcolumnsCombinationColumns
         .map((item: any) => (item.named ? `"${item.value}"` : item.value))
         .join(", ")}]`;
     }
     return `
 # Execute the detect unique key function
 ${outputName} = []
-${outputName} = detect_unique_key(${inputName},${combination_columns},${combination_nfield})
+${outputName} = py_fn_detect_unique_key(${inputName},${tsConstCombinationColumns},${tsConstCombinationNField})
     `;
   }
 }
