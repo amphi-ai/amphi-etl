@@ -1,0 +1,85 @@
+{
+  "customer":[{
+  "first_name": "John",
+  "last_name": "Smith",
+  "is_alive": true,
+  "age": 27,
+  "object_address": {
+    "street_address": "21 2nd Street",
+    "city": "New York",
+    "postal_code": "10021-3100"
+  },
+  "array_phone_numbers": [
+    {
+      "type": "home",
+      "number": "212 555-1234",
+	  "update_date": "2025-12-01",
+	  "array_phone_users": [
+		"John",
+        "Catherine",
+        "Thomas",
+        "Trevor"
+      ]	
+    },
+    {
+      "type": "office",
+      "number": "646 555-4567",
+	  "array_phone_users": [
+		"John",
+        "Catherine"
+      ]
+    }
+	,
+    {
+      "type": "office2",
+	  "array_phone_users": [
+		"John"
+      ]
+    }
+  ],
+  "array_children": [
+    "Catherine",
+    "Thomas",
+    "Trevor"
+  ],
+  "spouse": null
+}
+,
+{
+  "first_name": "Balthazar",
+  "last_name": "O'Hara",
+  "is_alive": false,
+  "age": 29,
+  "object_address": {
+    "street_address": "rue de Lacanau",
+    "city": "Bordeaux",
+    "postal_code": "33200"
+  },
+  "array_phone_numbers": [
+    {
+      "type": "home",
+      "number": "212 555-1234",
+	  "update_date": "2025-12-01",
+	  "array_phone_users": [
+		"Balthazar",
+        "Charlotte",
+        "이준"
+      ]	
+    },
+    {
+      "type": "office",
+      "number": "646 555-4567",
+	  "array_phone_users": [
+		"Balthazar",
+        "Charlotte"
+      ]
+    }
+  ],
+  "array_children": [
+    "Charlotte",
+    "이준"
+  ],
+  "spouse": null
+}
+  ]
+}
