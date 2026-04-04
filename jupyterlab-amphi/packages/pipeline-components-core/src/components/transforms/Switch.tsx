@@ -18,7 +18,7 @@ export class Switch extends BaseCoreComponent {
                 {
                     type: "info",
                     label: "Routes data to True or False based on a condition",
-                    id: "instructions",
+                    id: "tsCFinfoInstructions",
                     text: "Uses the same condition builder as Filter Rows. Matching rows go to True, remaining rows go to False.",
                     advanced: true
                 },

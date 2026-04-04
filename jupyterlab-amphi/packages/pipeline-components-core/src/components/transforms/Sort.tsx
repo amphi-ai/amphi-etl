@@ -5,14 +5,17 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class Sort extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { columnAndOrder: [] };
+    const defaultConfig = {
+		tsCFkeyvalueColumnsRadioColumnAndOrder: [],
+        tsCFbooleanIgnoreIndex : false		
+		};
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "keyvalueColumnsRadio",
           label: "Columns Sorting Order",
-          id: "columnAndOrder",
+          id: "tsCFkeyvalueColumnsRadioColumnAndOrder",
           options: [
             { value: "True", label: "Asc." },
             { value: "False", label: "Desc." }
@@ -21,7 +24,7 @@ export class Sort extends BaseCoreComponent {
         {
           type: "boolean",
           label: "Ignore Index",
-          id: "ignoreIndex",
+          id: "tsCFbooleanIgnoreIndex",
           advanced: true
         }
       ],
@@ -37,13 +40,15 @@ export class Sort extends BaseCoreComponent {
 
   public generateComponentCode({ config, inputName, outputName }): string {
 
-    const byColumns = `by=[${config.columnAndOrder.map(item => item.key.named ? `"${item.key.value}"` : item.key.value).join(", ")}]`;
-    const ascending = `ascending=[${config.columnAndOrder.map(item => item.value === "True" ? "True" : "False").join(", ")}]`;
-    const ignoreIndex = config.ignoreIndex ? `, ignore_index=${config.ignoreIndex}` : "";
+    const tsConstByColumns = `by=[${config.tsCFkeyvalueColumnsRadioColumnAndOrder.map(item => item.key.named ? `"${item.key.value}"` : item.key.value).join(", ")}]`;
+    const tsConstAscending = `ascending=[${config.tsCFkeyvalueColumnsRadioColumnAndOrder.map(item => item.value === "True" ? "True" : "False").join(", ")}]`;
+		//for boolean
+	let tsConstIgnoreIndexStep1 = config.tsCFbooleanIgnoreIndex ? 'True' : 'False';
+    const tsConstIgnoreIndex = config.tsCFbooleanIgnoreIndex ? `, ignore_index=${tsConstIgnoreIndexStep1}` : "";
     
     const code = `
 # Sort rows 
-${outputName} = ${inputName}.sort_values(${byColumns}, ${ascending}${ignoreIndex})
+${outputName} = ${inputName}.sort_values(${tsConstByColumns}, ${tsConstAscending}${tsConstIgnoreIndex})
 `;
     return code;
   }

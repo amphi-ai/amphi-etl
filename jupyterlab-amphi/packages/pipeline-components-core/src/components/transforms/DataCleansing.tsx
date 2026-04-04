@@ -1,53 +1,53 @@
-
 import { washIcon } from '../../icons'; // Define this icon in your icons file
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
-
-
 export class DataCleansing extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { method: "value", value: 0, forward: false, backward: false };
+    const defaultConfig = {
+	tsCFselectReplaceMethod: "value",
+	tsCFinputValue: 0
+	};
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "boolean",
           label: "Drop rows with NULL values",
-          id: "removeNullRows",
+          id: "tsCFbooleanRemoveNullRows",
           advanced: true
         },
         {
           type: "radio",
           label: "Drop rows if",
-          id: "removeRowsHow",
+          id: "tsCFradioRemoveRowsHow",
           options: [
             { value: "all", label: "All values are NULL" },
             { value: "any", label: "Any values are NULL (at least one)" }
           ],
-          condition: { removeNullRows: true },
+          condition: { tsCFbooleanRemoveNullRows: true },
           advanced: true
         },
         {
           type: "boolean",
           label: "Drop columns with NULL values",
-          id: "removeNullColumns",
+          id: "tsCFbooleanRemoveNullColumns",
           advanced: true
         },
         {
           type: "radio",
           label: "Drop rows if",
-          id: "removeColumnsHow",
+          id: "tsCFremoveradioColumnsHow",
           options: [
             { value: "all", label: "All values are NULL" },
             { value: "any", label: "Any values are NULL (at least one)" }
           ],
-          condition: { removeNullColumns: true },
+          condition: { tsCFbooleanRemoveNullColumns: true },
           advanced: true
         },
         {
           type: "columns",
           label: "Apply cleansing to columns",
-          id: "columns",
+          id: "tsCFcolumnsSelectColumns",
           tooltip: "Select the columns to apply the cleansing rules. If left blank, all columns will be selected by default.",
           placeholder: "Default: All columns",
           advanced: true
@@ -55,7 +55,7 @@ export class DataCleansing extends BaseCoreComponent {
         {
           type: "select",
           label: "Replace missing values with",
-          id: "replaceMethod",
+          id: "tsCFselectReplaceMethod",
           options: [
             { value: "blanks", label: "Replace with blanks (for string fields)" },
             { value: "0", label: "Replace with 0 (for numeric fields)" },
@@ -69,14 +69,14 @@ export class DataCleansing extends BaseCoreComponent {
         {
           type: "input",
           label: "Value",
-          id: "value",
-          condition: { replaceMethod: "custom" },
+          id: "tsCFinputValue",
+          condition: { tsCFselectReplaceMethod: "custom" },
           placeholder: "Enter value"
         },
         {
           type: "selectMultipleCustomizable",
           label: "Remove Unwanted Characters",
-          id: "removeUnwantedCharacters",
+          id: "tsCFselectMultipleCustomizableRemoveUnwantedCharacters",
           options: [
             { value: "whitespace", label: "Leading and Trailing Whitespace" },
             { value: "tabs", label: "Tabs" },
@@ -90,7 +90,7 @@ export class DataCleansing extends BaseCoreComponent {
         {
           type: "select",
           label: "Modify Case",
-          id: "case",
+          id: "tsCFselectCase",
           options: [
             { value: "lower", label: "Lower Case", tooltip: "Convert all characters to lowercase." },
             { value: "upper", label: "Upper Case", tooltip: "Convert all characters to uppercase." },
@@ -112,7 +112,7 @@ export class DataCleansing extends BaseCoreComponent {
   public provideImports({ config }): string[] {
     const imports = [];
     // Import 're' only if unwanted characters are specified
-    if (config.removeUnwantedCharacters && config.removeUnwantedCharacters.length > 0) {
+    if (config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters && config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters.length > 0) {
       imports.push("import re");
     }
     return imports;
@@ -122,7 +122,7 @@ export class DataCleansing extends BaseCoreComponent {
   public generateComponentCode({ config, inputName, outputName }): string {
     const code = [];
 
-    const columns = config.columns;
+    const columns = config.tsCFcolumnsSelectColumns;
 
     function getColumnReference(column: { value: string, named: boolean, type: string }): string {
       return column.named ? `'${column.value}'` : `${column.value}`;
@@ -135,33 +135,33 @@ export class DataCleansing extends BaseCoreComponent {
     code.push(`${outputName} = ${inputName}.copy()`);
 
     // Handle missing value replacement
-    if (config.replaceMethod) {
+    if (config.tsCFselectReplaceMethod) {
       let value;
-      if (config.replaceMethod === 'blanks') {
+      if (config.tsCFselectReplaceMethod === 'blanks') {
         value = "''";
-      } else if (config.replaceMethod === '0') {
+      } else if (config.tsCFselectReplaceMethod === '0') {
         value = '0';
-      } else if (config.replaceMethod === 'custom') {
-        value = isNaN(Number(config.value)) ? `'${config.value}'` : config.value;
+      } else if (config.tsCFselectReplaceMethod === 'custom') {
+        value = isNaN(Number(config.tsCFinputValue)) ? `'${config.tsCFinputValue}'` : config.tsCFinputValue;
       }
 
-      if (['blanks', '0', 'custom'].includes(config.replaceMethod)) {
+      if (['blanks', '0', 'custom'].includes(config.tsCFselectReplaceMethod)) {
         if (columnsList) {
           code.push(`${outputName}[${columnsList}] = ${outputName}[${columnsList}].fillna(${value})`);
         } else {
           code.push(`${outputName} = ${outputName}.fillna(${value})`);
         }
-      } else if (config.replaceMethod === 'median') {
+      } else if (config.tsCFselectReplaceMethod === 'median') {
         if (columnsList) {
           code.push(`${outputName}[${columnsList}] = ${outputName}[${columnsList}].fillna(${outputName}[${columnsList}].median())`);
         } else {
           code.push(`${outputName} = ${outputName}.fillna(${outputName}.median())`);
         }
-      } else if (['ffill', 'bfill'].includes(config.replaceMethod)) {
+      } else if (['ffill', 'bfill'].includes(config.tsCFselectReplaceMethod)) {
         if (columnsList) {
-          code.push(`${outputName}[${columnsList}] = ${outputName}[${columnsList}].fillna(method='${config.replaceMethod}')`);
+          code.push(`${outputName}[${columnsList}] = ${outputName}[${columnsList}].fillna(method='${config.tsCFselectReplaceMethod}')`);
         } else {
-          code.push(`${outputName} = ${outputName}.fillna(method='${config.replaceMethod}')`);
+          code.push(`${outputName} = ${outputName}.fillna(method='${config.tsCFselectReplaceMethod}')`);
         }
       }
     }
@@ -177,7 +177,7 @@ export class DataCleansing extends BaseCoreComponent {
       'punctuation': { '[^\\w\\s]+': '' }
     };
 
-    const removeUnwantedChars = config.removeUnwantedCharacters || [];
+    const removeUnwantedChars = config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters || [];
     let replaceDict = {};
 
     removeUnwantedChars.forEach(char => {
@@ -193,11 +193,11 @@ export class DataCleansing extends BaseCoreComponent {
       'capitalize': '.capitalize()',
       'swapcase': '.swapcase()',
       'camelcase': ".title().replace(' ', '')",
-      'snakecase': ".replace(' ', '_').lower()"
+      'snakecase': ".replace(' ', '_').str.lower()"
     };
 
     // Determine case transformation
-    const caseOption = config.case;
+    const caseOption = config.tsCFselectCase;
     const caseTransform = caseOption ? caseMapping[caseOption] : null;
 
     if (Object.keys(replaceDict).length > 0 || caseTransform) {
@@ -234,20 +234,20 @@ export class DataCleansing extends BaseCoreComponent {
     }
 
     // Handle removal of null rows
-    if (config.removeNullRows) {
+    if (config.tsCFbooleanRemoveNullRows) {
       if (columnsList) {
-        code.push(`${outputName} = ${outputName}.dropna(axis=0, how='${config.removeRowsHow}', subset=${columnsList})`);
+        code.push(`${outputName} = ${outputName}.dropna(axis=0, how='${config.tsCFradioRemoveRowsHow}', subset=${columnsList})`);
       } else {
-        code.push(`${outputName} = ${outputName}.dropna(axis=0, how='${config.removeRowsHow}')`);
+        code.push(`${outputName} = ${outputName}.dropna(axis=0, how='${config.tsCFradioRemoveRowsHow}')`);
       }
     }
 
     // Handle removal of null columns
-    if (config.removeNullColumns) {
+    if (config.tsCFbooleanRemoveNullColumns) {
       if (columnsList) {
-        code.push(`${outputName} = ${outputName}.dropna(axis=1, how='${config.removeColumnsHow}', subset=${columnsList})`);
+        code.push(`${outputName} = ${outputName}.dropna(axis=1, how='${config.tsCFremoveradioColumnsHow}', subset=${columnsList})`);
       } else {
-        code.push(`${outputName} = ${outputName}.dropna(axis=1, how='${config.removeColumnsHow}')`);
+        code.push(`${outputName} = ${outputName}.dropna(axis=1, how='${config.tsCFremoveradioColumnsHow}')`);
       }
     }
 

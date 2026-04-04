@@ -1,8 +1,6 @@
 import { extractIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
-
-
 export class Extract extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {};
@@ -12,13 +10,13 @@ export class Extract extends BaseCoreComponent {
         {
           type: "column",
           label: "Column name",
-          id: "column",
+          id: "tsCFcolumnColummToBeExtracted",
           placeholder: "Column name",
         },
         {
           type: "select",
           label: "Regular Expression",
-          id: "regex",
+          id: "tsCFselectRegex",
           tooltip: "Select a type of data or custom regex",
           placeholder: "Select type or type regex",
           options: [
@@ -55,7 +53,7 @@ export class Extract extends BaseCoreComponent {
           type: "codeTextarea",
           label: "Custom RegEx",
           tooltip: "Write a custom regex (PCRE: Perl Compatible Regular Expressions)",
-          id: "customRegex",
+          id: "tsCFcodeTextareaCustomRegex",
           mode: "python",
           height: '300px',
           placeholder: "^((?:0[1-9]|1[1-2])[.](?:0[1-9]|[12][0-9]|3[01])[.])$",
@@ -66,12 +64,12 @@ export class Extract extends BaseCoreComponent {
             { label: "Extract dates", value: "Extract dates that matches format like 12/31/2025 or 31-12-2025." }
           ],
           advanced: true,
-          condition: { regex: "custom" }
+          condition: { tsCFselectRegex: "custom" }
         },
         {
           type: "select",
           label: "Flags",
-          id: "flags",
+          id: "tsCFselectFlags",
           placeholder: "Type or select",
           tooltip: "Choose a flag to modify how the regular expression behaves when parsing data in pandas. These flags control case sensitivity, multiline handling, Unicode matching, and more.",
           options: [
@@ -96,16 +94,16 @@ export class Extract extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    const columnName = config.column.value;
-    const columnNamed = config.column.named;
+    const columnName = config.tsCFcolumnColummToBeExtracted.value;
+    const columnNamed = config.tsCFcolumnColummToBeExtracted.named;
     const columnAccess = columnNamed ? `'${columnName}'` : `${columnName}`;
 
-    const isCustom = config.regex === 'custom';
-    const regex = isCustom && config.customRegex ? config.customRegex : config.regex;
+    const isCustom = config.tsCFselectRegex === 'custom';
+    const regex = isCustom && config.tsCFcodeTextareaCustomRegex ? config.tsCFcodeTextareaCustomRegex : config.tsCFselectRegex;
 
     let flagsCode = '';
-    if (config.flags && config.flags.trim() !== '') {
-      const flags = config.flags.split(',')
+    if (config.tsCFselectFlags && config.tsCFselectFlags.trim() !== '') {
+      const flags = config.tsCFselectFlags.split(',')
         .filter(flag => flag.trim() !== '')
         .map(flag => `re.${flag}`)
         .join(' | ');
