@@ -1,16 +1,31 @@
 // Import necessary icons and the BaseCoreComponent class.
-// Ensure the correct folder hierarchy is used (e.g., input/xx/yy...)
+// Ensure the correct folder hierarchy is used (e.g., input/xx/yy...). Built-in component only.
 import { typescriptIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
-// Main class definition
+// Main class definition for built-in component
 export class FormExample extends BaseCoreComponent {
+// Main class definition for custom component (deactivated). Do not keep comments before, it will break !
+//class FormExampleCustom extends (globalThis as any).Amphi.BaseCoreComponent {
+  
   // Constructor initializes the form structure
   constructor() {
-	//this is here where you set the default values of form. but choose either default value or placeholder  
+	//this is here where you set the default values of form. but choose either default value or placeholder
+	//it's highly recommanded to always set a default value when applicable
     const defaultConfig = {
-                           with_default_value_inputNumber : "18",
-                           default_value_column : []
+		                   //id of the form : default value (depends of Type)
+						   tsCFradioFileLocation : "local",
+						   tsCFfileFilePath : "",
+						   tsCFselectCustomizableCSVOptionsSep: ";",
+                           tsCFinputNumberCSVOptionsNRowsWithDefaultValue : "18",
+						   //tsCFselectTokenizationCSVOptionsNames :
+						   tsCFinputCSVOptionsQuoteChar : ",", 
+						   tsCFselectCSVOptionsOnBadLines : "",
+                           tsCFcolumnDefaultValueColumn : [],
+						   tsCFbooleanAutoCommit : true, //or false
+                           tsCFselectMultipleCustomizableRemoveUnwantedCharacters:[],
+      			   		   tsCFselectMultipleDateType:[""],
+                           tsCFcascaderDataType:[""]
                            };
     
     const form = {
@@ -20,78 +35,76 @@ export class FormExample extends BaseCoreComponent {
         // Each form has a type, label, tooltip, and additional properties.
         // Available form types are defined in:
         // amphi-etl\jupyterlab-amphi\packages\pipeline-components-manager\src\forms
-        // For this example, id sometimes mention the  type of the component. Do not do that in real life, use a functional name.
+        // Ensure that you follow the naming convention.
         // Informational sections
+		
+		//common attribute : 
+		//advanced : true by default, require to click on the button. false is displayed in the flow
+		//placeholder : a text that is displayed (but it's not a value)
+		//condition : if specified, when its displayed. By default, always. Keep in mind that even if not displayed, the value is kept.
         {
           type: "info",
-          id: "description",
+          id: "tsCFinfoDescription",
           text: "This component serves as an example showcasing all types of data entry forms available with Amphi.⚠️It is not intended for use as part of a pipeline.",
           advanced: false
         },
         {
           type: "info",
-          id: "misc_info",
+          id: "tsCFinfoMiscInfo",
           text: "You can find the types in amphi-etl/jupyterlab-amphi/packages/pipeline-components-manager/src/configUtils.tsx",
           advanced: true
         },
         {
           type: "info",
-          id: "instructions",
-          text: "1. Informational text to show in the component. File path (3), Separator (4) and sheet name (18) are mandatory to run, meaning you also need File Location (2) set to Local. An input is also required.",
+          id: "tsCFinfoInstructions",
+          text: "1. Informational text to show in the component. Sheet name (21) are mandatory to run. An input is also required.",
           advanced: true
         },
         {
           type: "radio",
           label: "2. File Location (radio)",
-          id: "fileLocation",
+          id: "tsCFradioFileLocation",
           //options : value on the radio button
           options: [
             { value: "local", label: "Local" },
             { value: "http", label: "HTTP" },
-            { value: "s3", label: "S3" },
-            { value: "option4", label: "Option 4" }
+            { value: "s3", label: "S3" }
           ],
           advanced: true
         },
         {
           type: "file",
           label: "3. File path (file)",
-          id: "filePath",
+          id: "tsCFfileFilePath",
           placeholder: "Type file name or use '*' for patterns",
           tooltip: "Provide a single CSV file path or use '*' for matching multiple files. Extensions accepted: .csv, .tsv, .txt. Can also read CSV files compressed as .gz, .bz2, .zip, .xz, .zst.",
           validation: "^(.*(\\.csv|\\.tsv|\\.txt))$|^(.*\\*)$",
           advanced: true
         },
         {
-          type: "selectCustomizable",
-          label: "4. Separator (selectCustomizable)",
-          id: "csvOptions.sep",
-          placeholder: "default: ,",
-          tooltip: "Select or provide a custom delimiter.",
-          options: [
-            { value: ",", label: "comma (,)" },
-            { value: ";", label: "semicolon (;)" },
-            { value: " ", label: "space" },
-            { value: "\\t", label: "tab" },
-            { value: "|", label: "pipe (|)" },
-            { value: "infer", label: "infer (tries to auto detect)" }
-          ],
-          advanced: true
-        },
-        {
           type: "inputNumber",
           tooltip: "Number of rows of file to read. Useful for reading pieces of large files.",
-          label: "5. Rows number (inputNumber)",
-          id: "csvOptions.nrows",
+          label: "4. Rows number without a default value(inputNumber)",
+          id: "tsCFinputNumberCSVOptionsNRows",
           placeholder: "Default: all",
           min: 0,
+          columnId: 1,
+          advanced: true
+        },
+		{
+          type: "inputNumber",
+          tooltip: "Number of rows of file to read. Useful for reading pieces of large files.",
+          label: "5. Rows number with a default value (inputNumber)",
+          id: "tsCFinputNumberCSVOptionsNRowsWithDefaultValue",
+          min: 0,
+		  columnId: 1,
           advanced: true
         },
         {
           type: "selectTokenization",
           tooltip: "Sequence of column labels to apply.",
           label: "6. Column names (selectTokenization)",
-          id: "csvOptions.names",
+          id: "tsCFselectTokenizationCSVOptionsNames",
           placeholder: "Type header fields (ordered and comma-separated)",
           options: [],
           advanced: true
@@ -99,102 +112,138 @@ export class FormExample extends BaseCoreComponent {
         {
           type: "input",
           label: "7. Wrapper Character (input)",
-          id: "csvOptions.quotechar",
+          id: "tsCFinputCSVOptionsQuoteChar",
           tooltip: "Defines the character used to wrap fields containing special characters like the delimiter or newline.",
           advanced: true
         },
         {
           type: "select",
           label: "8. On Bad Lines (select)",
-          id: "csvOptions.on_bad_lines",
+          id: "tsCFselectCSVOptionsOnBadLines",
           placeholder: "Error: raise an Exception when a bad line is encountered",
           options: [
             { value: "error", label: "Error", tooltip: "Raise an Exception when a bad line is encountered" },
-            { value: "warn", label: "Warn", tooltip: "Raise a warning when a bad line is encountered and skip that line." },
-            { value: "skip", label: "Skip", tooltip: "Skip bad lines without raising or warning when they are encountered." }
+            { value: "warn", label: "Warn", tooltip: "Raise a warning when a bad line is encountered and skip that line." }
+          ],
+		  columnId: 2,
+          advanced: true
+        },
+        {
+          type: "selectCustomizable",
+          label: "9. Separator (selectCustomizable)",
+          id: "tsCFselectCustomizableCSVOptionsSep",
+          placeholder: "default: ,",
+          tooltip: "Select or provide a custom delimiter.",
+          options: [
+            { value: ",", label: "comma (,)" },
+            { value: ";", label: "semicolon (;)" },
+            { value: " ", label: "space" }
+          ],
+		  columnId: 2,
+          advanced: true
+        },
+		{
+          type: "selectMultiple",
+          label: "10. Date type (selectMultiple)",
+          id: "tsCFselectMultipleDateType",
+          options: [
+            { value: "days", label: "Days" },
+            { value: "years", label: "Years" },
+            { value: "months", label: "Months" }
           ],
           advanced: true
         },
         {
+          type: "selectMultipleCustomizable",
+          label: "11. Remove Unwanted Characters (selectMultipleCustomizable)",
+          id: "tsCFselectMultipleCustomizableRemoveUnwantedCharacters",
+          options: [
+            { value: "whitespace", label: "Leading and Trailing Whitespace" },
+            { value: "tabs", label: "Tabs" },
+            { value: "Line breaks", label: "Line Breaks" }
+          ],
+          advanced: true
+        },		
+        {
           type: "keyvalue",
-          label: "9. Storage Options (keyvalue)",
-          id: "csvOptions.storage_options",
+          label: "12. Storage Options (keyvalue)",
+          id: "tsCFkeyvalueCSVOptionsStorageOptions",
           condition: { fileLocation: ["http", "s3"] },
           advanced: true
         },
         {
           type: "transferData",
-          label: "10. Filter columns (transferData)",
-          id: "transferData_filtercolumn",
+          label: "13. Filter columns (transferData)",
+          id: "tsCFtransferDataFilterColumn",
           advanced: true
         },
         {
           type: "columns",
-          label: "11. Left Input Column(s) (columns)",
-          id: "leftKeyColumn",
+          label: "14. Select multiple Column(s) (columns)",
+          id: "tsCFcolumnsLeftKeyColumn",
           placeholder: "Column name",
-          tooltip: "If you're joining by multiple columns, make sure the column lists are ordered to match the corresponding columns in the right dataset.",
+          tooltip: "Select multiple columns",
           inputNb: 1,
           advanced: true
         },
         {
           type: "keyvalueColumns",
-          label: "12. Columns (keyvalueColumns)",
-          id: "keyvalueColumns_columns",
+          label: "15. Columns (keyvalueColumns)",
+          id: "tsCFkeyvalueColumnsColumns",
           placeholders: { key: "column name", value: "new column name" },
           advanced: true
         },
         {
           type: "codeTextarea",
-          label: "13. Imports (codeTextarea)",
-          id: "codeTextarea_import",
+          label: "16. Imports (codeTextarea)",
+          id: "tsCFcodeTextareaImports",
           placeholder: "import langchain ...",
           height: '50px',
           advanced: true
         },
         {
           type: "textarea",
-          label: "14. Body (textarea)",
-          id: "textarea_body",
+          label: "17. Body (textarea)",
+          id: "tsCFtextareaJSONBody",
           placeholder: "Write body in JSON",
           advanced: true
         },
         {
           type: "table",
-          label: "15. Table Name (table)",
+          label: "18. Table Name (table)",
           query: `SHOW TABLES;`,
-          id: "tableName",
+          id: "tsCFtableTableName",
           placeholder: "Enter table name",
           condition: { queryMethod: "table" },
           advanced: true
         },
         {
           type: "boolean",
-          label: "16. Auto Commit (boolean)",
-          tooltip: "Setting autocommit True will cause the database to issue a commit after each SQL statement, otherwise database transactions will have to be explicity committed. As per the Python DB API, the default value is False (even though the ODBC default value is True). Typically, you will probably want to set autocommit True when creating a connection.",
-          id: "boolean_autoCommit",
+          label: "19. Auto Commit (boolean)",
+          tooltip: "Auto commit for database",
+          id: "tsCFbooleanAutoCommit",
           advanced: true
          },
         {
           type: "valuesList",
-          label: "17. URLs (valuesList)",
-          id: "valuesList_urls",
+          label: "20. URLs (valuesList)",
+          id: "tsCFvaluesListUrls",
           placeholders: "Enter URLs",
           advanced: true
         },
         {
           type: "sheets",
-          label: "18. Sheets (sheets)",
-          id: "excelOptions.sheet_name",
+          label: "21. Sheets (sheets)",
+          id: "tsCFsheetsExcelOptionsSheetName",
           placeholder: "Default: 0 (first sheet)",
           tooltip: "Select one or multiple sheets. If multiple sheets are selected, the sheets are concatenated to output a single dataset.",
-          condition: { fileLocation: "local"},
+          condition: { tsCFradioFileLocation: "local"},
           advanced: true
         },
         {
           type: "dataMapping",
-          label: "19. Mapping (dataMapping)",
-          id: "mapping",
+          label: "22. Mapping (dataMapping)",
+          id: "tsCFdataMappingmapping",
           tooltip: "By default, the mapping is inferred from the input data. By specifying a schema, you override the incoming schema.",
           outputType: "relationalDatabase",
           imports: ["pyodbc"],
@@ -242,8 +291,8 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
         },
         {
           type: "cascader",
-          label: "20. Data Type to convert to (cascader)",
-          id: "dataType",
+          label: "23. Data Type to convert to (cascader)",
+          id: "tsCFcascaderDataType",
           placeholder: "Select ...",
           onlyLastValue: true,
           options: [
@@ -257,12 +306,7 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
                   children: [
                     { value: "int64", label: "int64: Standard integer type." },
                     { value: "int32", label: "int32: For optimized memory usage." },
-                    { value: "int16", label: "int16: For more optimized memory usage." },
-                    { value: "int8", label: "int8: For more optimized memory usage." },
-                    { value: "uint64", label: "uint64: Unsigned integer (can only hold non-negative values)" },
-                    { value: "uint32", label: "uint32: For more optimized memory usage." },
-                    { value: "uint16", label: "uint16: For more optimized memory usage." },
-                    { value: "uint8", label: "uint8: For more optimized memory usage." }
+                    { value: "int16", label: "int16: For more optimized memory usage." }
                   ]
                 },
                 {
@@ -291,10 +335,7 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
               children: [
                 { value: "datetime64[ns]", label: "datetime64[ns]: For datetime values." },
                 { value: "datetime64[ms]", label: "datetime64[ms]: For datetime values in milliseconds." },
-                { value: "datetime64[s]", label: "datetime64[s]: For datetime values in seconds." },
-                { value: "datetime32[ns]", label: "datetime32[ns]: For compact datetime storage in nanoseconds." },
-                { value: "datetime32[ms]", label: "datetime32[ms]: For compact datetime storage in milliseconds." },
-                { value: "timedelta[ns]", label: "timedelta[ns]: For differences between two datetimes." }
+                { value: "datetime64[s]", label: "datetime64[s]: For datetime values in seconds." }
               ]
             },
             {
@@ -309,8 +350,8 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
         },
         {
           type: "keyvalueColumnsRadio",
-          label: "21. Columns Sorting Order(keyvalueColumnsRadio)",
-          id: "columnAndOrder",
+          label: "24. Columns Sorting Order(keyvalueColumnsRadio)",
+          id: "tsCFkeyvalueColumnsRadioColumnSortingOrder",
           options: [
             { value: "True", label: "Asc." },
             { value: "False", label: "Desc." }
@@ -318,52 +359,27 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
           advanced: true
         },
         {
-          type: "selectMultipleCustomizable",
-          label: "22. Remove Unwanted Characters (selectMultipleCustomizable)",
-          id: "removeUnwantedCharacters",
-          options: [
-            { value: "whitespace", label: "Leading and Trailing Whitespace" },
-            { value: "tabs", label: "Tabs" },
-            { value: "Line breaks", label: "Line Breaks" },
-            { value: "allwhitespace", label: "All Whitespace" },
-            { value: "letters", label: "All Letters" },
-            { value: "numbers", label: "All Numbers" },
-            { value: "punctuation", label: "Punctuation" }
-          ],
-          advanced: true
-        },
-        {
           type: "keyvalueColumnsSelect",
-          label: "23. Operations (keyvalueColumnsSelect)",
-          id: "columnsOperations",
+          label: "25. Operations (keyvalueColumnsSelect)",
+          id: "tsCFkeyvalueColumnsSelectColumnsOperations",
           placeholder: "Select column",
           options: [
             { value: "min", label: "Min", tooltip: "Returns the minimum value in the group." },
-            { value: "max", label: "Max", tooltip: "Returns the maximum value in the group." },
-            { value: "sum", label: "Sum", tooltip: "Returns the sum of all values in the group." },
-            { value: "mean", label: "Mean", tooltip: "Returns the average value of the group." },
-            { value: "count", label: "Count", tooltip: "Counts the number of non-null entries." },
-            { value: "nunique", label: "Distinct Count", tooltip: "Returns the number of distinct elements." },
-            { value: "first", label: "First", tooltip: "Returns the first value in the group." },
-            { value: "last", label: "Last", tooltip: "Returns the last value in the group." },
-            { value: "median", label: "Median", tooltip: "Returns the median value in the group." },
-            { value: "std", label: "Standard Deviation", tooltip: "Returns the standard deviation of the group." },
-            { value: "var", label: "Variance", tooltip: "Returns the variance of the group." },
-            { value: "prod", label: "Product", tooltip: "Returns the product of all values in the group." }
+            { value: "max", label: "Max", tooltip: "Returns the maximum value in the group." }
           ],
           advanced: true
         },
         {
           type: "column",
-          label: "24. Select a single column (column)",
-          id: "column",
+          label: "26. Select a single column (column)",
+          id: "tsCFcolumnSelectColumn",
           placeholder: "Column name",
           advanced: true
         },
         {
           type: "column",
-          label: "25. Select a single column (column) restricted to specific types (string, bool)",
-          id: "type_restricted_column",
+          label: "27. Select a single column (column) restricted to specific types (string, bool)",
+          id: "tsCFcolumnTypeRestrictedColumn",
 //types for allowedtype : 
 //            numeric:  /^(u?int|float|complex|decimal)\d*$/i,
 //              datetime: /^(datetime|timedelta|period|datetimetz)/i,
@@ -375,31 +391,23 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
           advanced: true
         },
         {
-          type: "inputNumber",
-          tooltip: "Number of rows of file to read. Useful for reading pieces of large files.",
-          label: "26. Rows number with a default value (inputNumber)",
-          id: "with_default_value_inputNumber",
-          min: 0,
-          advanced: true
-        },
-        {
           type: "column",
-          label: "27. Select a single column with default value so that code can work when retrieving default_value_column.value even if not defined(column)",
-          id: "default_value_column",
+          label: "28. Select a single column with default value so that code can work when retrieving tsCFcolumnDefaultValueColumn.value even if not defined(column)",
+          id: "tsCFcolumnDefaultValueColumn",
           placeholder: "Column name",
           advanced: true
         },
 		{
           type: "date",
-          label: "28. Select a Date (date)",
-          id: "date_picker",
+          label: "29. Select a Date (date)",
+          id: "tsCFdateDatePicker",
           advanced: true
         },
         {
           type: "codeTextarea",
-          label: "29. Code with AI (codeTextarea)",
+          label: "30. Code with AI (codeTextarea)",
           tooltip: "Use the dataframe 'output' as output, and 'input' as input",
-          id: "code_with_ai",
+          id: "tsCFcodeTextareaCodeWithAi",
           mode: "python",
           height: '300px',
           placeholder: "your amazing code here",
@@ -411,154 +419,313 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
             { label: "Size of my data", value: "Give me the size of my 'input' dataframe" }
           ],
           advanced: true,
-        },
-        {
-          type: "selectMultiple",
-          label: "30. Date type (selectMultiple)",
-          id: "datetype",
-          options: [
-            { value: "days", label: "Days" },
-            { value: "years", label: "Years" },
-            { value: "months", label: "Months" }
-          ],
-          advanced: true
-        },		
+        }	
       ]
           
     };
     // Component description for tooltips in the menu
     const description = "Form examples";
-    
+ 
+	//icon svg code, only for custom component, deactivated
+    //const icon = {
+    //  name: 'amphi-name-input-hello',
+    //  svgstr:
+    //    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.33 0-8 2.17-8 5v1h16v-1c0-2.83-3.67-5-8-5Z"/></svg>'
+    //};
+
+	
     // Super constructor call with necessary parameters
     // 1. Do not forget to add the icon in amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\icons.ts and in amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\style\icons.
     super("Form Example", "form_example", description, "pandas_df_processor", [], "developer", typescriptIcon, defaultConfig, form);
+  
+  	//for custom, icon changes
+	//super("Form Example Custom", "form_example_custom", description, "pandas_df_processor", [], "developer", icon, defaultConfig, form);
+
   }
-  // List of additional Python packages required (if any)
+  
+  
+// List of additional Python packages required (if any).
+//  Do not import in the python code or python function later to avoid duplication of import
   public provideImports({ config }): string[] {
-    return [];
+    return [
+"import pandas as pd",
+"from typing import Dict, List,Union,Any"
+];
   }
+
 
   // Define the Python function. Not mandatory but can help.
   public provideFunctions({ config }): string[] {
     const prefix = config?.backend?.prefix ?? "pd";
 
-    const ExampleTSFunction = `
-
-def example_python_function(
-    df: pd.DataFrame,
-    example_kwarg_int: int, 
-    example_kwarg_string: str = "mydefaultvalue",#here the default value of the function.In Python, arguments with default values must come after non-default arguments.
+    const tsExampleFunction = `
+def py_fn_example_python_function(
+    py_arg_df: pd.DataFrame,
+    py_arg_csv_options_nrows_with_default_value: int, 
+    py_arg_csv_options_on_badlines: str = "mydefaultvalue",#here the default value of the function.In Python, arguments with default values must come after non-default arguments.
+    py_arg_function_test_list: list = None,
+    py_arg_function_test_dict: dict = None
 ) -> pd.DataFrame:
 
-    result_df = df.copy()  # avoid mutating original DataFrame
-    result_df["new_int_column"] = example_kwarg_int
-    result_df["new_string_column"] = example_kwarg_string
+	#this is a doctring to document the function
+    """
+    Add two columns to a dataframe, and test two arguments
+ 
+    Parameters
+    ----------
+    py_arg_df : pandas.DataFrame
+        The input DataFrame.
+    py_arg_csv_options_nrows_with_default_value : int or None, default None
+        number of rows.
+    py_arg_csv_options_on_badlines : str or None, default None
+        what to do with badlines. 
+    py_arg_function_test_list: a list that will be tested, default None
+    py_arg_function_test_dict: a dict that will be tested, default None
+	
+    Returns
+    -------
+    pandas.DataFrame
+        a dataframe with two more columns.
+    """
+	# Debug prints for types
+    print("py_arg_function_test_list type:", type(py_arg_function_test_list))
+    print("Is list:", isinstance(py_arg_function_test_list, list))
+
+    print("py_arg_function_test_dict type:", type(py_arg_function_test_dict))
+    print("Is dict:", isinstance(py_arg_function_test_dict, dict))
+	
+    result_df = py_arg_df.copy()  # avoid mutating original DataFrame
+    result_df["new integer column"] = py_arg_csv_options_nrows_with_default_value
+    result_df["new string column"] = py_arg_csv_options_on_badlines
 	#convert to string (else object)
-    result_df["new_string_column"] = result_df["new_string_column"].astype("string")
+    result_df["new string column"] = result_df["new string column"].astype("string")
     return result_df
 
     `;
 
-    return [ExampleTSFunction];
+    return [tsExampleFunction];
   }
 
 
   // Generates the Python code for processing the form input
-  //please note a few things : 
-  //-that typescript const/var will also be interpretated on commented lines
-  //-you can use in your code config.column even if undefined but to use config.column.value, config.column has to be defined
-  public generateComponentCode({ config, inputName, outputName }): string {
-    //constant declaration
-    const default_value_column_value=config.default_value_column.value;
-	const constTswith_default_value_inputNumber=config.with_default_value_inputNumber;
-	const constTsfileLocation=config.fileLocation;	
-	const tsConsdatetype = JSON.stringify(config.datetype);
-	const tsConsremoveUnwantedCharacters = JSON.stringify(config.removeUnwantedCharacters);
 
-    let columnsParam = "{";
-    if (config.columns && config.columns.length > 0) {
-      columnsParam += config.columns.map(column => {
-        if (column.key.named) {
-          return `"${column.key.value}": "${column.value}"`;
-        } else {
-          return `${column.key.value}: "${column.value}"`;
-        }
-      }).join(", ");
-      columnsParam += "}";
-    } else {
-      columnsParam = "{}"; // Ensure columnsParam is always initialized
+  public generateComponentCode({ config, inputName, outputName }): string {
+  
+    //constant declaration
+	//this part is useful to transform your form data to something exploitable by Python
+	//the form is usable with config.{id of your form}
+	//sometimes you will have to use config.{id of your form}.value
+    //please note a few things : 
+    //-that typescript const/var will also be interpretated on commented lines
+   //-you can use in your code config.column even if undefined but to use config.column.value, config.column has to be defined
+   // since you can have None and "value", it's recommended to deal with quote in typescript.
+   
+   
+   //for select, radio, input, date..
+   //initialization to None
+    let tsConstCSVOptionsOnBadLines = 'None';
+    if (config.tsCFselectCSVOptionsOnBadLines && config.tsCFselectCSVOptionsOnBadLines.trim() !== '' 
+	) {
+      tsConstCSVOptionsOnBadLines = '"' + config.tsCFselectCSVOptionsOnBadLines+ '"';
+    }	
+
+	
+    //for select multiple, select multiple customizable..
+	//tsConstRemoveUnwantedCharacters gives something like ['tabs', 'whitespace'] in console and you want something like a list ["tabs","whitespace"]
+	let tsConstRemoveUnwantedCharacters = 'None';
+    if (config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters && config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters.length > 0
+	) {
+      tsConstRemoveUnwantedCharacters = JSON.stringify(config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters);
+    }	
+	let tsConsDateType = 'None';
+    if (config.tsCFselectMultipleDateType && config.tsCFselectMultipleDateType.length > 0
+	) {
+      tsConsDateType = JSON.stringify(config.tsCFselectMultipleDateType);
+    }	
+	let tsConsselectTokenization = 'None';
+    if (config.tsCFselectTokenizationCSVOptionsNames && config.tsConsselectTokenization[0].length !== 0 
+	) {
+      tsConsselectTokenization = JSON.stringify(config.tsCFselectTokenizationCSVOptionsNames);
+    }		
+
+	//for boolean
+	let tsConstAutoCommit = config.tsCFbooleanAutoCommit ? 'True' : 'False';
+	
+    // for Column
+	let tsConstSelectColumn = 'None';
+	if (config.tsCFcolumnSelectColumn && config.tsCFcolumnSelectColumn.value.trim() !== '' 
+	) {
+      tsConstSelectColumn = '"' + config.tsCFcolumnSelectColumn.value+ '"';
     }
+	let tsConstTypeRestrictedColumn = 'None';
+	if (config.tsCFcolumnTypeRestrictedColumn && config.tsCFcolumnTypeRestrictedColumn.value.trim() !== '' 
+	) {
+      tsConstTypeRestrictedColumn = '"' + config.tsCFcolumnTypeRestrictedColumn.value+ '"';
+    }
+	
+    //for columns,
+	let tsConstLeftKeyColumn = "None";
+    if (config.tsCFcolumnsLeftKeyColumn?.length > 0) {
+      tsConstLeftKeyColumn = `[${config.tsCFcolumnsLeftKeyColumn
+        .map((item: any) => (item.named ? `"${item.value}"` : item.value))
+        .join(", ")}]`;
+    }
+	//for keyvalueColumnsRadioColumn,keyvalueColumns
+	//it will be formatted as a python dict
+	let tsConstSortingOrder = "None";
+	if (config.tsCFkeyvalueColumnsRadioColumnSortingOrder && config.tsCFkeyvalueColumnsRadioColumnSortingOrder.length > 0) {
+      tsConstSortingOrder = "{";
+	  config.tsCFkeyvalueColumnsRadioColumnSortingOrder.forEach((op, index) => {
+        // Determine how to reference the column based on 'named'
+        const tsConstSortingOrdercolumnReference = op.key.value;
+        const tsConstSortingOrderSort = op.value;
+        // Construct each element argument
+        tsConstSortingOrder += `"${tsConstSortingOrdercolumnReference}": "${tsConstSortingOrderSort}"`;
+        if (index < config.tsCFkeyvalueColumnsRadioColumnSortingOrder.length - 1) {
+          tsConstSortingOrder += ", ";
+        }
+      });
+	  tsConstSortingOrder +=`}`;
+    }
+	
+	let tsConstColumnswithkeys = "None";
+	if (config.tsCFkeyvalueColumnsColumns && config.tsCFkeyvalueColumnsColumns.length > 0) {
+      tsConstColumnswithkeys = "{";
+	  config.tsCFkeyvalueColumnsColumns.forEach((op, index) => {
+        // Determine how to reference the column based on 'named'
+        const tsConstColumnswithkeyscolumnReference = op.key.value;
+        const tsConstColumnswithkeyskey = op.value;
+        // Construct each element argument
+        tsConstColumnswithkeys += `"${tsConstColumnswithkeyscolumnReference}": "${tsConstColumnswithkeyskey}"`;
+        if (index < config.tsCFkeyvalueColumnsColumns.length - 1) {
+          tsConstColumnswithkeys += ", ";
+        }
+      });
+	  tsConstColumnswithkeys +=`}`;
+    }	
+	//for keyvalueColumns...(small difference with the keyvalueColumnsRadioColumn : we look at op.value.value, not ope.value)
+	//it will be formatted as a python dict
+	let tsConstColumnsOperations = "None";
+	if (config.tsCFkeyvalueColumnsSelectColumnsOperations && config.tsCFkeyvalueColumnsSelectColumnsOperations.length > 0) {
+      tsConstColumnsOperations = "{";
+	  config.tsCFkeyvalueColumnsSelectColumnsOperations.forEach((op, index) => {
+        // Determine how to reference the column based on 'named'
+        const tsConstColumnsOperationscolumnReference = op.key.value;
+        const tsConstColumnsOperationsOpe = op.value.value;
+        // Construct each element argument
+        tsConstColumnsOperations += `"${tsConstColumnsOperationscolumnReference}": "${tsConstColumnsOperationsOpe}"`;
+        if (index < config.tsCFkeyvalueColumnsSelectColumnsOperations.length - 1) {
+          tsConstColumnsOperations += ", ";
+        }
+      });
+	  tsConstColumnsOperations +=`}`;
+    }
+	
+	
+	//for inputNumber
+    const tsConstCSVOptionsNRowsWithDefaultValue=config.tsCFinputNumberCSVOptionsNRowsWithDefaultValue;
+	
+	//for cascader. Cascader gives the whole path of the data like ['text', 'string'].
+    //in this example, we retrieve only the last level	
+    const tsConstDataTypeStep1 = config.tsCFcascaderDataType[config.tsCFcascaderDataType.length - 1];
+    let tsConstDataType = 'None';
+    if (tsConstDataTypeStep1 && tsConstDataTypeStep1.trim() !== '' 
+	) {
+      tsConstDataType = '"' + tsConstDataTypeStep1+ '"';
+    }
+
 
     // Template for outputting the input data. This is where you place your Python code.
     const code = `
-print("example of print in Amphi console")
-print("2 config.fileLocation : ")
-print("${config.fileLocation}")
-print("3 config.filePath : ")
-print("${config.filePath}")
-print("4 config.csvOptions.sep : ")
-print("${config.csvOptions.sep}")
-print("5 config.csvOptions.nrows : ")
-print("${config.csvOptions.nrows}")
-print("6 config.csvOptions.names : ")
-print("${config.csvOptions.names}")
-print("7 config.csvOptions.quotechar : ")
-print("${config.csvOptions.quotechar}")
-print("8 config.csvOptions.on_bad_lines : ")
-print("${config.csvOptions.on_bad_lines}")
-print("9 config.csvOptions.storage_options : ")
-print("${config.csvOptions.storage_options}")
-print("10 config.transferData_filtercolumn : ")
-print("${config.transferData_filtercolumn}")
-print("11 config.leftKeyColumn : ")
-print("${config.leftKeyColumn}")
-print("12 config.keyvalueColumns_columns : ")
-print("${config.keyvalueColumns_columns}")
-print("13 config.codeTextarea_import : ")
-print("${config.csvOptions.nrows}")
-print("14 config.textarea_body : ")
-print("${config.textarea_body}")
-print("14 config.textarea_body : ")
-print("${config.textarea_body}")
-print("15 config.tableName : ")
-print("${config.tableName}")
-print("16 config.boolean_autoCommit : ")
-print("${config.boolean_autoCommit}")
-print("17 config.valuesList_urls : ")
-print("${config.valuesList_urls}")
-print("18 config.excelOptions.sheet_name: ")
-print("${config.excelOptions.sheet_name}")
-print("19 config.mapping : ")
-print("${config.mapping}")
-print("20 config.dataType : ")
-print("${config.dataType}")
-print("21 columnAndOrder : ")
-print("${config.columnAndOrder}")
-print("22 config.removeUnwantedCharacters : ")
-print("${config.removeUnwantedCharacters}")
-print("${tsConsremoveUnwantedCharacters}")
-print("23 config.columnsOperations : ")
-print("${config.columnsOperations}")
-print("24 config.column : ")
-print("${config.column}")
-print("25 config.type_restricted_column: ")
-print("${config.type_restricted_column}")
-print("26 config.with_default_value_inputNumber: ")
-print("${config.with_default_value_inputNumber}")
-print("27 config.default_value_column: ")
-print("${config.default_value_column}")
-print("27 config.default_value_column.value: ")
-print("${config.default_value_column.value}")
-print("27 default_value_column_value: ")
-print("${default_value_column_value}")
-print("${config.dataType}")
-print("28 config.date_picker : ")
-print("${config.date_picker}")
-print("29. config.code_with_ai : ")
-print("${config.code_with_ai}")
-print("30.config.datetype : ")
-print("${config.datetype}")
-print("${tsConsdatetype}")
+print("1 config.tsCFinfoInstructions : ")
+print("${config.tsCFinfoInstructions}")
+print("2 config.tsCFradioFileLocation : ")
+print("${config.tsCFradioFileLocation}")
+print("3 config.tsCFfileFilePath : ")
+print("${config.tsCFfileFilePath}")
+print("4 config.tsCFinputNumberCSVOptionsNRows : ")
+print("${config.tsCFinputNumberCSVOptionsNRows}")
+print("5 config.tsCFinputNumberCSVOptionsNRowsWithDefaultValue : ")
+print("${config.tsCFinputNumberCSVOptionsNRowsWithDefaultValue}")
+print("tsConstCSVOptionsNRowsWithDefaultValue : ")
+print("${tsConstCSVOptionsNRowsWithDefaultValue}")
+print("6 config.tsCFselectTokenizationCSVOptionsNames : ")
+print("${config.tsCFselectTokenizationCSVOptionsNames}")
+print("tsConsselectTokenization : ")
+print('${tsConsselectTokenization}') #single quote because we have quotes inside
+print("7 config.tsCFinputCSVOptionsQuoteChar : ")
+print("${config.tsCFinputCSVOptionsQuoteChar}")
+print("8 config.tsCFselectCSVOptionsOnBadLines : ")
+print("${config.tsCFselectCSVOptionsOnBadLines}")
+print("tsConstCSVOptionsOnBadLines : ")
+print(${tsConstCSVOptionsOnBadLines})
+print("9 config.tsCFselectCustomizableCSVOptionsSep : ")
+print("${config.tsCFselectCustomizableCSVOptionsSep}")
+print("10 config.tsCFselectMultipleDateType : ")
+print("${config.tsCFselectMultipleDateType}")
+print("tsConsDateType : ")
+print('${tsConsDateType}')
+print("11 config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters : ")
+print("${config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters}")
+print("tsConstRemoveUnwantedCharacters : ")
+print('${tsConstRemoveUnwantedCharacters}') #single quote because we have quotes inside
+print("12 config.tsCFkeyvalueCSVOptionsStorageOptions : ")
+print("${config.tsCFkeyvalueCSVOptionsStorageOptions}")
+print("13 config.tsCFtransferDataFilterColumn : ")
+print("${config.tsCFtransferDataFilterColumn}")
+print("14 config.tsCFcolumnsLeftKeyColumn : ")
+print("${config.tsCFcolumnsLeftKeyColumn}")
+print("tsConstLeftKeyColumn : ")
+print(${tsConstLeftKeyColumn})
+print("15 config.tsCFkeyvalueColumnsColumns : ")
+print(${tsConstColumnswithkeys})
+#print("16 config.tsCFcodeTextareaImports : ")
+#print("${config.tsCFcodeTextareaImports}")//break the code, please look at console instead
+print("17 config.tsCFtextareaJSONBody : ")
+print("${config.tsCFtextareaJSONBody}")
+print("18 config.tsCFtableTableName : ")
+print("${config.tsCFtableTableName}")
+print("19 config.tsCFbooleanAutoCommit : ")
+print("${config.tsCFbooleanAutoCommit}")
+print("tsConstAutoCommit : ")
+print("${tsConstAutoCommit}")
+print("20 config.tsCFvaluesListUrls : ")
+print("${config.tsCFvaluesListUrls}")
+print("21 config.tsCFsheetsExcelOptionsSheetName : ")
+print("${config.tsCFsheetsExcelOptionsSheetName}")
+print("22 config.tsCFdataMappingmapping : ")
+print("${config.tsCFdataMappingmapping}")
+print("23 config.tsCFcascaderDataType : ")
+print("${config.tsCFcascaderDataType}")
+print("tsConstDataTypeStep1 : ")
+print("${tsConstDataTypeStep1}")
+print("tsConstDataType : ")
+print(${tsConstDataType})
+print("24 config.tsCFkeyvalueColumnsRadioColumnSortingOrder : ")
+print("${config.tsCFkeyvalueColumnsRadioColumnSortingOrder}")
+print("24 tsConstSortingOrder : ")
+print(${tsConstSortingOrder})
+print("25 config.tsCFkeyvalueColumnsSelectColumnsOperations : ")
+print("${config.tsCFkeyvalueColumnsSelectColumnsOperations}")
+print("25 tsConstColumnsOperations : ")
+print(${tsConstColumnsOperations})
+print("26 config.tsCFcolumnSelectColumn : ")
+print("${config.tsCFcolumnSelectColumn}")
+print("tsConstSelectColumn : ")
+print(${tsConstSelectColumn})
+print("27 config.tsCFcolumnTypeRestrictedColumn : ")
+print("${config.tsCFcolumnTypeRestrictedColumn}")
+print("27 tsConstTypeRestrictedColumn : ")
+print(${tsConstTypeRestrictedColumn})
+print("28 config.tsCFcolumnDefaultValueColumn : ")
+print("${config.tsCFcolumnDefaultValueColumn}")
+print("28 config.tsCFcolumnDefaultValueColumn.value : ")
+print("${config.tsCFcolumnDefaultValueColumn.value}")
+print("29 config.tsCFdateDatePicker : ")
+print("${config.tsCFdateDatePicker}")
+#print("30 config.tsCFcodeTextareaCodeWithAi : ")
+#print("${config.tsCFcodeTextareaCodeWithAi}") //break the code, please look at console instead
+
 
 
 #A comment in Python. The code generator will replace outputName by the output real name, same for inputName.
@@ -566,79 +733,113 @@ print("${tsConsdatetype}")
 #You can do without a python function however if your code is very simple.
 #kwarg is for key word argument, it allows a more understandable syntax than just writing the argument.
 #new line for each argument improve readability
-${outputName} = example_python_function(
-  df=${inputName},
-  example_kwarg_int=${constTswith_default_value_inputNumber},
-  example_kwarg_string='${constTsfileLocation}')
+#note how typescript const are used without quotes
+
+${outputName} = py_fn_example_python_function(
+  py_arg_df=${inputName},
+  py_arg_csv_options_nrows_with_default_value=${tsConstCSVOptionsNRowsWithDefaultValue},
+  py_arg_csv_options_on_badlines=${tsConstCSVOptionsOnBadLines},
+  py_arg_function_test_list=${tsConstRemoveUnwantedCharacters},
+  py_arg_function_test_dict=${tsConstColumnswithkeys}
+)
 `;
 
 //test console : it will appear in your browser console. This is TypeScript code.
-console.log("2 config.fileLocation : ");
-console.log(config.fileLocation);
-console.log("3 config.filePath : ");
-console.log(config.filePath);
-console.log("4 config.csvOptions.sep : ");
-console.log(config.csvOptions.sep);
-console.log("5 config.csvOptions.nrows : ");
-console.log(config.csvOptions.nrows);
-console.log("6 config.csvOptions.names : ");
-console.log(config.csvOptions.names);
-console.log("7 config.csvOptions.quotechar : ");
-console.log(config.csvOptions.quotechar);
-console.log("8 config.csvOptions.on_bad_lines : ");
-console.log(config.csvOptions.on_bad_lines);
-console.log("9 config.csvOptions.storage_options : ");
-console.log(config.csvOptions.storage_options);
-console.log("10 config.transferData_filtercolumn : ");
-console.log(config.transferData_filtercolumn);
-console.log("11 config.leftKeyColumn : ");
-console.log(config.leftKeyColumn);
-console.log("12 config.keyvalueColumns_columns : ");
-console.log(config.keyvalueColumns_columns);
-console.log("13 config.codeTextarea_import : ");
-console.log(config.csvOptions.nrows);
-console.log("14 config.textarea_body : ");
-console.log(config.textarea_body);
-console.log("14 config.textarea_body : ");
-console.log(config.textarea_body);
-console.log("15 config.tableName : ");
-console.log(config.tableName);
-console.log("16 config.boolean_autoCommit : ");
-console.log(config.boolean_autoCommit);
-console.log("17 config.valuesList_urls : ");
-console.log(config.valuesList_urls);
-console.log("18 config.excelOptions.sheet_name: ");
-console.log(config.excelOptions.sheet_name);
-console.log("19 config.mapping : ");
-console.log(config.mapping);
-console.log("20 config.dataType : ");
-console.log(config.dataType);
-console.log("21 columnAndOrder : ");
-console.log(config.columnAndOrder);
-console.log("22 config.removeUnwantedCharacters : ");
-console.log(config.removeUnwantedCharacters);
-console.log(tsConsremoveUnwantedCharacters);
-console.log("23 config.columnsOperations : ");
-console.log(config.columnsOperations);
-console.log("24 config.column : ");
-console.log(config.column);
-console.log("25 config.type_restricted_column : ");
-console.log(config.type_restricted_column);
-console.log("26 config.with_default_value_inputNumber: ");
-console.log(config.with_default_value_inputNumber);
-console.log("27 config.default_value_column: ");
-console.log(config.default_value_column);
-console.log("27 config.default_value_column.value: ");
-console.log(config.default_value_column.value);
-console.log("27 default_value_column_value: ");
-console.log(default_value_column_value);
-console.log("28 config.date_picker: ");
-console.log(config.date_picker);
-console.log("29 config.code_with_ai: ");
-console.log(config.code_with_ai);
-console.log("30 config.datetype : ");
-console.log(config.datetype);
-console.log(tsConsdatetype);
+console.log("Amphi typescript code with values of the form");
+console.log("1 config.tsCFinfoInstructions : ");
+console.log(config.tsCFinfoInstructions);
+console.log("2 config.tsCFradioFileLocation : ");
+console.log(config.tsCFradioFileLocation);
+console.log("3 config.tsCFfileFilePath : ");
+console.log(config.tsCFfileFilePath);
+console.log("4 config.tsCFinputNumberCSVOptionsNRows : ");
+console.log(config.tsCFinputNumberCSVOptionsNRows);
+console.log("5 config.tsCFinputNumberCSVOptionsNRowsWithDefaultValue : ");
+console.log(config.tsCFinputNumberCSVOptionsNRowsWithDefaultValue);
+console.log("tsConstCSVOptionsNRowsWithDefaultValue : ");
+console.log(tsConstCSVOptionsNRowsWithDefaultValue);
+console.log("6 config.tsCFselectTokenizationCSVOptionsNames : ");
+console.log(config.tsCFselectTokenizationCSVOptionsNames);
+console.log("6 tsConsselectTokenization : ");
+console.log(tsConsselectTokenization);
+console.log("7 config.tsCFinputCSVOptionsQuoteChar : ");
+console.log(config.tsCFinputCSVOptionsQuoteChar);
+console.log("8 config.tsCFselectCSVOptionsOnBadLines : ");
+console.log(config.tsCFselectCSVOptionsOnBadLines);
+console.log("tsConstCSVOptionsOnBadLines : ");
+console.log(tsConstCSVOptionsOnBadLines);
+console.log("9 config.tsCFselectCustomizableCSVOptionsSep : ");
+console.log(config.tsCFselectCustomizableCSVOptionsSep);
+console.log("10 config.tsCFselectMultipleDateType : ");
+console.log(config.tsCFselectMultipleDateType);
+console.log("11 config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters : ");
+console.log(config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters);
+console.log("tsConstRemoveUnwantedCharacters : ");
+console.log(tsConstRemoveUnwantedCharacters);
+console.log("12 config.tsCFkeyvalueCSVOptionsStorageOptions : ");
+console.log(config.tsCFkeyvalueCSVOptionsStorageOptions);
+console.log("13 config.tsCFtransferDataFilterColumn : ");
+console.log(config.tsCFtransferDataFilterColumn);
+console.log("14 config.tsCFcolumnsLeftKeyColumn : ");
+console.log(config.tsCFcolumnsLeftKeyColumn);
+console.log("tsConstLeftKeyColumn : ");
+console.log(tsConstLeftKeyColumn);
+console.log("15 config.tsCFkeyvalueColumnsColumns : ");
+console.log(config.tsCFkeyvalueColumnsColumns);
+console.log("15 tsConstColumnswithkeys : ");
+console.log(tsConstColumnswithkeys);
+console.log("16 config.tsCFcodeTextareaImports : ");
+console.log(config.tsCFcodeTextareaImports);
+console.log("17 config.tsCFtextareaJSONBody : ");
+console.log(config.tsCFtextareaJSONBody);
+console.log("18 config.tsCFtableTableName : ");
+console.log(config.tsCFtableTableName);
+console.log("19 config.tsCFbooleanAutoCommit : ");
+console.log(config.tsCFbooleanAutoCommit);
+console.log("tsConstAutoCommit : ");
+console.log(tsConstAutoCommit);
+console.log("20 config.tsCFvaluesListUrls : ");
+console.log(config.tsCFvaluesListUrls);
+console.log("21 config.tsCFsheetsExcelOptionsSheetName : ");
+console.log(config.tsCFsheetsExcelOptionsSheetName);
+console.log("22 config.tsCFdataMappingmapping : ");
+console.log(config.tsCFdataMappingmapping);
+console.log("23 config.tsCFcascaderDataType : ");
+console.log(config.tsCFcascaderDataType);
+console.log("tsConsDateType : ");
+console.log(tsConsDateType);
+console.log("tsConstDataTypeStep1 : ");
+console.log(tsConstDataTypeStep1);
+console.log("tsConstDataType : ");
+console.log(tsConstDataType);
+console.log("24 config.tsCFkeyvalueColumnsRadioColumnSortingOrder : ");
+console.log(config.tsCFkeyvalueColumnsRadioColumnSortingOrder);
+console.log("24 tsConstSortingOrder : ");
+console.log(tsConstSortingOrder);
+console.log("25 config.tsCFkeyvalueColumnsSelectColumnsOperations : ");
+console.log(config.tsCFkeyvalueColumnsSelectColumnsOperations);
+console.log("25 tsConstColumnsOperations : ");
+console.log(tsConstColumnsOperations);
+console.log("26 config.tsCFcolumnSelectColumn : ");
+console.log(config.tsCFcolumnSelectColumn);
+console.log("tsConstSelectColumn : ");
+console.log(tsConstSelectColumn);
+console.log("27 config.tsCFcolumnTypeRestrictedColumn : ");
+console.log(config.tsCFcolumnTypeRestrictedColumn);
+console.log("27 tsConstTypeRestrictedColumn : ");
+console.log(tsConstTypeRestrictedColumn);
+console.log("28 config.tsCFcolumnDefaultValueColumn : ");
+console.log(config.tsCFcolumnDefaultValueColumn);
+console.log("28 config.tsCFcolumnDefaultValueColumn.value : ");
+console.log(config.tsCFcolumnDefaultValueColumn.value);
+console.log("29 config.tsCFdateDatePicker : ");
+console.log(config.tsCFdateDatePicker);
+console.log("30 config.tsCFcodeTextareaCodeWithAi : ");
+console.log(config.tsCFcodeTextareaCodeWithAi);
+
     return code;
   }
 }
+
+//for custom components only, deactivated
+//export default new FormExampleCustom();
