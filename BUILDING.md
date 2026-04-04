@@ -147,22 +147,22 @@ For more detailed information about:
 - Conda environments: [Conda documentation](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
 
 ## ✚ Adding a new component ✚
-1. a component is stored as a .tsx file in the amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\components repository, within a sub-folder related to its category.
-Note there is a  amphi-etl\jupyterlab-amphi\packages\pipeline-components-local for components that are not packaged with amphi for snowflake (Snowpark pandas).
+1. A component is stored as a .tsx file in the amphi-etl/jupyterlab-amphi/packages/pipeline-components-core/src/components repository, within a sub-folder related to its category.
+Note there is a  amphi-etl/jupyterlab-amphi/packages/pipeline-components-local for components that are not packaged with amphi for snowflake (Snowpark pandas).
  
-2. component is mainly composed of two parts : the form and the code generator. you can have some form examples in developer\FormExample.tsx
+2. A Component is mainly composed of two parts : the form and the code generator. you can have some form examples in developer/FormExample.tsx. Using your browser console is also helpful to understand how to interact with the forms. All displayable forms are indexed in jupyterlab-amphi/packages/pipeline-components-manager/src/configUtils.tsx
  
-3. component must be registered in two indexes files:
-amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\index.ts
-amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\components\index.ts
+3. Components must be registered in two indexes files:
+amphi-etl/jupyterlab-amphi/packages/pipeline-components-core/src/index.ts
+amphi-etl/jupyterlab-amphi/packages/pipeline-components-core/src/components/index.ts
  
-4. icons are stored in  amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\style\icons\ 
-it must me registered  in amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\icon.ts and the icon is a svg square of 24.
+4. Icons are stored in  amphi-etl/jupyterlab-amphi/packages/pipeline-components-core/style/icons/ 
+it must me registered  in amphi-etl/jupyterlab-amphi/packages/pipeline-components-core/src/icon.ts and the icon is a svg square of 24.
 The privileged icon library is now https://tabler.io/icons (formerly https://helios.hashicorp.design/icons/library )
 
 5. Component categories are created on the fly, with the super{} function, you don’t need to create a category.
 
-6. Tips : check your output. Usually on transforms and input, it must be a dataframe (not a list). The output types are also important (string, integer, etc.. instead of object). You can check the Python part with the Python Transforms tool. Also be careful when your python code use backslash in your component code (like to escape a double quote), it may disapear when using it and useful to build properly a string (cf compare dataframe tool as an example to handle it)
+6. Tips : check your output. Usually on transforms and input, it must be a dataframe (not a list). The output types are also important (string, integer, etc.. instead of object). You can check the Python part with the Python Transforms tool. Also be careful when your python code use backslash in your component code (like to escape a double quote), it may disapear when using it and useful to build properly a string (cf compare dataframe tool as an example to handle it).
 
 7. Here an example of dev routine : 7.1 : start with some python code in a python input/transforms. you may use a LLM for that. 7.2 Continue with a custom component. 7.3 Ends with building the Core component (there are only a few things to change between custom and core such as the 3 first rows, the last one, the super function). Such a routine is made to validate each component and to iterate the fastest possible.
 

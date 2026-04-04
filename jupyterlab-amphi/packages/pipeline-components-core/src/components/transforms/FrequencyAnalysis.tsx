@@ -91,7 +91,7 @@ def py_fn_value_frequency(
         .size()
         .reset_index(name="frequency")
     )
-
+    py_freq["field_name"]=py_freq["field_name"].astype("string")
     py_freq["frequency"] = py_freq["frequency"].astype("int64")
 
     py_totals = py_freq.groupby("field_name")["frequency"].transform("sum")
