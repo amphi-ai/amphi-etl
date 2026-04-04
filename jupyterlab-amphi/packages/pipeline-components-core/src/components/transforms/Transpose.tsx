@@ -4,10 +4,10 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 export class Transpose extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-      inputVariableFieldName: "Column",
-      inputValueFieldName: "Value",
-      selectTypeVariableField: "type as string",
-      selectTypeValueField: "do nothing",
+      tsCFinputVariableFieldName: "Column",
+      tsCFinputValueFieldName: "Value",
+      tsCFselectTypeVariableField: "type as string",
+      tsCFselectTypeValueField: "do nothing",
     };
 
     const form = {
@@ -16,14 +16,14 @@ export class Transpose extends BaseCoreComponent {
         {
           type: "info",
           label: "Information",
-          id: "information",
+          id: "tsCFinfoInformation",
           text:
             "Transforms transposed columns into rows, replaced by a variable and value columns.",
         },
         {
           type: "columns",
           label: "ID columns (keep as-is)",
-          id: "columnsKeyTranspose",
+          id: "tsCFcolumnsKeyTranspose",
           selectAll: true,
           advanced: true,
           tooltip:
@@ -32,7 +32,7 @@ export class Transpose extends BaseCoreComponent {
         {
           type: "columns",
           label: "Columns to unpivot",
-          id: "columnsColumnsToTranspose",
+          id: "tsCFcolumnsColumnsToTranspose",
           selectAll: true,
           advanced: true,
           tooltip:
@@ -41,7 +41,7 @@ export class Transpose extends BaseCoreComponent {
         {
           type: "input",
           label: "Output column for original column name",
-          id: "inputVariableFieldName",
+          id: "tsCFinputVariableFieldName",
           advanced: true,
           tooltip:
             "Name of the output column that stores the source column name (default: Column). Example values: Jan, Revenue, Cost.",
@@ -49,7 +49,7 @@ export class Transpose extends BaseCoreComponent {
         {
           type: "input",
           label: "Output column for values",
-          id: "inputValueFieldName",
+          id: "tsCFinputValueFieldName",
           advanced: true,
           tooltip:
             "Name of the output column that stores the cell values from the unpivoted columns (default: Value).",
@@ -57,7 +57,7 @@ export class Transpose extends BaseCoreComponent {
         {
           type: "select",
           label: "Type for original column name column",
-          id: "selectTypeVariableField",
+          id: "tsCFselectTypeVariableField",
           options: [
             {
               value: "type as string",
@@ -77,7 +77,7 @@ export class Transpose extends BaseCoreComponent {
         {
           type: "select",
           label: "Type for values column",
-          id: "selectTypeValueField",
+          id: "tsCFselectTypeValueField",
           options: [
             {
               value: "do nothing",
@@ -124,8 +124,8 @@ export class Transpose extends BaseCoreComponent {
   }
 
   public provideFunctions({ config }): string[] {
-    const TSTransposeFunctionFunction = `
-def pyfn_transpose_dataframe(
+    const tsTransposeFunctionFunction = `
+def py_fn_transpose_dataframe(
     df: pd.DataFrame,
     transpose_key_columns: list | None = None,
     transpose_value_columns: list | None = None,
@@ -184,26 +184,26 @@ def pyfn_transpose_dataframe(
 
     return transposed
     `;
-    return [TSTransposeFunctionFunction];
+    return [tsTransposeFunctionFunction];
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    const constTSVariableFieldName = config.inputVariableFieldName?.trim() || "Column";
-    const constTSValueFieldName = config.inputValueFieldName?.trim() || "Value";
-    const constTSTypeVariableField = config.selectTypeVariableField || "type as string";
-    const constTSTypeValueField = config.selectTypeValueField || "do nothing";
+    const tsConstVariableFieldName = config.tsCFinputVariableFieldName?.trim() || "Column";
+    const tsConstValueFieldName = config.tsCFinputValueFieldName?.trim() || "Value";
+    const tsConstTypeVariableField = config.tsCFselectTypeVariableField || "type as string";
+    const tsConstTypeValueField = config.tsCFselectTypeValueField || "do nothing";
 
     // note: None vs [] can differ for id_vars/value_vars; we preserve current behavior
-    let vTSKeyColumns = "None";
-    if (config.columnsKeyTranspose?.length > 0) {
-      vTSKeyColumns = `[${config.columnsKeyTranspose
+    let tsVarKeyColumns = "None";
+    if (config.tsCFcolumnsKeyTranspose?.length > 0) {
+      tsVarKeyColumns = `[${config.tsCFcolumnsKeyTranspose
         .map((item: any) => (item.named ? `"${item.value}"` : item.value))
         .join(", ")}]`;
     }
 
-    let vTSDataColumns = "None";
-    if (config.columnsColumnsToTranspose?.length > 0) {
-      vTSDataColumns = `[${config.columnsColumnsToTranspose
+    let tsVarDataColumns = "None";
+    if (config.tsCFcolumnsColumnsToTranspose?.length > 0) {
+      tsVarDataColumns = `[${config.tsCFcolumnsColumnsToTranspose
         .map((item: any) => (item.named ? `"${item.value}"` : item.value))
         .join(", ")}]`;
     }
@@ -211,14 +211,14 @@ def pyfn_transpose_dataframe(
     const code = `
 # Unpivot (Columns to Rows) Component
 
-${outputName} = pyfn_transpose_dataframe(
+${outputName} = py_fn_transpose_dataframe(
     df=${inputName},
-    transpose_key_columns=${vTSKeyColumns},
-    transpose_value_columns=${vTSDataColumns},
-    transpose_variable_name='${constTSVariableFieldName}',
-    transpose_value_name='${constTSValueFieldName}',
-    transpose_variable_field_type='${constTSTypeVariableField}',
-    transpose_value_field_type='${constTSTypeValueField}'
+    transpose_key_columns=${tsVarKeyColumns},
+    transpose_value_columns=${tsVarDataColumns},
+    transpose_variable_name='${tsConstVariableFieldName}',
+    transpose_value_name='${tsConstValueFieldName}',
+    transpose_variable_field_type='${tsConstTypeVariableField}',
+    transpose_value_field_type='${tsConstTypeValueField}'
 )
 `;
     return code;

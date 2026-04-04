@@ -5,14 +5,16 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class Deduplicate extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { keep: "first" };
+    const defaultConfig = {
+		tsCFselectKeep: "first"
+		};
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "select",
           label: "Keep (survivorship)",
-          id: "keep",
+          id: "tsCFselectKeep",
           options: [
             { value: "first", label: "First occurrence", tooltip: "Drop duplicates except for the first occurrence" },
             { value: "last", label: "Last occurrence", tooltip: "Drop duplicates except for the last occurrence" },
@@ -22,7 +24,7 @@ export class Deduplicate extends BaseCoreComponent {
         {
           type: "columns",
           label: "Columns",
-          id: "subset",
+          id: "tsCFcolumnsSubset",
           placeholder: "All columns",
           tooltip: "Columns considered for identifying duplicates. Leave empty to consider all columns."
         }
@@ -44,15 +46,15 @@ export class Deduplicate extends BaseCoreComponent {
   # Deduplicate rows\n`;
   
     // Ensuring config.subset is defined and has a length property
-    const subset = config.subset && Array.isArray(config.subset) ? config.subset : [];
+    const subset = config.tsCFcolumnsSubset && Array.isArray(config.tsCFcolumnsSubset) ? config.tsCFcolumnsSubset: [];
     const columns = subset.length > 0 ? `subset=[${subset.map(column => column.named ? `"${column.value.trim()}"` : column.value).join(', ')}]` : '';
   
     // Adjusting keep parameter based on config.keep value
     let keep;
-    if (typeof config.keep === 'boolean') {
-      keep = config.keep ? `"first"` : "False";
+    if (typeof config.tsCFselectKeep === 'boolean') {
+      keep = config.tsCFselectKeep ? `"first"` : "False";
     } else {
-      keep = config.keep === "False" ? "False" : `"${config.keep}"`;
+      keep = config.tsCFselectKeep === "False" ? "False" : `"${config.tsCFselectKeep}"`;
     }
   
     // Generating the code for deduplication

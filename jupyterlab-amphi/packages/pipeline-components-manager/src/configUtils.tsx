@@ -1,5 +1,5 @@
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import { Card, Cascader, Flex, Form, Modal, Drawer, Radio, Switch, Typography, Select, Divider, Space, Button } from 'antd';
+import { Card, Cascader, Col, Flex, Form, Modal, Drawer, Radio, Row, Switch, Typography, Select, Divider, Space, Button } from 'antd';
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { renderFormItem } from './formUtils'
 import CodeTextarea from './forms/CodeTextarea';
@@ -12,12 +12,14 @@ import DataMapping from './forms/dataMapping';
 import KeyValueColumns from './forms/keyValueColumns';
 import KeyValueColumnsSelect from './forms/keyValueColumnsSelect';
 import KeyValueColumnsRadio from './forms/keyValueColumnsRadio';
+import ColumnOperationColumn from './forms/ColumnOperationColumn';
 import KeyValueForm from './forms/keyValueForm';
 import SelectColumn from './forms/selectColumn';
 import SelectColumns from './forms/selectColumns';
 import SelectFromSQLQuery from './forms/selectFromSQLQuery';
 import SelectFromPythonQuery from './forms/selectFromPythonQuery';
 import SelectCustomizable from './forms/selectCustomizable';
+import SelectMultiple from './forms/selectMultiple';
 import SelectMultipleCustomizable from './forms/selectMultipleCustomizable';
 import SelectRegular from './forms/selectRegular';
 import SelectTokenization from './forms/selectTokenization';
@@ -268,6 +270,30 @@ export const GenerateUIInputs = React.memo(({
     return acc;
   }, {}), [form.fields]);
 
+  const groupFieldsIntoRows = useCallback((fields: FieldDescriptor[]) => {
+    const rows: FieldDescriptor[][] = [];
+    const rowByColumnId = new Map<string | number, FieldDescriptor[]>();
+
+    fields.forEach((field) => {
+      if (field.columnId === undefined || field.columnId === null) {
+        rows.push([field]);
+        return;
+      }
+
+      const existingRow = rowByColumnId.get(field.columnId);
+      if (existingRow) {
+        existingRow.push(field);
+        return;
+      }
+
+      const newRow = [field];
+      rowByColumnId.set(field.columnId, newRow);
+      rows.push(newRow);
+    });
+
+    return rows;
+  }, []);
+
   const renderField = useCallback((field: FieldDescriptor, index: number) => {
 
     if (!advanced && field.advanced) {
@@ -320,7 +346,7 @@ export const GenerateUIInputs = React.memo(({
       case "radio":
         return renderFormItem(field, (
           <Flex vertical gap="middle">
-            <Radio.Group defaultValue={value} onChange={(e: any) => handleChange(e.target.value, field.id)} buttonStyle="solid">
+            <Radio.Group defaultValue={value} size={advanced ? "middle" : "small"} onChange={(e: any) => handleChange(e.target.value, field.id)} buttonStyle="solid">
               {field.options.map((option: any) => (
                 <Radio.Button value={option.value}>{option.label}</Radio.Button>
               ))}
@@ -343,6 +369,8 @@ export const GenerateUIInputs = React.memo(({
         return renderFormItem(field, <SelectSheetFromExcel {...commonProps} data={data} defaultValue={value} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "selectCustomizable":
         return renderFormItem(field, <SelectCustomizable {...commonProps} defaultValue={value} />);
+      case "selectMultiple":
+        return renderFormItem(field, <SelectMultiple {...commonProps} defaultValues={values} />);
       case "selectMultipleCustomizable":
         return renderFormItem(field, <SelectMultipleCustomizable {...commonProps} defaultValues={values} />);
       case "selectTokenization":
@@ -378,6 +406,8 @@ export const GenerateUIInputs = React.memo(({
         return renderFormItem(field, <KeyValueColumns {...commonProps} initialValues={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "keyvalueColumnsSelect":
         return renderFormItem(field, <KeyValueColumnsSelect {...commonProps} initialValues={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
+      case "columnOperationColumn":
+        return renderFormItem(field, <ColumnOperationColumn {...commonProps} initialValues={values} data={{ ...data, ...(formValues || {}) }} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "keyvalueColumnsRadio":
         return renderFormItem(field, <KeyValueColumnsRadio {...commonProps} initialValues={values} componentService={componentService} commands={commands} nodeId={nodeId} />);
       case "valuesList":
@@ -397,7 +427,42 @@ export const GenerateUIInputs = React.memo(({
       default:
         return null;
     }
-  }, [data, handleChange, componentService, commands, manager, advanced]);
+  }, [data, formValues, handleChange, componentService, commands, manager, advanced]);
+
+  const renderFieldRows = useCallback((fields: FieldDescriptor[], groupKeyPrefix: string) => {
+    const rows = groupFieldsIntoRows(fields);
+
+    return rows.map((rowFields, rowIndex) => {
+      const renderedFields = rowFields
+        .map((field, fieldIndex) => ({
+          field,
+          content: renderField(field, fieldIndex)
+        }))
+        .filter(item => item.content !== null);
+
+      if (renderedFields.length === 0) {
+        return null;
+      }
+
+      if (renderedFields.length === 1) {
+        return (
+          <React.Fragment key={`${groupKeyPrefix}-row-${rowIndex}`}>
+            {renderedFields[0].content}
+          </React.Fragment>
+        );
+      }
+
+      return (
+        <Row key={`${groupKeyPrefix}-row-${rowIndex}`} gutter={8} align="top" wrap>
+          {renderedFields.map(({ field, content }) => (
+            <Col key={`${groupKeyPrefix}-${field.id}`} flex="1 1 0">
+              {content}
+            </Col>
+          ))}
+        </Row>
+      );
+    });
+  }, [groupFieldsIntoRows, renderField]);
 
   // Helper function to check if any field in a connection should be displayed
   const shouldDisplayConnection = (fields: FieldDescriptor[]) => {
@@ -449,11 +514,11 @@ export const GenerateUIInputs = React.memo(({
             extra={selectConnection}
             type="inner"
           >
-            {connectionFields.map(renderField)}
+            {renderFieldRows(connectionFields, `connection-${connection}-${groupIndex}`)}
           </Card>
         );
       })}
-      {groupedFields.default && groupedFields.default.map(renderField)}
+      {groupedFields.default && renderFieldRows(groupedFields.default, 'default')}
     </>
   );
 });
@@ -593,8 +658,8 @@ export interface Option {
 
 export interface FieldDescriptor {
   type: 'file' | 'files' | 'column' | 'columns' | 'table' | 'keyvalue' | 'valuesList' | 'input' | 'password' | 'select' | 'textarea' | 'codeTextarea' | 'radio'
-  | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'sheets'
-  | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultipleCustomizable' | 'formulaColumns' | 'keyvalueColumnsRadio' | 'date' | 'collection';
+  | 'cascader' | 'boolean' | 'inputNumber' | 'selectCustomizable' | 'selectTokenization' | 'transferData' | 'keyvalueColumns' | 'keyvalueColumnsSelect' | 'columnOperationColumn' | 'sheets'
+  | 'dataMapping' | 'editableTable' | 'info' | 'cascaderMultiple' | 'selectMultiple' | 'selectMultipleCustomizable' | 'formulaColumns' | 'keyvalueColumnsRadio' | 'date' | 'collection';
   label: string;
   id: string;
   placeholder?: any;
@@ -628,6 +693,10 @@ export interface FieldDescriptor {
   selectionRemovable?: boolean;
   allowedTypes?: string[];
   allowedExtensions?: string[];
+  operatorControlFieldId?: string;
+  operatorLockedValues?: string[];
+  operatorLockedWhenMissing?: boolean;
+  columnId?: string | number;
 }
 
 interface ConfigModalProps {

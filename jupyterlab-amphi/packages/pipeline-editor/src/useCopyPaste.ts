@@ -11,17 +11,15 @@ import {
   type KeyCode
 } from 'reactflow';
 
-// are we currently typing in something that should get normal clipboard behavior
+// are we currently typing in something that should get normal keyboard behavior
 function isEditingText(): boolean {
   const el = document.activeElement as HTMLElement | null;
   if (!el) return false;
 
-  const tag = el.tagName;
-  const role = el.getAttribute('role');
-
-  if (tag === 'INPUT' || tag === 'TEXTAREA') return true;
+  // Ace can focus different internal elements depending on browser/runtime.
+  if (el.closest('.ace_editor, .ace_text-input')) return true;
+  if (el.closest('input, textarea, [contenteditable="true"], [role="textbox"]')) return true;
   if (el.isContentEditable) return true;
-  if (role === 'textbox') return true;
 
   return false;
 }

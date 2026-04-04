@@ -4,8 +4,8 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 export class DataframeDelete extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-    boolean_raise_error:true,
-    boolean_output_result:false
+    tsCFbooleanRaiseError:true,
+    tsCFbooleanOutputResult:false
     };
 
     const form = {
@@ -13,27 +13,27 @@ export class DataframeDelete extends BaseCoreComponent {
       fields: [
         {
           type: "info",
-          id: "description",
+          id: "tsCFinfoDescription",
           text: "Delete listed dataframe",
           advanced: false
         },
         {
           type: "valuesList",
           label: "Dataframe(s) to delete",
-          id: "valuesList_dataframe",
+          id: "tsCFvaluesListDataframe",
           placeholders: "Enter Dataframe names",
           advanced: true
         },
         {
           type: "boolean",
           label: "Raise an error if failure",
-          id: "boolean_raise_error",
+          id: "tsCFbooleanRaiseError",
           advanced: true
         },
         {
           type: "boolean",
           label: "Output the result (and not the input dataframe)",
-          id: "boolean_output_result",
+          id: "tsCFbooleanOutputResult",
           advanced: true
         }
       ],
@@ -53,12 +53,12 @@ export class DataframeDelete extends BaseCoreComponent {
   public provideFunctions({ config }): string[] {
     const prefix = config?.backend?.prefix ?? "pd";
     // Function to list dataframes
-    const DeleteDataframeFunction = `
-def delete_dataframes(df_to_delete_names: list, scope: dict, raise_on_error: bool, output_delete_result: bool, default_input_df) -> pd.DataFrame:
+    const tsDeleteDataframeFunction = `
+def py_fn_delete_dataframes(py_arg_df_to_delete_names: list, scope: dict, py_arg_raise_on_error: bool, py_arg_output_delete_result: bool, py_arg_default_input_df) -> pd.DataFrame:
     results = []
     df_deletion_failed = []
 
-    for name in df_to_delete_names:
+    for name in py_arg_df_to_delete_names:
         try:
             if name in scope:
                 del scope[name]
@@ -72,33 +72,29 @@ def delete_dataframes(df_to_delete_names: list, scope: dict, raise_on_error: boo
             results.append((name, err_msg))
             df_deletion_failed.append(f"{name}: {e}")
 
-    if raise_on_error and len(df_deletion_failed) > 0:
+    if py_arg_raise_on_error and len(df_deletion_failed) > 0:
         raise RuntimeError("One or more deletions failed:".join(df_deletion_failed))
-    if output_delete_result:
+    if py_arg_output_delete_result:
        return pd.DataFrame(results, columns=['DataFrame', 'Status']).astype({
         "DataFrame": "string",
         "Status": "string"
     })
     else:
-        return default_input_df
+        return py_arg_default_input_df
     `;
-    return [DeleteDataframeFunction];
+    return [tsDeleteDataframeFunction];
   }
 
   // Generate the Python execution script
 public generateComponentCode({ config, inputName, outputName }: { config: any; inputName: string; outputName: string }): string {
-const raise_on_error=config.boolean_raise_error ? "True" : "False";
-//console.log(config.boolean_raise_error);
-const output_delete_result=config.boolean_output_result ? "True" : "False";
-//console.log(config.boolean_output_result);
+const tsConstRaiseError=config.tsCFbooleanRaiseError ? "True" : "False";
+const tsConstOutputResult=config.tsCFbooleanOutputResult ? "True" : "False";
 //create a typescript string coming from the typescript list
-const dataframe_to_delete = '[' + config.valuesList_dataframe.map(v => `'${v}'`).join(',') + ']';
-console.log(config.valuesList_dataframe);
+const tsConstDataframeToDelete = '[' + config.tsCFvaluesListDataframe.map(v => `'${v}'`).join(',') + ']';
+console.log(config.tsCFvaluesListDataframe);
     return `
 # Execute the function
-#boolean : False/True, list ['toto']
-
-${outputName} = delete_dataframes(${dataframe_to_delete}, globals(), ${raise_on_error},${output_delete_result},${inputName})
+${outputName} = py_fn_delete_dataframes(${tsConstDataframeToDelete}, globals(), ${tsConstRaiseError},${tsConstOutputResult},${inputName})
     `;
   }
 }

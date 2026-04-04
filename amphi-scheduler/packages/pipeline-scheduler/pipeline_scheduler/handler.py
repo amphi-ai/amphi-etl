@@ -1,6 +1,10 @@
 # handler.py  (backend)  ─────────────────────────────────────
 import os, json, logging, subprocess
 import sys
+from typing import Optional
+import uuid
+import threading
+import sqlite3
 import tornado
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.date import DateTrigger
@@ -8,6 +12,7 @@ from apscheduler.triggers.interval import IntervalTrigger
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.executors.pool import ThreadPoolExecutor, ProcessPoolExecutor
+from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
 from jupyter_server.base.handlers import APIHandler
 from jupyter_server.utils import url_path_join
 import datetime as dt
@@ -73,7 +78,198 @@ def _make_trigger(body: dict):
             raise ValueError("cron_expression is required for cron trigger")
         return _cron_from_string(expr), "cron"
 
+    if kind == "trigger":
+        # Trigger jobs are dependency-driven and fired manually by backend logic.
+        # Give them a far-future date trigger so APScheduler can persist metadata.
+        return DateTrigger(run_date=dt.datetime(2099, 1, 1)), "trigger"
+
     raise ValueError(f"Invalid schedule_type: {kind}")
+
+def _normalise_trigger_conditions(raw):
+    if raw is None:
+        return []
+    if not isinstance(raw, list):
+        raise ValueError("trigger_conditions must be an array")
+
+    normalised = []
+    for cond in raw:
+        if not isinstance(cond, dict):
+            raise ValueError("Each trigger condition must be an object")
+        target_id = cond.get("job_id")
+        outcome = cond.get("on")
+        if not target_id or not isinstance(target_id, str):
+            raise ValueError("Each trigger condition must include job_id")
+        if outcome not in ("success", "failure"):
+            raise ValueError("Each trigger condition must use on=success|failure")
+        normalised.append({"job_id": target_id, "on": outcome})
+    return normalised
+
+def _normalise_logical_operator(raw):
+    op = (raw or "AND")
+    if not isinstance(op, str):
+        raise ValueError("logical_operator must be a string")
+    op = op.upper()
+    if op not in ("AND", "OR"):
+        raise ValueError("logical_operator must be AND or OR")
+    return op
+
+def _validate_trigger_conditions(conditions, job_id):
+    if not conditions:
+        raise ValueError("At least one trigger condition is required")
+
+    for cond in conditions:
+        source_job_id = cond["job_id"]
+        if source_job_id == job_id:
+            raise ValueError("A task cannot depend on itself")
+        if scheduler.get_job(source_job_id) is None:
+            raise ValueError(f"Condition references unknown job_id: {source_job_id}")
+
+_JOB_STATUS = {}
+_TRIGGER_LOCK = threading.RLock()
+_RUNS_DB_PATH = None
+
+def _record_job_status(job_id: str, success: bool):
+    with _TRIGGER_LOCK:
+        _JOB_STATUS[job_id] = {
+            "success": success,
+            "updated_at": dt.datetime.utcnow().isoformat() + "Z",
+        }
+
+def _conditions_match(conditions, logical_operator):
+    with _TRIGGER_LOCK:
+        checks = []
+        for cond in conditions:
+            status = _JOB_STATUS.get(cond["job_id"])
+            if status is None:
+                checks.append(False)
+                continue
+            expected_success = cond["on"] == "success"
+            checks.append(status["success"] == expected_success)
+
+    if not checks:
+        return False
+    if logical_operator == "AND":
+        return all(checks)
+    return any(checks)
+
+def _init_runs_store(sqlite_path: str):
+    global _RUNS_DB_PATH
+    _RUNS_DB_PATH = sqlite_path
+    with sqlite3.connect(_RUNS_DB_PATH) as conn:
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS scheduler_runs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                job_id TEXT,
+                job_name TEXT,
+                status TEXT NOT NULL,
+                triggered_by TEXT NOT NULL,
+                started_at TEXT NOT NULL,
+                finished_at TEXT NOT NULL,
+                exit_code INTEGER,
+                output TEXT,
+                error TEXT
+            )
+            """
+        )
+        conn.commit()
+
+def _save_run(run: dict):
+    if not _RUNS_DB_PATH:
+        return
+    with sqlite3.connect(_RUNS_DB_PATH) as conn:
+        conn.execute(
+            """
+            INSERT INTO scheduler_runs
+            (job_id, job_name, status, triggered_by, started_at, finished_at, exit_code, output, error)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                run.get("job_id"),
+                run.get("job_name"),
+                run.get("status"),
+                run.get("triggered_by"),
+                run.get("started_at"),
+                run.get("finished_at"),
+                run.get("exit_code"),
+                run.get("output"),
+                run.get("error"),
+            ),
+        )
+        conn.commit()
+
+def _list_runs(limit: int = 200):
+    if not _RUNS_DB_PATH:
+        return []
+    safe_limit = max(1, min(int(limit), 1000))
+    with sqlite3.connect(_RUNS_DB_PATH) as conn:
+        conn.row_factory = sqlite3.Row
+        rows = conn.execute(
+            """
+            SELECT id, job_id, job_name, status, triggered_by, started_at, finished_at, exit_code, output, error
+            FROM scheduler_runs
+            ORDER BY id DESC
+            LIMIT ?
+            """,
+            (safe_limit,),
+        ).fetchall()
+        return [dict(row) for row in rows]
+
+def _get_run(run_id: int):
+    if not _RUNS_DB_PATH:
+        return None
+    with sqlite3.connect(_RUNS_DB_PATH) as conn:
+        conn.row_factory = sqlite3.Row
+        row = conn.execute(
+            """
+            SELECT id, job_id, job_name, status, triggered_by, started_at, finished_at, exit_code, output, error
+            FROM scheduler_runs
+            WHERE id = ?
+            """,
+            (run_id,),
+        ).fetchone()
+        return dict(row) if row else None
+
+def _delete_run(run_id: int) -> bool:
+    if not _RUNS_DB_PATH:
+        return False
+    with sqlite3.connect(_RUNS_DB_PATH) as conn:
+        cur = conn.execute(
+            """
+            DELETE FROM scheduler_runs
+            WHERE id = ?
+            """,
+            (run_id,),
+        )
+        conn.commit()
+        return cur.rowcount > 0
+
+def _clear_runs() -> int:
+    if not _RUNS_DB_PATH:
+        return 0
+    with sqlite3.connect(_RUNS_DB_PATH) as conn:
+        cur = conn.execute("DELETE FROM scheduler_runs")
+        conn.commit()
+        return int(cur.rowcount or 0)
+
+def _evaluate_trigger_jobs(changed_job_id: str):
+    for job in scheduler.get_jobs():
+        if job.id == changed_job_id:
+            continue
+
+        if job.kwargs.get("schedule_type") != "trigger":
+            continue
+
+        conditions = job.kwargs.get("trigger_conditions") or []
+        if not any(cond.get("job_id") == changed_job_id for cond in conditions):
+            continue
+
+        logical_operator = _normalise_logical_operator(job.kwargs.get("logical_operator"))
+        if not _conditions_match(conditions, logical_operator):
+            continue
+
+        result = run_pipeline(job.args[0], _triggered_by="trigger", **job.kwargs)
+        _record_job_status(job.id, bool(result.get("success")))
 
 def _cron_to_crontab(trigger: CronTrigger) -> str:
     """Convert a CronTrigger to a 5-field crontab string (minute hour dom mon dow)."""
@@ -118,6 +314,15 @@ def _serialise(job):
         "pipeline_path": pipeline_path,
         "trigger": str(job.trigger),
     }
+
+    if job.kwargs.get("schedule_type") == "trigger":
+        base.update(
+            trigger="Trigger",
+            schedule_type="trigger",
+            logical_operator=_normalise_logical_operator(job.kwargs.get("logical_operator")),
+            trigger_conditions=job.kwargs.get("trigger_conditions") or [],
+        )
+        return base
 
     if isinstance(job.trigger, DateTrigger):
         base.update(
@@ -174,8 +379,26 @@ def _amphi_dir() -> str:
     """Folder given with --notebook-dir / --root-dir when JupyterLab was started."""
     return _AMPHI_ROOT or os.getcwd()     # sane fallback for unit tests/CLI
 
+def _resolve_workdir(root: str, pipeline_path: Optional[str]) -> str:
+    """
+    Resolve execution cwd from pipeline location.
+
+    If a pipeline path is available, use its parent directory so relative paths
+    in generated/script code behave like when the pipeline is developed manually.
+    """
+    if not pipeline_path:
+        return root
+
+    absolute_path = pipeline_path
+    if not os.path.isabs(absolute_path):
+        absolute_path = os.path.join(root, absolute_path)
+    absolute_path = os.path.abspath(absolute_path)
+
+    candidate_dir = absolute_path if os.path.isdir(absolute_path) else os.path.dirname(absolute_path)
+    return candidate_dir if os.path.isdir(candidate_dir) else root
+
 # ── task runner ─────────────────────────────────────────────────────────────
-def run_pipeline(pipeline_or_code, **_meta):
+def run_pipeline(pipeline_or_code, **meta):
     """
     Execute the scheduled pipeline.
 
@@ -184,7 +407,11 @@ def run_pipeline(pipeline_or_code, **_meta):
     * Otherwise treat the string as raw Python and run it with: python -c "<code>".
     """
     try:
+        started_at = dt.datetime.utcnow().isoformat() + "Z"
         root = _AMPHI_ROOT or os.getcwd()
+        pipeline_path = meta.get("pipeline_path")
+        run_cwd = _resolve_workdir(root, pipeline_path)
+        triggered_by = meta.get("_triggered_by", "schedule")
 
         # Build an absolute candidate and only then decide if it is a file
         candidate = pipeline_or_code
@@ -196,15 +423,16 @@ def run_pipeline(pipeline_or_code, **_meta):
         else:
             cmd = [sys.executable, "-c", pipeline_or_code]
 
-        # Run inside the workspace root so relative IO in scripts works
+        # Run from pipeline directory so relative IO resolves from pipeline location
         res = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
-            cwd=root,
+            cwd=run_cwd,
         )
 
         success = (res.returncode == 0)
+        finished_at = dt.datetime.utcnow().isoformat() + "Z"
 
         if success:
             logger.info("Pipeline OK (exit %s)\nSTDOUT:\n%s", res.returncode, res.stdout)
@@ -214,15 +442,44 @@ def run_pipeline(pipeline_or_code, **_meta):
             logger.error("Pipeline FAILED (exit %s)\nSTDOUT:\n%s\nSTDERR:\n%s",
                          res.returncode, res.stdout, res.stderr)
 
-        return {
+        result = {
             "success": success,
             "output": res.stdout,
             "error": res.stderr if res.stderr else None,
             "exit_code": res.returncode,
+            "cwd": run_cwd,
         }
+        _save_run(
+            {
+                "job_id": meta.get("job_id"),
+                "job_name": meta.get("job_name"),
+                "status": "success" if success else "failure",
+                "triggered_by": triggered_by,
+                "started_at": started_at,
+                "finished_at": finished_at,
+                "exit_code": res.returncode,
+                "output": res.stdout,
+                "error": res.stderr if res.stderr else None,
+            }
+        )
+        return result
 
     except Exception as e:
         logger.exception("Exception while running pipeline")
+        finished_at = dt.datetime.utcnow().isoformat() + "Z"
+        _save_run(
+            {
+                "job_id": meta.get("job_id"),
+                "job_name": meta.get("job_name"),
+                "status": "failure",
+                "triggered_by": meta.get("_triggered_by", "schedule"),
+                "started_at": started_at if "started_at" in locals() else finished_at,
+                "finished_at": finished_at,
+                "exit_code": None,
+                "output": None,
+                "error": str(e),
+            }
+        )
         return {"success": False, "error": str(e)}
 
 
@@ -231,6 +488,56 @@ class SchedulerConfigHandler(APIHandler):
     @tornado.web.authenticated
     async def get(self):
         self.finish(json.dumps({"amphi_dir": _amphi_dir()}))
+
+class SchedulerRunsHandler(APIHandler):
+    @tornado.web.authenticated
+    async def get(self):
+        try:
+            limit_arg = self.get_argument("limit", "200")
+            self.finish(json.dumps({"runs": _list_runs(limit_arg)}))
+        except Exception as e:
+            logger.exception("Error listing runs")
+            self.set_status(500)
+            self.finish(json.dumps({"error": str(e)}))
+
+    @tornado.web.authenticated
+    async def delete(self):
+        try:
+            deleted = _clear_runs()
+            self.finish(json.dumps({"success": True, "deleted": deleted}))
+        except Exception as e:
+            logger.exception("Error clearing runs")
+            self.set_status(500)
+            self.finish(json.dumps({"error": str(e)}))
+
+class SchedulerRunDetailHandler(APIHandler):
+    @tornado.web.authenticated
+    async def get(self, run_id):
+        try:
+            run = _get_run(int(run_id))
+            if not run:
+                self.set_status(404)
+                self.finish(json.dumps({"error": "Run not found"}))
+                return
+            self.finish(json.dumps(run))
+        except Exception as e:
+            logger.exception("Error fetching run details")
+            self.set_status(500)
+            self.finish(json.dumps({"error": str(e)}))
+
+    @tornado.web.authenticated
+    async def delete(self, run_id):
+        try:
+            deleted = _delete_run(int(run_id))
+            if not deleted:
+                self.set_status(404)
+                self.finish(json.dumps({"error": "Run not found"}))
+                return
+            self.finish(json.dumps({"success": True}))
+        except Exception as e:
+            logger.exception("Error deleting run")
+            self.set_status(500)
+            self.finish(json.dumps({"error": str(e)}))
 
 # ── HTTP handlers ───────────────────────────────────────────────────────────
 class SchedulerListHandler(APIHandler):
@@ -265,6 +572,8 @@ class SchedulerListHandler(APIHandler):
             if not isinstance(body, dict):
                 raise ValueError("Request body must be a JSON object")
             
+            job_name = body.get("name", f"job_{dt.datetime.now():%Y%m%d%H%M%S}")
+
             # Determine what to execute: python_code takes precedence over pipeline_path
             executable = body.get("python_code") or body.get("pipeline_path")
             if not executable:
@@ -274,6 +583,7 @@ class SchedulerListHandler(APIHandler):
             pipeline_path = body.get("pipeline_path", "")
 
             trigger, kind = _make_trigger(body)
+            job_id = body.get("id") or f"job_{uuid.uuid4().hex[:12]}"
 
             # runtime controls (with sensible defaults)
             max_instances = int(body.get("max_instances", 2))
@@ -281,7 +591,12 @@ class SchedulerListHandler(APIHandler):
             misfire_grace = int(body.get("misfire_grace_time", 60))
 
             # Keep original parameters so we can round-trip them later
-            kwargs = {"pipeline_path": pipeline_path}
+            kwargs = {
+                "pipeline_path": pipeline_path,
+                "schedule_type": body.get("schedule_type", kind),
+                "job_id": job_id,
+                "job_name": job_name,
+            }
             if kind == "cron":
                 kwargs["cron_expression"] = body.get("cron_expression")
                 # Store date_type if it was a date-based cron
@@ -297,6 +612,10 @@ class SchedulerListHandler(APIHandler):
             elif kind == "date":
                 kwargs["run_date"] = body.get("run_date")
                 kwargs["date_type"] = body.get("date_type", "once")
+            elif kind == "trigger":
+                kwargs["logical_operator"] = _normalise_logical_operator(body.get("logical_operator"))
+                kwargs["trigger_conditions"] = _normalise_trigger_conditions(body.get("trigger_conditions"))
+                _validate_trigger_conditions(kwargs["trigger_conditions"], job_id)
 
             job = scheduler.add_job(
                 run_pipeline,
@@ -306,8 +625,8 @@ class SchedulerListHandler(APIHandler):
                 misfire_grace_time=misfire_grace,
                 coalesce=coalesce,
                 max_instances=max_instances,
-                id=body.get("id"),
-                name=body.get("name", f"job_{dt.datetime.now():%Y%m%d%H%M%S}"),
+                id=job_id,
+                name=job_name,
                 replace_existing=bool(body.get("id")),  # replace to update persisted jobs
             )
             self.finish(json.dumps(_serialise(job)))
@@ -373,8 +692,92 @@ class SchedulerRunHandler(APIHandler):
             self.set_status(404)
             self.finish(json.dumps({"error": "Job not found"}))
             return
-        result = run_pipeline(job.args[0], **job.kwargs)
+        result = run_pipeline(job.args[0], _triggered_by="manual", **job.kwargs)
+        _record_job_status(job.id, bool(result.get("success")))
+        _evaluate_trigger_jobs(job.id)
         self.finish(json.dumps(result))
+
+class ComponentsConfigHandler(APIHandler):
+    """API handler for components config.toml file operations."""
+    @tornado.web.authenticated
+    async def get(self):
+        """Read config.toml content."""
+        try:
+            config_path = os.path.join(_amphi_dir(), ".amphi", "config.toml")
+            if os.path.exists(config_path):
+                with open(config_path, 'r') as f:
+                    content = f.read()
+                self.finish(json.dumps({"content": content}))
+            else:
+                self.finish(json.dumps({"content": ""}))
+        except Exception as e:
+            logger.exception("Error reading config.toml")
+            self.set_status(500)
+            self.finish(json.dumps({"error": str(e)}))
+
+    @tornado.web.authenticated
+    async def post(self):
+        """Write config.toml content."""
+        try:
+            body = self.get_json_body() or {}
+            content = body.get("content", "")
+            config_path = os.path.join(_amphi_dir(), ".amphi", "config.toml")
+            with open(config_path, 'w') as f:
+                f.write(content)
+            self.finish(json.dumps({"success": True}))
+        except Exception as e:
+            logger.exception("Error writing config.toml")
+            self.set_status(500)
+            self.finish(json.dumps({"error": str(e)}))
+
+class ComponentsFileHandler(APIHandler):
+    """API handler for saving component files to .amphi/components/."""
+    @tornado.web.authenticated
+    async def post(self):
+        """Save a component file."""
+        try:
+            body = self.get_json_body() or {}
+            filename = body.get("filename")
+            content = body.get("content")
+
+            if not filename or not content:
+                raise ValueError("filename and content are required")
+
+            # Sanitize filename to prevent directory traversal
+            filename = os.path.basename(filename)
+            file_path = os.path.join(_amphi_dir(), ".amphi", "components", filename)
+
+            with open(file_path, 'w') as f:
+                f.write(content)
+
+            self.finish(json.dumps({"success": True, "path": file_path}))
+        except Exception as e:
+            logger.exception("Error saving component file")
+            self.set_status(500)
+            self.finish(json.dumps({"error": str(e)}))
+
+    @tornado.web.authenticated
+    async def delete(self):
+        """Delete a component file."""
+        try:
+            filename = self.get_argument("filename")
+            if not filename:
+                raise ValueError("filename parameter is required")
+
+            # Sanitize filename to prevent directory traversal
+            filename = os.path.basename(filename)
+            file_path = os.path.join(_amphi_dir(), ".amphi", "components", filename)
+
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                self.finish(json.dumps({"success": True}))
+            else:
+                self.set_status(404)
+                self.finish(json.dumps({"error": "File not found"}))
+        except Exception as e:
+            logger.exception("Error deleting component file")
+            self.set_status(500)
+            self.finish(json.dumps({"error": str(e)}))
 
 # ── extension wiring ────────────────────────────────────────────────────────
 def setup_handlers(web_app):
@@ -384,11 +787,26 @@ def setup_handlers(web_app):
         (url_path_join(base, "pipeline-scheduler", "jobs"), SchedulerListHandler),
         (url_path_join(base, "pipeline-scheduler", "jobs", "(.+)"), SchedulerJobHandler),
         (url_path_join(base, "pipeline-scheduler", "run",  "(.+)"), SchedulerRunHandler),
-        (url_path_join(base, "pipeline-scheduler", "config"), SchedulerConfigHandler)
+        (url_path_join(base, "pipeline-scheduler", "runs"), SchedulerRunsHandler),
+        (url_path_join(base, "pipeline-scheduler", "runs", "(.+)"), SchedulerRunDetailHandler),
+        (url_path_join(base, "pipeline-scheduler", "config"), SchedulerConfigHandler),
+        (url_path_join(base, "pipeline-scheduler", "components-config"), ComponentsConfigHandler),
+        (url_path_join(base, "pipeline-scheduler", "components-file"), ComponentsFileHandler)
     ])
 
 def _jupyter_server_extension_paths():
     return [{"module": "pipeline_scheduler.handler"}]
+
+def _on_job_event(event):
+    try:
+        job_id = getattr(event, "job_id", None)
+        if not job_id:
+            return
+        success = getattr(event, "exception", None) is None
+        _record_job_status(job_id, success)
+        _evaluate_trigger_jobs(job_id)
+    except Exception:
+        logger.exception("Error while evaluating trigger jobs")
 
 def load_jupyter_server_extension(nb_server_app):
     """Initialise the pipeline-scheduler extension."""
@@ -404,8 +822,20 @@ def load_jupyter_server_extension(nb_server_app):
 
     nb_server_app.log.info("🚀 _AMPHI_ROOT resolved to %s", _AMPHI_ROOT)
 
+    # Create .amphi directory structure
     amphi_data_dir = os.path.join(_AMPHI_ROOT, ".amphi")
     os.makedirs(amphi_data_dir, exist_ok=True)
+
+    # Create components subdirectory for components-panel
+    components_dir = os.path.join(amphi_data_dir, "components")
+    os.makedirs(components_dir, exist_ok=True)
+
+    # Initialize config.toml if it doesn't exist
+    config_path = os.path.join(amphi_data_dir, "config.toml")
+    if not os.path.exists(config_path):
+        with open(config_path, 'w') as f:
+            f.write("[components]\nsources = [\n]\n\nmanaged_sources = [\n]\n")
+
     sqlite_path = os.path.join(amphi_data_dir, "scheduler.sqlite")
     scheduler.configure(
         executors={
@@ -416,6 +846,8 @@ def load_jupyter_server_extension(nb_server_app):
         jobstores={"default": SQLAlchemyJobStore(url=f"sqlite:///{sqlite_path}")},
         # timezone="Europe/Zurich",
     )
+    _init_runs_store(sqlite_path)
     scheduler.start()
+    scheduler.add_listener(_on_job_event, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
     setup_handlers(nb_server_app.web_app)
     nb_server_app.log.info("🚀 Pipeline Scheduler extension loaded")

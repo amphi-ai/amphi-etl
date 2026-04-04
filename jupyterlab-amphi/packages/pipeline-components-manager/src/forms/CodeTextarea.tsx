@@ -5,7 +5,6 @@ import { wandIcon, openaiIcon, claudeIcon, mistralIcon } from '../icons';
 import AceEditor from "react-ace";
 import { RequestService } from '../RequestService';
 import TextArea from 'antd/es/input/TextArea';
-import { onInputKeyDown } from '../formUtils';
 import "ace-builds/src-noconflict/mode-python";
 import "ace-builds/src-noconflict/mode-sql";
 import "ace-builds/src-noconflict/theme-xcode";
@@ -164,19 +163,42 @@ ${instructions || 'No specific instructions provided'}
   ];
 
   const handleAceLoad = (editor: any) => {
-    const stop = (e: KeyboardEvent) => e.stopPropagation();
+    const stopClipboardShortcutBubble = (e: KeyboardEvent) => {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      const key = e.key.toLowerCase();
+      if (key === 'c' || key === 'v' || key === 'x') {
+        // Keep native Ace/browser clipboard behavior, only block parent shortcuts.
+        e.stopPropagation();
+      }
+    };
+
+    const stopClipboardEventBubble = (e: Event) => {
+      e.stopPropagation();
+    };
+
     const el = editor.container as HTMLElement;
+    const aceInputEl = editor?.textInput?.getElement?.() as HTMLElement | undefined;
 
-    // Use capture so we intercept before parents
-    el.addEventListener('keydown', stop, true);
-    el.addEventListener('keypress', stop, true);
-    el.addEventListener('keyup', stop, true);
+    el.addEventListener('keydown', stopClipboardShortcutBubble);
+    aceInputEl?.addEventListener('keydown', stopClipboardShortcutBubble);
 
-    // Clean up when the editor is destroyed
+    el.addEventListener('copy', stopClipboardEventBubble);
+    el.addEventListener('cut', stopClipboardEventBubble);
+    el.addEventListener('paste', stopClipboardEventBubble);
+    aceInputEl?.addEventListener('copy', stopClipboardEventBubble);
+    aceInputEl?.addEventListener('cut', stopClipboardEventBubble);
+    aceInputEl?.addEventListener('paste', stopClipboardEventBubble);
+
     editor.on('destroy', () => {
-      el.removeEventListener('keydown', stop, true);
-      el.removeEventListener('keypress', stop, true);
-      el.removeEventListener('keyup', stop, true);
+      el.removeEventListener('keydown', stopClipboardShortcutBubble);
+      aceInputEl?.removeEventListener('keydown', stopClipboardShortcutBubble);
+
+      el.removeEventListener('copy', stopClipboardEventBubble);
+      el.removeEventListener('cut', stopClipboardEventBubble);
+      el.removeEventListener('paste', stopClipboardEventBubble);
+      aceInputEl?.removeEventListener('copy', stopClipboardEventBubble);
+      aceInputEl?.removeEventListener('cut', stopClipboardEventBubble);
+      aceInputEl?.removeEventListener('paste', stopClipboardEventBubble);
     });
   };
 

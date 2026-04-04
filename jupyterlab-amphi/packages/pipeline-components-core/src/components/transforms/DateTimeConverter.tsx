@@ -3,14 +3,19 @@ import { BaseCoreComponent } from '../BaseCoreComponent'; // Adjust the import p
 
 export class DateTimeConverter extends BaseCoreComponent {
     constructor() {
-        const defaultConfig = { conversionType: "stringToDate", language: "en_US.UTF-8", dateTimeFormat: "auto" };
+        const defaultConfig = {
+		tsCFradioConversionType: "stringToDate",
+		tsCFselectCustomizableLanguage: "en_US.UTF-8",
+		tsCFselectCustomizableDateTimeFormat: "auto",
+		tsCFbooleanNewColumn : false
+		};
         const form = {
             idPrefix: "component__form",
             fields: [
                 {
                     type: "radio",
                     label: "Conversion Type",
-                    id: "conversionType",
+                    id: "tsCFradioConversionType",
                     options: [
                         { value: "dateToString", label: "Date/Time to string" },
                         { value: "stringToDate", label: "String to Date/Time" }
@@ -19,13 +24,13 @@ export class DateTimeConverter extends BaseCoreComponent {
                 {
                     type: "column",
                     label: "Select column",
-                    id: "dateTimeField",
+                    id: "tsCFcolumnDateTimeField",
                     placeholder: "Select column(s)"
                 },
                 {
                     type: "selectCustomizable",
                     label: "DateTime Language",
-                    id: "language",
+                    id: "tsCFselectCustomizableLanguage",
                     tooltip: "Select language or provide custom locale for your system, POSIX-style locale identifier (Linux/Mac) or Windows locale names (Windows)",
                     options: [
                         { value: "en_US.UTF-8", label: "English (US)" },
@@ -57,9 +62,9 @@ export class DateTimeConverter extends BaseCoreComponent {
                 {
                     type: "selectCustomizable",
                     label: "Select the format",
-                    id: "dateTimeFormat",
+                    id: "tsCFselectCustomizableDateTimeFormat",
                     tooltip: "Select pre-defined format or provide a custom strftime format used for the conversion (in both orders)",
-                    condition: { conversionType: "dateToString"},
+                    condition: { tsCFradioConversionType: "dateToString"},
                     options: [
                         { value: "%A, %B %d, %Y", label: "day, dd Month, yyyy" },
                         { value: "%d-%m-%Y", label: "dd-MM-yyyy" },
@@ -84,9 +89,9 @@ export class DateTimeConverter extends BaseCoreComponent {
                 {
                     type: "selectCustomizable",
                     label: "Select the format",
-                    id: "dateTimeFormat",
+                    id: "tsCFselectCustomizableDateTimeFormat",
                     tooltip: "Select pre-defined format, Auto detect (selected by default) or provide a custom strftime format used for the conversion (in both orders)",
-                    condition: { conversionType: "stringToDate"},
+                    condition: { tsCFradioConversionType: "stringToDate"},
                     options: [
                         { value: "auto", label: "Auto detect" },
                         { value: "%A, %B %d, %Y", label: "day, dd Month, yyyy" },
@@ -112,15 +117,15 @@ export class DateTimeConverter extends BaseCoreComponent {
                 {
                     type: "boolean",
                     label: "New Column",
-                    id: "newColumn",
+                    id: "tsCFbooleanNewColumn",
                     advanced: true
                 },
                 {
                     type: "input",
                     label: "New column name",
-                    id: "newColumnName",
+                    id: "tsCFinputNewColumnName",
                     placeholder: "Type new column name",
-                    condition: { newColumn: true },
+                    condition: { tsCFbooleanNewColumn: true },
                     advanced: true
                 }
             ],
@@ -130,22 +135,24 @@ export class DateTimeConverter extends BaseCoreComponent {
     }
 
     public provideImports({ config }): string[] {
-        return ["from datetime import datetime", "import locale"];
+        return [
+		"from datetime import datetime",
+		"import locale"
+		];
     }
 
     public generateComponentCode({ config, inputName, outputName }) {
         const prefix = config?.backend?.prefix ?? "pd";
-        const { conversionType, dateTimeField, language, dateTimeFormat, newColumn } = config;
 
         // Extract column details
-        const columnName = dateTimeField.value;
-        const columnIsNamed = dateTimeField.named;
+        const columnName = config.tsCFcolumnDateTimeField.value;
+        const columnIsNamed = config.tsCFcolumnDateTimeField.named;
         const inputColumnReference = columnIsNamed ? `'${columnName}'` : columnName;
 
         // Determine the output column reference
         let outputColumnReference = inputColumnReference;
-        if (newColumn) {
-            const newColumnName = config.newColumnName && config.newColumnName.trim() ? config.newColumnName : `${columnName}_converted`;
+        if (config.tsCFbooleanNewColumn) {
+            const newColumnName = config.tsCFinputNewColumnName && config.tsCFinputNewColumnName.trim() ? config.tsCFinputNewColumnName : `${columnName}_converted`;
             outputColumnReference = `'${newColumnName}'`;
         }
 
@@ -183,11 +190,11 @@ export class DateTimeConverter extends BaseCoreComponent {
         let code = '';
 
         // Only set locale if language is specified
-        if (language) {
-            let locale = language;
+        if (config.tsCFselectCustomizableLanguage) {
+            let locale = config.tsCFselectCustomizableLanguage;
             // If Windows is detected, map the Linux locale to the equivalent Windows locale
-            if (isWindows && localeMap[language]) {
-                locale = localeMap[language];
+            if (isWindows && localeMap[config.tsCFselectCustomizableLanguage]) {
+                locale = localeMap[config.tsCFselectCustomizableLanguage];
             }
             code += `
 # Set the locale for date parsing/formatting
@@ -199,13 +206,13 @@ locale.setlocale(locale.LC_TIME, '${locale}')
 ${outputName} = ${inputName}.copy()
 `;
 
-        if (conversionType === 'dateToString') {
+        if (config.tsCFradioConversionType === 'dateToString') {
             code += `
 # Convert date/time column to string with specified format
-${outputName}[${outputColumnReference}] = ${outputName}[${inputColumnReference}].dt.strftime('${dateTimeFormat}').astype('string')
+${outputName}[${outputColumnReference}] = ${outputName}[${inputColumnReference}].dt.strftime('${config.tsCFselectCustomizableDateTimeFormat}').astype('string')
 `;
-        } else if (conversionType === 'stringToDate') {
-            if (dateTimeFormat === 'auto') {
+        } else if (config.tsCFradioConversionType === 'stringToDate') {
+            if (config.tsCFselectCustomizableDateTimeFormat === 'auto') {
                 code += `
 # Convert string column to datetime with auto-detected format
 ${outputName}[${outputColumnReference}] = ${prefix}.to_datetime(${outputName}[${inputColumnReference}], infer_datetime_format=True)
@@ -213,7 +220,7 @@ ${outputName}[${outputColumnReference}] = ${prefix}.to_datetime(${outputName}[${
             } else {
                 code += `
 # Convert string column to datetime with specified format
-${outputName}[${outputColumnReference}] = ${prefix}.to_datetime(${outputName}[${inputColumnReference}], format='${dateTimeFormat}')
+${outputName}[${outputColumnReference}] = ${prefix}.to_datetime(${outputName}[${inputColumnReference}], format='${config.tsCFselectCustomizableDateTimeFormat}')
 `;
             }
         }

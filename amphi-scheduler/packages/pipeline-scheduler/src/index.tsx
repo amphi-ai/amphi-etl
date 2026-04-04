@@ -10,17 +10,21 @@ import { requestScheduler } from './handler';
 import { IDocumentManager } from '@jupyterlab/docmanager';
 import React, { useState, useEffect } from 'react';
 import {
+  CheckCircleOutlined,
   CalendarOutlined,
   ClockCircleOutlined,
+  CloseOutlined,
   DeleteOutlined,
   EditOutlined,
+  FileTextOutlined,
   PlayCircleOutlined,
   PlusOutlined,
   ReloadOutlined,
   ScheduleOutlined,
+  CloseCircleOutlined,
   FolderOpenOutlined
 } from '@ant-design/icons';
-import { schedulerIcon } from './icons';
+import { pipelineBrandIcon, schedulerIcon } from './icons';
 import {
   Button,
   Card,
@@ -37,6 +41,7 @@ import {
   Space,
   Spin,
   Tag,
+  Tabs,
   Tooltip,
   message,
 
@@ -56,36 +61,60 @@ interface Job {
   pipeline_path: string;
 
   /*  ⇣ fields returned by the backend's `_serialise()` helper ⇣  */
-  schedule_type: 'date' | 'interval' | 'cron';
+  schedule_type: 'date' | 'interval' | 'cron' | 'trigger';
   date_type?: 'once' | 'daily' | 'weekly' | 'monthly' | 'every_x_days';
   run_date?: string;              // only for `date`
   interval_seconds?: number;      // only for `interval`
   interval_days?: number;         // only for `date` with `every_x_days`
   cron_expression?: string;       // only for `cron`
+  logical_operator?: 'AND' | 'OR';
+  trigger_conditions?: TriggerCondition[];
+}
+
+interface TriggerCondition {
+  job_id: string;
+  on: 'success' | 'failure';
+}
+
+interface RunEntry {
+  id: number;
+  job_id?: string;
+  job_name?: string;
+  status: 'success' | 'failure';
+  triggered_by: 'schedule' | 'manual' | 'trigger' | string;
+  started_at: string;
+  finished_at: string;
+  exit_code?: number | null;
+  output?: string | null;
+  error?: string | null;
 }
 
 interface JobFormValues {
   id?: string;
   name: string;
   pipeline_path: string;
-  schedule_type: 'date' | 'interval' | 'cron';
+  schedule_type: 'date' | 'interval' | 'cron' | 'trigger';
   date_type?: 'once' | 'daily' | 'weekly' | 'monthly' | 'every_x_days';
   run_date?: Dayjs;  // Changed to Dayjs type
   interval_seconds?: number;
   interval_days?: number;
   cron_expression?: string;
+  logical_operator?: 'AND' | 'OR';
+  trigger_conditions?: TriggerCondition[];
 }
 
 /* Replace the previous definition completely */
 interface JobFormSubmitValues {
   id?: string;
   name: string;
-  schedule_type: 'date' | 'interval' | 'cron';
+  schedule_type: 'date' | 'interval' | 'cron' | 'trigger';
   date_type?: 'once' | 'daily' | 'weekly' | 'monthly' | 'every_x_days';
   run_date?: string;          // ISO string sent to backend
   interval_seconds?: number;
   interval_days?: number;
   cron_expression?: string;
+  logical_operator?: 'AND' | 'OR';
+  trigger_conditions?: TriggerCondition[];
   pipeline_path: string;      // ALWAYS present - the original file path
   python_code?: string;       // present when user picked a .ampln
 }
@@ -184,6 +213,26 @@ class SchedulerAPI {
     // Server does not read a body here
     return this.makeRequest(`run/${id}`, { method: 'POST' });
   }
+
+  static listRuns(limit = 200): Promise<{ runs: RunEntry[] }> {
+    return this.makeRequest(`runs?limit=${limit}`);
+  }
+
+  static getRun(id: number): Promise<RunEntry> {
+    return this.makeRequest(`runs/${id}`);
+  }
+
+  static deleteRun(id: number): Promise<{ success: boolean }> {
+    return this.makeRequest(`runs/${id}`, {
+      method: 'DELETE'
+    });
+  }
+
+  static clearRuns(): Promise<{ success: boolean; deleted: number }> {
+    return this.makeRequest('runs', {
+      method: 'DELETE'
+    });
+  }
 }
 
 /* ---------- styles ---------- */
@@ -210,7 +259,7 @@ const useStyle = createStyles(({ token, css }) => ({
   content: css`
     flex: 1;
     overflow: auto;
-    padding: 16px;
+    padding: 6px 16px 16px;
   `,
   jobCard: css`
     margin-bottom: 12px;
@@ -236,12 +285,13 @@ const useStyle = createStyles(({ token, css }) => ({
 /* ---------- Components ---------- */
 const JobForm: React.FC<{
   docManager: IDocumentManager;
+  jobs: Job[];
   onSubmit: (values: JobFormValues) => void;
   onCancel: () => void;
   initialValues?: Partial<JobFormValues>;
-}> = ({ docManager, onSubmit, onCancel, initialValues }) => {
+}> = ({ docManager, jobs, onSubmit, onCancel, initialValues }) => {
   const [form] = Form.useForm<JobFormValues>();
-  const [scheduleType, setScheduleType] = useState<'date' | 'interval' | 'cron'>(
+  const [scheduleType, setScheduleType] = useState<'date' | 'interval' | 'cron' | 'trigger'>(
     initialValues?.schedule_type || 'date'
   );
   const [dateType, setDateType] = useState<'once' | 'daily' | 'weekly' | 'monthly' | 'every_x_days'>(
@@ -286,7 +336,13 @@ const JobForm: React.FC<{
         form={form}
         layout="vertical"
         onFinish={onSubmit}
-        initialValues={{ schedule_type: 'date', date_type: 'once', ...initialValues }}
+        initialValues={{
+          schedule_type: 'date',
+          date_type: 'once',
+          logical_operator: 'AND',
+          trigger_conditions: [],
+          ...initialValues
+        }}
       >
         <Form.Item name="id" hidden>
           <Input />
@@ -321,6 +377,7 @@ const JobForm: React.FC<{
             <Radio value="date">Date</Radio>
             <Radio value="interval">Interval</Radio>
             <Radio value="cron">Cron</Radio>
+            <Radio value="trigger">Trigger</Radio>
           </Radio.Group>
         </Form.Item>
 
@@ -378,6 +435,87 @@ const JobForm: React.FC<{
           >
             <Input placeholder="*/5 * * * *" />
           </Form.Item>
+        )}
+
+        {scheduleType === 'trigger' && (
+          <>
+            <Form.Item
+              style={{ marginBottom: 16 }}
+              name="logical_operator"
+              label="Conditions Logic"
+              rules={[{ required: true, message: 'Please select AND or OR' }]}
+            >
+              <Radio.Group>
+                <Radio value="AND">AND</Radio>
+                <Radio value="OR">OR</Radio>
+              </Radio.Group>
+            </Form.Item>
+
+            <Form.List
+              name="trigger_conditions"
+              rules={[
+                {
+                  validator: async (_, value) => {
+                    if (!value || value.length < 1) {
+                      return Promise.reject(new Error('Add at least one condition'));
+                    }
+                    return Promise.resolve();
+                  }
+                }
+              ]}
+            >
+              {(fields, { add, remove }, { errors }) => (
+                <>
+                  {fields.map(field => (
+                    <Space key={field.key} style={{ display: 'flex', marginBottom: 12 }} align="start">
+                      <Form.Item
+                        {...field}
+                        name={[field.name, 'job_id']}
+                        rules={[{ required: true, message: 'Select a task' }]}
+                        style={{ minWidth: 220 }}
+                      >
+                        <Select
+                          placeholder="Task"
+                          showSearch
+                          optionFilterProp="label"
+                          options={jobs
+                            .filter(job => job.id !== form.getFieldValue('id'))
+                            .map(job => ({ value: job.id, label: job.name }))}
+                        />
+                      </Form.Item>
+
+                      <Form.Item
+                        {...field}
+                        name={[field.name, 'on']}
+                        rules={[{ required: true, message: 'Select outcome' }]}
+                        style={{ minWidth: 140 }}
+                      >
+                        <Select placeholder="Outcome">
+                          <Select.Option value="success">Success</Select.Option>
+                          <Select.Option value="failure">Failure</Select.Option>
+                        </Select>
+                      </Form.Item>
+
+                      <Button type="text" danger onClick={() => remove(field.name)}>
+                        Remove
+                      </Button>
+                    </Space>
+                  ))}
+
+                  <Form.ErrorList errors={errors} />
+
+                  <Button
+                    type="dashed"
+                    onClick={() => add({ on: 'success' })}
+                    icon={<PlusOutlined />}
+                    style={{ width: '100%', marginBottom: 16 }}
+                  >
+                    Add Condition
+                  </Button>
+                </>
+              )}
+            </Form.List>
+          </>
         )}
 
         <Form.Item>
@@ -444,12 +582,20 @@ const getPythonCode = async (
 const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager }) => {
   const { styles } = useStyle();
   const [jobs, setJobs] = useState<Job[]>([]);
+  const [runs, setRuns] = useState<RunEntry[]>([]);
   const [loading, setLoading] = useState(false);
+  const [monitoringLoading, setMonitoringLoading] = useState(false);
   const [jobModalVisible, setJobModalVisible] = useState(false);
   const [currentJob, setCurrentJob] = useState<Partial<JobFormValues> | null>(null);
+  const [activeTab, setActiveTab] = useState<'tasks' | 'monitoring'>('tasks');
+  const [logsModalVisible, setLogsModalVisible] = useState(false);
+  const [logsLoading, setLogsLoading] = useState(false);
+  const [selectedRun, setSelectedRun] = useState<RunEntry | null>(null);
 
-  const fetchJobs = async () => {
-    setLoading(true);
+  const fetchJobs = async (showLoader = false) => {
+    if (showLoader) {
+      setLoading(true);
+    }
     try {
       const data = await SchedulerAPI.listJobs();
       setJobs(data.jobs || []);
@@ -457,14 +603,37 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
       console.error('Error fetching jobs:', error);
       Notification.error('Failed to fetch scheduled jobs');
     } finally {
-      setLoading(false);
+      if (showLoader) {
+        setLoading(false);
+      }
+    }
+  };
+
+  const fetchRuns = async (showLoader = false) => {
+    if (showLoader) {
+      setMonitoringLoading(true);
+    }
+    try {
+      const data = await SchedulerAPI.listRuns();
+      setRuns(data.runs || []);
+    } catch (error) {
+      console.error('Error fetching runs:', error);
+      Notification.error('Failed to fetch run monitoring data');
+    } finally {
+      if (showLoader) {
+        setMonitoringLoading(false);
+      }
     }
   };
 
   useEffect(() => {
-    fetchJobs();
+    fetchJobs(true);
+    fetchRuns(true);
     // Set up a refresh interval
-    const intervalId = setInterval(fetchJobs, 30000); // Refresh every 30 seconds
+    const intervalId = setInterval(() => {
+      fetchJobs();
+      fetchRuns();
+    }, 30000); // Refresh every 30 seconds
     return () => clearInterval(intervalId);
   }, []);
 
@@ -497,6 +666,10 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
     if (job.schedule_type === 'cron') {
       formValues.cron_expression = job.cron_expression;
     }
+    if (job.schedule_type === 'trigger') {
+      formValues.logical_operator = job.logical_operator || 'AND';
+      formValues.trigger_conditions = job.trigger_conditions || [];
+    }
 
     setCurrentJob(formValues);
     setJobModalVisible(true);
@@ -514,14 +687,12 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
       }
     });
 
-    promise.then(fetchJobs).catch(console.error);
+    promise.then(() => fetchJobs()).catch(console.error);
   };
 
   const handleRunJob = async (jobId: string) => {
     const job = jobs.find(j => j.id === jobId);
     if (!job) return;
-
-    const pythonCode = await getPythonCode(job.pipeline_path, commands, docManager);
 
     const promise = SchedulerAPI.runJob(jobId).then(res => {
       if (!res.success) throw new Error(res.error || 'Execution failed');
@@ -530,7 +701,12 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
 
     Notification.promise(promise, {
       pending: { message: 'Running pipeline…' },
-      success: { message: () => 'Pipeline executed successfully' },
+      success: {
+        message: () => {
+          fetchRuns();
+          return 'Pipeline executed successfully';
+        }
+      },
       error: {
         message: (e: unknown) =>
           `Pipeline execution failed: ${e instanceof Error ? e.message : String(e)}`
@@ -558,6 +734,10 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
           formData.interval_days = values.interval_days;
         }
       }
+      if (values.schedule_type === 'trigger') {
+        formData.logical_operator = values.logical_operator || 'AND';
+        formData.trigger_conditions = values.trigger_conditions || [];
+      }
 
       if (values.id) formData.id = values.id;
 
@@ -580,6 +760,80 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
     }
   };
 
+  const jobNameById = new Map(jobs.map(job => [job.id, job.name]));
+
+  const getScheduleBadge = (job: Job) => {
+    if (job.schedule_type === 'trigger') return { label: 'Trigger', icon: <ScheduleOutlined /> };
+    if (job.schedule_type === 'interval') return { label: 'Interval', icon: <ClockCircleOutlined /> };
+    if (job.schedule_type === 'cron') return { label: 'Cron', icon: <ScheduleOutlined /> };
+    return { label: 'Date', icon: <CalendarOutlined /> };
+  };
+
+  const formatTriggerConditions = (job: Job): string => {
+    const conditions = job.trigger_conditions || [];
+    if (conditions.length <= 1) return '';
+    const op = ` ${job.logical_operator || 'AND'} `;
+    return conditions
+      .map(c => {
+        const sourceName = jobNameById.get(c.job_id) || c.job_id;
+        const outcome = c.on === 'success' ? 'succeeds' : 'fails';
+        return `${sourceName} ${outcome}`;
+      })
+      .join(op);
+  };
+
+  const openRunLogs = async (run: RunEntry) => {
+    setLogsLoading(true);
+    setLogsModalVisible(true);
+    try {
+      const detailed = await SchedulerAPI.getRun(run.id);
+      setSelectedRun(detailed);
+    } catch (error) {
+      console.error('Error fetching run logs:', error);
+      Notification.error('Failed to fetch run logs');
+      setSelectedRun(run);
+    } finally {
+      setLogsLoading(false);
+    }
+  };
+
+  const handleDeleteRun = (runId: number) => {
+    const promise = SchedulerAPI.deleteRun(runId);
+
+    Notification.promise(promise, {
+      pending: { message: 'Deleting monitoring entry…' },
+      success: {
+        message: () => {
+          fetchRuns();
+          return 'Monitoring entry removed';
+        }
+      },
+      error: {
+        message: (err: unknown) =>
+          `Failed to remove monitoring entry: ${err instanceof Error ? err.message : String(err)}`
+      }
+    });
+  };
+
+  const handleClearRuns = () => {
+    const promise = SchedulerAPI.clearRuns();
+
+    Notification.promise(promise, {
+      pending: { message: 'Clearing monitoring entries…' },
+      success: {
+        message: (_result: unknown, data?: { success: boolean; deleted: number }) => {
+          fetchRuns();
+          const deleted = data?.deleted ?? 0;
+          return `Cleared ${deleted} monitoring entr${deleted === 1 ? 'y' : 'ies'}`;
+        }
+      },
+      error: {
+        message: (err: unknown) =>
+          `Failed to clear monitoring entries: ${err instanceof Error ? err.message : String(err)}`
+      }
+    });
+  };
+
   return (
     <ConfigProvider
       theme={{
@@ -589,95 +843,194 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
       }}
     >
       <div className={styles.root}>
-        <div className={styles.header}>
-          <Space>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={handleCreateJob}
-            >
-              Task
-            </Button>
-            <Button
-              icon={<ReloadOutlined />}
-              onClick={fetchJobs}
-            />
-          </Space>
-        </div>
-
         <div className={styles.content}>
-          {loading ? (
-            <div style={{ textAlign: 'center', padding: '40px 0' }}>
-              <Spin size="large" />
-            </div>
-          ) : jobs.length === 0 ? (
-            <Empty
-              description="No scheduled tasks yet"
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-            />
-          ) : (
-            <List
-              itemLayout="vertical"
-              dataSource={jobs}
-              renderItem={job => {
-                const type = job.trigger.split('[')[0];
-                return (
-                  <List.Item
-                    key={job.id}
-                    actions={[
-                      <Tooltip title="Run now" key="run">
-                        <Button
-                          type="text"
-                          icon={<PlayCircleOutlined />}
-                          onClick={() => handleRunJob(job.id)}
-                        />
-                      </Tooltip>,
-                      <Tooltip title="Edit" key="edit">
-                        <Button
-                          type="text"
-                          icon={<EditOutlined />}
-                          onClick={() => handleEditJob(job)}
-                        />
-                      </Tooltip>,
-                      <Tooltip title="Delete" key="delete">
-                        <Button
-                          type="text"
-                          danger
-                          icon={<DeleteOutlined />}
-                          onClick={() => handleDeleteJob(job.id)}
-                        />
-                      </Tooltip>
-                    ]}
-                  >
-                    <List.Item.Meta
-                      title={
-                        <Space wrap>
-                          <span style={{ fontWeight: 600 }}>{job.name}</span>
-                          <Tag icon={<ClockCircleOutlined />} color="default">
-                            {type}
-                          </Tag>
-                        </Space>
-                      }
-                      description={
-                        <div>
-                          <div className={styles.jobMeta}>
-                            <ScheduleOutlined className={styles.jobMetaIcon} />
-                            <span>Pipeline: {job.pipeline_path}</span>
-                          </div>
-                          {job.next_run_time && (
-                            <div className={styles.jobMeta}>
-                              <CalendarOutlined className={styles.jobMetaIcon} />
-                              <span>Next: {dayjs(job.next_run_time).format('YYYY-MM-DD HH:mm:ss')}</span>
-                            </div>
-                          )}
-                        </div>
-                      }
-                    />
-                  </List.Item>
-                );
-              }}
-            />
-          )}
+          <Tabs
+            activeKey={activeTab}
+            onChange={key => setActiveTab(key as 'tasks' | 'monitoring')}
+            items={[
+              {
+                key: 'tasks',
+                label: 'Tasks',
+                children: (
+                  <>
+                    <Space style={{ marginBottom: 12 }}>
+                      <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={handleCreateJob}
+                      >
+                        New Task
+                      </Button>
+                      <Button
+                        icon={<ReloadOutlined />}
+                        onClick={() => {
+                          fetchJobs();
+                          fetchRuns();
+                        }}
+                      />
+                    </Space>
+                    {loading ? (
+                      <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                        <Spin size="large" />
+                      </div>
+                    ) : jobs.length === 0 ? (
+                      <Empty
+                        description="No scheduled tasks yet"
+                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                      />
+                    ) : (
+                      <List
+                        itemLayout="vertical"
+                        dataSource={jobs}
+                        renderItem={job => {
+                          const badge = getScheduleBadge(job);
+                          const triggerSummary = formatTriggerConditions(job);
+                          return (
+                            <List.Item
+                              key={job.id}
+                              actions={[
+                                <Tooltip title="Run now" key="run">
+                                  <Button
+                                    type="text"
+                                    icon={<PlayCircleOutlined />}
+                                    onClick={() => handleRunJob(job.id)}
+                                  />
+                                </Tooltip>,
+                                <Tooltip title="Edit" key="edit">
+                                  <Button
+                                    type="text"
+                                    icon={<EditOutlined />}
+                                    onClick={() => handleEditJob(job)}
+                                  />
+                                </Tooltip>,
+                                <Tooltip title="Delete" key="delete">
+                                  <Button
+                                    type="text"
+                                    danger
+                                    icon={<DeleteOutlined />}
+                                    onClick={() => handleDeleteJob(job.id)}
+                                  />
+                                </Tooltip>
+                              ]}
+                            >
+                              <List.Item.Meta
+                                title={
+                                  <Space wrap>
+                                    <span style={{ fontWeight: 600 }}>{job.name}</span>
+                                    <Tag icon={badge.icon} color="default">
+                                      {badge.label}
+                                    </Tag>
+                                  </Space>
+                                }
+                                description={
+                                  <div>
+                                    <div className={styles.jobMeta}>
+                                      <pipelineBrandIcon.react className={styles.jobMetaIcon} />
+                                      <span>Pipeline: {job.pipeline_path}</span>
+                                    </div>
+                                    {job.schedule_type !== 'trigger' && job.next_run_time && (
+                                      <div className={styles.jobMeta}>
+                                        <CalendarOutlined className={styles.jobMetaIcon} />
+                                        <span>Next: {dayjs(job.next_run_time).format('YYYY-MM-DD HH:mm:ss')}</span>
+                                      </div>
+                                    )}
+                                    {job.schedule_type === 'trigger' && !!triggerSummary && (
+                                      <div className={styles.jobMeta}>
+                                        <ScheduleOutlined className={styles.jobMetaIcon} />
+                                        <span>Trigger when: {triggerSummary}</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                }
+                              />
+                            </List.Item>
+                          );
+                        }}
+                      />
+                    )}
+                  </>
+                )
+              },
+              {
+                key: 'monitoring',
+                label: 'Monitoring',
+                children: (
+                  <>
+                    <Space style={{ marginBottom: 12 }}>
+                      <Button danger icon={<DeleteOutlined />} onClick={handleClearRuns}>
+                        Clear
+                      </Button>
+                      <Button
+                        icon={<ReloadOutlined />}
+                        onClick={() => fetchRuns()}
+                      />
+                    </Space>
+                    {monitoringLoading ? (
+                      <div style={{ textAlign: 'center', padding: '40px 0' }}>
+                        <Spin size="large" />
+                      </div>
+                    ) : runs.length === 0 ? (
+                      <Empty
+                        description="No runs recorded yet"
+                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                      />
+                    ) : (
+                      <List
+                        itemLayout="horizontal"
+                        dataSource={runs}
+                        renderItem={run => (
+                          <List.Item
+                            key={run.id}
+                            actions={[
+                              <Tooltip title="View logs" key={`logs-tooltip-${run.id}`}>
+                                <Button
+                                  key={`logs-${run.id}`}
+                                  type="text"
+                                  icon={<FileTextOutlined />}
+                                  onClick={() => openRunLogs(run)}
+                                />
+                              </Tooltip>,
+                              <Tooltip title="Remove from monitoring" key={`remove-tooltip-${run.id}`}>
+                                <Button
+                                  key={`remove-${run.id}`}
+                                  type="text"
+                                  danger
+                                  icon={<CloseOutlined />}
+                                  onClick={() => handleDeleteRun(run.id)}
+                                />
+                              </Tooltip>
+                            ]}
+                          >
+                            <List.Item.Meta
+                              title={
+                                <Space wrap>
+                                  <span style={{ fontWeight: 600 }}>
+                                    {run.job_name || jobNameById.get(run.job_id || '') || run.job_id || 'Unknown Task'}
+                                  </span>
+                                  {run.triggered_by === 'manual' && <Tag color="default">Manual</Tag>}
+                                  <Tag
+                                    icon={run.status === 'success' ? <CheckCircleOutlined /> : <CloseCircleOutlined />}
+                                    style={
+                                      run.status === 'success'
+                                        ? { color: '#1f883d', borderColor: '#1f883d', background: '#eef8f2' }
+                                        : { color: '#D1242F', borderColor: '#D1242F', background: '#fff1f2' }
+                                    }
+                                  >
+                                    {run.status === 'success' ? 'Succeeded' : 'Failed'}
+                                  </Tag>
+                                </Space>
+                              }
+                              description={`Time: ${dayjs(run.finished_at).format('YYYY-MM-DD HH:mm:ss')}`}
+                            />
+                          </List.Item>
+                        )}
+                      />
+                    )}
+                  </>
+                )
+              }
+            ]}
+          />
         </div>
 
         <Modal
@@ -690,10 +1043,46 @@ const SchedulerPanel: React.FC<SchedulerPanelProps> = ({ commands, docManager })
         >
           <JobForm
             docManager={docManager}
+            jobs={jobs}
             onSubmit={handleFormSubmit}
             onCancel={() => setJobModalVisible(false)}
             initialValues={currentJob || undefined}
           />
+        </Modal>
+
+        <Modal
+          title={selectedRun ? `Run Logs - ${selectedRun.job_name || selectedRun.job_id || selectedRun.id}` : 'Run Logs'}
+          open={logsModalVisible}
+          onCancel={() => setLogsModalVisible(false)}
+          footer={null}
+          width={800}
+          destroyOnClose
+        >
+          {logsLoading ? (
+            <div style={{ textAlign: 'center', padding: '24px 0' }}>
+              <Spin />
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div>
+                <strong>Status:</strong>{' '}
+                {selectedRun?.status === 'success' ? 'Succeeded' : 'Failed'} at{' '}
+                {selectedRun?.finished_at ? dayjs(selectedRun.finished_at).format('YYYY-MM-DD HH:mm:ss') : 'n/a'}
+              </div>
+              <div>
+                <strong>Output</strong>
+                <pre style={{ maxHeight: 220, overflow: 'auto', background: '#f6f8fa', padding: 10 }}>
+                  {selectedRun?.output || '(no output)'}
+                </pre>
+              </div>
+              <div>
+                <strong>Error</strong>
+                <pre style={{ maxHeight: 220, overflow: 'auto', background: '#fff2f0', padding: 10 }}>
+                  {selectedRun?.error || '(no error)'}
+                </pre>
+              </div>
+            </div>
+          )}
         </Modal>
       </div>
     </ConfigProvider>

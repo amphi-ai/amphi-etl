@@ -31,15 +31,15 @@ export class CodeGenerator extends BaseCodeGenerator {
     const connMap = new Map<string, Node>();
 
     const { nodesToTraverse, nodesMap } = this.computeNodesToTraverse(
-      flow, 
-      targetNodeId, 
+      flow,
+      targetNodeId,
       componentService
     );
 
     // Identify special nodes
     flow.nodes.forEach(node => {
       const type = componentService.getComponent(node.type)._type;
-      if (['env_variables','env_file'].includes(type)) {
+      if (['env_variables', 'env_file'].includes(type)) {
         envMap.set(node.id, node);
       } else if (type === 'connection') {
         connMap.set(node.id, node);
@@ -48,10 +48,10 @@ export class CodeGenerator extends BaseCodeGenerator {
 
     // Build node objects
     const nodeObjects = this.createNodeObjects(
-      flow, 
-      componentService, 
-      nodesToTraverse, 
-      nodesMap, 
+      flow,
+      componentService,
+      nodesToTraverse,
+      nodesMap,
       variablesAutoNaming
     );
 
@@ -74,7 +74,7 @@ export class CodeGenerator extends BaseCodeGenerator {
       // If it's the target node, handle display code or final try-catch
       if (nodeObj.id === targetNodeId) {
         let displayCode = '';
-        if (nodeObj.type.includes('processor') || nodeObj.type.includes('input')) {
+        if (nodeObj.type.includes('processor') || nodeObj.type.includes('input') || nodeObj.type.includes('pandas_df_switch')) {
           if (nodeObj.type.includes('documents')) {
             if (!fromStart) {
               codeList.length = 0;
@@ -90,7 +90,12 @@ export class CodeGenerator extends BaseCodeGenerator {
               executedNodes.clear();
               executedNodes.add(nodeObj.id);
             }
-            displayCode = `\__amphi_display(${nodeObj.outputName}, dfName="${nodeObj.outputName}", nodeId="${targetNodeId}"${nodeObj.runtime !== "local" ? `, runtime="${nodeObj.runtime}"` : ''})`;
+            // Handle pandas_df_switch nodes - determine which path to display
+            if (nodeObj.type === 'pandas_df_switch') {
+              displayCode = `__amphi_display(${nodeObj.outputName}_True, dfName="${nodeObj.outputName}_True", nodeId="${targetNodeId}"${nodeObj.runtime !== "local" ? `, runtime="${nodeObj.runtime}"` : ''})`;
+            } else {
+              displayCode = `__amphi_display(${nodeObj.outputName}, dfName="${nodeObj.outputName}", nodeId="${targetNodeId}"${nodeObj.runtime !== "local" ? `, runtime="${nodeObj.runtime}"` : ''})`;
+            }
           }
           codeList.push(displayCode);
           if (incrementalCodeList.length > 0) {
@@ -152,9 +157,9 @@ export class CodeGenerator extends BaseCodeGenerator {
   }
 
   static generateCode(
-    pipelineJson: string, 
-    commands: any, 
-    componentService: any, 
+    pipelineJson: string,
+    commands: any,
+    componentService: any,
     variablesAutoNaming: boolean
   ): string {
     const { codeList } = this.generateCodeForNodes(

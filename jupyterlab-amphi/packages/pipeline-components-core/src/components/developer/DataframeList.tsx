@@ -11,7 +11,7 @@ export class DataframeList extends BaseCoreComponent {
       fields: [
         {
           type: "info",
-          id: "description",
+          id: "tsCFinfoDescription",
           text: "List all existing pandas dataframes created before the tool",
           advanced: false
         },
@@ -34,15 +34,15 @@ export class DataframeList extends BaseCoreComponent {
   public provideFunctions({ config }): string[] {
     const prefix = config?.backend?.prefix ?? "pd";
     // Function to list dataframes
-    const ListExistingDataframesFunction = `
-def list_existing_dataframes(scope, exclude=None):
-    if exclude is None:
-        exclude = []
+    const tsListExistingDataframesFunction = `
+def py_fn_list_existing_dataframes(scope, py_arg_exclude=None):
+    if py_arg_exclude is None:
+        py_arg_exclude = []
 
     dataframe_summary = []
     
     for name, obj in scope.items():
-        if name in exclude:
+        if name in py_arg_exclude:
             continue
         
         # --- Pandas ---
@@ -92,14 +92,14 @@ def list_existing_dataframes(scope, exclude=None):
 
     return dataframe_summary_df
     `;
-    return [ListExistingDataframesFunction];
+    return [tsListExistingDataframesFunction];
   }
 
   // Generate the Python execution script
 public generateComponentCode({ config, inputName, outputName }: { config: any; inputName: string; outputName: string }): string {
     return `
 # Execute the function
-${outputName} = list_existing_dataframes(globals(), exclude=['df_summary'])
+${outputName} = py_fn_list_existing_dataframes(globals(), py_arg_exclude=['df_summary'])
     `;
   }
 }

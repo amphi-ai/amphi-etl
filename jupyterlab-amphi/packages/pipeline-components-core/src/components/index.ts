@@ -41,8 +41,6 @@ export { ExpandList } from './transforms/JSON/ExpandList';
 export { FlattenJSON } from './transforms/JSON/FlattenJSON';
 export { ExplodeJSON } from './transforms/JSON/ExplodeJSON';
 export { JSONTools } from './transforms/JSON/JSONTools';
-
-
 export { Sample } from './transforms/Sample';
 export { Sort } from './transforms/Sort';
 export { RenameColumns } from './transforms/RenameColumns/RenameColumns';
@@ -65,6 +63,9 @@ export { UniqueKeyDetector } from './transforms/UniqueKeyDetector';
 export { FileAction } from './transforms/files/FileAction';
 export { HierarchyPath } from './transforms/HierarchyPath';
 export { CompareDataframes } from './transforms/CompareDataframes';
+export { CorrelationMatrix } from './transforms/CorrelationMatrix';
+export { Switch } from './transforms/Switch';
+export { AutoColumnPosition } from './transforms/AutoColumnPosition';
 
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';

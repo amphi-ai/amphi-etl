@@ -4,7 +4,7 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 export class FrequencyAnalysis extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-      columns: [],
+      tsCFcolumnsColumnsToAnalyze: []	  
     };
 
     const form = {
@@ -13,7 +13,7 @@ export class FrequencyAnalysis extends BaseCoreComponent {
         {
           type: "columns",
           label: "Columns to analyze",
-          id: "columns",
+          id: "tsCFcolumnsColumnsToAnalyze",
           placeholder: "Leave blank to analyze all columns",
         }
       ],
@@ -25,72 +25,119 @@ export class FrequencyAnalysis extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd"];
+    return [
+	"import pandas as pd",
+	"from typing import List, Optional"
+	]
+;
   }
 
   public provideFunctions({ config }): string[] {
     const prefix = config?.backend?.prefix ?? "pd";
-    // Function to perform frequency analysis
-    const frequencyAnalysisFunction = `
-# Function to perform frequency analysis
-def frequency_analysis(df, column_name):
-    # Frequency counts
-    frequency = df[column_name].value_counts(dropna=False)
-    percentage = df[column_name].value_counts(normalize=True, dropna=False) * 100
-    
-    # Cumulative frequency and percentage
-    cumulative_frequency = frequency.cumsum()
-    cumulative_percent = percentage.cumsum()
+    const tsFrequencyAnalysisFunction = `
+def py_fn_value_frequency(
+    py_arg_dataframe: pd.DataFrame,
+    py_arg_columns: Optional[List[str]] = None
+) -> pd.DataFrame:
+    """
+    Compute frequency statistics for values in a pandas DataFrame using a
+    vectorized single-pass method.
 
-    # Combine all into a DataFrame
-    result = ${prefix}.DataFrame({
-        'Field Name': column_name,
-        'Field Value': frequency.index,
-        'Frequency': frequency.values,
-        'Percent': percentage.values,
-        'Cumulative Frequency': cumulative_frequency.values,
-        'Cumulative Percent': cumulative_percent.values
-    })
-    return result
+    The function calculates frequency metrics for each value in the specified
+    columns of a DataFrame. If no columns are provided, all columns of the
+    DataFrame are analyzed.
+
+    Returned statistics include:
+        - field_name
+        - field_value
+        - frequency
+        - percent
+        - cumulative_frequency
+        - cumulative_percent
+
+    This implementation processes all columns simultaneously using a stacked
+    representation, which is typically faster for wide DataFrames.
+
+    Parameters
+    ----------
+    py_arg_dataframe : pd.DataFrame
+        Input pandas DataFrame containing the data to analyze.
+
+    py_arg_columns : Optional[List[str]], default None
+        List of column names to analyze. If None, all columns of the
+        DataFrame are processed.
+
+    Returns
+    -------
+    pd.DataFrame
+        A DataFrame containing value frequency statistics.
+    """
+
+    if py_arg_columns is None:
+        py_arg_columns = list(py_arg_dataframe.columns)
+
+    py_df = py_arg_dataframe[py_arg_columns]
+
+    py_stacked = (
+        py_df
+        .stack(future_stack=True)
+        .rename_axis(["row_index", "field_name"])
+        .reset_index(name="field_value")
+    )
+
+    py_freq = (
+        py_stacked
+        .groupby(["field_name", "field_value"], dropna=False)
+        .size()
+        .reset_index(name="frequency")
+    )
+    py_freq["field_name"]=py_freq["field_name"].astype("string")
+    py_freq["frequency"] = py_freq["frequency"].astype("int64")
+
+    py_totals = py_freq.groupby("field_name")["frequency"].transform("sum")
+
+    py_freq["percent"] = py_freq["frequency"] / py_totals * 100.0
+
+    py_freq = py_freq.sort_values(
+        ["field_name", "frequency", "field_value"],
+        ascending=[True, False, True]
+    ).reset_index(drop=True)
+
+    py_freq["cumulative_frequency"] = (
+        py_freq
+        .groupby("field_name")["frequency"]
+        .cumsum()
+        .astype("int64")
+    )
+
+    py_freq["cumulative_percent"] = (
+        py_freq
+        .groupby("field_name")["percent"]
+        .cumsum()
+        .astype("float64")
+    )
+
+    py_freq["percent"] = py_freq["percent"].astype("float64")
+
+    return py_freq
     `;
-    return [frequencyAnalysisFunction];
+    return [tsFrequencyAnalysisFunction];
   }
 
   public generateComponentCode({ config, inputName, outputName }: { config: any; inputName: string; outputName: string }): string {
     const prefix = config?.backend?.prefix ?? "pd";
-
-    const selectedColumns = config.columns;
-    let code = `
-# Perform frequency analysis on selected columns
-${outputName}_results = []
-`;
-
-    // Helper function to get the correct column reference
-    const getColumnReference = (column: any) => {
-      return column.named ? `'${column.value}'` : column.value;
-    };
-
-    // Check if columns are selected; if not, analyze all columns
-    if (selectedColumns && selectedColumns.length > 0) {
-      code += selectedColumns.map((col: any) => {
-        const columnRef = getColumnReference(col);
-        return `
-${outputName}_result_${col.value} = frequency_analysis(${inputName}, ${columnRef})
-${outputName}_result_${col.value}['Field Name'] = '${col.value}'
-${outputName}_results.append(${outputName}_result_${col.value})
-`;
-      }).join('');
-
-      code += `${outputName} = ${prefix}.concat(${outputName}_results, ignore_index=True)\n`;
-    } else {
-      // If no columns are selected, analyze all columns
-      code += `
-for col in ${inputName}.columns:
-    result = frequency_analysis(${inputName}, col)
-    ${outputName}_results.append(result)
-${outputName} = ${prefix}.concat(${outputName}_results, ignore_index=True)\n`;
+	let tsConstColumnsToAnalyze = "None";
+    if (config.tsCFcolumnsColumnsToAnalyze?.length > 0) {
+      tsConstColumnsToAnalyze = `[${config.tsCFcolumnsColumnsToAnalyze
+        .map((item: any) => (item.named ? `"${item.value}"` : item.value))
+        .join(", ")}]`;
     }
 
-    return code + '\n';
+    return `
+${outputName}=py_fn_value_frequency(	
+    py_arg_dataframe=${inputName},
+    py_arg_columns=${tsConstColumnsToAnalyze}
+    )
+`;
   }
 }

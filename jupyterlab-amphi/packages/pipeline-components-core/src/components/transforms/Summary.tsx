@@ -4,8 +4,8 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 export class Summary extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-      statisticsType: "all",
-      pivot: "rows", // Set default pivot to 'rows'
+      tsCFselectStatisticsType: "all",
+      tsCFradioPivot: "rows",
     };
     const form = {
       idPrefix: "component__form",
@@ -13,7 +13,7 @@ export class Summary extends BaseCoreComponent {
         {
           type: "select",
           label: "Apply to ",
-          id: "statisticsType",
+          id: "tsCFselectStatisticsType",
           placeholder: "Select statistics type",
           options: [
             { value: "all", label: "All columns" },
@@ -25,16 +25,16 @@ export class Summary extends BaseCoreComponent {
         {
           type: "columns",
           label: "Columns",
-          id: "columns",
+          id: "tsCFcolumnsSelectedColumns",
           placeholder: "Select columns",
           tooltip: "Select which columns to analyze",
-          condition: { statisticsType: "select" },
+          condition: { tsCFselectStatisticsType: "select" },
           advanced: true
         },
         {
           type: "radio",
           label: "Resulting Table Columns",
-          id: "pivot",
+          id: "tsCFradioPivot",
           placeholder: "Select how should the resulting table be formatted",
           options: [
             { value: "rows", label: "As rows" },
@@ -58,8 +58,8 @@ export class Summary extends BaseCoreComponent {
   public provideFunctions({ config }): string[] {
     const prefix = config?.backend?.prefix ?? "pd";
     // Functions to summary the dataframe
-    const SummaryFunction = `
-def describe_dataset(df, column_type='all', orientation='columns_as_row', selected_columns=None):
+    const tsSummaryFunction = `
+def py_fn_describe_dataset(df, column_type='all', orientation='columns_as_row', selected_columns=None):
     if column_type == 'numerical':
         df = df.select_dtypes(include=[np.number])
     elif column_type == 'categorical':
@@ -163,17 +163,17 @@ def describe_dataset(df, column_type='all', orientation='columns_as_row', select
         result_df = result_df.set_index("field_name").transpose().reset_index().rename(columns={'index': 'stat'})
     return result_df
     `;
-    return [SummaryFunction];
+    return [tsSummaryFunction];
   }
   public generateComponentCode({ config, inputName, outputName }: { config: any; inputName: string; outputName: string }): string {
-    const statisticsType = config.statisticsType;
-    const pivot = config.pivot;
+    const statisticsType = config.tsCFselectStatisticsType;
+    const pivot = config.tsCFradioPivot;
     let orientation="";
     let code = `# Generate summary statistics\n`;
 
     // Handle subset selection based on statisticsType.
     if (statisticsType === "select") {
-      const selectedColumns = config.columns.map((col: any) => col.value);
+      const selectedColumns = config.tsCFcolumnsSelectedColumns.map((col: any) => col.value);
       code += `df_subset = ${inputName}[${JSON.stringify(selectedColumns)}]\n`;
     } else if (statisticsType === "numerical") {
       code += `df_subset = ${inputName}.select_dtypes(include=['number'])\n`;
@@ -194,7 +194,7 @@ def describe_dataset(df, column_type='all', orientation='columns_as_row', select
     code += `
 # Execute the detect unique key function
 ${outputName} = []
-${outputName} = describe_dataset(df_subset, 'all', '${orientation}')
+${outputName} = py_fn_describe_dataset(df_subset, 'all', '${orientation}')
 del df_subset
     `;
     return code + '\n';

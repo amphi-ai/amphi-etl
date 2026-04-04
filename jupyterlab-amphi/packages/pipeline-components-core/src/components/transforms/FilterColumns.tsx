@@ -5,20 +5,22 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class FilterColumns extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { columns: { sourceData: [], targetKeys: [] } };
+    const defaultConfig = {
+		tsCFtransferDataColumns: { sourceData: [], targetKeys: [] }
+		};
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "info",
           label: "Instructions",
-          id: "instructions",
+          id: "tsCFinfoInstructions",
           text: "Select the columns you want to keep, and drag and drop them to reorder.",
         },
         {
           type: "transferData",
           label: "Filter columns",
-          id: "columns",
+          id: "tsCFtransferDataColumns",
           advanced: true
         }
       ],
@@ -33,8 +35,8 @@ export class FilterColumns extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    const allColumns = config.columns.sourceData;
-    const targetKeys = config.columns.targetKeys;
+    const allColumns = config.tsCFtransferDataColumns.sourceData;
+    const targetKeys = config.tsCFtransferDataColumns.targetKeys;
 
     // Prepare column references, handling named and unnamed columns
     const columnsToKeep = targetKeys.map(key => {

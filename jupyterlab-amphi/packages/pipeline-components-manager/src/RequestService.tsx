@@ -38,7 +38,12 @@ export class RequestService {
         if (lastExecuted >= lastUpdated) {
           console.log("Skip generation")
           const dataframeVar = nameId || refNodeId;
-          const codeToFetchContent = `print(_amphi_metadatapanel_getcontentof(${dataframeVar}))`;
+          let codeToFetchContent = "";
+          if (refNode.type === "conditionalSwitch") {
+            codeToFetchContent = `print(_amphi_metadatapanel_getcontentof(${dataframeVar}_path_a if not ${dataframeVar}_path_a.empty else ${dataframeVar}_path_b))`;
+          } else {
+            codeToFetchContent = `print(_amphi_metadatapanel_getcontentof(${dataframeVar}))`;
+          }
 
           const future = context.sessionContext.session.kernel!.requestExecute({ code: codeToFetchContent });
           future.onIOPub = msg => {

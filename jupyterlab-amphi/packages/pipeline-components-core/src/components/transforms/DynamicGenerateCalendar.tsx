@@ -15,7 +15,7 @@ export class DynamicGenerateCalendar extends BaseCoreComponent {
         tsCFinputNumberToXAhead:"",
         tsCFselectToWhatAhead:"days",
         tsCFcolumnToColumn:"",
-		tsCFselectMultipleCustomizableFieldsToInclude:["date"],
+		tsCFselectMultipleFieldsToInclude:["date"],
         // tsCFSelectinputEngine:"pandas",
         tsCFSelectoutputEngine:"pandas"
 	};
@@ -95,9 +95,9 @@ export class DynamicGenerateCalendar extends BaseCoreComponent {
           advanced: true
         },
         {
-          type: "selectMultipleCustomizable",
+          type: "selectMultiple",
           label: "Fields to include",
-          id: "tsCFselectMultipleCustomizableFieldsToInclude",
+          id: "tsCFselectMultipleFieldsToInclude",
           options: [
             { value: "date", label: "Date" },
             { value: "year", label: "Year" },
@@ -340,7 +340,7 @@ def py_fn_dynamic_generate_calendar(
     return [tsDynamicGenerateCalendarFunction];
   }
   generateComponentCode({ config, inputName, outputName }) {
-	const tsConsFieldsToInclude = JSON.stringify(config.tsCFselectMultipleCustomizableFieldsToInclude);
+	const tsConsFieldsToInclude = JSON.stringify(config.tsCFselectMultipleFieldsToInclude);
    let tsConstFromDate = 'None';
     if (config.tsCFdateFromDate && config.tsCFdateFromDate.trim() !== '' 
 	) {

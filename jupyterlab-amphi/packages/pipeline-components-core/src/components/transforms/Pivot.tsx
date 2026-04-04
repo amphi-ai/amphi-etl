@@ -3,35 +3,38 @@ import { BaseCoreComponent } from '../BaseCoreComponent';// Adjust the import pa
 
 export class Pivot extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { aggfunc: "none", fillValue: 0 };
+    const defaultConfig = {
+		tsCFselectAggFunc: "none",
+		tsCFinputNumberFillValue: 0
+		};
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "columns",
           label: "Index Columns",
-          id: "indexColumns",
+          id: "tsCFcolumnsIndexColumns",
           tooltip: "List of columns used as index for the pivot.",
           placeholder: "Select columns"
         },
         {
           type: "columns",
           label: "Columns to pivot",
-          id: "columnsToPivot",
+          id: "tsCFcolumnsColumnsToPivot",
           tooltip: "List of columns that are pivoted.",
           placeholder: "Select columns"
         },
         {
           type: "columns",
           label: "Values",
-          id: "values",
+          id: "tsCFcolumnsValues",
           tooltip: "Values used to fill in the pivot table.",
           placeholder: "Select columns"
         },
         {
           type: "select",
           label: "Aggregation Function",
-          id: "aggfunc",
+          id: "tsCFselectAggFunc",
           tooltip: "Aggregation used on the values to fill in the pivot table.",
           options: [
             { value: "none", label: "None (use pivot without aggregation)" },
@@ -45,7 +48,7 @@ export class Pivot extends BaseCoreComponent {
         {
           type: "inputNumber",
           label: "Fill missing values",
-          id: "fillValue",
+          id: "tsCFinputNumberFillValue",
           placeholder: "0",
           min: 0,
           advanced: true
@@ -53,7 +56,7 @@ export class Pivot extends BaseCoreComponent {
         {
           type: "boolean",
           label: "Drop rows with missing values",
-          id: "dropna",
+          id: "tsCFbooleanDropNa",
           advanced: true
         }
       ],
@@ -70,11 +73,11 @@ export class Pivot extends BaseCoreComponent {
   public generateComponentCode({ config, inputName, outputName }) {
     const formatColumns = (cols) => cols.length === 1 ? `"${cols[0].value}"` : `[${cols.map(col => `"${col.value}"`).join(', ')}]`;
 
-    const indexColumns = formatColumns(config.indexColumns);
-    const columnsToPivot = formatColumns(config.columnsToPivot);
-    const values = formatColumns(config.values);
+    const indexColumns = formatColumns(config.tsCFcolumnsIndexColumns);
+    const columnsToPivot = formatColumns(config.tsCFcolumnsColumnsToPivot);
+    const values = formatColumns(config.tsCFcolumnsValues);
 
-    if (config.aggfunc === "none") {
+    if (config.tsCFselectAggFunc === "none") {
       let code = `
 ${outputName} = ${inputName}.pivot(
     index=${indexColumns},
@@ -82,16 +85,16 @@ ${outputName} = ${inputName}.pivot(
     values=${values}
 ).reset_index()\n`;
 
-      if (config.fillValue !== null && config.fillValue !== undefined && config.fillValue !== '') {
+      if (config.tsCFinputNumberFillValue !== null && config.tsCFinputNumberFillValue !== undefined && config.tsCFinputNumberFillValue !== '') {
         code += `
-${outputName} = ${outputName}.fillna(${config.fillValue})\n`;
+${outputName} = ${outputName}.fillna(${config.tsCFinputNumberFillValue})\n`;
       }
 
       return code;
     } else {
-      const aggfunc = `"${config.aggfunc}"`;
-      const fillValue = config.fillValue !== null && config.fillValue !== undefined && config.fillValue !== '' ? config.fillValue : 0;
-      const dropna = config.dropna ? 'True' : 'False';
+      const aggfunc = `"${config.tsCFselectAggFunc}"`;
+      const fillValue = config.tsCFinputNumberFillValue !== null && config.tsCFinputNumberFillValue !== undefined && config.tsCFinputNumberFillValue !== '' ? config.tsCFinputNumberFillValue : 0;
+      const dropna = config.tsCFbooleanDropNa ? 'True' : 'False';
 
       let code = `
 ${outputName} = ${inputName}.pivot_table(

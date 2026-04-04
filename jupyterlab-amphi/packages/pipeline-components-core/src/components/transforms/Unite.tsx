@@ -5,14 +5,18 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class Unite extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { ignoreIndex: true, sort: false, concatDirection: "horizontal" };
+    const defaultConfig = {
+		tsCFbooleanIgnoreIndex: true,
+		tsCFbooleanSort: false,
+		tsCFradioconcatDirection: "horizontal"
+		};
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "radio",
           label: "Concatenation direction",
-          id: "concatDirection",
+          id: "tsCFradioconcatDirection",
           tooltip: "Select whether you want to concatenate the datasets vertically (stacking rows) or horizontally (side-by-side columns).",
           options: [
             { value: "horizontal", label: "Along columns (horizontal)" },
@@ -24,14 +28,14 @@ export class Unite extends BaseCoreComponent {
           type: "boolean",
           label: "Ignore Index",
           tooltip: "Enable this option to reindex the combined dataset.",
-          id: "ignoreIndex",
+          id: "tsCFbooleanIgnoreIndex",
           advanced: true
         },
         {
           type: "boolean",
           label: "Sort",
           tooltip: "Disable this option to prevent automatic sorting of columns.",
-          id: "sort",
+          id: "tsCFbooleanSort",
           advanced: true
         }
       ],
@@ -47,11 +51,12 @@ export class Unite extends BaseCoreComponent {
 
   public generateComponentCode({ config, inputNames, outputName }): string {
     
-    const prefix = config?.backend?.prefix ?? "pd";    const ignoreIndex = config.ignoreIndex !== undefined ? `, ignore_index=${config.ignoreIndex ? 'True' : 'False'}` : '';
-    const sort = config.sort !== undefined ? `, sort=${config.sort ? 'True' : 'False'}` : '';
-    const concatDirection = config.concatDirection === "horizontal" 
+    const prefix = config?.backend?.prefix ?? "pd";
+    const ignoreIndex = config.tsCFbooleanIgnoreIndex !== undefined ? `, ignore_index=${config.tsCFbooleanIgnoreIndex ? 'True' : 'False'}` : '';
+    const sort = config.tsCFbooleanSort !== undefined ? `, sort=${config.tsCFbooleanSort ? 'True' : 'False'}` : '';
+    const concatDirection = config.tsCFradioConcatDirection === "horizontal" 
     ? ", axis=1" 
-    : config.concatDirection === "vertical"
+    : config.tsCFradioConcatDirection === "vertical"
     ? ", axis=0"
     : "";
 

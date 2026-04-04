@@ -16,7 +16,7 @@ export class SystemInformation extends BaseCoreComponent {
         {
           type: "info",  // Form type
           label: "Info", // Display label
-          id: "instructions",
+          id: "tsCFinfoInstructions",
           text: "Available fields may depend on the Operating System",
           advanced: false // No expandable options
         }
@@ -58,7 +58,7 @@ export class SystemInformation extends BaseCoreComponent {
   public provideFunctions({ config }): string[] {
     const prefix = config?.backend?.prefix ?? "pd";
 
-    const SystemInformationFunction = `
+    const tsSystemInformationFunction = `
 def get_gpu_info():
     """Retrieve GPU information based on the operating system."""
     try:
@@ -82,7 +82,7 @@ def get_gpu_info():
 
     return "N/A"
 
-def system_informations():
+def py_fn_system_informations():
     """Gather system information including OS, hardware, and network details."""
 
     # Operating System details
@@ -139,7 +139,7 @@ def system_informations():
     return result
     `;
 
-    return [SystemInformationFunction];
+    return [tsSystemInformationFunction];
   }
 
   // Generate the Python execution script
@@ -149,7 +149,7 @@ def system_informations():
     return `
 # Execute the system information retrieval function
 ${outputName} = []
-${outputName} = system_informations()
-    `;
+${outputName} = py_fn_system_informations()
+`;
   }
 }

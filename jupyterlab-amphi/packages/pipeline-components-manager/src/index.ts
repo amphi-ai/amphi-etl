@@ -14,6 +14,9 @@ export { CodeGeneratorDagster } from './CodeGeneratorDagster';
 export { PipelineService } from './PipelineService';
 export { RequestService } from './RequestService';
 export { InputFile, InputRegular, SelectRegular, SelectColumns, CodeTextarea, CodeTextareaMirror } from './forms';
+export { ExecutionMetadata, ExecutionResult } from './ExecutionTypes';
+export { IPipelineExecutionService, IPipelineExecutionToken } from './ExecutionToken';
+export { ExecutionBadge } from './ExecutionBadge';
 
 // === Types ===
 interface ComponentItem {
