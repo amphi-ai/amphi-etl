@@ -3,13 +3,22 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';// Adjust the import
 
 export class OracleInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { host: "localhost", port: "1521", databaseName: "", username: "", password: "", tableName: "", queryMethod: "table", dbapi: "oracledb" };
+    const defaultConfig = {
+	tsCFinputHost: "localhost",
+	tsCFinputPort: "1521",
+	tsCFinputDatabaseName: "",
+	tsCFinputUserName: "",
+	tsCFinputPassword: "",
+	tsCFinputTableName: "",
+	tsCFradioQueryMethod: "table",
+	tsCFselectDbApi: "oracledb"
+	};
     const form = {
       fields: [
         {
           type: "input",
           label: "Host",
-          id: "host",
+          id: "tsCFinputHost",
           placeholder: "Enter database host",
           connection: "Oracle DB",
           advanced: true
@@ -17,7 +26,7 @@ export class OracleInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Port",
-          id: "port",
+          id: "tsCFinputPort",
           placeholder: "Enter database port",
           connection: "Oracle DB",
           advanced: true
@@ -25,7 +34,7 @@ export class OracleInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Database Name",
-          id: "databaseName",
+          id: "tsCFinputDatabaseName",
           placeholder: "Enter database name",
           connection: "Oracle DB",
           advanced: true
@@ -33,7 +42,7 @@ export class OracleInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Username",
-          id: "username",
+          id: "tsCFinputUserName",
           placeholder: "Enter username",
           connection: "Oracle DB",
           advanced: true
@@ -41,7 +50,7 @@ export class OracleInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Password",
-          id: "password",
+          id: "tsCFinputPassword",
           placeholder: "Enter password",
           inputType: "password",
           connection: "Oracle DB",
@@ -50,7 +59,7 @@ export class OracleInput extends BaseCoreComponent {
         {
           type: "radio",
           label: "Query Method",
-          id: "queryMethod",
+          id: "tsCFradioQueryMethod",
           tooltip: "Select whether you want to specify the table name to retrieve data or use a custom SQL query for greater flexibility.",
           options: [
             { value: "table", label: "Table Name" },
@@ -62,8 +71,8 @@ export class OracleInput extends BaseCoreComponent {
           type: "table",
           label: "Table Name",
           query: `SELECT table_name FROM user_tables;`,
-          id: "tableName",
-          condition: { queryMethod: "table" },
+          id: "tsCFinputTableName",
+          condition: { tsCFradioQueryMethod: "table" },
           placeholder: "Enter table name"
         },
         {
@@ -72,9 +81,9 @@ export class OracleInput extends BaseCoreComponent {
           height: '50px',
           mode: "sql",
           placeholder: 'SELECT * FROM table_name',
-          id: "sqlQuery",
+          id: "tsCFcodeTextareaSqlQuery",
           tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
-          condition: { queryMethod: "query" },
+          condition: { tsCFradioQueryMethod: "query" },
           advanced: true
         },
         {
@@ -89,7 +98,7 @@ export class OracleInput extends BaseCoreComponent {
           type: "select",
           label: "Database API (DBAPI)",
           tooltip: "",
-          id: "dbapi",
+          id: "tsCFselectDbApi",
           options: [
             { value: "cx_Oracle", label: "cx-Oracle" },
             { value: "oracledb", label: "python-oracledb" }
@@ -105,9 +114,9 @@ export class OracleInput extends BaseCoreComponent {
 
   public provideDependencies({ config }): string[] {
     let deps: string[] = [];
-    if (config.dbapi === 'cx_Oracle') {
+    if (config.tsCFselectDbApi === 'cx_Oracle') {
       deps.push("cx_Oracle");
-    } else if (config.dbapi === 'oracledb') {
+    } else if (config.tsCFselectDbApi === 'oracledb') {
       deps.push("oracledb");
     }
     return deps;
@@ -116,9 +125,9 @@ export class OracleInput extends BaseCoreComponent {
   public provideImports({ config }): string[] {
     const imports = ["import pandas as pd", "import sqlalchemy"];
 
-    if (config.dbapi === 'cx_Oracle') {
+    if (config.tsCFselectDbApi === 'cx_Oracle') {
       imports.push("import cx_Oracle");
-    } else if (config.dbapi === 'oracledb') {
+    } else if (config.tsCFselectDbApi === 'oracledb') {
       imports.push("import oracledb");
     }
 
@@ -126,14 +135,14 @@ export class OracleInput extends BaseCoreComponent {
   }
 
   public generateDatabaseConnectionCode({ config, connectionName }): string {
-    const dbapi = config.dbapi;
+    const dbapi = config.tsCFselectDbApi;
 
     // Initialize the Oracle client if oracleClient is provided
     const oracleClientInitialization = config.oracleClient && config.oracleClient.trim()
       ? `${dbapi}.init_oracle_client(lib_dir="${config.oracleClient}")\n`
       : "";
 
-    let connectionString = `oracle+${dbapi}://${config.username}:${config.password}@${config.host}:${config.port}/?service_name=${config.databaseName}`;
+    let connectionString = `oracle+${dbapi}://${config.tsCFinputUserName}:${config.tsCFinputPassword}@${config.tsCFinputHost}:${config.tsCFinputPort}/?service_name=${config.tsCFinputDatabaseName}`;
     const connectionCode = `
 # Connect to the Oracle database
 ${oracleClientInitialization}${connectionName} = sqlalchemy.create_engine("${connectionString}")
@@ -144,9 +153,9 @@ ${oracleClientInitialization}${connectionName} = sqlalchemy.create_engine("${con
   public generateComponentCode({ config, outputName }): string {
     const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
 
-    const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim()
-      ? config.sqlQuery
-      : `SELECT * FROM ${config.tableName.value}`;
+    const sqlQuery = config.tsCFradioQueryMethod === 'query' && config.tsCFcodeTextareaSqlQuery && config.tsCFcodeTextareaSqlQuery.trim()
+      ? config.tsCFcodeTextareaSqlQuery
+      : `SELECT * FROM ${config.tsCFinputTableName.value}`;
 
     const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName });
 

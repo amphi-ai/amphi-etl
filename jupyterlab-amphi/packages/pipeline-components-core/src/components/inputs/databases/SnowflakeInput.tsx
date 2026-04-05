@@ -1,10 +1,12 @@
-
 import { snowflakeIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';// Adjust the import path
 
 export class SnowflakeInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { schema: "PUBLIC", tableName: "", queryMethod: "table" };
+    const defaultConfig = {
+		schema: "PUBLIC",
+		tsCFinputTableName: "",
+		tsCFradioQueryMethod: "table" };
     const form = {
       fields: [
         {
@@ -26,7 +28,7 @@ export class SnowflakeInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Username",
-          id: "username",
+          id: "tsCFinputUserName",
           placeholder: "Enter username",
           connection: "Snowflake",
           advanced: true
@@ -34,7 +36,7 @@ export class SnowflakeInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Password",
-          id: "password",
+          id: "tsCFinputPassword",
           placeholder: "Enter password",
           connection: "Snowflake",
           inputType: "password",
@@ -59,7 +61,7 @@ export class SnowflakeInput extends BaseCoreComponent {
         {
           type: "radio",
           label: "Query Method",
-          id: "queryMethod",
+          id: "tsCFradioQueryMethod",
           tooltip: "Select whether you want to specify the table name to retrieve data or use a custom SQL query for greater flexibility.",
           options: [
             { value: "table", label: "Table Name" },
@@ -71,9 +73,9 @@ export class SnowflakeInput extends BaseCoreComponent {
           type: "table",
           label: "Table Name",
           query: `SELECT table_name FROM information_schema.tables WHERE table_schema = '{{schema}}'`,
-          id: "tableName",
+          id: "tsCFinputTableName",
           placeholder: "Enter table name",
-          condition: { queryMethod: "table" }
+          condition: { tsCFradioQueryMethod: "table" }
         },
         {
           type: "codeTextarea",
@@ -81,9 +83,9 @@ export class SnowflakeInput extends BaseCoreComponent {
           height: '50px',
           mode: "sql",
           placeholder: 'SELECT * FROM table_name',
-          id: "sqlQuery",
+          id: "tsCFcodeTextareaSqlQuery",
           tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
-          condition: { queryMethod: "query" },
+          condition: { tsCFradioQueryMethod: "query" },
           advanced: true
         },
         {
@@ -115,8 +117,8 @@ export class SnowflakeInput extends BaseCoreComponent {
 # Connect to the Snowflake database
 ${connectionName} = sqlalchemy.create_engine(URL(
     account = '${config.account}',
-    user = '${config.username}',
-    password = urllib.parse.quote("${config.password}"),
+    user = '${config.tsCFinputUserName}',
+    password = urllib.parse.quote("${config.tsCFinputPassword}"),
     database = '${config.database}',
     schema = '${config.schema}',
     warehouse = '${config.warehouse}'
@@ -129,17 +131,17 @@ ${connectionName} = sqlalchemy.create_engine(URL(
     const uniqueEngineName = `${outputName}_Engine`;
 
     // Build table reference with optional schema
-    const tableReference = config.tableName?.value
+    const tableReference = config.tsCFinputTableName?.value
       ? (config.schema && config.schema.toLowerCase() !== 'public')
-        ? `"${config.schema}"."${config.tableName.value}"`
-        : `"${config.tableName.value}"`
+        ? `"${config.schema}"."${config.tsCFinputTableName.value}"`
+        : `"${config.tsCFinputTableName.value}"`
       : null;
 
     let sqlQuery: string;
 
-    if (config.queryMethod === 'query' && config.sqlQuery) {
+    if (config.tsCFradioQueryMethod === 'query' && config.tsCFcodeTextareaSqlQuery) {
       try {
-        const parsedQuery = JSON.parse(config.sqlQuery);
+        const parsedQuery = JSON.parse(config.tsCFcodeTextareaSqlQuery);
         sqlQuery = parsedQuery.code?.trim();
 
         // Only fall back to table reference if it exists

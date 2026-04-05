@@ -3,13 +3,17 @@ import { BaseCoreComponent } from '../../BaseCoreComponent'; // Adjust the impor
 
 export class BigQueryInput extends BaseCoreComponent {
     constructor() {
-        const defaultConfig = { dataset: "", tableName: "", queryMethod: "table" };
+        const defaultConfig = {
+			tsCFinputDataset: "",
+			tsCFinputTableName: "",
+			tsCFradioQueryMethod: "table"
+			};
         const form = {
             fields: [
                 {
                     type: "select",
                     label: "Connection Method",
-                    id: "connectionMethod",
+                    id: "tsCFselectConnectionMethod",
                     options: [
                         { value: "service_account", label: "Service Account", tooltip: "Use a service account JSON key file for authentication." },
                         { value: "prompt", label: "Login via browser", tooltip: "You will be prompted to login via the browser." }
@@ -21,18 +25,18 @@ export class BigQueryInput extends BaseCoreComponent {
                 {
                     type: "file",
                     label: "Service Account Key",
-                    id: "filePath",
+                    id: "tsCFfileFilePath",
                     placeholder: "Type file name",
                     validation: "\\.(json)$",
                     validationMessage: "This field expects a file with a .json extension such as your-service-account-file.json.",
                     advanced: true,
                     connection: "Google Cloud Platform",
-                    condition: { connectionMethod: "service_account" }
+                    condition: { tsCFselectConnectionMethod: "service_account" }
                 },
                 {
                     type: "input",
                     label: "Project ID",
-                    id: "projectId",
+                    id: "tsCFinputProjectId",
                     placeholder: "Enter Project ID",
                     connection: "BigQuery",
                     advanced: true
@@ -40,7 +44,7 @@ export class BigQueryInput extends BaseCoreComponent {
                 {
                     type: "input",
                     label: "Dataset",
-                    id: "dataset",
+                    id: "tsCFinputDataset",
                     placeholder: "Enter Dataset",
                     connection: "BigQuery",
                     advanced: true
@@ -48,15 +52,15 @@ export class BigQueryInput extends BaseCoreComponent {
                 {
                     type: "input",
                     label: "Table Name",
-                    id: "tableName",
+                    id: "tsCFinputTableName",
                     placeholder: "Enter Table Name",
-                    condition: { queryMethod: "table" },
+                    condition: { tsCFradioQueryMethod: "table" },
                     advanced: true
                 },
                 {
                     type: "radio",
                     label: "Query Method",
-                    id: "queryMethod",
+                    id: "tsCFradioQueryMethod",
                     tooltip: "Select whether you want to specify the table name to retrieve data or use a custom SQL query for greater flexibility.",
                     options: [
                         { value: "table", label: "Table Name" },
@@ -70,9 +74,9 @@ export class BigQueryInput extends BaseCoreComponent {
                     height: '50px',
                     mode: "sql",
                     placeholder: 'SELECT * FROM dataset.table_name',
-                    id: "sqlQuery",
+                    id: "tsCFcodeTextareaSqlQuery",
                     tooltip: 'Optional. By default, the SQL query is: SELECT * FROM dataset.table_name_provided. If specified, the SQL Query is used.',
-                    condition: { queryMethod: "query" },
+                    condition: { tsCFradioQueryMethod: "query" },
                     advanced: true
                 }
             ]
@@ -94,21 +98,21 @@ export class BigQueryInput extends BaseCoreComponent {
     }
 
     public generateDatabaseConnectionCode({ config, connectionName }): string {
-        const connectionString = `bigquery://${config.projectId}`;
+        const connectionString = `bigquery://${config.tsCFinputProjectId}`;
         let connectionCode = `
 # Connect to the BigQuery database using SQLAlchemy
 `;
 
-        if (config.connectionMethod === 'application_default') {
+        if (config.tsCFselectConnectionMethod === 'application_default') {
             connectionCode += `
 ${connectionName} = sqlalchemy.create_engine("${connectionString}")
 `;
-        } else if (config.connectionMethod === 'service_account') {
+        } else if (config.tsCFselectConnectionMethod === 'service_account') {
             connectionCode += `
-${connectionName} = sqlalchemy.create_engine("${connectionString}", credentials_path='${config.filePath}')
+${connectionName} = sqlalchemy.create_engine("${connectionString}", credentials_path='${config.tsCFfileFilePath}')
 `;
         } else {
-            throw new Error("Unsupported connection method: " + config.connectionMethod);
+            throw new Error("Unsupported connection method: " + config.tsCFselectConnectionMethod);
         }
 
         return connectionCode;
@@ -117,9 +121,9 @@ ${connectionName} = sqlalchemy.create_engine("${connectionString}", credentials_
     public generateComponentCode({ config, outputName }): string {
         const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
 
-        const tableReference = `${config.dataset}.${config.tableName}`;
-        const sqlQuery = config.queryMethod === 'query' && config.sqlQuery && config.sqlQuery.trim()
-            ? config.sqlQuery
+        const tableReference = `${config.tsCFinputDataset}.${config.tsCFinputTableName}`;
+        const sqlQuery = config.tsCFradioQueryMethod === 'query' && config.tsCFcodeTextareaSqlQuery && config.tsCFcodeTextareaSqlQuery.trim()
+            ? config.tsCFcodeTextareaSqlQuery
             : `SELECT * FROM ${tableReference}`;
 
         const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName });

@@ -1,16 +1,24 @@
-
 import { postgresIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';// Adjust the import path
 
 export class PostgresInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { host: "localhost", port: "5432", databaseName: "", username: "", password: "", schema: "public", tableName: "", queryMethod: "table" };
+    const defaultConfig = {
+		tsCFinputHost: "localhost",
+		tsCFinputPort: "5432",
+		tsCFinputDatabaseName: "",
+		tsCFinputUserName: "",
+		tsCFinputPassword: "",
+		tsCFinputSchema: "public",
+		tsCFinputTableName: "",
+		tsCFradioQueryMethod: "table"
+		};
     const form = {
       fields: [
         {
           type: "input",
           label: "Host",
-          id: "host",
+          id: "tsCFinputHost",
           placeholder: "Enter database host",
           connection: "Postgres",
           advanced: true
@@ -18,7 +26,7 @@ export class PostgresInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Port",
-          id: "port",
+          id: "tsCFinputPort",
           placeholder: "Enter database port",
           connection: "Postgres",
           advanced: true
@@ -26,7 +34,7 @@ export class PostgresInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Database Name",
-          id: "databaseName",
+          id: "tsCFinputDatabaseName",
           placeholder: "Enter database name",
           connection: "Postgres",
           advanced: true
@@ -34,7 +42,7 @@ export class PostgresInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Username",
-          id: "username",
+          id: "tsCFinputUserName",
           placeholder: "Enter username",
           connection: "Postgres",
           advanced: true
@@ -42,7 +50,7 @@ export class PostgresInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Password",
-          id: "password",
+          id: "tsCFinputPassword",
           placeholder: "Enter password",
           connection: "Postgres",
           inputType: "password",
@@ -51,13 +59,13 @@ export class PostgresInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Schema",
-          id: "schema",
+          id: "tsCFinputSchema",
           placeholder: "Enter schema name",
         },
         {
           type: "radio",
           label: "Query Method",
-          id: "queryMethod",
+          id: "tsCFradioQueryMethod",
           tooltip: "Select whether you want to specify the table name to retrieve data or use a custom SQL query for greater flexibility.",
           options: [
             { value: "table", label: "Table Name" },
@@ -68,10 +76,10 @@ export class PostgresInput extends BaseCoreComponent {
         {
           type: "table",
           label: "Table Name",
-          query: `SELECT table_name FROM information_schema.tables WHERE table_schema = '{{schema}}';`,
-          id: "tableName",
+          query: `SELECT table_name FROM information_schema.tables WHERE table_schema = '{{tsCFinputSchema}}';`,
+          id: "tsCFinputTableName",
           placeholder: "Enter table name",
-          condition: { queryMethod: "table" }
+          condition: { tsCFradioQueryMethod: "table" }
         },
         {
           type: "codeTextarea",
@@ -79,9 +87,9 @@ export class PostgresInput extends BaseCoreComponent {
           height: '150px',
           mode: "sql",
           placeholder: 'SELECT * FROM table_name',
-          id: "sqlQuery",
+          id: "tsCFcodeTextareaSqlQuery",
           tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
-          condition: { queryMethod: "query" },
+          condition: { tsCFradioQueryMethod: "query" },
           advanced: true
         }
       ],
@@ -98,11 +106,13 @@ export class PostgresInput extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "import sqlalchemy", "import psycopg2"];
+    return ["import pandas as pd",
+	"import sqlalchemy",
+	"import psycopg2"];
   }
 
   public generateDatabaseConnectionCode({ config, connectionName }): string {
-    let connectionString = `postgresql://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}`;
+    let connectionString = `postgresql://${config.tsCFinputUserName}:${config.tsCFinputPassword}@${config.tsCFinputHost}:${config.tsCFinputPort}/${config.tsCFinputDatabaseName}`;
     const connectionCode = `
 # Connect to the PostgreSQL database
 ${connectionName} = sqlalchemy.create_engine("${connectionString}")
@@ -114,15 +124,15 @@ ${connectionName} = sqlalchemy.create_engine("${connectionString}")
     const uniqueEngineName = `${outputName}_Engine`;
 
     // Build table reference only if both schema and tableName exist
-    const tableReference = config.schema && config.tableName?.value
-      ? `"${config.schema}"."${config.tableName.value}"`
+    const tableReference = config.tsCFinputSchema && config.tsCFinputTableName?.value
+      ? `"${config.tsCFinputSchema}"."${config.tsCFinputTableName.value}"`
       : null;
 
     let sqlQuery: string;
 
-    if (config.queryMethod === 'query' && config.sqlQuery) {
+    if (config.tsCFradioQueryMethod === 'query' && config.tsCFcodeTextareaSqlQuery) {
       try {
-        const parsedQuery = JSON.parse(config.sqlQuery);
+        const parsedQuery = JSON.parse(config.tsCFcodeTextareaSqlQuery);
         sqlQuery = parsedQuery.code?.trim();
 
         // Only fall back to table reference if it exists

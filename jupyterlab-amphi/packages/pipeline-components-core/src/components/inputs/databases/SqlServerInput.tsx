@@ -3,13 +3,20 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';// Adjust the import
 
 export class SqlServerInput extends BaseCoreComponent {
     constructor() {
-        const defaultConfig = { host: "localhost", port: "1433", databaseName: "", username: "", password: "", tableName: "", queryMethod: "table" };
+        const defaultConfig = {
+			tsCFinputHost: "localhost",
+			tsCFinputPort: "1433",
+			tsCFinputDatabaseName: "",
+			tsCFinputUserName: "",
+			tsCFinputPassword: "",
+			tsCFinputTableName: "",
+			tsCFradioQueryMethod: "table" };
         const form = {
             fields: [
                 {
                     type: "input",
                     label: "Host",
-                    id: "host",
+                    id: "tsCFinputHost",
                     placeholder: "Enter database host",
                     connection: "SQL Server",
                     advanced: true
@@ -17,7 +24,7 @@ export class SqlServerInput extends BaseCoreComponent {
                 {
                     type: "input",
                     label: "Port",
-                    id: "port",
+                    id: "tsCFinputPort",
                     placeholder: "Enter database port",
                     connection: "SQL Server",
                     advanced: true
@@ -25,7 +32,7 @@ export class SqlServerInput extends BaseCoreComponent {
                 {
                     type: "input",
                     label: "Database Name",
-                    id: "databaseName",
+                    id: "tsCFinputDatabaseName",
                     placeholder: "Enter database name",
                     connection: "SQL Server",
                     advanced: true
@@ -33,7 +40,7 @@ export class SqlServerInput extends BaseCoreComponent {
                 {
                     type: "input",
                     label: "Username",
-                    id: "username",
+                    id: "tsCFinputUserName",
                     placeholder: "Enter username",
                     connection: "SQL Server",
                     advanced: true
@@ -41,7 +48,7 @@ export class SqlServerInput extends BaseCoreComponent {
                 {
                     type: "input",
                     label: "Password",
-                    id: "password",
+                    id: "tsCFinputPassword",
                     placeholder: "Enter password",
                     connection: "SQL Server",
                     inputType: "password",
@@ -50,7 +57,7 @@ export class SqlServerInput extends BaseCoreComponent {
                 {
                     type: "radio",
                     label: "Query Method",
-                    id: "queryMethod",
+                    id: "tsCFradioQueryMethod",
                     tooltip: "Select whether you want to specify the table name to retrieve data or use a custom SQL query for greater flexibility.",
                     options: [
                         { value: "table", label: "Table Name" },
@@ -62,8 +69,8 @@ export class SqlServerInput extends BaseCoreComponent {
                     type: "table",
                     label: "Table Name",
                     query: `SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE';`,
-                    id: "tableName",
-                    condition: { queryMethod: "table" },
+                    id: "tsCFinputTableName",
+                    condition: { tsCFradioQueryMethod: "table" },
                     placeholder: "Enter table name"
                 },
                 {
@@ -72,15 +79,15 @@ export class SqlServerInput extends BaseCoreComponent {
                     height: '50px',
                     mode: "sql",
                     placeholder: 'SELECT * FROM table_name',
-                    id: "sqlQuery",
+                    id: "tsCFcodeTextareaSqlQuery",
                     tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
-                    condition: { queryMethod: "query" },
+                    condition: { tsCFradioQueryMethod: "query" },
                     advanced: true
                 },
                 {
                     type: "info",
                     label: "Drivers installation",
-                    id: "driversInstallation",
+                    id: "tsCFinfoDriversInstallation",
                     text: "You may need to install additional drivers on your machine for this component to function. /n For Mac you need to install 'brew install unixodbc'",
                     advanced: true
                 },
@@ -98,11 +105,15 @@ export class SqlServerInput extends BaseCoreComponent {
     }
 
     public provideImports({ config }): string[] {
-        return ["import pandas as pd", "import sqlalchemy", "import pyodbc"];
+        return [
+		"import pandas as pd",
+		"import sqlalchemy",
+		"import pyodbc"
+		];
     }
 
     public generateDatabaseConnectionCode({ config, connectionName }): string {
-        let connectionString = `mssql+pyodbc://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}?driver=ODBC+Driver+17+for+SQL+Server`;
+        let connectionString = `mssql+pyodbc://${config.tsCFinputUserName}:${config.tsCFinputPassword}@${config.tsCFinputHost}:${config.tsCFinputPort}/${config.tsCFinputDatabaseName}?driver=ODBC+Driver+17+for+SQL+Server`;
         const connectionCode = `
 # Connect to the SQL Server database
 ${connectionName} = sqlalchemy.create_engine("${connectionString}")
@@ -114,13 +125,13 @@ ${connectionName} = sqlalchemy.create_engine("${connectionString}")
         const uniqueEngineName = `${outputName}_Engine`;
 
         // Build table reference if tableName exists
-        const tableReference = config.tableName?.value || null;
+        const tableReference = config.tsCFinputTableName?.value || null;
 
         let sqlQuery: string;
 
-        if (config.queryMethod === 'query' && config.sqlQuery) {
+        if (config.tsCFradioQueryMethod === 'query' && config.tsCFcodeTextareaSqlQuery) {
             try {
-                const parsedQuery = JSON.parse(config.sqlQuery);
+                const parsedQuery = JSON.parse(config.tsCFcodeTextareaSqlQuery);
                 sqlQuery = parsedQuery.code?.trim();
 
                 // Only fall back to table reference if it exists
