@@ -24,7 +24,7 @@ export class FormExample extends BaseCoreComponent {
                            tsCFcolumnDefaultValueColumn : [],
 						   tsCFbooleanAutoCommit : true, //or false
                            tsCFselectMultipleCustomizableRemoveUnwantedCharacters:[],
-      			   		   tsCFselectMultipleDateType:[""],
+      			   		   tsCFselectMultipleDateType:["Date"],
                            tsCFcascaderDataType:[""]
                            };
     
@@ -116,9 +116,17 @@ export class FormExample extends BaseCoreComponent {
           tooltip: "Defines the character used to wrap fields containing special characters like the delimiter or newline.",
           advanced: true
         },
+		{
+          type: "input",
+          label: "8. Password (input)",
+          id: "tsCFinputPassword",
+          placeholder: "Enter password",
+          inputType: "password",
+          advanced: true
+        },
         {
           type: "select",
-          label: "8. On Bad Lines (select)",
+          label: "9. On Bad Lines (select)",
           id: "tsCFselectCSVOptionsOnBadLines",
           placeholder: "Error: raise an Exception when a bad line is encountered",
           options: [
@@ -130,7 +138,7 @@ export class FormExample extends BaseCoreComponent {
         },
         {
           type: "selectCustomizable",
-          label: "9. Separator (selectCustomizable)",
+          label: "10. Separator (selectCustomizable)",
           id: "tsCFselectCustomizableCSVOptionsSep",
           placeholder: "default: ,",
           tooltip: "Select or provide a custom delimiter.",
@@ -144,7 +152,7 @@ export class FormExample extends BaseCoreComponent {
         },
 		{
           type: "selectMultiple",
-          label: "10. Date type (selectMultiple)",
+          label: "11. Date type (selectMultiple)",
           id: "tsCFselectMultipleDateType",
           options: [
             { value: "days", label: "Days" },
@@ -155,7 +163,7 @@ export class FormExample extends BaseCoreComponent {
         },
         {
           type: "selectMultipleCustomizable",
-          label: "11. Remove Unwanted Characters (selectMultipleCustomizable)",
+          label: "12. Remove Unwanted Characters (selectMultipleCustomizable)",
           id: "tsCFselectMultipleCustomizableRemoveUnwantedCharacters",
           options: [
             { value: "whitespace", label: "Leading and Trailing Whitespace" },
@@ -166,20 +174,20 @@ export class FormExample extends BaseCoreComponent {
         },		
         {
           type: "keyvalue",
-          label: "12. Storage Options (keyvalue)",
+          label: "13. Storage Options (keyvalue)",
           id: "tsCFkeyvalueCSVOptionsStorageOptions",
           condition: { fileLocation: ["http", "s3"] },
           advanced: true
         },
         {
           type: "transferData",
-          label: "13. Filter columns (transferData)",
+          label: "14. Filter columns (transferData)",
           id: "tsCFtransferDataFilterColumn",
           advanced: true
         },
         {
           type: "columns",
-          label: "14. Select multiple Column(s) (columns)",
+          label: "15. Select multiple Column(s) (columns)",
           id: "tsCFcolumnsLeftKeyColumn",
           placeholder: "Column name",
           tooltip: "Select multiple columns",
@@ -188,14 +196,14 @@ export class FormExample extends BaseCoreComponent {
         },
         {
           type: "keyvalueColumns",
-          label: "15. Columns (keyvalueColumns)",
+          label: "16. Columns (keyvalueColumns)",
           id: "tsCFkeyvalueColumnsColumns",
           placeholders: { key: "column name", value: "new column name" },
           advanced: true
         },
         {
           type: "codeTextarea",
-          label: "16. Imports (codeTextarea)",
+          label: "17. Imports (codeTextarea)",
           id: "tsCFcodeTextareaImports",
           placeholder: "import langchain ...",
           height: '50px',
@@ -203,14 +211,14 @@ export class FormExample extends BaseCoreComponent {
         },
         {
           type: "textarea",
-          label: "17. Body (textarea)",
+          label: "18. Body (textarea)",
           id: "tsCFtextareaJSONBody",
           placeholder: "Write body in JSON",
           advanced: true
         },
         {
           type: "table",
-          label: "18. Table Name (table)",
+          label: "19. Table Name (table)",
           query: `SHOW TABLES;`,
           id: "tsCFtableTableName",
           placeholder: "Enter table name",
@@ -219,21 +227,21 @@ export class FormExample extends BaseCoreComponent {
         },
         {
           type: "boolean",
-          label: "19. Auto Commit (boolean)",
+          label: "20. Auto Commit (boolean)",
           tooltip: "Auto commit for database",
           id: "tsCFbooleanAutoCommit",
           advanced: true
          },
         {
           type: "valuesList",
-          label: "20. URLs (valuesList)",
+          label: "21. URLs (valuesList)",
           id: "tsCFvaluesListUrls",
           placeholders: "Enter URLs",
           advanced: true
         },
         {
           type: "sheets",
-          label: "21. Sheets (sheets)",
+          label: "22. Sheets (sheets)",
           id: "tsCFsheetsExcelOptionsSheetName",
           placeholder: "Default: 0 (first sheet)",
           tooltip: "Select one or multiple sheets. If multiple sheets are selected, the sheets are concatenated to output a single dataset.",
@@ -242,7 +250,7 @@ export class FormExample extends BaseCoreComponent {
         },
         {
           type: "dataMapping",
-          label: "22. Mapping (dataMapping)",
+          label: "23. Mapping (dataMapping)",
           id: "tsCFdataMappingmapping",
           tooltip: "By default, the mapping is inferred from the input data. By specifying a schema, you override the incoming schema.",
           outputType: "relationalDatabase",
@@ -291,7 +299,7 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
         },
         {
           type: "cascader",
-          label: "23. Data Type to convert to (cascader)",
+          label: "24. Data Type to convert to (cascader)",
           id: "tsCFcascaderDataType",
           placeholder: "Select ...",
           onlyLastValue: true,
@@ -350,7 +358,7 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
         },
         {
           type: "keyvalueColumnsRadio",
-          label: "24. Columns Sorting Order(keyvalueColumnsRadio)",
+          label: "25. Columns Sorting Order(keyvalueColumnsRadio)",
           id: "tsCFkeyvalueColumnsRadioColumnSortingOrder",
           options: [
             { value: "True", label: "Asc." },
@@ -360,7 +368,7 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
         },
         {
           type: "keyvalueColumnsSelect",
-          label: "25. Operations (keyvalueColumnsSelect)",
+          label: "26. Operations (keyvalueColumnsSelect)",
           id: "tsCFkeyvalueColumnsSelectColumnsOperations",
           placeholder: "Select column",
           options: [
@@ -371,14 +379,14 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
         },
         {
           type: "column",
-          label: "26. Select a single column (column)",
+          label: "27. Select a single column (column)",
           id: "tsCFcolumnSelectColumn",
           placeholder: "Column name",
           advanced: true
         },
         {
           type: "column",
-          label: "27. Select a single column (column) restricted to specific types (string, bool)",
+          label: "28. Select a single column (column) restricted to specific types (string, bool)",
           id: "tsCFcolumnTypeRestrictedColumn",
 //types for allowedtype : 
 //            numeric:  /^(u?int|float|complex|decimal)\d*$/i,
@@ -392,20 +400,20 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
         },
         {
           type: "column",
-          label: "28. Select a single column with default value so that code can work when retrieving tsCFcolumnDefaultValueColumn.value even if not defined(column)",
+          label: "29. Select a single column with default value so that code can work when retrieving tsCFcolumnDefaultValueColumn.value even if not defined(column)",
           id: "tsCFcolumnDefaultValueColumn",
           placeholder: "Column name",
           advanced: true
         },
 		{
           type: "date",
-          label: "29. Select a Date (date)",
+          label: "30. Select a Date (date)",
           id: "tsCFdateDatePicker",
           advanced: true
         },
         {
           type: "codeTextarea",
-          label: "30. Code with AI (codeTextarea)",
+          label: "31. Code with AI (codeTextarea)",
           tooltip: "Use the dataframe 'output' as output, and 'input' as input",
           id: "tsCFcodeTextareaCodeWithAi",
           mode: "python",
@@ -436,8 +444,18 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
 	
     // Super constructor call with necessary parameters
     // 1. Do not forget to add the icon in amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\src\icons.ts and in amphi-etl\jupyterlab-amphi\packages\pipeline-components-core\style\icons.
-    super("Form Example", "form_example", description, "pandas_df_processor", [], "developer", typescriptIcon, defaultConfig, form);
-  
+    super(
+	"Form Example", 				// Display name in the UI
+	"form_example", 				// Component ID. Where is it used?
+	description, 					// Description
+	"pandas_df_processor",			// Component type
+	[], 							// File drop. List of file extension that would create the tool if dropped. e.g. ["xlsx", "xls", "ods", "xlsb"] for ExcelFileInput 
+	"developer", 					// Category in the UI
+	typescriptIcon,					// Component icon as in export of icons.ts
+	defaultConfig,					// Default configuration
+	form 							// Form structure
+	);
+ 
   	//for custom, icon changes
 	//super("Form Example Custom", "form_example_custom", description, "pandas_df_processor", [], "developer", icon, defaultConfig, form);
 
@@ -634,6 +652,14 @@ def py_fn_example_python_function(
       tsConstDataType = '"' + tsConstDataTypeStep1+ '"';
     }
 
+    // for codeTextarea
+	let tsConstCodeWithAI = 'None';
+    if (config.tsCFcodeTextareaCodeWithAi && config.tsCFcodeTextareaCodeWithAi.trim() !== ''
+	) {
+        const tsConstParsedCodeWithAIStep1 = JSON.parse(config.tsCFcodeTextareaCodeWithAi );
+        const tsConstParsedCodeWithAI = tsConstParsedCodeWithAIStep1.code?.trim();	
+      tsConstCodeWithAI = '"' + tsConstParsedCodeWithAI+ '"';
+    }
 
     // Template for outputting the input data. This is where you place your Python code.
     const code = `
@@ -655,76 +681,82 @@ print("tsConsselectTokenization : ")
 print('${tsConsselectTokenization}') #single quote because we have quotes inside
 print("7 config.tsCFinputCSVOptionsQuoteChar : ")
 print("${config.tsCFinputCSVOptionsQuoteChar}")
-print("8 config.tsCFselectCSVOptionsOnBadLines : ")
+print("8 config.tsCFinputPassword : ")
+print("${config.tsCFinputPassword}")
+print("9 config.tsCFselectCSVOptionsOnBadLines : ")
 print("${config.tsCFselectCSVOptionsOnBadLines}")
 print("tsConstCSVOptionsOnBadLines : ")
 print(${tsConstCSVOptionsOnBadLines})
-print("9 config.tsCFselectCustomizableCSVOptionsSep : ")
+print("10 config.tsCFselectCustomizableCSVOptionsSep : ")
 print("${config.tsCFselectCustomizableCSVOptionsSep}")
-print("10 config.tsCFselectMultipleDateType : ")
+print("11 config.tsCFselectMultipleDateType : ")
 print("${config.tsCFselectMultipleDateType}")
 print("tsConsDateType : ")
 print('${tsConsDateType}')
-print("11 config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters : ")
+print("12 config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters : ")
 print("${config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters}")
 print("tsConstRemoveUnwantedCharacters : ")
 print('${tsConstRemoveUnwantedCharacters}') #single quote because we have quotes inside
-print("12 config.tsCFkeyvalueCSVOptionsStorageOptions : ")
+print("13 config.tsCFkeyvalueCSVOptionsStorageOptions : ")
 print("${config.tsCFkeyvalueCSVOptionsStorageOptions}")
-print("13 config.tsCFtransferDataFilterColumn : ")
+print("14 config.tsCFtransferDataFilterColumn : ")
 print("${config.tsCFtransferDataFilterColumn}")
-print("14 config.tsCFcolumnsLeftKeyColumn : ")
+print("15 config.tsCFcolumnsLeftKeyColumn : ")
 print("${config.tsCFcolumnsLeftKeyColumn}")
 print("tsConstLeftKeyColumn : ")
 print(${tsConstLeftKeyColumn})
-print("15 config.tsCFkeyvalueColumnsColumns : ")
+print("16 config.tsCFkeyvalueColumnsColumns : ")
 print(${tsConstColumnswithkeys})
-#print("16 config.tsCFcodeTextareaImports : ")
+#print("17 config.tsCFcodeTextareaImports : ")
 #print("${config.tsCFcodeTextareaImports}")//break the code, please look at console instead
-print("17 config.tsCFtextareaJSONBody : ")
+print("18 config.tsCFtextareaJSONBody : ")
 print("${config.tsCFtextareaJSONBody}")
-print("18 config.tsCFtableTableName : ")
+print("19 config.tsCFtableTableName : ")
 print("${config.tsCFtableTableName}")
-print("19 config.tsCFbooleanAutoCommit : ")
+print("20 config.tsCFbooleanAutoCommit : ")
 print("${config.tsCFbooleanAutoCommit}")
 print("tsConstAutoCommit : ")
 print("${tsConstAutoCommit}")
-print("20 config.tsCFvaluesListUrls : ")
+print("21 config.tsCFvaluesListUrls : ")
 print("${config.tsCFvaluesListUrls}")
-print("21 config.tsCFsheetsExcelOptionsSheetName : ")
+print("22 config.tsCFsheetsExcelOptionsSheetName : ")
 print("${config.tsCFsheetsExcelOptionsSheetName}")
-print("22 config.tsCFdataMappingmapping : ")
+print("23 config.tsCFdataMappingmapping : ")
 print("${config.tsCFdataMappingmapping}")
-print("23 config.tsCFcascaderDataType : ")
+print("24 config.tsCFcascaderDataType : ")
 print("${config.tsCFcascaderDataType}")
 print("tsConstDataTypeStep1 : ")
 print("${tsConstDataTypeStep1}")
 print("tsConstDataType : ")
 print(${tsConstDataType})
-print("24 config.tsCFkeyvalueColumnsRadioColumnSortingOrder : ")
+print("25 config.tsCFkeyvalueColumnsRadioColumnSortingOrder : ")
 print("${config.tsCFkeyvalueColumnsRadioColumnSortingOrder}")
-print("24 tsConstSortingOrder : ")
+print("25 tsConstSortingOrder : ")
 print(${tsConstSortingOrder})
-print("25 config.tsCFkeyvalueColumnsSelectColumnsOperations : ")
+print("26 config.tsCFkeyvalueColumnsSelectColumnsOperations : ")
 print("${config.tsCFkeyvalueColumnsSelectColumnsOperations}")
-print("25 tsConstColumnsOperations : ")
+print("26 tsConstColumnsOperations : ")
 print(${tsConstColumnsOperations})
-print("26 config.tsCFcolumnSelectColumn : ")
+print("27 config.tsCFcolumnSelectColumn : ")
 print("${config.tsCFcolumnSelectColumn}")
 print("tsConstSelectColumn : ")
 print(${tsConstSelectColumn})
-print("27 config.tsCFcolumnTypeRestrictedColumn : ")
+print("28 config.tsCFcolumnTypeRestrictedColumn : ")
 print("${config.tsCFcolumnTypeRestrictedColumn}")
-print("27 tsConstTypeRestrictedColumn : ")
+print("28 tsConstTypeRestrictedColumn : ")
 print(${tsConstTypeRestrictedColumn})
-print("28 config.tsCFcolumnDefaultValueColumn : ")
+print("29 config.tsCFcolumnDefaultValueColumn : ")
 print("${config.tsCFcolumnDefaultValueColumn}")
-print("28 config.tsCFcolumnDefaultValueColumn.value : ")
+print("29 config.tsCFcolumnDefaultValueColumn.value : ")
 print("${config.tsCFcolumnDefaultValueColumn.value}")
-print("29 config.tsCFdateDatePicker : ")
+print("30 config.tsCFdateDatePicker : ")
 print("${config.tsCFdateDatePicker}")
-#print("30 config.tsCFcodeTextareaCodeWithAi : ")
+#print("31 config.tsCFcodeTextareaCodeWithAi : ")
 #print("${config.tsCFcodeTextareaCodeWithAi}") //break the code, please look at console instead
+print("31 tsConstCodeWithAI : ")
+print(${tsConstCodeWithAI})
+
+
 
 
 
@@ -764,47 +796,49 @@ console.log("6 tsConsselectTokenization : ");
 console.log(tsConsselectTokenization);
 console.log("7 config.tsCFinputCSVOptionsQuoteChar : ");
 console.log(config.tsCFinputCSVOptionsQuoteChar);
-console.log("8 config.tsCFselectCSVOptionsOnBadLines : ");
+console.log("8 config.tsCFinputPassword : ");
+console.log(config.tsCFinputPassword);
+console.log("9 config.tsCFselectCSVOptionsOnBadLines : ");
 console.log(config.tsCFselectCSVOptionsOnBadLines);
 console.log("tsConstCSVOptionsOnBadLines : ");
 console.log(tsConstCSVOptionsOnBadLines);
-console.log("9 config.tsCFselectCustomizableCSVOptionsSep : ");
+console.log("10 config.tsCFselectCustomizableCSVOptionsSep : ");
 console.log(config.tsCFselectCustomizableCSVOptionsSep);
-console.log("10 config.tsCFselectMultipleDateType : ");
+console.log("11 config.tsCFselectMultipleDateType : ");
 console.log(config.tsCFselectMultipleDateType);
-console.log("11 config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters : ");
+console.log("12 config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters : ");
 console.log(config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters);
 console.log("tsConstRemoveUnwantedCharacters : ");
 console.log(tsConstRemoveUnwantedCharacters);
-console.log("12 config.tsCFkeyvalueCSVOptionsStorageOptions : ");
+console.log("13 config.tsCFkeyvalueCSVOptionsStorageOptions : ");
 console.log(config.tsCFkeyvalueCSVOptionsStorageOptions);
-console.log("13 config.tsCFtransferDataFilterColumn : ");
+console.log("14 config.tsCFtransferDataFilterColumn : ");
 console.log(config.tsCFtransferDataFilterColumn);
-console.log("14 config.tsCFcolumnsLeftKeyColumn : ");
+console.log("15 config.tsCFcolumnsLeftKeyColumn : ");
 console.log(config.tsCFcolumnsLeftKeyColumn);
 console.log("tsConstLeftKeyColumn : ");
 console.log(tsConstLeftKeyColumn);
-console.log("15 config.tsCFkeyvalueColumnsColumns : ");
+console.log("16 config.tsCFkeyvalueColumnsColumns : ");
 console.log(config.tsCFkeyvalueColumnsColumns);
-console.log("15 tsConstColumnswithkeys : ");
+console.log("16 tsConstColumnswithkeys : ");
 console.log(tsConstColumnswithkeys);
-console.log("16 config.tsCFcodeTextareaImports : ");
+console.log("17 config.tsCFcodeTextareaImports : ");
 console.log(config.tsCFcodeTextareaImports);
-console.log("17 config.tsCFtextareaJSONBody : ");
+console.log("18 config.tsCFtextareaJSONBody : ");
 console.log(config.tsCFtextareaJSONBody);
-console.log("18 config.tsCFtableTableName : ");
+console.log("19 config.tsCFtableTableName : ");
 console.log(config.tsCFtableTableName);
-console.log("19 config.tsCFbooleanAutoCommit : ");
+console.log("20 config.tsCFbooleanAutoCommit : ");
 console.log(config.tsCFbooleanAutoCommit);
 console.log("tsConstAutoCommit : ");
 console.log(tsConstAutoCommit);
-console.log("20 config.tsCFvaluesListUrls : ");
+console.log("21 config.tsCFvaluesListUrls : ");
 console.log(config.tsCFvaluesListUrls);
-console.log("21 config.tsCFsheetsExcelOptionsSheetName : ");
+console.log("22 config.tsCFsheetsExcelOptionsSheetName : ");
 console.log(config.tsCFsheetsExcelOptionsSheetName);
-console.log("22 config.tsCFdataMappingmapping : ");
+console.log("23 config.tsCFdataMappingmapping : ");
 console.log(config.tsCFdataMappingmapping);
-console.log("23 config.tsCFcascaderDataType : ");
+console.log("24 config.tsCFcascaderDataType : ");
 console.log(config.tsCFcascaderDataType);
 console.log("tsConsDateType : ");
 console.log(tsConsDateType);
@@ -812,30 +846,32 @@ console.log("tsConstDataTypeStep1 : ");
 console.log(tsConstDataTypeStep1);
 console.log("tsConstDataType : ");
 console.log(tsConstDataType);
-console.log("24 config.tsCFkeyvalueColumnsRadioColumnSortingOrder : ");
+console.log("25 config.tsCFkeyvalueColumnsRadioColumnSortingOrder : ");
 console.log(config.tsCFkeyvalueColumnsRadioColumnSortingOrder);
-console.log("24 tsConstSortingOrder : ");
+console.log("25 tsConstSortingOrder : ");
 console.log(tsConstSortingOrder);
-console.log("25 config.tsCFkeyvalueColumnsSelectColumnsOperations : ");
+console.log("26 config.tsCFkeyvalueColumnsSelectColumnsOperations : ");
 console.log(config.tsCFkeyvalueColumnsSelectColumnsOperations);
-console.log("25 tsConstColumnsOperations : ");
+console.log("26 tsConstColumnsOperations : ");
 console.log(tsConstColumnsOperations);
-console.log("26 config.tsCFcolumnSelectColumn : ");
+console.log("27 config.tsCFcolumnSelectColumn : ");
 console.log(config.tsCFcolumnSelectColumn);
 console.log("tsConstSelectColumn : ");
 console.log(tsConstSelectColumn);
-console.log("27 config.tsCFcolumnTypeRestrictedColumn : ");
+console.log("28 config.tsCFcolumnTypeRestrictedColumn : ");
 console.log(config.tsCFcolumnTypeRestrictedColumn);
-console.log("27 tsConstTypeRestrictedColumn : ");
+console.log("28 tsConstTypeRestrictedColumn : ");
 console.log(tsConstTypeRestrictedColumn);
-console.log("28 config.tsCFcolumnDefaultValueColumn : ");
+console.log("29 config.tsCFcolumnDefaultValueColumn : ");
 console.log(config.tsCFcolumnDefaultValueColumn);
-console.log("28 config.tsCFcolumnDefaultValueColumn.value : ");
+console.log("29 config.tsCFcolumnDefaultValueColumn.value : ");
 console.log(config.tsCFcolumnDefaultValueColumn.value);
-console.log("29 config.tsCFdateDatePicker : ");
+console.log("30 config.tsCFdateDatePicker : ");
 console.log(config.tsCFdateDatePicker);
-console.log("30 config.tsCFcodeTextareaCodeWithAi : ");
+console.log("31 config.tsCFcodeTextareaCodeWithAi : ");
 console.log(config.tsCFcodeTextareaCodeWithAi);
+console.log("31 tsConstCodeWithAI : ");
+console.log(tsConstCodeWithAI);
 
     return code;
   }

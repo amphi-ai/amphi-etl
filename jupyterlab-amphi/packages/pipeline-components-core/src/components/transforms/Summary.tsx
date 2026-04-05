@@ -46,7 +46,7 @@ export class Summary extends BaseCoreComponent {
 
     const description = "Use Summary Component to provide a statistical summary of the incoming data.";
 
-    super("Summary", "summary", description, "pandas_df_processor", [], "Misc", eyeGlassesIcon, defaultConfig, form);
+    super("Summary", "summary", description, "pandas_df_processor", [], "exploration", eyeGlassesIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

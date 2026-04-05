@@ -15,7 +15,7 @@ import {
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
   SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample, UniqueKeyDetector, FileAction, DataframeList, DataframeDelete, HierarchyPath, PackagesList, JSONTools,
   DatabaseInput, DatabaseOutput, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar, CorrelationMatrix,
-  Switch,AutoColumnPosition
+  Switch,AutoColumnPosition,ChartGenerator
 } from './components';
 
 // Export allow the component to be used as a base component in different packages
@@ -26,7 +26,7 @@ export {
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON, ExplodeJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
   SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample, UniqueKeyDetector, FileAction, DataframeList, DataframeDelete, HierarchyPath, PackagesList, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar,
-  Switch, CorrelationMatrix,AutoColumnPosition
+  Switch, CorrelationMatrix,AutoColumnPosition,ChartGenerator
 }
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -103,21 +103,25 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(DatabaseOutput.getInstance());
     componentService.addComponent(Console.getInstance());
     componentService.addComponent(CustomOutput.getInstance());
-
+	
+	//Exploration
+    componentService.addComponent(Summary.getInstance());
+    componentService.addComponent(FrequencyAnalysis.getInstance());
+    componentService.addComponent(UniqueKeyDetector.getInstance());
+    componentService.addComponent(CorrelationMatrix.getInstance());
+	componentService.addComponent(ChartGenerator.getInstance());
+	
     // Settings
     componentService.addComponent(EnvVariables.getInstance());
     componentService.addComponent(EnvFile.getInstance());
     componentService.addComponent(Connection.getInstance());
 
     // Misc
-    componentService.addComponent(Summary.getInstance());
-    componentService.addComponent(FrequencyAnalysis.getInstance());
-    componentService.addComponent(UniqueKeyDetector.getInstance());
+
     componentService.addComponent(FileAction.getInstance());
     componentService.addComponent(Annotation.getInstance());
     componentService.addComponent(Annotation.getInstance());
-    componentService.addComponent(CorrelationMatrix.getInstance());
-
+	    
     // Settings
     componentService.addComponent(EnvVariables.getInstance());
     componentService.addComponent(EnvFile.getInstance());

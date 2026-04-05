@@ -53,7 +53,7 @@ export class CorrelationMatrix extends BaseCoreComponent {
     };
 
     const description = "Use Correlation Matrix to analyse the correlation between several variables";
-    super('Correlation Matrix', 'CorrelationMatrix', description, 'pandas_df_processor', [], 'transforms', correlationMatrixIcon, defaultConfig, form);
+    super('Correlation Matrix', 'CorrelationMatrix', description, 'pandas_df_processor', [], 'exploration', correlationMatrixIcon, defaultConfig, form);
   }
 
   provideImports() {

@@ -28,15 +28,15 @@ export class PackagesList extends BaseCoreComponent {
 
     // Call the parent class constructor with component details
     super(
-      "Packages List",    // Display name
-      "packages_list",   // Component ID
-      description,             // Description
-      "pandas_df_input",       // Component type
-      [],                      // File drop (unused)
-      "developer",         // Category
-      PackagesListIcon,  // Component icon
-      defaultConfig,           // Default configuration
-      form                     // Form structure
+      "Packages List",
+      "packages_list",
+      description,
+      "pandas_df_input",
+      [],
+      "developer",
+      PackagesListIcon,
+      defaultConfig,
+      form
     );
   }
 
