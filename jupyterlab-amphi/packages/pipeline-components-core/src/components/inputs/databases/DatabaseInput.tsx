@@ -8,7 +8,15 @@ import { SnowflakeInput } from './SnowflakeInput';
 
 export class DatabaseInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { provider: "postgres" };
+    const defaultConfig = {
+		tsCFselectProvider: "postgres",
+		tsCFradioQueryMethod: "table",
+		tsCFinputHost: "localhost",
+        tsCFselectODBCConnectionMethod : "dsn",			
+        tsCFinputODBCConnectionString: "",
+        tsCFinputDSN: "",
+        tsCFbooleanAutoCommit: true
+		};
 
     const mysql = new MySQLInput();
     const pg = new PostgresInput();
@@ -21,8 +29,8 @@ export class DatabaseInput extends BaseCoreComponent {
       return Array.isArray(form?.fields) ? form.fields : [];
     };
 
-    const wrapFields = (fields: any[], provider: string) =>
-      fields.map(f => ({ ...f, condition: { provider: [provider], ...(f.condition || {}) } }));
+    const wrapFields = (fields: any[], tsCFselectProvider: string) =>
+      fields.map(f => ({ ...f, condition: { tsCFselectProvider: [tsCFselectProvider], ...(f.condition || {}) } }));
 
     const form = {
       idPrefix: "component__form",
@@ -30,7 +38,7 @@ export class DatabaseInput extends BaseCoreComponent {
         {
           type: "select",
           label: "Database Type",
-          id: "provider",
+          id: "tsCFselectProvider",
           options: [
             { value: "postgres", label: "PostgreSQL" },
             { value: "mysql", label: "MySQL" },
@@ -54,7 +62,7 @@ export class DatabaseInput extends BaseCoreComponent {
   }
 
   public provideDependencies({ config }): string[] {
-    switch (config.provider) {
+    switch (config.tsCFselectProvider) {
       case "mysql": return new MySQLInput().provideDependencies({ config });
       case "postgres": return new PostgresInput().provideDependencies({ config });
       case "sqlserver": return new SqlServerInput().provideDependencies({ config });
@@ -66,11 +74,11 @@ export class DatabaseInput extends BaseCoreComponent {
 
   public provideImports({ config }): string[] {
     const imports =
-      config.provider === "mysql" ? new MySQLInput().provideImports({ config }) :
-      config.provider === "postgres" ? new PostgresInput().provideImports({ config }) :
-      config.provider === "sqlserver" ? new SqlServerInput().provideImports({ config }) :
-      config.provider === "odbc" ? new ODBCInput().provideImports({ config }) :
-      config.provider === "snowflake" ? new SnowflakeInput().provideImports({ config }) :
+      config.tsCFselectProvider === "mysql" ? new MySQLInput().provideImports({ config }) :
+      config.tsCFselectProvider === "postgres" ? new PostgresInput().provideImports({ config }) :
+      config.tsCFselectProvider === "sqlserver" ? new SqlServerInput().provideImports({ config }) :
+      config.tsCFselectProvider === "odbc" ? new ODBCInput().provideImports({ config }) :
+      config.tsCFselectProvider === "snowflake" ? new SnowflakeInput().provideImports({ config }) :
       [];
 
     const seen = new Set<string>();
@@ -78,7 +86,7 @@ export class DatabaseInput extends BaseCoreComponent {
   }
 
   public generateDatabaseConnectionCode({ config, connectionName }): string {
-    switch (config.provider) {
+    switch (config.tsCFselectProvider) {
       case "mysql": return new MySQLInput().generateDatabaseConnectionCode({ config, connectionName });
       case "postgres": return new PostgresInput().generateDatabaseConnectionCode({ config, connectionName });
       case "sqlserver": return new SqlServerInput().generateDatabaseConnectionCode({ config, connectionName }); 
@@ -87,8 +95,15 @@ export class DatabaseInput extends BaseCoreComponent {
     }
   }
 
+  public provideFunctions({ config }): string[] {
+    if (config.tsCFselectProvider === "odbc" && typeof (ODBCInput as any).prototype.provideFunctions === 'function') {
+      return new ODBCInput().provideFunctions({ config });
+    }
+    return [];
+  }
+  
   public generateComponentCode({ config, outputName }): string {
-    switch (config.provider) {
+    switch (config.tsCFselectProvider) {
       case "mysql": return new MySQLInput().generateComponentCode({ config, outputName });
       case "postgres": return new PostgresInput().generateComponentCode({ config, outputName });
       case "sqlserver": return new SqlServerInput().generateComponentCode({ config, outputName });

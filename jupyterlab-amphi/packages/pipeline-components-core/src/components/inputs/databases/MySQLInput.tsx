@@ -1,16 +1,23 @@
-
 import { mySQLIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';// Adjust the import path
 
 export class MySQLInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { host: "localhost", port: "3306", databaseName: "", username: "", password: "", tableName: "", queryMethod: "table" };
+    const defaultConfig = {
+		tsCFinputHost: "localhost",
+		tsCFinputPort: "3306",
+		tsCFinputDatabaseName: "",
+		tsCFinputUserName: "",
+		tsCFinputPassword: "",
+		tsCFinputTableName: "",
+		tsCFradioQueryMethod: "table"
+		};
     const form = {
       fields: [
         {
           type: "input",
           label: "Host",
-          id: "host",
+          id: "tsCFinputHost",
           placeholder: "Enter database host",
           connection: 'Mysql',
           advanced: true
@@ -18,7 +25,7 @@ export class MySQLInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Port",
-          id: "port",
+          id: "tsCFinputPort",
           placeholder: "Enter database port",
           connection: 'Mysql',
           advanced: true
@@ -26,7 +33,7 @@ export class MySQLInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Database Name",
-          id: "databaseName",
+          id: "tsCFinputDatabaseName",
           placeholder: "Enter database name",
           connection: 'Mysql',
           advanced: true
@@ -34,7 +41,7 @@ export class MySQLInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Username",
-          id: "username",
+          id: "tsCFinputUserName",
           placeholder: "Enter username",
           connection: "Mysql",
           advanced: true
@@ -42,7 +49,7 @@ export class MySQLInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Password",
-          id: "password",
+          id: "tsCFinputPassword",
           placeholder: "Enter password",
           inputType: "password",
           connection: "Mysql",
@@ -51,7 +58,7 @@ export class MySQLInput extends BaseCoreComponent {
         {
           type: "radio",
           label: "Query Method",
-          id: "queryMethod",
+          id: "tsCFradioQueryMethod",
           tooltip: "Select whether you want to specify the table name to retrieve data or use a custom SQL query for greater flexibility.",
           options: [
             { value: "table", label: "Table Name" },
@@ -63,9 +70,9 @@ export class MySQLInput extends BaseCoreComponent {
           type: "table",
           label: "Table Name",
           query: `SHOW TABLES;`,
-          id: "tableName",
+          id: "tsCFinputTableName",
           placeholder: "Enter table name",
-          condition: { queryMethod: "table" }
+          condition: { tsCFradioQueryMethod: "table" }
         },
         {
           type: "codeTextarea",
@@ -73,10 +80,10 @@ export class MySQLInput extends BaseCoreComponent {
           height: '50px',
           mode: "sql",
           placeholder: 'SELECT * FROM table_name',
-          id: "sqlQuery",
+          id: "tsCFcodeTextareaSqlQuery",
           tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
           advanced: true,
-          condition: { queryMethod: "query" }
+          condition: { tsCFradioQueryMethod: "query" }
         }
       ],
     };
@@ -92,11 +99,13 @@ export class MySQLInput extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "import sqlalchemy", "import pymysql"];
+    return ["import pandas as pd",
+	"import sqlalchemy",
+	"import pymysql"];
   }
 
   public generateDatabaseConnectionCode({ config, connectionName }): string {
-    let connectionString = `mysql+pymysql://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}`;
+    let connectionString = `mysql+pymysql://${config.tsCFinputUserName}:${config.tsCFinputPassword}@${config.tsCFinputHost}:${config.tsCFinputPort}/${config.tsCFinputDatabaseName}`;
     const connectionCode = `
 # Connect to the MySQL database
 ${connectionName} = sqlalchemy.create_engine("${connectionString}")
@@ -108,13 +117,13 @@ ${connectionName} = sqlalchemy.create_engine("${connectionString}")
     const uniqueEngineName = `${outputName}_Engine`;
 
     // Build table reference if tableName exists
-    const tableReference = config.tableName?.value || null;
+    const tableReference = config.tsCFinputTableName?.value || null;
 
     let sqlQuery: string;
 
-    if (config.queryMethod === 'query' && config.sqlQuery) {
+    if (config.tsCFradioQueryMethod === 'query' && config.tsCFcodeTextareaSqlQuery) {
       try {
-        const parsedQuery = JSON.parse(config.sqlQuery);
+        const parsedQuery = JSON.parse(config.tsCFcodeTextareaSqlQuery);
         sqlQuery = parsedQuery.code?.trim();
 
         // Only fall back to table reference if it exists

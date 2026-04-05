@@ -3,13 +3,21 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class TrinoInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { host: "localhost", port: "8082",catalogs : "", schemaName: "", username: "", password: "", tableName: "" };
+    const defaultConfig = {
+	tsCFinputHost: "localhost",
+	tsCFinputPort: "8082",
+	tsCFinputCatalogs : "",
+	tsCFinputSchemaName: "",
+	tsCFinputUserName: "",
+	tsCFinputPassword: "",
+	tsCFinputTableName: ""
+	};
     const form = {
       fields: [
         {
           type: "input",
           label: "Host",
-          id: "host",
+          id: "tsCFinputHost",
           placeholder: "Enter Trino host",
           connection: 'Trino',
           advanced: true
@@ -17,7 +25,7 @@ export class TrinoInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Port",
-          id: "port",
+          id: "tsCFinputPort",
           placeholder: "Enter Trino port",
           connection: 'Trino',
           advanced: true
@@ -25,7 +33,7 @@ export class TrinoInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Catalogs",
-          id: "catalogs",
+          id: "tsCFinputCatalogs",
           placeholder: "Enter Trino Catalogs",
           connection: 'Trino',
           advanced: true
@@ -33,7 +41,7 @@ export class TrinoInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Schema Name",
-          id: "schemaName",
+          id: "tsCFinputSchemaName",
           placeholder: "Enter Trino schema name",
           connection: 'Trino',
           advanced: true
@@ -41,7 +49,7 @@ export class TrinoInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Username",
-          id: "username",
+          id: "tsCFinputUserName",
           placeholder: "Enter username",
           connection: "Trino",
           advanced: true
@@ -49,7 +57,7 @@ export class TrinoInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Password",
-          id: "password",
+          id: "tsCFinputPassword",
           placeholder: "Enter password",
           inputType: "password",
           connection: "Trino",
@@ -58,7 +66,7 @@ export class TrinoInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Table Name",
-          id: "tableName",
+          id: "tsCFinputTableName",
           placeholder: "Enter table name",
         },
         {
@@ -67,7 +75,7 @@ export class TrinoInput extends BaseCoreComponent {
           height: '50px',
           mode: "sql",
           placeholder: 'SELECT * FROM table_name',
-          id: "sqlQuery",
+          id: "tsCFcodeTextareaSqlQuery",
           tooltip: 'Optional. By default the SQL query is: SELECT * FROM table_name_provided. If specified, the SQL Query is used.',
           advanced: true
         }
@@ -78,17 +86,19 @@ export class TrinoInput extends BaseCoreComponent {
   }
   
     public provideImports({config}): string[] {
-      return ["import pandas as pd", "import sqlalchemy", "import trino"];
+      return ["import pandas as pd",
+	  "import sqlalchemy",
+	  "import trino"];
     }  
 
     public generateComponentCode({ config, outputName }): string {
       let connectionString = `trino.dbapi.connect(
-                                      host='${config.host}',
-                                      port=${config.port},
-                                      user='${config.username}',
-                                      catalog='${config.catalogs}',
-                                      schema='${config.schemaName}')`;
-      const sqlQuery = config.sqlQuery && config.sqlQuery.trim() ? config.sqlQuery : `SELECT * FROM ${config.tableName}`;
+                                      host='${config.tsCFinputHost}',
+                                      port=${config.tsCFinputPort},
+                                      user='${config.tsCFinputUserName}',
+                                      catalog='${config.tsCFinputCatalogs}',
+                                      schema='${config.tsCFinputSchemaName}')`;
+      const sqlQuery = config.tsCFcodeTextareaSqlQuery && config.tsCFcodeTextareaSqlQuery.trim() ? config.tsCFcodeTextareaSqlQuery : `SELECT * FROM ${config.tsCFinputTableName}`;
       const code = `
 
 conn = ${connectionString}

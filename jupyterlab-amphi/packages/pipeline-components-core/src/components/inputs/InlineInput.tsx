@@ -5,21 +5,23 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 export class InlineInput extends BaseCoreComponent {
     constructor() {
 
-        const inlineDataDefault: string = `First Name,Last Name,Age,🏅
-John,Doe,28,🥇
-Jane,Smith,34,🥈
-Emily,Jones,45,🥉
-Michael,Brown,22,🥉
-Sarah,Wilson,30,🥇`;
+        const tsConstinlineDataDefault: string = `First Name,Last Name,Age,Size,Disabled,🏅
+John,Doe,28,1.72,False,🥇
+Jane,Smith,34,1.65,False,🥈
+Emily,Jones,45,1.68,False,🥉
+Michael,Brown,22,1.77,True,🥉
+Sarah,Wilson,30,1.80,False,🥇`;
 
-        const defaultConfig = { inlineData: inlineDataDefault };
+        const defaultConfig = {
+			tsCFcodeTextareaInlineData: tsConstinlineDataDefault
+			};
         const form = {
             idPrefix: "component__form",
             fields: [
                 {
                     type: "codeTextarea",
                     label: "Inline Data",
-                    id: "inlineData",
+                    id: "tsCFcodeTextareaInlineData",
                     placeholder: "Enter your CSV data here",
                     tooltip: "Type your CSV-like data directly. First line is header. For example:\nID,brand,criteria,assesement\n123,abc,Q9,Y\n145,abc,Q9,Y",
                     aiInstructions: "Generate mock CSV-like data for demonstration purposes.\nIMPORTANT: Output only raw CSV text. Limit to 20 rows unless specified otherwise by the user.",
@@ -40,7 +42,7 @@ Sarah,Wilson,30,🥇`;
     }
 
     private getEffectiveData(config: any): string {
-        const rawValue = config.inlineData;
+        const rawValue = config.tsCFcodeTextareaInlineData;
         if (!rawValue) return "";
 
         // If it's already an object
