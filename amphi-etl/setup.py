@@ -27,8 +27,9 @@ setup(
     description='Open-source and Python-based ETL',
     author='Thibaut Gourdel',
     author_email='tgourdel@amphi.ai',
+    url='https://amphi.ai/',
     license='ELv2',
-    install_requires=[
+    install_requires=[ #must be identic to requirements
         'jupyterlab==4.5.3',
         'jupyterlab-amphi==0.9.5',
         'amphi-scheduler==0.9.5',
