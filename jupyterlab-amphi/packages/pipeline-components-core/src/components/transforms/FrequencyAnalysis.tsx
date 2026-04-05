@@ -21,7 +21,7 @@ export class FrequencyAnalysis extends BaseCoreComponent {
 
     const description = "Turn selected columns into simple frequency tables. For every unique value you get the count, percent, and cumulative totals. The results are combined into one table.";
 
-    super("Frequency Analysis", "frequencyAnalysis", description, "pandas_df_processor", [], "Misc", activityIcon, defaultConfig, form);
+    super("Frequency Analysis", "frequencyAnalysis", description, "pandas_df_processor", [], "exploration", activityIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

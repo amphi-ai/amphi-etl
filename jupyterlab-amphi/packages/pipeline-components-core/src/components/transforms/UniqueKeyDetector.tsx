@@ -31,7 +31,7 @@ export class UniqueKeyDetector extends BaseCoreComponent {
 
     const description = "Find combination of fields for unique key";
 
-    super("Unique Key Detector", "UniqueKeyDetector", description, "pandas_df_processor", [], "Misc", UniqueKeyIcon, defaultConfig, form);
+    super("Unique Key Detector", "UniqueKeyDetector", description, "pandas_df_processor", [], "exploration", UniqueKeyIcon, defaultConfig, form);
   }
 
   public provideImports({ config }): string[] {

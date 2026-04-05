@@ -1,13 +1,11 @@
 import { filterIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
-
-
 export class Filter extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-		filterType: "basic",
-		condition: "==" 
+		tsCFradioFilterType: "basic",
+		tsCFselectCondition: "==" 
 		};
     const form = {
       idPrefix: "component__form",
@@ -15,7 +13,7 @@ export class Filter extends BaseCoreComponent {
         {
           type: "radio",
           label: "Type",
-          id: "filterType",
+          id: "tsCFradioFilterType",
           options: [
             { value: "basic", label: "Basic" },
             { value: "advanced", label: "Advanced" }
@@ -25,14 +23,14 @@ export class Filter extends BaseCoreComponent {
         {
           type: "column",
           label: "Column name",
-          id: "column",
+          id: "tsCFcolumnColumntoFilter",
           placeholder: "Select column",
-          condition: { filterType: "basic" }
+          condition: { tsCFradioFilterType: "basic" }
         },
         {
           type: "select",
           label: "Condition",
-          id: "condition",
+          id: "tsCFselectCondition",
           placeholder: "Select condition",
           options: [
             { value: "==", label: "==" },
@@ -50,27 +48,27 @@ export class Filter extends BaseCoreComponent {
             { value: "startswith", label: "Starts With (string)" },
             { value: "endswith", label: "Ends With (string)" }
           ],
-          condition: { filterType: "basic" }
+          condition: { tsCFradioFilterType: "basic" }
         },
         {
           type: "input",
           label: "Value",
-          id: "conditionValue",
+          id: "tsCFinputConditionValue",
           placeholder: "Any string of characters (enforce numbers if needed)",
-          condition: { filterType: "basic" }
+          condition: { tsCFradioFilterType: "basic" }
         },
         {
           type: "boolean",
           label: "Enforce value as string",
-          id: "enforceString",
-          condition: { filterType: "basic" },
+          id: "tsCFbooleanEnforceString",
+          condition: { tsCFradioFilterType: "basic" },
           advanced: true
         },
         {
           type: "codeTextarea",
           label: "Python Expression",
           mode: "python",
-          id: "pythonExpression",
+          id: "tsCFcodeTextareaPythonExpression",
           tooltip: "Enter a valid pandas query expression. This should be combining column names, values, and logical operators (e.g., ==, and, or, notnull()). Do not include variable assignments, print statements, or comments.",
           placeholder: "(firstName == 'Bob' or Lastname == 'SMITH') and Age > 50",
           aiInstructions: "Generate only the Python expression to be used within the query attribute of a pandas filter.\nIMPORTANT: Return only the expression string, ensuring it is valid for pandas.DataFrame.query. Do not include display or print statements, variable assignments, or explanatory comments.",
@@ -82,7 +80,7 @@ export class Filter extends BaseCoreComponent {
             { label: "Date comparison", value: "Filter rows where CreatedDate is on or after '2020-01-01'." },
             { label: "List membership", value: "Filter rows where Industry is either 'Technology' or 'Healthcare'." }
           ],
-          condition: { filterType: "advanced" },
+          condition: { tsCFradioFilterType: "advanced" },
           advanced: true
         }
       ],
@@ -106,8 +104,11 @@ export class Filter extends BaseCoreComponent {
     outputName: string;
   }): string {
     /* ---------- advanced mode ---------- */
-    if (config.filterType === "advanced") {
-      const expr = String(config.pythonExpression || "").replace(/"/g, '\\"');
+		
+    if (config.tsCFradioFilterType === "advanced" && config.tsCFcodeTextareaPythonExpression.trim() !== '') {
+	  const tsConstParsedPythonExpressionStep1 = JSON.parse(config.tsCFcodeTextareaPythonExpression );
+	  const tsConstParsedPythonExpression = tsConstParsedPythonExpressionStep1.code?.trim();
+      const expr = String(tsConstParsedPythonExpression || "").replace(/"/g, '\\"');
       return `
 # Advanced filter using pandas.DataFrame.query
 ${outputName} = ${inputName}.query("${expr}")
@@ -115,12 +116,12 @@ ${outputName} = ${inputName}.query("${expr}")
     }
 
     /* ---------- basic mode ---------- */
-    const columnName = config.column.value;
-    const columnType = config.column.type;
-    const columnIsNamed = config.column.named;
-    const condition = config.condition;
-    const conditionValue = config.conditionValue;
-    const enforceString = config.enforceString;
+    const columnName = config.tsCFcolumnColumntoFilter.value;
+    const columnType = config.tsCFcolumnColumntoFilter.type;
+    const columnIsNamed = config.tsCFcolumnColumntoFilter.named;
+    const condition = config.tsCFselectCondition;
+    const conditionValue = config.tsCFinputConditionValue;
+    const enforceString = config.tsCFbooleanEnforceString;
 
     let code = `
 # Filter rows based on condition

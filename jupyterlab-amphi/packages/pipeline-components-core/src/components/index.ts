@@ -66,6 +66,7 @@ export { CompareDataframes } from './transforms/CompareDataframes';
 export { CorrelationMatrix } from './transforms/CorrelationMatrix';
 export { Switch } from './transforms/Switch';
 export { AutoColumnPosition } from './transforms/AutoColumnPosition';
+export { ChartGenerator } from './transforms/ChartGenerator';
 
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';

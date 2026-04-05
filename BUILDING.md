@@ -166,6 +166,9 @@ The privileged icon library is now https://tabler.io/icons (formerly https://hel
 
 7. Here an example of dev routine : 7.1 : start with some python code in a python input/transforms. you may use a LLM for that. 7.2 Continue with a custom component. 7.3 Ends with building the Core component (there are only a few things to change between custom and core such as the 3 first rows, the last one, the super function). Such a routine is made to validate each component and to iterate the fastest possible.
 
+8. For package that must be installed, you can either dynamically push it on on the tools or require by registering it in jupyterlab-amphi/requirements.txt,amphi-etl/requirements and amphi-etl/setup.py
+
+ 
 ## 👮Development rules & norms👮
 ### Context : 
 Without rules, "good" or "common" practices set for the developer team, leading to misunderstanging or rework/correction by the project leader would occur.
