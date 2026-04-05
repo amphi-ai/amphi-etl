@@ -40,6 +40,7 @@ const DataView = ({ htmlData }: { htmlData: string }) => {
   const [rowsData, setRowsData] = useState<DataRow[]>([]);
   const [gridColumns, setGridColumns] = useState<GridColumn[]>([]);
   const [originalHeaders, setOriginalHeaders] = useState<string[]>([]);
+  const [columnTypes, setColumnTypes] = useState<string[]>([]);
 
   // Tooltip state
   const [tooltip, setTooltip] = useState<{ val: string; bounds: IBounds } | undefined>();
@@ -86,9 +87,12 @@ const DataView = ({ htmlData }: { htmlData: string }) => {
     });
 
     // Build columns, extracting only the column name part and guessing icons from type
+    const detectedTypes: string[] = [];
+
     const updatedColumns: GridColumn[] = headers.map((header) => {
       // If header is empty, return no icon
       if (!header.trim()) {
+        detectedTypes.push("string");
         return {
           title: header,
           width: getOptimalColumnWidth(header)
@@ -111,6 +115,7 @@ const DataView = ({ htmlData }: { htmlData: string }) => {
         else if (colType.includes("bool")) dataType = "boolean";
       }
 
+      detectedTypes.push(dataType);
       return {
         title: cleanColumnName,
         id: header, // Keep original header as ID for data mapping
@@ -120,6 +125,7 @@ const DataView = ({ htmlData }: { htmlData: string }) => {
     });
 
     setGridColumns(updatedColumns);
+    setColumnTypes(detectedTypes);
     setRowsData(cleanedData);
   }, [htmlData]);
 
@@ -149,14 +155,21 @@ const DataView = ({ htmlData }: { htmlData: string }) => {
       const columnKey = originalHeaders[col];
       const value = rowsData[row][columnKey] ?? "";
 
+      const columnType = columnTypes[col] || "string";
+      const contentAlign =
+        columnType === "number" || columnType === "decimal" || columnType === "datetime"
+          ? "right"
+          : "left";
+
       return {
         kind: GridCellKind.Text,
         data: value,
         displayData: value,
+        contentAlign,
         allowOverlay: false
       };
     },
-    [gridColumns, rowsData, originalHeaders]
+    [gridColumns, rowsData, originalHeaders, columnTypes]
   );
 
   // Function to get accurate bounds relative to viewport
