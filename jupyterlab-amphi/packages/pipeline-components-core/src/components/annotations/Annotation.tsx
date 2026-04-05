@@ -24,6 +24,30 @@ export type AnnotationData = {
   isLocked?: boolean;
 };
 
+const getEffectiveContent = (rawValue: any, fallback = '# Annotation'): string => {
+  if (!rawValue) return fallback;
+
+  if (typeof rawValue === 'object') {
+    if ('code' in rawValue) return rawValue.code || '';
+    if ('content' in rawValue) return rawValue.content || '';
+  }
+
+  if (typeof rawValue !== 'string') return fallback;
+
+  try {
+    const parsed = JSON.parse(rawValue);
+    if (parsed && typeof parsed === 'object') {
+      if ('code' in parsed) return parsed.code || '';
+      if ('content' in parsed) return parsed.content || '';
+    }
+  } catch (e) {
+    // BACKWARD COMPATIBILITY: It's a plain markdown string from an older version
+    return rawValue;
+  }
+
+  return rawValue;
+};
+
 export class Annotation extends PipelineComponent<ComponentItem>() {
 
   public _name = "Annotation";
@@ -64,7 +88,7 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
       handleChange(newValue, 'borderWidth');
     }, [handleChange]);
 
-    const [content, setContent] = useState<string>(data.content || '# Annotation');
+    const [content, setContent] = useState<string>(getEffectiveContent(data.content));
     const [backgroundColor, setBackgroundColor] = useState<Color>(data.backgroundColor || '#fff');
     const [borderColor, setBorderColor] = useState<Color>(data.borderColor || '#42766D');
     const [borderWidth, setBorderWidth] = useState<number>(data.borderWidth || 5);
@@ -72,12 +96,8 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
     const [borderRadius, setBorderRadius] = useState<number>(data.borderRadius || 5);
 
     useEffect(() => {
-      setContent(data.content || '# Annotation');
+      setContent(getEffectiveContent(data.content));
     }, [data.content]);
-
-    useEffect(() => {
-      handleChange(content, 'content');
-    }, [content]);
 
     return (
       <>
@@ -178,14 +198,14 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
               <Form.Item label="Markdown Content">
                 <CodeTextarea
                   field={{
-                    type: "code",
+                    type: "codeTextarea",
                     label: "Markdown Content",
                     id: "content",
                     placeholder: "Markdown",
                   }}
                   handleChange={(value) => {
                     handleChange(value, 'content');
-                    setContent(value);
+                    setContent(getEffectiveContent(value));
                   }}
                   advanced={false}
                   value={content}
@@ -252,6 +272,7 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
     const borderWidthStyle = data.borderWidth || 2;
     const textColorStyle = data.textColor || 'rgba(0, 0, 0, 1)';
     const borderRadiusStyle = data.borderRadius || 0;
+    const effectiveContent = getEffectiveContent(data.content);
 
     return (
       <>
@@ -296,7 +317,7 @@ export class Annotation extends PipelineComponent<ComponentItem>() {
             minHeight={50}
           />
           <div style={{ color: textColorStyle }}>
-            <Remark>{data.content}</Remark>
+            <Remark>{effectiveContent}</Remark>
           </div>
 
           <NodeToolbar isVisible={isSelected} position={Position.Bottom}>
