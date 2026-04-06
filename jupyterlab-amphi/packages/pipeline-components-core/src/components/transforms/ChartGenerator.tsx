@@ -47,7 +47,7 @@ export class ChartGenerator extends BaseCoreComponent {
             { value: "barh", label: "Bar (Horizontal)"},
             { value: "line", label: "Line" },
 			//{ value: "scatter", label: "Scatter Plot" },
-			{ value: "pie", label: "Years" }
+			{ value: "pie", label: "Pie" }
           ],
           advanced: false
         },
