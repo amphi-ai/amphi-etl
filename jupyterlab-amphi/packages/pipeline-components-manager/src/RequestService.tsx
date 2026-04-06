@@ -335,7 +335,7 @@ export class RequestService {
 
     // Escape and replace schema in the query
     let escapedQuery = query.replace(/"/g, '\\"');
-    escapedQuery = escapedQuery.replace(/{{schema}}/g, schemaName);
+    escapedQuery = escapedQuery.replace(/{{tsCFinputSchema}}/g, schemaName);
 
     // Get environment and connection code
     const envVariableCode = CodeGenerator.getEnvironmentVariableCode(context.model.toString(), componentService);
