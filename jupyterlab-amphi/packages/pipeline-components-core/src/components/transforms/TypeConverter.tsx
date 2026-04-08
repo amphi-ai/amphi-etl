@@ -10,8 +10,8 @@ export class TypeConverter extends BaseCoreComponent {
 		tsCFColumnsToConvert:[],
 		tsCFselectErrorManagement: "warn_coerce",
         tsCFbooleanKeepInitial : false,
-        inputPrefixForNewColumns : "",
-        inputSuffixForNewColumns : "",
+        tsCFinputPrefixForNewColumns : "",
+        tsCFinputSuffixForNewColumns : "",
         tsCFbooleanConvertToDtype : false,	
 		tsCFselectDtypeBackend: "pyarrow"
 		};
@@ -145,13 +145,13 @@ export class TypeConverter extends BaseCoreComponent {
         {
           type: "input",
           label: "Prefix for new columns",
-          id: "inputPrefixForNewColumns",
+          id: "tsCFinputPrefixForNewColumns",
           advanced: true
         },
         {
           type: "input",
           label: "Suffix for new columns",
-          id: "inputSuffixForNewColumns",
+          id: "tsCFinputSuffixForNewColumns",
           advanced: true
         },
 	   {
@@ -380,14 +380,14 @@ def py_fn_convert_columns_type(
       tsConstErrorManagement = '"' + config.tsCFselectErrorManagement+ '"';
     }
    let tsConstPrefixForNewColumns = 'None';
-    if (config.inputPrefixForNewColumns && config.inputPrefixForNewColumns.trim() !== '' 
+    if (config.tsCFinputPrefixForNewColumns && config.tsCFinputPrefixForNewColumns.trim() !== '' 
 	) {
-      tsConstPrefixForNewColumns = '"' + config.inputPrefixForNewColumns+ '"';
+      tsConstPrefixForNewColumns = '"' + config.tsCFinputPrefixForNewColumns+ '"';
     }	
    let tsConstSuffixForNewColumns = 'None';
-    if (config.inputSuffixForNewColumns && config.inputSuffixForNewColumns.trim() !== '' 
+    if (config.tsCFinputSuffixForNewColumns && config.tsCFinputSuffixForNewColumns.trim() !== '' 
 	) {
-      tsConstSuffixForNewColumns = '"' + config.inputSuffixForNewColumns+ '"';
+      tsConstSuffixForNewColumns = '"' + config.tsCFinputSuffixForNewColumns+ '"';
     }
    let tsConstDtypeBackend = 'None';
     if (config.tsCFselectDtypeBackend && config.tsCFselectDtypeBackend.trim() !== '' 

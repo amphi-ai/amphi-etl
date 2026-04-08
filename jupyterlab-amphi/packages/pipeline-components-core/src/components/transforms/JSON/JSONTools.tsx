@@ -7,10 +7,8 @@ import { ExplodeJSON } from './ExplodeJSON';
 export class JSONTools extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-		toolType: "explodeJSON",
-		boolean_keepColumns: true,
-		boolean_alllevels: true,
-        selectCustomizable_levelseparator	: ".",
+		tsCFradioToolType: "explodeJSON",
+		tsCFbooleanAllLevels: true,
         tsCFColumnToExplode:"",
 		tsCFbooleanKeepColumns:true,
         tsCFInputnumberMaxLevel:"",
@@ -28,17 +26,17 @@ export class JSONTools extends BaseCoreComponent {
 
     const explodeJSONFields = explodeJSONComponent._form['fields'].map(field => ({
       ...field,
-      condition: { toolType: ["explodeJSON"], ...(field.condition || {}) }
+      condition: { tsCFradioToolType: ["explodeJSON"], ...(field.condition || {}) }
     }));
 
     const expandListFields = expandListComponent._form['fields'].map(field => ({
       ...field,
-      condition: { toolType: ["expandList"], ...(field.condition || {}) }
+      condition: { tsCFradioToolType: ["expandList"], ...(field.condition || {}) }
     }));
 
     const flattenJSONFields = flattenJSONComponent._form['fields'].map(field => ({
       ...field,
-      condition: { toolType: ["flattenJSON"], ...(field.condition || {}) }
+      condition: { tsCFradioToolType: ["flattenJSON"], ...(field.condition || {}) }
     }));
 
     const form = {
@@ -47,7 +45,7 @@ export class JSONTools extends BaseCoreComponent {
         {
           type: "radio",
           label: "JSON Tool",
-          id: "toolType",
+          id: "tsCFradioToolType",
           options: [
             { value: "explodeJSON", label: "Explode JSON" },
             { value: "expandList", label: "Expand JSON List" },
@@ -71,14 +69,14 @@ export class JSONTools extends BaseCoreComponent {
     return [];
   }
   public provideFunctions({ config }): string[] {
-    if (config.toolType === 'explodeJSON' && typeof (ExplodeJSON as any).prototype.provideFunctions === 'function') {
+    if (config.tsCFradioToolType === 'explodeJSON' && typeof (ExplodeJSON as any).prototype.provideFunctions === 'function') {
       return new ExplodeJSON().provideFunctions({ config });
     }
     return [];
   }
   
   public provideImports({ config }): string[] {
-    const tool = config.toolType;
+    const tool = config.tsCFradioToolType;
     const importsSets: string[] = [];
 
     if (tool === "expandList") {
@@ -98,7 +96,7 @@ export class JSONTools extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    const tool = config.toolType;
+    const tool = config.tsCFradioToolType;
     if (tool === "explodeJSON") {
       const explode = new ExplodeJSON();
       return explode.generateComponentCode({ config, inputName, outputName });

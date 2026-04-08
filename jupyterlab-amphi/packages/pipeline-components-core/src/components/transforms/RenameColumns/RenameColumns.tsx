@@ -9,7 +9,9 @@ import { DynamicRenameColumns } from './DynamicRenameColumns';
 export class RenameColumns extends BaseCoreComponent {
   constructor() {
 	//default active component  
-    const defaultConfig = { mode: "manual"};
+    const defaultConfig = {
+		tsCFradioMode: "manual"
+		};
 	
     const manual = new ManualRenameColumns();
     const dynamic = new DynamicRenameColumns();
@@ -19,8 +21,8 @@ export class RenameColumns extends BaseCoreComponent {
       return Array.isArray(form?.fields) ? form.fields : [];
     };
 
-    const wrapFields = (fields: any[], mode: 'manual' | 'dynamic') =>
-      fields.map(f => ({ ...f, condition: { mode: [mode], ...(f.condition || {}) } }));
+    const wrapFields = (fields: any[], tsCFradioMode: 'manual' | 'dynamic') =>
+      fields.map(f => ({ ...f, condition: { tsCFradioMode: [tsCFradioMode], ...(f.condition || {}) } }));
 
     const form = {
       idPrefix: 'component__form',
@@ -28,7 +30,7 @@ export class RenameColumns extends BaseCoreComponent {
         {
           type: 'radio',
           label: 'Rename type',
-          id: 'mode',
+          id: 'tsCFradioMode',
           options: [
             { value: 'manual', label: 'Manual' },
             { value: 'dynamic', label: 'Dynamic' }
@@ -47,7 +49,7 @@ super("Rename Columns", "rename", description, "pandas_df_processor", [], "trans
   }
 
   public provideImports({ config }): string[] {
-    const mode = config.mode;
+    const mode = config.tsCFradioMode;
     const imports =
       mode === 'dynamic'
         ? new DynamicRenameColumns().provideImports({ config })
@@ -58,14 +60,14 @@ super("Rename Columns", "rename", description, "pandas_df_processor", [], "trans
   }
 
   public provideFunctions({ config }): string[] {
-    if (config.mode === 'dynamic' && typeof (DynamicRenameColumns as any).prototype.provideFunctions === 'function') {
+    if (config.tsCFradioMode === 'dynamic' && typeof (DynamicRenameColumns as any).prototype.provideFunctions === 'function') {
       return new DynamicRenameColumns().provideFunctions({ config });
     }
     return [];
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    return config.mode === 'dynamic'
+    return config.tsCFradioMode === 'dynamic'
       ? new DynamicRenameColumns().generateComponentCode({ config, inputName, outputName })
       : new ManualRenameColumns().generateComponentCode({ config, inputName, outputName });
   }

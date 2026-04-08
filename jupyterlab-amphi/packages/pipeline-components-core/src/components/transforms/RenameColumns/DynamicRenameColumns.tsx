@@ -4,7 +4,7 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 export class DynamicRenameColumns extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-      columns: []
+      tsCFcolumnsColumnsToRename: []
     };
 
     const form = {
@@ -13,13 +13,13 @@ export class DynamicRenameColumns extends BaseCoreComponent {
         {
           type: "columns",
           label: "Select Columns",
-          id: "combinationColumns",
+          id: "tsCFcolumnsColumnsToRename",
           placeholder: "Default: all columns",
         },
         {
           type: "select",
           label: "Global case operation",
-          id: "selectGlobalCaseOperation",
+          id: "tsCFselectGlobalCaseOperation",
           options: [
             { value: "none", label: "None", tooltip: "Keep the text exactly as it is, with no changes to case or formatting." },
             { value: "lower", label: "Lower case", tooltip: "Convert all letters to lowercase (e.g., 'Example Text' → 'example text')." },
@@ -34,7 +34,7 @@ export class DynamicRenameColumns extends BaseCoreComponent {
           type: "select",
           label: "Action on special characters",
           tooltip: "Define how to handle special characters in column names. (_ will be keeped if snake case is selected)",
-          id: "selectActionSpecialCharacters",
+          id: "tsCFselectActionSpecialCharacters",
           options: [
             { value: "None", label: "None", tooltip: "No action on special characters" },
             { value: "replace", label: "Replace", tooltip: "Replace all special characters" }
@@ -44,36 +44,36 @@ export class DynamicRenameColumns extends BaseCoreComponent {
         {
           type: "input",
           label: "Replace special characters with",
-          id: "inputCharReplacement",
+          id: "tsCFinputCharReplacement",
           tooltip: "Defines the character used to replace special characters",
           advanced: true,
-          condition: { selectActionSpecialCharacters: ["replace"] },
+          condition: { tsCFselectActionSpecialCharacters: ["replace"] },
         },
         {
           type: "input",
           label: "Prefix to delete",
-          id: "inputPrefixDelete",
+          id: "tsCFinputPrefixDelete",
           tooltip: "Prefix to delete",
           advanced: true
         },
         {
           type: "input",
           label: "Prefix to add",
-          id: "inputPrefixAdd",
+          id: "tsCFinputPrefixAdd",
           tooltip: "Prefix to add",
           advanced: true
         },
         {
           type: "input",
           label: "Suffix to delete",
-          id: "inputSuffixDelete",
+          id: "tsCFinputSuffixDelete",
           tooltip: "Suffix to delete",
           advanced: true
         },
         {
           type: "input",
           label: "Suffix to add",
-          id: "inputSuffixAdd",
+          id: "tsCFinputSuffixAdd",
           tooltip: "Suffix to add",
           advanced: true
         },
@@ -190,19 +190,19 @@ def dynamic_rename_dataframe_columns(
     const combinationColumns_step1 = [];
     // If no columns are selected, pass None so that the Python function uses all columns(default).
     let combinationColumns = "None";
-    if (config.combinationColumns?.length > 0) {
-      combinationColumns = `[${config.combinationColumns
+    if (config.tsCFcolumnsColumnsToRename?.length > 0) {
+      combinationColumns = `[${config.tsCFcolumnsColumnsToRename
         .map((item: any) => (item.named ? `"${item.value}"` : item.value))
         .join(", ")}]`;
     }
 
-    const const_ts_global_case_operation = config.selectGlobalCaseOperation ?? "none";
-    const const_ts_action_special_characters = config.selectActionSpecialCharacters ?? "";
-    const const_ts_char_replacement = config.inputCharReplacement ?? "";
-    const const_ts_prefix_delete = config.inputPrefixDelete ?? "";
-    const const_ts_prefix_add = config.inputPrefixAdd ?? "";
-    const const_ts_suffix_delete = config.inputSuffixDelete ?? "";
-    const const_ts_suffix_add = config.inputSuffixAdd ?? "";
+    const const_ts_global_case_operation = config.tsCFselectGlobalCaseOperation ?? "none";
+    const const_ts_action_special_characters = config.tsCFselectActionSpecialCharacters ?? "";
+    const const_ts_char_replacement = config.tsCFinputCharReplacement ?? "";
+    const const_ts_prefix_delete = config.tsCFinputPrefixDelete ?? "";
+    const const_ts_prefix_add = config.tsCFinputPrefixAdd ?? "";
+    const const_ts_suffix_delete = config.tsCFinputSuffixDelete ?? "";
+    const const_ts_suffix_add = config.tsCFinputSuffixAdd ?? "";
 
 
     return `

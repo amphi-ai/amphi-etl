@@ -6,9 +6,9 @@ export class FlattenJSON extends BaseCoreComponent {
   constructor() {
     const defaultConfig =
         {
-         boolean_keepColumns: true,
-		 boolean_alllevels: true,
-         selectCustomizable_levelseparator	: "."	
+         tsCFbooleanKeepColumns: true,
+		 tsCFbooleanAllLevels: true,
+         tsCFselectCustomizableLevelSeparator	: "."	
 		};
     const form = {
       idPrefix: "component__form",
@@ -16,19 +16,19 @@ export class FlattenJSON extends BaseCoreComponent {
         {
           type: "column",
           label: "Column",
-          id: "column",
+          id: "tsCFcolumnColumnToFlatten",
           placeholder: "Select column",
         },
         {
           type: "boolean",
           label: "Keep all columns",
-          id: "boolean_keepColumns",
+          id: "tsCFbooleanKeepColumns",
           advanced: true
         },
 		{
           type: "selectCustomizable",
           label: "Level Separator",
-          id: "selectCustomizable_levelseparator",
+          id: "tsCFselectCustomizableLevelSeparator",
           placeholder: "default: .",
           tooltip: "Select or provide a custom delimiter between levels.",
           options: [
@@ -42,16 +42,16 @@ export class FlattenJSON extends BaseCoreComponent {
 		{
           type: "boolean",
           label: "Flatten all levels",
-          id: "boolean_alllevels",
+          id: "tsCFbooleanAllLevels",
           advanced: true
         },
 		{
           type: "inputNumber",
           tooltip: "Max Level to flatten",
           label: "Level (index 0)",
-          id: "inputnumber_maxlevel",
+          id: "tsCFinputNumberMaxLevel",
           min: 0,
-		  condition: { boolean_alllevels: [false] },
+		  condition: { tsCFbooleanAllLevels: [false] },
           advanced: true
         },
       ]
@@ -69,12 +69,12 @@ export class FlattenJSON extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    const columnName = config.column.value;
-    const columnIsNamed = config.column.named;
-    const const_ts_boolean_keepAll = config.boolean_keepColumns;
-	const const_ts_boolean_alllevels = config.boolean_alllevels;
-	const const_ts_inputnumber_maxlevel = config.boolean_alllevels ? "None" : config.inputnumber_maxlevel;
-	const const_ts_levelseparator=config.selectCustomizable_levelseparator;
+    const columnName = config.tsCFcolumnColumnToFlatten.value;
+    const columnIsNamed = config.tsCFcolumnColumnToFlatten.named;
+    const const_ts_boolean_keepAll = config.tsCFbooleanKeepColumns;
+	const const_ts_boolean_alllevels = config.tsCFbooleanAllLevels;
+	const const_ts_inputnumber_maxlevel = config.tsCFbooleanAllLevels ? "None" : config.tsCFinputNumberMaxLevel;
+	const const_ts_levelseparator=config.tsCFselectCustomizableLevelSeparator;
     const columnReference = columnIsNamed ? `'${columnName}'` : columnName;
 
     let code = `# Flatten JSON in the specified column\n`;

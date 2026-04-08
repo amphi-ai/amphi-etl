@@ -2,14 +2,13 @@ import { splitIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
 
-
 export class SplitColumn extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-	splitType: "columns",
-	regex: false,
-	keepOriginalColumn: false,
-	selectConvertResult : "none"
+	tsCFradiosplitType: "columns",
+	tsCFbooleanRegex: false,
+	tsCFbooleanKeepOriginalColumn: false,
+	tsCFselectCustomizableConvertResult : "none"
 	};
     const form = {
       idPrefix: "component__form",
@@ -17,7 +16,7 @@ export class SplitColumn extends BaseCoreComponent {
         {
           type: "radio",
           label: "Split Type",
-          id: "splitType",
+          id: "tsCFradiosplitType",
           options: [
             { value: "columns", label: "Split to columns" },
             { value: "rows", label: "Split to rows" }
@@ -27,13 +26,13 @@ export class SplitColumn extends BaseCoreComponent {
         {
           type: "column",
           label: "Column",
-          id: "column",
+          id: "tsCFcolumnColumnToSplit",
           placeholder: "Type column name",
         },
         {
           type: "selectCustomizable",
           label: "Delimiter",
-          id: "delimiter",
+          id: "tsCFselectCustomizableDelimiter",
           placeholder: "Select or type delimiter",
           options: [
             { value: ",", label: "comma (,)" },
@@ -47,40 +46,40 @@ export class SplitColumn extends BaseCoreComponent {
         {
           type: "boolean",
           label: "Is delimiter a regex?",
-          id: "regex",
+          id: "tsCFbooleanRegex",
           advanced: true
         },
         {
           type: "inputNumber",
           label: "Number of columns",
-          id: "numberColumns",
+          id: "tsCFinputNumberNumberColumns",
           placeholder: "auto",
           min: 1,
-          condition: { splitType: "columns" }
+          condition: { tsCFradiosplitType: "columns" }
         },
         {
           type: "input",
           label: "Name of new column",
           tooltip: "Mandatory if original column is kept",
-          id: "inputNameNewColumn",
-          condition: { splitType: "rows" }
+          id: "tsCFinputNameNewColumn",
+          condition: { tsCFradiosplitType: "rows" }
         },
         {
           type: "boolean",
           label: "Keep original column",
-          id: "keepOriginalColumn",
+          id: "tsCFbooleanKeepOriginalColumn",
           advanced: true
         },
 		{
           type: "selectCustomizable",
           label: "Convert result",
-          id: "selectConvertResult",
+          id: "tsCFselectCustomizableConvertResult",
           options: [
             { value: "none", label: "None" },
             { value: "string", label: "string" },
             { value: "auto", label: "auto (numeric or string)" }
           ],
-          condition: { splitType: "rows" },
+          condition: { tsCFradiosplitType: "rows" },
           advanced: true
         }
       ],
@@ -164,7 +163,7 @@ def py_fn_split_dataframe_to_rows(
 
     return df
     `;
-    if (config.splitType === "rows") {
+    if (config.tsCFradiosplitType === "rows") {
       return [tsSplit_Column_To_Row_Function]; 
     } else {
       return [];
@@ -174,9 +173,9 @@ def py_fn_split_dataframe_to_rows(
 
   public generateComponentCode({ config, inputName, outputName }): string {
     const prefix = config?.backend?.prefix ?? "pd";
-    const columnName = config.column.value; // name of the column
-    const columnType = config.column.type; // current type of the column (e.g., 'int', 'string')
-    const columnNamed = config.column.named; // boolean, true if column is named, false if index is used
+    const columnName = config.tsCFcolumnColumnToSplit.value; // name of the column
+    const columnType = config.tsCFcolumnColumnToSplit.type; // current type of the column (e.g., 'int', 'string')
+    const columnNamed = config.tsCFcolumnColumnToSplit.named; // boolean, true if column is named, false if index is used
   
     // Ensure unique variable names for intermediate dataframes
     const uniqueSplitVar = `${outputName}_split`;
@@ -194,43 +193,43 @@ def py_fn_split_dataframe_to_rows(
     }
   
     // Determine whether to use regex in the split
-    const regexOption = config.regex ? ", regex=True" : "";
+    const regexOption = config.tsCFbooleanRegex ? ", regex=True" : "";
   
     // Add the split logic based on splitType
-    if (config.splitType === "columns") {
+    if (config.tsCFradiosplitType === "columns") {
       // Split to columns
-      code += `${uniqueSplitVar} = ${inputName}[${columnAccess}].str.split("${config.delimiter}"${regexOption}, expand=True)\n`;
+      code += `${uniqueSplitVar} = ${inputName}[${columnAccess}].str.split("${config.tsCFselectCustomizableDelimiter}"${regexOption}, expand=True)\n`;
   
       // Rename the new columns to avoid any potential overlap
       code += `${uniqueSplitVar}.columns  = [f"${columnName}_{i}" for i in range(${uniqueSplitVar}.shape[1])]\n`;
   
       // If numberColumns is specified, keep only the desired number of columns
-      if (config.numberColumns > 0) {
-        code += `${uniqueSplitVar} = ${uniqueSplitVar}.iloc[:, :${config.numberColumns}]\n`;
+      if (config.tsCFinputNumberNumberColumns > 0) {
+        code += `${uniqueSplitVar} = ${uniqueSplitVar}.iloc[:, :${config.tsCFinputNumberNumberColumns}]\n`;
       }
   
       // Combine the original DataFrame with the new columns
       code += `${outputName} = ${prefix}.concat([${inputName}, ${uniqueSplitVar}], axis=1)\n`;
   
       // Check if the original column should be kept
-      if (!config.keepOriginalColumn) {
+      if (!config.tsCFbooleanKeepOriginalColumn) {
         code += `\n# Remove the original column used for split\n`;
         code += `${outputName}.drop(columns=[${columnAccess}], inplace=True)\n`;
       }
     }
 
-	else if (config.splitType === "rows") {
+	else if (config.tsCFradiosplitType === "rows") {
       // Split to rows. if we keep original column, we have to rename the new one. Moreover, assign only accept a kwarg like argument (so no quoted, so space..)
       const const_ts_column_to_split = columnNamed ? columnName : columnAccess; // Added to fix https://github.com/amphi-ai/amphi-etl/issues/235
-      const const_ts_boolean_keepOriginalColumn= config.keepOriginalColumn ? "True" : "False";
+      const const_ts_boolean_keepOriginalColumn= config.tsCFbooleanKeepOriginalColumn ? "True" : "False";
 	  //if null, undefined or empty
       const const_ts_new_column_name =
-      config.inputNameNewColumn && config.inputNameNewColumn.length > 0
-        ? config.inputNameNewColumn
+      config.tsCFinputNameNewColumn && config.tsCFinputNameNewColumn.length > 0
+        ? config.tsCFinputNameNewColumn
         : const_ts_column_to_split;
-	  const const_ts_split_delimiter = config.delimiter;
-	  const const_ts_boolean_is_regex= config.regex ? "False" : "True";
-	  const const_ts_convert_result=config.selectConvertResult;
+	  const const_ts_split_delimiter = config.tsCFselectCustomizableDelimiter;
+	  const const_ts_boolean_is_regex= config.tsCFbooleanRegex ? "False" : "True";
+	  const const_ts_convert_result=config.tsCFselectCustomizableConvertResult;
 	  code += `${outputName}=py_fn_split_dataframe_to_rows(df=${inputName},keep_original_column=${const_ts_boolean_keepOriginalColumn},column_to_split='${const_ts_column_to_split}',new_column_name='${const_ts_new_column_name}',split_delimiter='${const_ts_split_delimiter}',is_regex=${const_ts_boolean_is_regex},convert_result='${const_ts_convert_result}')\n`;
     }
   

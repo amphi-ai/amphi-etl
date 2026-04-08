@@ -4,9 +4,9 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 export class Console extends BaseCoreComponent {
   constructor() {
     const defaultConfig = { 
-	type: "Data",
-	dataFormat: "text",
-	message:""
+	tsCFselectType: "Data",
+	tsCFselectDataFormat: "text",
+	tsCFtextareaMessage:""
 	};
     const form = {
       idPrefix: "component__form",
@@ -14,7 +14,7 @@ export class Console extends BaseCoreComponent {
         {
           type: "select",
           label: "Type",
-          id: "type",
+          id: "tsCFselectType",
           placeholder: "Select type",
           options: [
             { value: "Info", label: "Info", tooltip: "Display a regular message in console." },
@@ -28,29 +28,29 @@ export class Console extends BaseCoreComponent {
         {
           type: "textarea",
           label: "Message",
-          id: "message",
+          id: "tsCFtextareaMessage",
           placeholder: "Write text message",
           advanced: true,
-          condition: { type: ["Info", "Error","Warning"] }
+          condition: { tsCFselectType: ["Info", "Error","Warning"] }
         },
         {
           type: "inputNumber",
           label: "Records limit",
-          id: "limit",
+          id: "tsCFinputNumberLimit",
           placeholder: "Number of records to print in console",
           min: 0,
-          condition: { type: "Data" },
+          condition: { tsCFselectType: "Data" },
           advanced: true
         },
         {
           type: "select",
           label: "Data Format",
-          id: "dataFormat",
+          id: "tsCFselectDataFormat",
           options: [
             { value: "text", label: "Text", tooltip: "Display data as text in console." },
             { value: "csv", label: "CSV", tooltip: "Display data as a csv in console." }
           ],
-          condition: { type: "Data" },
+          condition: { tsCFselectType: "Data" },
           advanced: true
         },
       ],
@@ -69,11 +69,11 @@ export class Console extends BaseCoreComponent {
   public provideImports({ config }): string[] {
     const imports = ["import pandas as pd"];
 
-    if (config.type === "Warning") {
+    if (config.tsCFselectType === "Warning") {
       imports.push("import warnings");
     }
 
-    if (config.type === "Markdown" || config.type === "HTML") {
+    if (config.tsCFselectType === "Markdown" || config.tsCFselectType === "HTML") {
       imports.push("from IPython.display import display, Markdown, HTML");
     }
 
@@ -83,22 +83,22 @@ export class Console extends BaseCoreComponent {
   public generateComponentCode({ config, inputName }): string {
     let code = "";
 
-    switch (config.type) {
+    switch (config.tsCFselectType) {
       case "Info":
-        code += `print("Info: ${config.message || ''}")\n`;
+        code += `print("Info: ${config.tsCFtextareaMessage || ''}")\n`;
         break;
       case "Warning":
-        code += `warnings.warn("${config.message || ''}")\n`;
+        code += `warnings.warn("${config.tsCFtextareaMessage || ''}")\n`;
         break;
       case "Error":
-        code += `raise Exception("Error: ${config.message || ''}")\n`;
+        code += `raise Exception("Error: ${config.tsCFtextareaMessage || ''}")\n`;
         break;
       case "Data":
-        if (config.limit) {
-          inputName += `.head(${config.limit})`;
+        if (config.tsCFinputNumberLimit) {
+          inputName += `.head(${config.tsCFinputNumberLimit})`;
         }
         // Handle different data formats
-        switch (config.dataFormat) {
+        switch (config.tsCFselectDataFormat) {
           case "text":
             code += `print(${inputName}.to_string(index=False))\n`;
             break;
@@ -110,10 +110,10 @@ export class Console extends BaseCoreComponent {
         }
         break;
       case "Markdown":
-        code += `display(Markdown("${config.message || ''}"))\n`;
+        code += `display(Markdown("${config.tsCFtextareaMessage || ''}"))\n`;
         break;
       case "HTML":
-        code += `display(HTML("${config.message || ''}"))\n`;
+        code += `display(HTML("${config.tsCFtextareaMessage || ''}"))\n`;
         break;
       default:
         code += `print(${inputName})\n`;
