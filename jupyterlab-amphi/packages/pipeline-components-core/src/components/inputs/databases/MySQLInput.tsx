@@ -9,7 +9,7 @@ export class MySQLInput extends BaseCoreComponent {
 		tsCFinputDatabaseName: "",
 		tsCFinputUserName: "",
 		tsCFinputPassword: "",
-		tsCFinputTableName: "",
+		tsCFtableTableName: "",
 		tsCFradioQueryMethod: "table"
 		};
     const form = {
@@ -70,7 +70,7 @@ export class MySQLInput extends BaseCoreComponent {
           type: "table",
           label: "Table Name",
           query: `SHOW TABLES;`,
-          id: "tsCFinputTableName",
+          id: "tsCFtableTableName",
           placeholder: "Enter table name",
           condition: { tsCFradioQueryMethod: "table" }
         },
@@ -117,7 +117,7 @@ ${connectionName} = sqlalchemy.create_engine("${connectionString}")
     const uniqueEngineName = `${outputName}_Engine`;
 
     // Build table reference if tableName exists
-    const tableReference = config.tsCFinputTableName?.value || null;
+    const tableReference = config.tsCFtableTableName?.value || null;
 
     let sqlQuery: string;
 

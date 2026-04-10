@@ -4,10 +4,10 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 export class MongoDBInput extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-      connectionString: "",
-      databaseName: "",
-      collectionName: "",
-      limit: ""
+      tsCFinputConnectionString: "",
+      tsCFinputDatabaseName: "",
+      tsCFinputCollectionName: "",
+      tsCFinputLimit: ""
     };
 
     const form = {
@@ -15,7 +15,7 @@ export class MongoDBInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Connection String",
-          id: "connectionString",
+          id: "tsCFinputConnectionString",
           placeholder:
             "mongodb+srv://user:pass@cluster0.example.mongodb.net/?retryWrites=true&w=majority",
           connection: "MongoDB",
@@ -24,21 +24,21 @@ export class MongoDBInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Database Name",
-          id: "databaseName",
+          id: "tsCFinputDatabaseName",
           placeholder: "Enter database name",
           connection: "MongoDB"
         },
         {
           type: "input",
           label: "Collection Name",
-          id: "collectionName",
+          id: "tsCFinputCollectionName",
           placeholder: "Enter collection name",
           connection: "MongoDB"
         },
         {
           type: "input",
           label: "Limit",
-          id: "limit",
+          id: "tsCFinputLimit",
           inputType: "number",
           placeholder: "Optional limit e.g. 100",
           advanced: true
@@ -67,12 +67,13 @@ export class MongoDBInput extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "from pymongo import MongoClient"];
+    return ["import pandas as pd",
+	"from pymongo import MongoClient"];
   }
 
   public provideFunctions({ config }): string[] {
-    const fn = `
-def mongodb_to_dataframe(connection_string, database_name, collection_name, limit=None):
+    const tsMongoDBInputFunction = `
+def py_fn_mongodb_to_dataframe(connection_string, database_name, collection_name, limit=None):
     with MongoClient(connection_string) as client:
         db = client[database_name]
         collection = db[collection_name]
@@ -85,17 +86,17 @@ def mongodb_to_dataframe(connection_string, database_name, collection_name, limi
                 doc['_id'] = str(doc['_id'])
         return pd.DataFrame(documents) if documents else pd.DataFrame()
 `;
-    return [fn];
+    return [tsMongoDBInputFunction];
   }
 
   public generateComponentCode({ config, outputName }): string {
-    const connectionString = (config.connectionString || "").replace(/"/g, '\\"');
-    const databaseName = (config.databaseName || "").replace(/"/g, '\\"');
-    const collectionName = (config.collectionName?.value ?? config.collectionName ?? "").replace(/"/g, '\\"');
-    const limit = config.limit ? parseInt(config.limit, 10) : null;
+    const connectionString = (config.tsCFinputConnectionString || "").replace(/"/g, '\\"');
+    const databaseName = (config.tsCFinputDatabaseName || "").replace(/"/g, '\\"');
+    const collectionName = (config.tsCFinputCollectionName?.value ?? config.tsCFinputCollectionName ?? "").replace(/"/g, '\\"');
+    const limit = config.tsCFinputLimit ? parseInt(config.tsCFinputLimit, 10) : null;
 
     return `
-${outputName} = mongodb_to_dataframe("${connectionString}", "${databaseName}", "${collectionName}", ${limit !== null ? limit : "None"})
+${outputName} = py_fn_mongodb_to_dataframe("${connectionString}", "${databaseName}", "${collectionName}", ${limit !== null ? limit : "None"})
 `.trim();
   }
 }

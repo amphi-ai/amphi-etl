@@ -1,18 +1,18 @@
 import { postgresIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 
-
 export class PostgresOutput extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-      host: "localhost",
-      port: "5432",
-      databaseName: "",
-      schema: "public",
-      username: "",
-      password: "",
-      ifTableExists: "fail",
-      mode: "insert"
+      tsCFinputHost: "localhost",
+      tsCFinputPort: "5432",
+      tsCFinputDatabaseName: "",
+      tsCFinputSchema: "public",
+      tsCFtableTableName: "",
+      tsCFinputUserName: "",
+      tsCFinputPassword: "",
+      tsCFradioIfTableExists: "fail",
+      tsCFradioMode: "insert"
     };
     const form = {
       idPrefix: "component__form",
@@ -20,7 +20,7 @@ export class PostgresOutput extends BaseCoreComponent {
         {
           type: "input",
           label: "Host",
-          id: "host",
+          id: "tsCFinputHost",
           placeholder: "Enter database host",
           connection: "Postgres",
           advanced: true
@@ -28,7 +28,7 @@ export class PostgresOutput extends BaseCoreComponent {
         {
           type: "input",
           label: "Port",
-          id: "port",
+          id: "tsCFinputPort",
           placeholder: "Enter database port",
           connection: "Postgres",
           advanced: true
@@ -36,28 +36,28 @@ export class PostgresOutput extends BaseCoreComponent {
         {
           type: "input",
           label: "Database Name",
-          id: "databaseName",
+          id: "tsCFinputDatabaseName",
           connection: "Postgres",
           placeholder: "Enter database name"
         },
         {
           type: "input",
           label: "Schema",
-          id: "schema",
+          id: "tsCFinputSchema",
           connection: "Postgres",
           placeholder: "Enter schema name",
         },
         {
           type: "table",
           label: "Table Name",
-          query: `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public';`,
-          id: "tableName",
+          query: `SELECT table_name FROM information_schema.tables WHERE table_schema = '{{tsCFinputSchema}}';`,
+          id: "tsCFtableTableName",
           placeholder: "Enter table name"
         },
         {
           type: "input",
           label: "Username",
-          id: "username",
+          id: "tsCFinputUserName",
           placeholder: "Enter username",
           connection: "Postgres",
           advanced: true
@@ -66,7 +66,7 @@ export class PostgresOutput extends BaseCoreComponent {
           type: "input",
           inputType: "password",
           label: "Password",
-          id: "password",
+          id: "tsCFinputPassword",
           connection: "Postgres",
           placeholder: "Enter password",
           advanced: true
@@ -74,7 +74,7 @@ export class PostgresOutput extends BaseCoreComponent {
         {
           type: "radio",
           label: "If Table Exists",
-          id: "ifTableExists",
+          id: "tsCFradioIfTableExists",
           options: [
             { value: "fail", label: "Fail" },
             { value: "replace", label: "Replace" },
@@ -85,7 +85,7 @@ export class PostgresOutput extends BaseCoreComponent {
         {
           type: "radio",
           label: "Mode",
-          id: "mode",
+          id: "tsCFradioMode",
           options: [
             { value: "insert", label: "INSERT" }
           ],
@@ -94,7 +94,7 @@ export class PostgresOutput extends BaseCoreComponent {
         {
           type: "dataMapping",
           label: "Mapping",
-          id: "mapping",
+          id: "tsCFdataMappingCustomMapping",
           tooltip: "By default the mapping is inferred from the input data. By specifying a schema you override the incoming schema.",
           outputType: "relationalDatabase",
           imports: ["psycopg2-binary"],
@@ -112,8 +112,8 @@ SELECT
 FROM 
     information_schema.columns
 WHERE 
-    table_schema = '{{schema}}' AND
-    table_name = '{{table}}';`,
+    table_schema = '{{tsCFinputSchema}}' AND
+    table_name = '{{tsCFtableTableName.value}}';`,
           pythonExtraction: `column_info = schema[[\"Field\", \"Type\"]]\nformatted_output = \", \".join([f\"{row['Field']} ({row['Type']})\" for _, row in column_info.iterrows()])\nprint(formatted_output)`,
           typeOptions: [
             { value: "SMALLINT", label: "SMALLINT" },
@@ -164,14 +164,18 @@ WHERE
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "import sqlalchemy", "import psycopg2"];
+    return [
+	"import pandas as pd",
+	"import sqlalchemy",
+	"import psycopg2"
+	];
   }
 
   public generateDatabaseConnectionCode({ config, connectionName }): string {
     return `
 # Connect to the Postgres database
 ${connectionName} = sqlalchemy.create_engine(
-  "postgresql://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}"
+  "postgresql://${config.tsCFinputUserName}:${config.tsCFinputPassword}@${config.tsCFinputHost}:${config.tsCFinputPort}/${config.tsCFinputDatabaseName}"
 )
 `;
   }
@@ -181,8 +185,8 @@ ${connectionName} = sqlalchemy.create_engine(
     let mappingsCode = "";
     let columnsCode = "";
 
-    if (config.mapping && config.mapping.length > 0) {
-      const renameMap = config.mapping
+    if (config.tsCFdataMappingCustomMapping && config.tsCFdataMappingCustomMapping.length > 0) {
+      const renameMap = config.tsCFdataMappingCustomMapping
         .filter(map => map.input && (map.input.value || typeof map.input.value === 'number'))
         .map(map => {
           if (map.input.value != map.value) {
@@ -203,7 +207,7 @@ ${inputName} = ${inputName}.rename(columns={${renameMap.join(", ")}})
 `;
       }
 
-      const selectedColumns = config.mapping
+      const selectedColumns = config.tsCFdataMappingCustomMapping
         .filter(map => map.value !== null && map.value !== undefined)
         .map(map => `"${map.value}"`)
         .join(', ');
@@ -216,11 +220,11 @@ ${inputName} = ${inputName}[[${selectedColumns}]]
       }
     }
 
-    const ifExistsAction = config.ifTableExists;
+    const ifExistsAction = config.tsCFradioIfTableExists;
 
-    const schemaParam = (config.schema && config.schema.toLowerCase() !== 'public')
+    const schemaParam = (config.tsCFinputSchema && config.tsCFinputSchema.toLowerCase() !== 'public')
       ? `,
-  schema="${config.schema}"`
+  schema="${config.tsCFinputSchema}"`
       : '';
 
     const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName });
@@ -231,7 +235,7 @@ ${mappingsCode}${columnsCode}
 # Write DataFrame to Postgres
 try:
     ${inputName}.to_sql(
-        name="${config.tableName.value}",
+        name="${config.tsCFtableTableName.value}",
         con=${uniqueEngineName},
         if_exists="${ifExistsAction}",
         index=False${schemaParam}

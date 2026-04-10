@@ -4,14 +4,14 @@ import { BaseCoreComponent } from '../../BaseCoreComponent'; // Adjust the impor
 export class SqlServerOutput extends BaseCoreComponent {
     constructor() {
         const defaultConfig = {
-            host: "localhost",
-            port: "1433",
-            databaseName: "",
-            username: "",
-            password: "",
-            tableName: "",
-            ifTableExists: "fail",
-            mode: "insert"
+            tsCFinputHost: "localhost",
+            tsCFinputPort: "1433",
+            tsCFinputDatabaseName: "",
+            tsCFinputUserName: "",
+            tsCFinputPassword: "",
+            tsCFtableTableName: "",
+            tsCFradioIfTableExists: "fail",
+            tsCFradioMode: "insert"
         };
         const form = {
             idPrefix: "component__form",
@@ -19,7 +19,7 @@ export class SqlServerOutput extends BaseCoreComponent {
                 {
                     type: "input",
                     label: "Host",
-                    id: "host",
+                    id: "tsCFinputHost",
                     placeholder: "Enter database host",
                     connection: "SQL Server",
                     advanced: true
@@ -27,7 +27,7 @@ export class SqlServerOutput extends BaseCoreComponent {
                 {
                     type: "input",
                     label: "Port",
-                    id: "port",
+                    id: "tsCFinputPort",
                     placeholder: "Enter database port",
                     connection: "SQL Server",
                     advanced: true
@@ -35,7 +35,7 @@ export class SqlServerOutput extends BaseCoreComponent {
                 {
                     type: "input",
                     label: "Database Name",
-                    id: "databaseName",
+                    id: "tsCFinputDatabaseName",
                     placeholder: "Enter database name",
                     connection: "SQL Server",
                     advanced: true
@@ -43,7 +43,7 @@ export class SqlServerOutput extends BaseCoreComponent {
                 {
                     type: "input",
                     label: "Username",
-                    id: "username",
+                    id: "tsCFinputUserName",
                     placeholder: "Enter username",
                     connection: "SQL Server",
                     advanced: true
@@ -51,7 +51,7 @@ export class SqlServerOutput extends BaseCoreComponent {
                 {
                     type: "input",
                     label: "Password",
-                    id: "password",
+                    id: "tsCFinputPassword",
                     placeholder: "Enter password",
                     connection: "SQL Server",
                     inputType: "password",
@@ -61,13 +61,13 @@ export class SqlServerOutput extends BaseCoreComponent {
                     type: "table",
                     label: "Table Name",
                     query: `SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE';`,
-                    id: "tableName",
+                    id: "tsCFtableTableName",
                     placeholder: "Enter table name"
                 },
                 {
                     type: "radio",
                     label: "If Table Exists",
-                    id: "ifTableExists",
+                    id: "tsCFradioIfTableExists",
                     options: [
                         { value: "fail", label: "Fail" },
                         { value: "replace", label: "Replace" },
@@ -78,7 +78,7 @@ export class SqlServerOutput extends BaseCoreComponent {
                 {
                     type: "radio",
                     label: "Mode",
-                    id: "mode",
+                    id: "tsCFradioMode",
                     options: [
                         { value: "insert", label: "INSERT" }
                     ],
@@ -87,7 +87,7 @@ export class SqlServerOutput extends BaseCoreComponent {
                 {
                     type: "dataMapping",
                     label: "Mapping",
-                    id: "mapping",
+                    id: "tsCFdataMappingCustomMapping",
                     tooltip: "By default, the mapping is inferred from the input data. By specifying a schema, you override the incoming schema.",
                     outputType: "relationalDatabase",
                     imports: ["pyodbc"],
@@ -100,7 +100,7 @@ SELECT
     COLUMN_DEFAULT AS "Default",
     '' AS "Extra"
 FROM INFORMATION_SCHEMA.COLUMNS
-WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
+WHERE TABLE_NAME = '{{tsCFtableTableName.value}}' AND TABLE_SCHEMA = 'dbo';
 `,
                     typeOptions: [
                         { value: "INT", label: "INT" },
@@ -136,7 +136,7 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
                 {
                     type: "info",
                     label: "Drivers installation",
-                    id: "driversInstallation",
+                    id: "tsCFinfoDriversInstallation",
                     text: "You may need to install additional drivers on your machine for this component to function.\nFor Mac you need to install 'brew install unixodbc'",
                     advanced: true
                 },
@@ -152,14 +152,17 @@ WHERE TABLE_NAME = '{{table}}' AND TABLE_SCHEMA = 'dbo';
     }
 
     public provideImports({ config }): string[] {
-        return ["import pandas as pd", "import sqlalchemy", "import pyodbc"];
+        return [
+		"import pandas as pd",
+		"import sqlalchemy",
+		"import pyodbc"];
     }
 
     public generateDatabaseConnectionCode({ config, connectionName }): string {
         return `
 # Connect to the SQL Server database
 ${connectionName} = sqlalchemy.create_engine(
-  "mssql+pyodbc://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}?driver=ODBC+Driver+17+for+SQL+Server"
+  "mssql+pyodbc://${config.tsCFinputUserName}:${config.tsCFinputPassword}@${config.tsCFinputHost}:${config.tsCFinputPort}/${config.tsCFinputDatabaseName}?driver=ODBC+Driver+17+for+SQL+Server"
 )
 `;
     }
@@ -170,8 +173,8 @@ ${connectionName} = sqlalchemy.create_engine(
         let mappingsCode = "";
         let columnsCode = "";
 
-        if (config.mapping && config.mapping.length > 0) {
-            const renameMap = config.mapping
+        if (config.tsCFdataMappingCustomMapping && config.tsCFdataMappingCustomMapping.length > 0) {
+            const renameMap = config.tsCFdataMappingCustomMapping
                 .filter(map => map.input && map.input.value !== undefined && map.input.value !== null)
                 .map(map => {
                     if (map.input.value != map.value) {
@@ -188,7 +191,7 @@ ${connectionName} = sqlalchemy.create_engine(
     `;
             }
 
-            const selectedColumns = config.mapping
+            const selectedColumns = config.tsCFdataMappingCustomMapping
                 .filter(map => map.value !== null && map.value !== undefined)
                 .map(map => `"${map.value}"`)
                 .join(', ');
@@ -201,7 +204,7 @@ ${connectionName} = sqlalchemy.create_engine(
             }
         }
 
-        const ifExistsAction = config.ifTableExists;
+        const ifExistsAction = config.tsCFradioIfTableExists;
 
         const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName });
 
@@ -211,7 +214,7 @@ ${mappingsCode}${columnsCode}
 # Write DataFrame to SQL Server
 try:
     ${inputName}.to_sql(
-        name="${config.tableName}",
+        name="${config.tsCFtableTableName}",
         con=${uniqueEngineName},
         if_exists="${ifExistsAction}",
         index=False,

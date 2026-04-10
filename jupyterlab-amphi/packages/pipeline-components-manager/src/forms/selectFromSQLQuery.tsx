@@ -106,7 +106,7 @@ export const SelectFromSQLQuery: React.FC<SelectFromSQLQueryProps> = ({
                 onClick={(event) =>
                   RequestService.retrieveTableList(
                     event,
-                    `${data.schema ?? 'public'}`,
+                    `${data.tsCFinputSchema ?? 'public'}`,
                     field.query,
                     context,
                     componentService,

@@ -84,7 +84,7 @@ export class DatabaseInput extends BaseCoreComponent {
     const seen = new Set<string>();
     return imports.filter(i => (seen.has(i) ? false : (seen.add(i), true)));
   }
-
+ //why not all db?
   public generateDatabaseConnectionCode({ config, connectionName }): string {
     switch (config.tsCFselectProvider) {
       case "mysql": return new MySQLInput().generateDatabaseConnectionCode({ config, connectionName });

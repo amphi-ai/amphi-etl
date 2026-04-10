@@ -5,7 +5,7 @@ export class SnowflakeInput extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
 		schema: "PUBLIC",
-		tsCFinputTableName: "",
+		tsCFtableTableName: "",
 		tsCFradioQueryMethod: "table" };
     const form = {
       fields: [
@@ -73,7 +73,7 @@ export class SnowflakeInput extends BaseCoreComponent {
           type: "table",
           label: "Table Name",
           query: `SELECT table_name FROM information_schema.tables WHERE table_schema = '{{schema}}'`,
-          id: "tsCFinputTableName",
+          id: "tsCFtableTableName",
           placeholder: "Enter table name",
           condition: { tsCFradioQueryMethod: "table" }
         },
@@ -131,10 +131,10 @@ ${connectionName} = sqlalchemy.create_engine(URL(
     const uniqueEngineName = `${outputName}_Engine`;
 
     // Build table reference with optional schema
-    const tableReference = config.tsCFinputTableName?.value
+    const tableReference = config.tsCFtableTableName?.value
       ? (config.schema && config.schema.toLowerCase() !== 'public')
-        ? `"${config.schema}"."${config.tsCFinputTableName.value}"`
-        : `"${config.tsCFinputTableName.value}"`
+        ? `"${config.schema}"."${config.tsCFtableTableName.value}"`
+        : `"${config.tsCFtableTableName.value}"`
       : null;
 
     let sqlQuery: string;

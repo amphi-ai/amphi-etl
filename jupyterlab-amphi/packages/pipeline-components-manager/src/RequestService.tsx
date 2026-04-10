@@ -448,8 +448,8 @@ print(formatted_output)
     // Escape and replace schema and table in the query
     let escapedQuery = query.replace(/"/g, '\\"');
     escapedQuery = escapedQuery
-      .replace(/{{schema}}/g, schemaName)
-      .replace(/{{table}}/g, tableName);
+      .replace(/{{tsCFinputSchema}}/g, schemaName)
+      .replace(/{{tsCFtableTableName.value}}/g, tableName);
 
     // Get environment and connection code
     const envVariableCode = CodeGenerator.getEnvironmentVariableCode(
@@ -769,7 +769,7 @@ print(formatted_output)
     // Prepare query as a regex filter; default to match all
     const rawQuery = query ?? ".*";
     let escapedQuery = rawQuery.replace(/"/g, '\\"');
-    escapedQuery = escapedQuery.replace(/{{schema}}/g, schemaName);
+    escapedQuery = escapedQuery.replace(/{{tsCFinputSchema}}/g, schemaName);
 
     // Get environment and connection code
     const envVariableCode = CodeGenerator.getEnvironmentVariableCode(
