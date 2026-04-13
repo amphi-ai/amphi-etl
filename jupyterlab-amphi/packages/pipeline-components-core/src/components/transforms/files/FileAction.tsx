@@ -4,14 +4,14 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 export class FileAction extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-      action_on_file_all: "move",
-      source_file_path : "",
-      action_on_file : "",
-      destination_path : "",
-      file_new_name : "",
-      overwrite_file_if_exists : "",
-      retry_count : 0,
-      boolean_raise_error : true
+      tsCFradioActionOnFileAll: "move",
+      tsCFcolumnSourceFilePath : "",
+      tsCFcolumnActionOnFile : "",
+      tsCFcolumnDestinationPath : "",
+      tsCFcolumnFileNewName : "",
+      tsCFcolumnOverwriteFileIfExists : "",
+      tsCFcolumnRetryCount : 0,
+      tsCFbooleanRaiseError : true
     };
 
     const form = {
@@ -20,7 +20,7 @@ export class FileAction extends BaseCoreComponent {
         {
           type: "radio",
           label: "Action on file",
-          id: "action_on_file_all",
+          id: "tsCFradioActionOnFileAll",
           options: [
             { value: "move", label: "Move" },
             { value: "delete", label: "Delete" },
@@ -36,7 +36,7 @@ export class FileAction extends BaseCoreComponent {
           type: "column",
           label: "Source file path",
           allowedTypes: ["string"],
-          id: "source_file_path",
+          id: "tsCFcolumnSourceFilePath",
           placeholder: "Column name",
           advanced: true
         },
@@ -45,9 +45,9 @@ export class FileAction extends BaseCoreComponent {
           label: "Action on file",
           tooltip: "Action to perform: move, delete, copy, rename, zip,create as empty (string)",
           allowedTypes: ["string"],
-          id: "action_on_file",
+          id: "tsCFcolumnActionOnFile",
           placeholder: "Column name",
-          condition: { action_on_file_all: ""},
+          condition: { tsCFradioActionOnFileAll: ""},
           advanced: true
         },
         {
@@ -55,9 +55,9 @@ export class FileAction extends BaseCoreComponent {
           label: "Destination path",
           tooltip: "Destination path such as C:/windows/result/file.txt or /your/destination/path",
           allowedTypes: ["string"],
-          id: "destination_path",
+          id: "tsCFcolumnDestinationPath",
           placeholder: "/your/destination/path",
-          condition: { action_on_file_all: ["","move","copy"]},
+          condition: { tsCFradioActionOnFileAll: ["","move","copy"]},
           advanced: true
         },
         {
@@ -65,25 +65,25 @@ export class FileAction extends BaseCoreComponent {
           label: "New name",
           tooltip: "New name for the file",
           allowedTypes: ["string"],
-          id: "file_new_name",
+          id: "tsCFcolumnFileNewName",
           placeholder: "Column name",
-          condition: { action_on_file_all: ["","rename"]},
+          condition: { tsCFradioActionOnFileAll: ["","rename"]},
           advanced: true
         },
         {
           type: "column",
-          label: "Overwrite if exists (boolean)",
-          id: "overwrite_file_if_exists",
+          label: "Overwrite if exists (boolean column)",
+          id: "tsCFcolumnOverwriteFileIfExists",
           placeholder: "Column name",
           allowedTypes: ["bool"],
-          condition: { action_on_file_all: ["","move","copy","zip","rename"]},
+          condition: { tsCFradioActionOnFileAll: ["","move","copy","zip","rename"]},
           advanced: true
         },
         {
           type: "column",
           label: "Retry Count(integer)",
           allowedTypes: ["numeric"],
-          id: "retry_count",
+          id: "tsCFcolumnRetryCount",
           placeholder: "Column name",
           advanced: true
         },
@@ -91,7 +91,7 @@ export class FileAction extends BaseCoreComponent {
           type: "boolean",
           label: "Raise an error",
           tooltip: "Raise an error and stop execution",
-          id: "boolean_raise_error",
+          id: "tsCFbooleanRaiseError",
           advanced: true
          }
       ],
@@ -265,21 +265,21 @@ def handle_file_safe(file_path, action, destination=None, new_name=None, overwri
 
   // Generate the Python execution script
 public generateComponentCode({ config, inputName, outputName }: { config: any; inputName: string; outputName: string }): string {
-const source_file_path_value =  config.source_file_path?.value ?? "";
-console.log(source_file_path_value);
-const destination_path_value = config.destination_path?.value ?? "";
-console.log(destination_path_value);
-const action_on_file_value = config.action_on_file?.value ?? "";
-console.log(action_on_file_value);
-const file_new_name_value = config.file_new_name?.value ?? "";
-console.log(file_new_name_value);
-const overwrite_file_if_exists_value = config.overwrite_file_if_exists?.value ?? "";
-console.log(overwrite_file_if_exists_value);
-const retry_count_value = config.retry_count?.value ?? "";
-console.log(retry_count_value);
-const action_on_file_all_value = config.action_on_file_all ?? "";
-console.log(action_on_file_all_value);
-const raise_on_error=config.boolean_raise_error ? "True" : "False";
+const source_file_path_value =  config.tsCFcolumnSourceFilePath?.value ?? "";
+//console.log(source_file_path_value);
+const destination_path_value = config.tsCFcolumnDestinationPath?.value ?? "";
+//console.log(destination_path_value);
+const action_on_file_value = config.tsCFcolumnActionOnFile?.value ?? "";
+//console.log(action_on_file_value);
+const file_new_name_value = config.tsCFcolumnFileNewName?.value ?? "";
+//console.log(file_new_name_value);
+const overwrite_file_if_exists_value = config.tsCFcolumnOverwriteFileIfExists?.value ?? "";
+//console.log(overwrite_file_if_exists_value);
+const retry_count_value = config.tsCFcolumnRetryCount?.value ?? "";
+//console.log(retry_count_value);
+const action_on_file_all_value = config.tsCFradioActionOnFileAll ?? "";
+//console.log(action_on_file_all_value);
+const raise_on_error=config.tsCFbooleanRaiseError ? "True" : "False";
     return `
 # Execute the file action function
 ${outputName} = []

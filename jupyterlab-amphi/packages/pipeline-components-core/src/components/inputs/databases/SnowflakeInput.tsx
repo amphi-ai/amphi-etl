@@ -4,15 +4,15 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';// Adjust the import
 export class SnowflakeInput extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-		schema: "PUBLIC",
-		tsCFtableTableName: "",
+		tsCFinputSchema: "PUBLIC",
+		tsCFinputTableName: "",
 		tsCFradioQueryMethod: "table" };
     const form = {
       fields: [
         {
           type: "input",
           label: "Account",
-          id: "account",
+          id: "tsCFinputAccount",
           placeholder: "Enter Account",
           connection: "Snowflake",
           advanced: true
@@ -20,7 +20,7 @@ export class SnowflakeInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Database Name",
-          id: "database",
+          id: "tsCFinputDatabase",
           connection: "Snowflake",
           placeholder: "Enter database name",
           advanced: true
@@ -45,7 +45,7 @@ export class SnowflakeInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Warehouse",
-          id: "warehouse",
+          id: "tsCFinputWarehouse",
           placeholder: "Enter warehouse name",
           connection: "Snowflake",
           advanced: true
@@ -53,7 +53,7 @@ export class SnowflakeInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Schema",
-          id: "schema",
+          id: "tsCFinputSchema",
           connection: "Snowflake",
           placeholder: "Enter schema name",
           advanced: true
@@ -72,8 +72,8 @@ export class SnowflakeInput extends BaseCoreComponent {
         {
           type: "table",
           label: "Table Name",
-          query: `SELECT table_name FROM information_schema.tables WHERE table_schema = '{{schema}}'`,
-          id: "tsCFtableTableName",
+          query: `SELECT table_name FROM information_schema.tables WHERE table_schema = '{{tsCFinputSchema}}'`,
+          id: "tsCFinputTableName",
           placeholder: "Enter table name",
           condition: { tsCFradioQueryMethod: "table" }
         },
@@ -88,10 +88,11 @@ export class SnowflakeInput extends BaseCoreComponent {
           condition: { tsCFradioQueryMethod: "query" },
           advanced: true
         },
+		//not used??
         {
           type: "input",
           label: "Role (Optional)",
-          id: "role",
+          id: "tsCFinputRole",
           placeholder: "Role name",
           advanced: true
         }
@@ -109,32 +110,36 @@ export class SnowflakeInput extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "import sqlalchemy", "import urllib.parse", "from snowflake.sqlalchemy import URL"];
+    return [
+	"import pandas as pd",
+	"import sqlalchemy",
+	"import urllib.parse",
+	"from snowflake.sqlalchemy import URL"];
   }
 
   public generateDatabaseConnectionCode({ config, connectionName }): string {
     const connectionCode = `
 # Connect to the Snowflake database
 ${connectionName} = sqlalchemy.create_engine(URL(
-    account = '${config.account}',
+    account = '${config.tsCFinputAccount}',
     user = '${config.tsCFinputUserName}',
     password = urllib.parse.quote("${config.tsCFinputPassword}"),
-    database = '${config.database}',
-    schema = '${config.schema}',
-    warehouse = '${config.warehouse}'
+    database = '${config.tsCFinputDatabase}',
+    schema = '${config.tsCFinputSchema}',
+    warehouse = '${config.tsCFinputWarehouse}'
 ))
 `;
     return connectionCode;
   }
 
   public generateComponentCode({ config, outputName }): string {
-    const uniqueEngineName = `${outputName}_Engine`;
+     const uniqueEngineName = `${outputName}_Engine`;
 
     // Build table reference with optional schema
-    const tableReference = config.tsCFtableTableName?.value
-      ? (config.schema && config.schema.toLowerCase() !== 'public')
-        ? `"${config.schema}"."${config.tsCFtableTableName.value}"`
-        : `"${config.tsCFtableTableName.value}"`
+    const tableReference = config.tsCFinputTableName?.value
+      ? (config.tsCFinputSchema && config.tsCFinputSchema.toLowerCase() !== 'public')
+        ? `"${config.tsCFinputSchema}"."${config.tsCFinputTableName.value}"`
+        : `"${config.tsCFinputTableName.value}"`
       : null;
 
     let sqlQuery: string;

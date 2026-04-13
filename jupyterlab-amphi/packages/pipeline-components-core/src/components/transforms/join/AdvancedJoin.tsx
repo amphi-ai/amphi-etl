@@ -4,10 +4,10 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 export class AdvancedJoin extends BaseCoreComponent {
     constructor() {
         const defaultConfig = {
-            selectExecutionEngine: "pandas",
-            selectJoinType: "left",
-            selectActionIfCartesianProduct: "0",
-            selectSameNameStrategy: "suffix_right"
+            tsCFselectExecutionEngine: "pandas",
+            tsCFselectJoinType: "left",
+            tsCFselectActionIfCartesianProduct: "0",
+            tsCFselectSameNameStrategy: "suffix_right"
         };
         const form = {
             idPrefix: "component__form",
@@ -15,7 +15,7 @@ export class AdvancedJoin extends BaseCoreComponent {
                 {
                     type: "select",
                     label: "Join type",
-                    id: "selectJoinType",
+                    id: "tsCFselectJoinType",
                     //placeholder: "Default: left", (no placeholder because defined in defaultConfig)
                     options: [
                         { value: "inner", label: "Inner", tooltip: "Return only the rows with matching keys in both datasets (intersection)." },
@@ -32,7 +32,7 @@ export class AdvancedJoin extends BaseCoreComponent {
                 {
                     type: "columnOperationColumn",
                     label: "Join Conditions",
-                    id: "joinConditions",
+                    id: "tsCFcolumnOperationColumnJoinConditions",
                     tooltip: "Define one or more join conditions with left column, operator, and right column.",
                     options: [
                         { value: "=", label: "=" },
@@ -41,7 +41,7 @@ export class AdvancedJoin extends BaseCoreComponent {
                         { value: ">=", label: ">=" },
                         { value: "<=", label: "<=" }
                     ],
-                    operatorControlFieldId: "selectExecutionEngine",
+                    operatorControlFieldId: "tsCFselectExecutionEngine",
                     operatorLockedValues: ["pandas"],
                     operatorLockedWhenMissing: true
                 },
@@ -49,35 +49,35 @@ export class AdvancedJoin extends BaseCoreComponent {
                     type: "select",
                     label: "Cartesian Product",
                     tooltip: "If the join keys contain duplicates, the result may multiply rows (Cartesian product). Choose how to handle this situation: continue, raise an error, or raise a warning.",
-                    id: "selectActionIfCartesianProduct",
+                    id: "tsCFselectActionIfCartesianProduct",
                     columnId: 1,
                     options: [
                         { value: "0", label: "Default", tooltip: "No action, execution of the join will continue." },
                         { value: "2", label: "Raise error if Cartesian product is detected", tooltip: "Execution will be stopped." },
                         { value: "3", label: "Raise warning if Cartesian product is detected", tooltip: "Execution will continue." }
                     ],
-                    condition: { selectJoinType: ["inner", "left", "right", "outer", "anti-right", "anti-left"] },
+                    condition: { tsCFselectJoinType: ["inner", "left", "right", "outer", "anti-right", "anti-left"] },
                     advanced: true
                 }
                 ,
                 {
                     type: "select",
                     label: "Strategy for same names",
-                    id: "selectSameNameStrategy",
+                    id: "tsCFselectSameNameStrategy",
                     columnId: 1,
                     options: [
                         { value: "suffix_right", label: "Add _right suffix", tooltip: "If both datasets have columns with the same name, add '_right' to the columns from the right dataset." },
                         { value: "suffix_both", label: "Add _left and _right suffixes", tooltip: "If both datasets have columns with the same name, add '_left' to the columns from the left dataset and '_right' to the columns from the right dataset." },
                         { value: "coalesce", label: "Coalesce", tooltip: "If both datasets have columns with the same name, keep only one column. Fill missing values with data from the right dataset when the left one is empty." }
                     ],
-                    condition: { selectJoinType: ["inner", "left", "right", "outer", "cross"] },
+                    condition: { tsCFselectJoinType: ["inner", "left", "right", "outer", "cross"] },
                     advanced: true
                 }
                 ,
                 {
                     type: "select",
                     label: "Execution Engine",
-                    id: "selectExecutionEngine",
+                    id: "tsCFselectExecutionEngine",
                     placeholder: "Default: Pandas",
                     options: [
                         { value: "pandas", label: "Pandas", tooltip: "Mature, easy-to-use, great for small-to-medium datasets." },
@@ -93,22 +93,8 @@ export class AdvancedJoin extends BaseCoreComponent {
         super("Join Datasets", "join", description, "pandas_df_double_processor", [], "transforms", joinIcon, defaultConfig, form);
     }
 
-    //now always available through requirements.txt
-    //    public provideDependencies({ config }): string[] {
-    //        const engine = config?.selectExecutionEngine ?? "pandas";
-    //        const deps: string[] = [];
-    //
-    //        if (engine === "polars") {
-    //            deps.push("polars", "pyarrow");
-    //        } else if (engine === "duckdb") {
-    //            deps.push("duckdb", "pyarrow");
-    //        }
-    //        // pandas assumed available, no extra deps
-    //        return deps;
-    //    }
-
     public provideImports({ config }): string[] {
-        const engine = config?.selectExecutionEngine ?? "pandas";
+        const engine = config?.tsCFselectExecutionEngine ?? "pandas";
         //pandas always necessary, since output and input are still pandas df
         const imports = ["import pandas as pd", "import warnings"];
 
@@ -557,10 +543,10 @@ def advanced_join_with_operations(df1, df2, conditions, join_type='inner', same_
 
     public generateComponentCode({ config, inputName1, inputName2, outputName }): string {
 
-        const const_ts_execution_engine = config.selectExecutionEngine ?? "pandas";
+        const const_ts_execution_engine = config.tsCFselectExecutionEngine ?? "pandas";
         const rawJoinConditions =
-            config.joinConditions && config.joinConditions.length > 0
-                ? config.joinConditions
+            config.tsCFcolumnOperationColumnJoinConditions && config.tsCFcolumnOperationColumnJoinConditions.length > 0
+                ? config.tsCFcolumnOperationColumnJoinConditions
                 : (config.leftKeyColumn || []).map((leftColumn, index) => ({
                     leftColumn,
                     operation: "=",
@@ -573,9 +559,9 @@ def advanced_join_with_operations(df1, df2, conditions, join_type='inner', same_
 
         const const_ts_leftKeys = joinConditions.map(condition => formatColumnReference(condition.leftColumn));
         const const_ts_rightKeys = joinConditions.map(condition => formatColumnReference(condition.rightColumn));
-        const const_ts_joinType = config.selectJoinType ?? "left";
-        const const_ts_action_if_cartesian_product = config.selectActionIfCartesianProduct ?? "0";
-        const const_ts_selectSameNameStrategy = config.selectSameNameStrategy ?? "suffix_right";
+        const const_ts_joinType = config.tsCFselectJoinType ?? "left";
+        const const_ts_action_if_cartesian_product = config.tsCFselectActionIfCartesianProduct ?? "0";
+        const const_ts_selectSameNameStrategy = config.tsCFselectSameNameStrategy ?? "suffix_right";
         const const_ts_leftKeysStr = `[${const_ts_leftKeys.join(', ')}]`;
         const const_ts_rightKeysStr = `[${const_ts_rightKeys.join(', ')}]`;
         const conditionsStr = `[${joinConditions

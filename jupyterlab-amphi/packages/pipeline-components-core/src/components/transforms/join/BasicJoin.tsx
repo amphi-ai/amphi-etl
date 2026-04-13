@@ -3,14 +3,16 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class Join extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { selectJoinType: "left" };
+    const defaultConfig = {
+		tsCFselectJoinType: "left"
+		};
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "select",
           label: "Join type",
-          id: "selectJoinType",
+          id: "tsCFselectJoinType",
           placeholder: "Default: Inner",
           options: [
             { value: "inner", label: "Inner", tooltip: "Return only the rows with matching keys in both datasets (intersection)." },
@@ -25,7 +27,7 @@ export class Join extends BaseCoreComponent {
         {
           type: "columnOperationColumn",
           label: "Join Conditions",
-          id: "joinConditions",
+          id: "tsCFcolumnOperationColumnJoinConditions",
           tooltip: "Define one or more join conditions with left column, operator, and right column.",
           options: [
             { value: "=", label: "=" },
@@ -146,10 +148,10 @@ def join_with_column_operations(df_left, df_right, conditions, join_type="inner"
   public generateComponentCode({ config, inputName1, inputName2, outputName }): string {
 
     const prefix = config?.backend?.prefix ?? "pd";
-    const joinType = config.selectJoinType || "left";
+    const joinType = config.tsCFselectJoinType || "left";
     const rawJoinConditions =
-      config.joinConditions && config.joinConditions.length > 0
-        ? config.joinConditions
+      config.tsCFcolumnOperationColumnJoinConditions && config.tsCFcolumnOperationColumnJoinConditions.length > 0
+        ? config.tsCFcolumnOperationColumnJoinConditions
         : (config.leftKeyColumn || []).map((leftColumn, index) => ({
           leftColumn,
           operation: "=",

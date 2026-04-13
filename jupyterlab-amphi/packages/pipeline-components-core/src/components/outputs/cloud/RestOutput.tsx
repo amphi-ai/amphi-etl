@@ -3,20 +3,25 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class RestOutput extends BaseCoreComponent {
     constructor() {
-        const defaultConfig = { method: "POST", recordStructure: "records", headers: [] };
+        const defaultConfig = {
+            tsCFinputUrl : "",
+			tsCFradioMethod: "POST",
+			tsCFselectRecordStructure: "records",
+			tsCFkeyvalueHeaders: [] 
+			};
         const form = {
             idPrefix: "component__form",
             fields: [
                 {
                     type: "input",
                     label: "URL",
-                    id: "url",
+                    id: "tsCFinputUrl",
                     placeholder: "Endpoint URL",
                 },
                 {
                     type: "radio",
                     label: "Method",
-                    id: "method",
+                    id: "tsCFradioMethod",
                     options: [
                         { value: "POST", label: "POST" },
                         { value: "PUT", label: "PUT" }
@@ -25,13 +30,13 @@ export class RestOutput extends BaseCoreComponent {
                 {
                     type: "keyvalue",
                     label: "Headers",
-                    id: "headers",
+                    id: "tsCFkeyvalueHeaders",
                     advanced: true
                 },
                 {
                     type: "select",
                     label: "Body Structure",
-                    id: "recordStructure",
+                    id: "tsCFselectRecordStructure",
                     options: [
                         { value: "records", label: "Each row is converted to a JSON record as body (multiple requests)." },
                         { value: "list", label: "Each row is added to a JSON list as body (single request)." },
@@ -44,7 +49,7 @@ export class RestOutput extends BaseCoreComponent {
                     label: "Record Template",
                     height: '250px',
                     mode: "json",
-                    id: "recordTemplate",
+                    id: "tsCFcodeTextareaRecordTemplate",
                     tooltip: "Use {{column_name}} for dynamic values from the input dataframe.",
                     advanced: true
                 }
@@ -59,11 +64,11 @@ export class RestOutput extends BaseCoreComponent {
     }
 
     public generateComponentCode({ config, inputName }): string {
-        const headersParam = config.headers && config.headers.length > 0
+        const headersParam = config.tsCFkeyvalueHeaders && config.tsCFkeyvalueHeaders.length > 0
             ? 'headers={' + config.headers.map(header => `"${header.key}": "${header.value}"`).join(', ') + '}, '
             : '';
 
-        const recordTemplate = config.recordTemplate ? config.recordTemplate : '{}';
+        const recordTemplate = config.tsCFcodeTextareaRecordTemplate ? config.tsCFcodeTextareaRecordTemplate : '{}';
 
         const replaceVariables = (template: string, inputName: string) => {
             return template.replace(/{{(\w+)}}/g, (_, columnName) => `\${row['${columnName}']}`);
@@ -71,26 +76,26 @@ export class RestOutput extends BaseCoreComponent {
 
         const generatePythonCode = () => {
             let bodyCode: string;
-            switch (config.recordStructure) {
+            switch (config.tsCFselectRecordStructure) {
                 case 'records':
                     bodyCode = `
 for index, row in ${inputName}.iterrows():
     data = ${replaceVariables(recordTemplate, 'row')}
-    response = requests.${config.method.toLowerCase()}("${config.url}", json=data, ${headersParam})
+    response = requests.${config.tsCFradioMethod.toLowerCase()}("${config.tsCFinputUrl}", json=data, ${headersParam})
     print(response.json())
 `;
                     break;
                 case 'list':
                     bodyCode = `
 data = [${replaceVariables(recordTemplate, inputName)} for index, row in ${inputName}.iterrows()]
-response = requests.${config.method.toLowerCase()}("${config.url}", json=data, ${headersParam})
+response = requests.${config.tsCFradioMethod.toLowerCase()}("${config.tsCFinputUrl}", json=data, ${headersParam})
 print(response.json())
 `;
                     break;
                 case 'document':
                     bodyCode = `
 data = ${inputName}.to_dict(orient='records')
-response = requests.${config.method.toLowerCase()}("${config.url}", json=data, ${headersParam})
+response = requests.${config.tsCFradioMethod.toLowerCase()}("${config.tsCFinputUrl}", json=data, ${headersParam})
 print(response.json())
 `;
                     break;

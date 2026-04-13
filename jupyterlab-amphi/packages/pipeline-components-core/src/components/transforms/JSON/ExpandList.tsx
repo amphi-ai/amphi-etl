@@ -1,8 +1,5 @@
 import { expandJsonIcon } from '../../../icons';
-
 import { BaseCoreComponent } from '../../BaseCoreComponent';
-
-
 
 export class ExpandList extends BaseCoreComponent {
   constructor() {
@@ -13,7 +10,7 @@ export class ExpandList extends BaseCoreComponent {
         {
           type: "column",
           label: "Column",
-          id: "column",
+          id: "tsCFcolumnColumnToExpand",
           placeholder: "Select column",
         }
       ]
@@ -30,9 +27,9 @@ export class ExpandList extends BaseCoreComponent {
   public generateComponentCode({ config, inputName, outputName }): string {
     // Start generating the code string
 
-    const columnName = config.column.value;
-    const columnType = config.column.type;
-    const columnIsNamed = config.column.named;
+    const columnName = config.tsCFcolumnColumnToExpand.value;
+    const columnType = config.tsCFcolumnColumnToExpand.type;
+    const columnIsNamed = config.tsCFcolumnColumnToExpand.named;
 
     let columnReference: string;
     columnReference = columnIsNamed ? `'${columnName}'` : columnName;

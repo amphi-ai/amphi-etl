@@ -1,8 +1,6 @@
 import { renameIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 
-
-
 export class ManualRenameColumns extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {};
@@ -12,7 +10,7 @@ export class ManualRenameColumns extends BaseCoreComponent {
         {
           type: "keyvalueColumns",
           label: "Columns",
-          id: "columns",
+          id: "tsCFcolumnsColumnsToRename",
           placeholders: { key: "column name", value: "new column name" },
           advanced: true
         }
@@ -29,8 +27,8 @@ export class ManualRenameColumns extends BaseCoreComponent {
 
   public generateComponentCode({ config, inputName, outputName }): string {
     let columnsParam = "{";
-    if (config.columns && config.columns.length > 0) {
-      columnsParam += config.columns.map(column => {
+    if (config.tsCFcolumnsColumnsToRename && config.tsCFcolumnsColumnsToRename.length > 0) {
+      columnsParam += config.tsCFcolumnsColumnsToRename.map(column => {
         if (column.key.named) {
           // Handle named columns as strings
           return `"${column.key.value}": "${column.value}"`;

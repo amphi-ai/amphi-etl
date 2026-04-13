@@ -6,10 +6,10 @@ import { AdvancedJoin } from './AdvancedJoin';
 export class CombinedJoin extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-		mode: 'basic',
-		selectJoinType: 'left',
-		selectActionIfCartesianProduct: '0',
-		selectSameNameStrategy: "suffix_right"
+		tsCFradioMode: 'basic',
+		tsCFselectJoinType: 'left',
+		tsCFselectActionIfCartesianProduct: '0',
+		tsCFselectSameNameStrategy: "suffix_right"
 		};
 
     const basic = new Join();
@@ -20,8 +20,8 @@ export class CombinedJoin extends BaseCoreComponent {
       return Array.isArray(form?.fields) ? form.fields : [];
     };
 
-    const wrapFields = (fields: any[], mode: 'basic' | 'advanced') =>
-      fields.map(f => ({ ...f, condition: { mode: [mode], ...(f.condition || {}) } }));
+    const wrapFields = (fields: any[], tsCFradioMode: 'basic' | 'advanced') =>
+      fields.map(f => ({ ...f, condition: { tsCFradioMode: [tsCFradioMode], ...(f.condition || {}) } }));
 
     const form = {
       idPrefix: 'component__form',
@@ -29,7 +29,7 @@ export class CombinedJoin extends BaseCoreComponent {
         {
           type: 'radio',
           label: 'Type',
-          id: 'mode',
+          id: 'tsCFradioMode',
           options: [
             { value: 'basic', label: 'Basic' },
             { value: 'advanced', label: 'Advanced' }
@@ -66,7 +66,7 @@ export class CombinedJoin extends BaseCoreComponent {
   // }
 
   public provideImports({ config }): string[] {
-    const mode = config.mode;
+    const mode = config.tsCFradioMode;
     const imports =
       mode === 'advanced'
         ? new AdvancedJoin().provideImports({ config })
@@ -77,14 +77,14 @@ export class CombinedJoin extends BaseCoreComponent {
   }
 
   public provideFunctions({ config }): string[] {
-    if (config.mode === 'advanced' && typeof (AdvancedJoin as any).prototype.provideFunctions === 'function') {
+    if (config.tsCFradioMode === 'advanced' && typeof (AdvancedJoin as any).prototype.provideFunctions === 'function') {
       return new AdvancedJoin().provideFunctions({ config });
     }
     return [];
   }
 
   public generateComponentCode({ config, inputName1, inputName2, outputName }): string {
-    return config.mode === 'advanced'
+    return config.tsCFradioMode === 'advanced'
       ? new AdvancedJoin().generateComponentCode({ config, inputName1, inputName2, outputName })
       : new Join().generateComponentCode({ config, inputName1, inputName2, outputName });
   }
