@@ -5,7 +5,7 @@ export class BigQueryInput extends BaseCoreComponent {
     constructor() {
         const defaultConfig = {
 			tsCFinputDataset: "",
-			tsCFinputTableName: "",
+			tsCFtableTableName: "",
 			tsCFradioQueryMethod: "table"
 			};
         const form = {
@@ -52,7 +52,7 @@ export class BigQueryInput extends BaseCoreComponent {
                 {
                     type: "input",
                     label: "Table Name",
-                    id: "tsCFinputTableName",
+                    id: "tsCFtableTableName",
                     placeholder: "Enter Table Name",
                     condition: { tsCFradioQueryMethod: "table" },
                     advanced: true
@@ -121,7 +121,7 @@ ${connectionName} = sqlalchemy.create_engine("${connectionString}", credentials_
     public generateComponentCode({ config, outputName }): string {
         const uniqueEngineName = `${outputName}_Engine`; // Unique engine name based on the outputName
 
-        const tableReference = `${config.tsCFinputDataset}.${config.tsCFinputTableName}`;
+        const tableReference = `${config.tsCFinputDataset}.${config.tsCFtableTableName}`;
         const sqlQuery = config.tsCFradioQueryMethod === 'query' && config.tsCFcodeTextareaSqlQuery && config.tsCFcodeTextareaSqlQuery.trim()
             ? config.tsCFcodeTextareaSqlQuery
             : `SELECT * FROM ${tableReference}`;

@@ -1,18 +1,17 @@
 import { mySQLIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 
-
 export class MySQLOutput extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-      host: "localhost",
-      port: "3306",
-      databaseName: "",
-      tableName: "",
-      username: "",
-      password: "",
-      ifTableExists: "fail",
-      mode: "insert"
+      tsCFinputHost: "localhost",
+      tsCFinputPort: "3306",
+      tsCFinputDatabaseName: "",
+      tsCFtableTableName: "",
+      tsCFinputUserName: "",
+      tsCFinputPassword: "",
+      tsCFradioIfTableExists: "fail",
+      tsCFradioMode: "insert"
     };
     const form = {
       idPrefix: "component__form",
@@ -20,7 +19,7 @@ export class MySQLOutput extends BaseCoreComponent {
         {
           type: "input",
           label: "Host",
-          id: "host",
+          id: "tsCFinputHost",
           placeholder: "Enter database host",
           connection: "Mysql",
           advanced: true
@@ -28,7 +27,7 @@ export class MySQLOutput extends BaseCoreComponent {
         {
           type: "input",
           label: "Port",
-          id: "port",
+          id: "tsCFinputPort",
           placeholder: "Enter database port",
           connection: "Mysql",
           advanced: true
@@ -36,7 +35,7 @@ export class MySQLOutput extends BaseCoreComponent {
         {
           type: "input",
           label: "Database Name",
-          id: "databaseName",
+          id: "tsCFinputDatabaseName",
           connection: "Mysql",
           placeholder: "Enter database name"
         },
@@ -44,13 +43,13 @@ export class MySQLOutput extends BaseCoreComponent {
           type: "table",
           label: "Table Name",
           query: `SHOW TABLES;`,
-          id: "tableName",
+          id: "tsCFtableTableName",
           placeholder: "Enter table name"
         },
         {
           type: "input",
           label: "Username",
-          id: "username",
+          id: "tsCFinputUserName",
           connection: "Mysql",
           placeholder: "Enter username",
           advanced: true
@@ -59,7 +58,7 @@ export class MySQLOutput extends BaseCoreComponent {
           type: "input",
           inputType: "password",
           label: "Password",
-          id: "password",
+          id: "tsCFinputPassword",
           connection: "Mysql",
           placeholder: "Enter password",
           advanced: true
@@ -67,7 +66,7 @@ export class MySQLOutput extends BaseCoreComponent {
         {
           type: "radio",
           label: "If Table Exists",
-          id: "ifTableExists",
+          id: "tsCFradioIfTableExists",
           options: [
             { value: "fail", label: "Fail" },
             { value: "replace", label: "Replace" },
@@ -78,7 +77,7 @@ export class MySQLOutput extends BaseCoreComponent {
         {
           type: "radio",
           label: "Mode",
-          id: "mode",
+          id: "tsCFradioMode",
           options: [
             { value: "insert", label: "INSERT" }
           ],
@@ -88,11 +87,11 @@ export class MySQLOutput extends BaseCoreComponent {
           type: "dataMapping",
           imports: ["pymysql"],
           label: "Mapping",
-          id: "mapping",
+          id: "tsCFdataMappingCustomMapping",
           tooltip: "By default the mapping is inferred from the input data. By specifying a schema you override the incoming schema.",
           outputType: "relationalDatabase",
           drivers: "mysql+pymysql",
-          query: "DESCRIBE {{table}}",
+          query: "DESCRIBE {{tsCFtableTableName.value}}",
           pythonExtraction: "column_info = schema[[\"Field\", \"Type\"]]\nformatted_output = \", \".join([f\"{row['Field']} ({row['Type']})\" for _, row in column_info.iterrows()])\nprint(formatted_output)",
           typeOptions: [
             { value: "INT", label: "INT" },
@@ -132,14 +131,17 @@ export class MySQLOutput extends BaseCoreComponent {
   }
   
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "import sqlalchemy", "import pymysql"];
+    return [
+	"import pandas as pd",
+	"import sqlalchemy",
+	"import pymysql"];
   }
 
   public generateDatabaseConnectionCode({ config, connectionName }): string {
     return `
 # Connect to the MySQL database
 ${connectionName} = sqlalchemy.create_engine(
-  "mysql+pymysql://${config.username}:${config.password}@${config.host}:${config.port}/${config.databaseName}"
+  "mysql+pymysql://${config.tsCFinputUserName}:${config.tsCFinputPassword}@${config.tsCFinputHost}:${config.tsCFinputPort}/${config.tsCFinputDatabaseName}"
 )
 `;
   }
@@ -149,8 +151,8 @@ ${connectionName} = sqlalchemy.create_engine(
     let mappingsCode = "";
     let columnsCode = "";
 
-    if (config.mapping && config.mapping.length > 0) {
-      const renameMap = config.mapping
+    if (config.tsCFdataMappingCustomMapping && config.tsCFdataMappingCustomMapping.length > 0) {
+      const renameMap = config.tsCFdataMappingCustomMapping
         .filter(map => map.input && (map.input.value || typeof map.input.value === 'number'))
         .map(map => {
           if (map.input.value != map.value) {
@@ -171,7 +173,7 @@ ${inputName} = ${inputName}.rename(columns={${renameMap.join(", ")}})
 `;
       }
 
-      const selectedColumns = config.mapping
+      const selectedColumns = config.tsCFdataMappingCustomMapping
         .filter(map => map.value !== null && map.value !== undefined)
         .map(map => `"${map.value}"`)
         .join(', ');
@@ -184,7 +186,7 @@ ${inputName} = ${inputName}[[${selectedColumns}]]
       }
     }
 
-    const ifExistsAction = config.ifTableExists;
+    const ifExistsAction = config.tsCFradioIfTableExists;
 
     const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName });
 
@@ -194,7 +196,7 @@ ${mappingsCode}${columnsCode}
 # Write DataFrame to MySQL
 try:
     ${inputName}.to_sql(
-        name="${config.tableName.value}",
+        name="${config.tsCFtableTableName.value}",
         con=${uniqueEngineName},
         if_exists="${ifExistsAction}",
         index=False

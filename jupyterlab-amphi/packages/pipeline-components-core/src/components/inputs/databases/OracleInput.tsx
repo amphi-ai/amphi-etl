@@ -9,7 +9,7 @@ export class OracleInput extends BaseCoreComponent {
 	tsCFinputDatabaseName: "",
 	tsCFinputUserName: "",
 	tsCFinputPassword: "",
-	tsCFinputTableName: "",
+	tsCFtableTableName: "",
 	tsCFradioQueryMethod: "table",
 	tsCFselectDbApi: "oracledb"
 	};
@@ -71,7 +71,7 @@ export class OracleInput extends BaseCoreComponent {
           type: "table",
           label: "Table Name",
           query: `SELECT table_name FROM user_tables;`,
-          id: "tsCFinputTableName",
+          id: "tsCFtableTableName",
           condition: { tsCFradioQueryMethod: "table" },
           placeholder: "Enter table name"
         },
@@ -155,7 +155,7 @@ ${oracleClientInitialization}${connectionName} = sqlalchemy.create_engine("${con
 
     const sqlQuery = config.tsCFradioQueryMethod === 'query' && config.tsCFcodeTextareaSqlQuery && config.tsCFcodeTextareaSqlQuery.trim()
       ? config.tsCFcodeTextareaSqlQuery
-      : `SELECT * FROM ${config.tsCFinputTableName.value}`;
+      : `SELECT * FROM ${config.tsCFtableTableName.value}`;
 
     const connectionCode = this.generateDatabaseConnectionCode({ config, connectionName: uniqueEngineName });
 
