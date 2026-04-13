@@ -8,7 +8,7 @@ export class ODBCInput extends BaseCoreComponent {
             tsCFinputODBCConnectionString: "",
             tsCFinputDSN: "",
             tsCFradioQueryMethod: "table",
-            tsCFinputTableName: "",
+            tsCFtableTableName: "",
             tsCFcodeTextareaSqlQuery: "",
             tsCFinputUserName : "",
             tsCFinputPassword :"",			
@@ -82,7 +82,7 @@ export class ODBCInput extends BaseCoreComponent {
         {
           type: "input",
           label: "Table Name",
-          id: "tsCFinputTableName",
+          id: "tsCFtableTableName",
           placeholder: "Enter table name",
           condition: { tsCFradioQueryMethod: "table" }
         },
@@ -209,9 +209,9 @@ def py_fn_odbc_input_query(
       tsConstUserName = '"' + config.tsCFinputUserName+ '"';
     }
 	let tsConstTableName = 'None';
-    if (config.tsCFinputTableName && config.tsCFinputTableName.trim() !== '' && config.tsCFradioQueryMethod =='table'
+    if (config.tsCFtableTableName && config.tsCFtableTableName.trim() !== '' && config.tsCFradioQueryMethod =='table'
 	) {
-      tsConstTableName = '"' + config.tsCFinputTableName+ '"';
+      tsConstTableName = '"' + config.tsCFtableTableName+ '"';
     }
 
 	let tsConstConnectionString = 'None';

@@ -10,7 +10,7 @@ export class PostgresInput extends BaseCoreComponent {
 		tsCFinputUserName: "",
 		tsCFinputPassword: "",
 		tsCFinputSchema: "public",
-		tsCFinputTableName: "",
+		tsCFtableTableName: "",
 		tsCFradioQueryMethod: "table"
 		};
     const form = {
@@ -77,7 +77,7 @@ export class PostgresInput extends BaseCoreComponent {
           type: "table",
           label: "Table Name",
           query: `SELECT table_name FROM information_schema.tables WHERE table_schema = '{{tsCFinputSchema}}';`,
-          id: "tsCFinputTableName",
+          id: "tsCFtableTableName",
           placeholder: "Enter table name",
           condition: { tsCFradioQueryMethod: "table" }
         },
@@ -124,8 +124,8 @@ ${connectionName} = sqlalchemy.create_engine("${connectionString}")
     const uniqueEngineName = `${outputName}_Engine`;
 
     // Build table reference only if both schema and tableName exist
-    const tableReference = config.tsCFinputSchema && config.tsCFinputTableName?.value
-      ? `"${config.tsCFinputSchema}"."${config.tsCFinputTableName.value}"`
+    const tableReference = config.tsCFinputSchema && config.tsCFtableTableName?.value
+      ? `"${config.tsCFinputSchema}"."${config.tsCFtableTableName.value}"`
       : null;
 
     let sqlQuery: string;

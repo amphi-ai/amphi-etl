@@ -8,7 +8,12 @@ import { OracleOutput } from './OracleOutput';
 
 export class DatabaseOutput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { provider: "mysql" };
+    const defaultConfig = {
+		tsCFselectProvider: "postgres",
+        tsCFinputHost: "localhost",
+        tsCFradioIfTableExists: "fail",
+        tsCFradioMode: "insert"		
+		};
 
     const mysql = new MySQLOutput();
     const pg = new PostgresOutput();
@@ -21,8 +26,8 @@ export class DatabaseOutput extends BaseCoreComponent {
       return Array.isArray(form?.fields) ? form.fields : [];
     };
 
-    const wrapFields = (fields: any[], provider: string) =>
-      fields.map(f => ({ ...f, condition: { provider: [provider], ...(f.condition || {}) } }));
+    const wrapFields = (fields: any[], tsCFselectProvider: string) =>
+      fields.map(f => ({ ...f, condition: { tsCFselectProvider: [tsCFselectProvider], ...(f.condition || {}) } }));
 
     const form = {
       idPrefix: "component__form",
@@ -30,7 +35,7 @@ export class DatabaseOutput extends BaseCoreComponent {
         {
           type: "select",
           label: "Database Type",
-          id: "provider",
+          id: "tsCFselectProvider",
           options: [
             { value: "mysql", label: "MySQL" },
             { value: "postgres", label: "PostgreSQL" },
@@ -54,7 +59,7 @@ export class DatabaseOutput extends BaseCoreComponent {
   }
 
   public provideDependencies({ config }): string[] {
-    switch (config.provider) {
+    switch (config.tsCFselectProvider) {
       case "mysql": return new MySQLOutput().provideDependencies({ config });
       case "postgres": return new PostgresOutput().provideDependencies({ config });
       case "sqlserver": return new SqlServerOutput().provideDependencies({ config });
@@ -63,14 +68,24 @@ export class DatabaseOutput extends BaseCoreComponent {
       default: return [];
     }
   }
-
+  
+  //why not all db?
+  public generateDatabaseConnectionCode({ config, connectionName }): string {
+    switch (config.tsCFselectProvider) {
+      case "mysql": return new MySQLOutput().generateDatabaseConnectionCode({ config, connectionName });
+      case "postgres": return new PostgresOutput().generateDatabaseConnectionCode({ config, connectionName });
+      case "sqlserver": return new SqlServerOutput().generateDatabaseConnectionCode({ config, connectionName }); 
+      case "snowflake": return new SnowflakeOutput().generateDatabaseConnectionCode({ config, connectionName });
+      default: return "";
+    }
+  }
   public provideImports({ config }): string[] {
     const imports =
-      config.provider === "mysql" ? new MySQLOutput().provideImports({ config }) :
-      config.provider === "postgres" ? new PostgresOutput().provideImports({ config }) :
-      config.provider === "sqlserver" ? new SqlServerOutput().provideImports({ config }) :
-      config.provider === "snowflake" ? new SnowflakeOutput().provideImports({ config }) :
-      config.provider === "oracle" ? new OracleOutput().provideImports({ config }) :
+      config.tsCFselectProvider === "mysql" ? new MySQLOutput().provideImports({ config }) :
+      config.tsCFselectProvider === "postgres" ? new PostgresOutput().provideImports({ config }) :
+      config.tsCFselectProvider === "sqlserver" ? new SqlServerOutput().provideImports({ config }) :
+      config.tsCFselectProvider === "snowflake" ? new SnowflakeOutput().provideImports({ config }) :
+      config.tsCFselectProvider === "oracle" ? new OracleOutput().provideImports({ config }) :
       [];
 
     const seen = new Set<string>();
@@ -78,7 +93,7 @@ export class DatabaseOutput extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName }): string {
-    switch (config.provider) {
+    switch (config.tsCFselectProvider) {
       case "mysql": return new MySQLOutput().generateComponentCode({ config, inputName });
       case "postgres": return new PostgresOutput().generateComponentCode({ config, inputName });
       case "sqlserver": return new SqlServerOutput().generateComponentCode({ config, inputName });

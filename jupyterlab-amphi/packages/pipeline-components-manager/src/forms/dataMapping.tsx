@@ -277,8 +277,8 @@ export const DataMapping: React.FC<DataMappingProps> = ({
               setDataSource([]);
               RequestService.retrieveTableColumns(
                 event,
-                `${data.schema ?? 'public'}`,
-                `${data.tableName.value}`,
+                `${data.tsCFinputSchema ?? 'public'}`,
+                `${data.tsCFtableTableName.value}`,
                 `${field.query}`,
                 `${field.pythonExtraction}`,
                 context,
