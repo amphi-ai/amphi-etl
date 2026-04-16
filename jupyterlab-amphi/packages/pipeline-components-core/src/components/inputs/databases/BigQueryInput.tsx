@@ -89,12 +89,12 @@ export class BigQueryInput extends BaseCoreComponent {
     public provideDependencies({ config }): string[] {
         let deps: string[] = [];
         deps.push('sqlalchemy-bigquery');
-        deps.push('pandas');
         return deps;
     }
 
     public provideImports({ config }): string[] {
-        return ["import pandas as pd", "from sqlalchemy.engine import create_engine"];
+        return ["import pandas as pd", 
+		"from sqlalchemy.engine import create_engine"];
     }
 
     public generateDatabaseConnectionCode({ config, connectionName }): string {
