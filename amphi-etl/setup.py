@@ -39,6 +39,21 @@ setup(
         'pyarrow==21.0.0',
         'matplotlib==3.10.8'
     ],
+    extras_require={
+        'all': [
+            'lxml',
+            's3fs',
+            'snowflake-sqlalchemy',
+            'psycopg2-binary',
+            'sqlalchemy-bigquery',
+            'pymysql',
+            'pyodbc',
+            'cx_Oracle',
+            'oracledb',
+            'openpyxl',
+            'xlsxwriter'            
+        ]
+    },
     keywords=[],  # Added an empty list for keywords to resolve the dynamic 'keywords' issue.
     packages=find_packages(include=['amphi', 'amphi.theme-light', 'amphi.ui-component', 'config', 'packages']),  # Custom package discovery.
     include_package_data=True,  # Include non-Python files specified in MANIFEST.in
