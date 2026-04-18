@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Suppliers>
+ <_empty_>
+  <SupplierID>7</SupplierID>
+  <CompanyName>Gallet Export</CompanyName>
+  <ContactName>Marie Desail</ContactName>
+  <Address>27, rue H. Voiron</Address>
+  <City>Montceau</City>
+  <PostalCode>71300</PostalCode>
+  <Country>France</Country>
+  <Phone>(33) 06 57 00 57</Phone>
+  <Fax>(33) 03 73 00 50</Fax>
+ </_empty_>
+ <_empty_>
+  <SupplierID>8</SupplierID>
+  <CompanyName>La Compagnie Alpine</CompanyName>
+  <ContactName>Yannik Boah</ContactName>
+  <Address>Bat. B 3, rue des Alpes</Address>
+  <City>Annecy</City>
+  <PostalCode>74000</PostalCode>
+  <Country>France</Country>
+  <Phone>(33) 07 38 76 98 89</Phone>
+  <Fax>(33) 38 76 98 85</Fax>
+ </_empty_>
+</Suppliers>
