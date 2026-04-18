@@ -1,5 +1,4 @@
 import { editIcon } from '../../icons';
-// import { BaseCoreComponent } from '../BaseCoreComponent';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
 export class InlineInput extends BaseCoreComponent {

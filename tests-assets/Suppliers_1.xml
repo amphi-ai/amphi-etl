@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Suppliers>
+ <_empty_>
+  <SupplierID>1</SupplierID>
+  <CompanyName>Sunnier Clothes</CompanyName>
+  <ContactName>Peter Fhilton</ContactName>
+  <Address>56 Gilbert Street</Address>
+  <City>London</City>
+  <PostalCode>EC1 4SD</PostalCode>
+  <Country>UK</Country>
+  <Phone>(171) 555-8767</Phone>
+  <Fax>(171) 555-8768</Fax>
+ </_empty_>
+ <_empty_>
+  <SupplierID>2</SupplierID>
+  <CompanyName>Big Little</CompanyName>
+  <ContactName>James Brownie</ContactName>
+  <Address>P.O. Box 78937</Address>
+  <City>New Orleans</City>
+  <PostalCode>70117</PostalCode>
+  <Country>USA</Country>
+  <Phone>(100) 555-7654</Phone>
+  <Fax>(100) 555-7655</Fax>
+ </_empty_>
+ <_empty_>
+  <SupplierID>3</SupplierID>
+  <CompanyName>Dressed 4 Succes</CompanyName>
+  <ContactName>Glenn Biller</ContactName>
+  <Address>708 Oxford Road</Address>
+  <City>Ann Arbor</City>
+  <PostalCode>48104</PostalCode>
+  <Country>USA</Country>
+  <Phone>(313) 555-5777</Phone>
+  <Fax>(313) 555-4549</Fax>
+ </_empty_>
+ <_empty_>
+  <SupplierID>4</SupplierID>
+  <CompanyName>Konitsuchiba</CompanyName>
+  <ContactName>Hori Kushi</ContactName>
+  <Address>9-8 Sekimai Musashino-shi</Address>
+  <City>Tokyo</City>
+  <PostalCode>100</PostalCode>
+  <Country>Japan</Country>
+  <Phone>(03) 3555-5007</Phone>
+  <Fax>(03) 3555-5008</Fax>
+ </_empty_>
+ <_empty_>
+  <SupplierID>5</SupplierID>
+  <CompanyName>Los Hombres Machos</CompanyName>
+  <ContactName>Antonio Landeras</ContactName>
+  <Address>Calle del Rosal 4</Address>
+  <City>Oviedo</City>
+  <PostalCode>33007</PostalCode>
+  <Country>Spain</Country>
+  <Phone>(98) 598 67 57</Phone>
+  <Fax>(98) 598 77 78</Fax>
+ </_empty_>
+</Suppliers>

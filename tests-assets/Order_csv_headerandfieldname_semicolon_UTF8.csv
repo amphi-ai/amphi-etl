@@ -1,0 +1,22 @@
+﻿This is a row with metadata
+Another row with metadata
+UselessRow
+
+SalesOrderDetailID;OrderDate;Flag_Canceled;Color
+4994;2023-12-01;False;Red
+27137;2024-12-01;False;Red
+2942;2023-11-01;False;Red
+9137;2024-05-01;False;Red
+33373;2025-03-01;False;Red
+7271;2024-03-01;False;Red
+11183;2024-06-01;False;Red
+23506;2024-11-01;False;Red
+13;2023-07-01;False;Red
+26789;2024-12-01;False;Red
+21637;2024-10-01;False;Red
+1972;2023-09-01;False;Red
+15488;2024-08-01;False;Red
+5610;2024-01-01;False;Red
+23999;2024-11-01;False;Red
+1571;2023-09-01;False;Red
+35830;2025-04-25;False;Red

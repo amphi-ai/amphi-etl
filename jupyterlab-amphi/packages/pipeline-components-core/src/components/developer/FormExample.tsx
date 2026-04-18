@@ -176,7 +176,6 @@ export class FormExample extends BaseCoreComponent {
           type: "keyvalue",
           label: "13. Storage Options (keyvalue)",
           id: "tsCFkeyvalueCSVOptionsStorageOptions",
-          condition: { fileLocation: ["http", "s3"] },
           advanced: true
         },
         {
