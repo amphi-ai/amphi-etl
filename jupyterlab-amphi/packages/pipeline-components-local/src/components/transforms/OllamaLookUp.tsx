@@ -4,10 +4,10 @@ import { BaseCoreComponent } from '../BaseCoreComponent';
 export class OllamaLookUp extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-      maxToken: 256,
-      temperature: 0.3,
-      model: "llama3.2:3b",
-      ollamaEndpoint: "http://localhost:11434",
+      tsCFinputNumberMaxToken: 256,
+      tsCFinputNumberTemperature: 0.3,
+      tsCFselectCustomizableModel: "llama3.2:3b",
+      tsCFinputOllamaEndpoint: "http://localhost:11434",
       systemPrompt: "You are part of a Python data pipeline using Pandas. Your task is to generate responses for each row of a DataFrame. Just provide the response as short as possible, don't write any sentence."
     };
     const form = {
@@ -16,18 +16,18 @@ export class OllamaLookUp extends BaseCoreComponent {
         {
           type: "textarea",
           label: "Prompt",
-          id: "prompt"
+          id: "tsCFtextareaPrompt"
         },
         {
           type: "columns",
           label: "Columns",
           tooltip: "Columns data to send with Prompt",
-          id: "columns"
+          id: "tsCFcolumnsColumnsToSend"
         },
         {
           type: "input",
           label: "Ollama Endpoint",
-          id: "ollamaEndpoint",
+          id: "tsCFinputOllamaEndpoint",
           placeholder: "http://localhost:11434",
           connection: "Ollama",
           advanced: true
@@ -35,7 +35,7 @@ export class OllamaLookUp extends BaseCoreComponent {
         {
           type: "selectCustomizable",
           label: "Model",
-          id: "model",
+          id: "tsCFselectCustomizableModel",
           tooltip: "Select an Ollama model. You must have access to it or pulled it locally. Check out: https://ollama.com/library",
           options: [
             { value: "llama3.2:1b", label: "llama3.2:1b" },
@@ -53,7 +53,7 @@ export class OllamaLookUp extends BaseCoreComponent {
         {
           type: "input",
           label: "New column name",
-          id: "newColumnName",
+          id: "tsCFinputNewColumnName",
           placeholder: "Type new column name",
           advanced: true
         }
@@ -71,7 +71,9 @@ export class OllamaLookUp extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "from ollama import Client"];
+    return [
+	"import pandas as pd",
+	"from ollama import Client"];
   }
 
   public provideFunctions({ config }): string[] {
@@ -103,17 +105,17 @@ def generate_ollama_response(
 
   public generateComponentCode({ config, inputName, outputName }): string {
     // Extract the column names from the config object
-    const columnNames = config.columns.map((col) => col.value);
+    const columnNames = config.tsCFcolumnsColumnsToSend.map((col) => col.value);
 
     // Determine the column name to use
-    const newColumnName = config.newColumnName && config.newColumnName.trim() ? config.newColumnName : `llama_${outputName}`;
+    const newColumnName = config.tsCFinputNewColumnName && config.tsCFinputNewColumnName.trim() ? config.tsCFinputNewColumnName : `llama_${outputName}`;
 
     // Generate Python code to configure Ollama API and process data
     const code = `
 # Ollama request parameters
-${outputName}_client = Client(host='${config.ollamaEndpoint}')
-${outputName}_user_prompt = "${config.prompt}"
-${outputName}_model = "${config.model}"  # Model to use for generating responses
+${outputName}_client = Client(host='${config.tsCFinputOllamaEndpoint}')
+${outputName}_user_prompt = "${config.tsCFtextareaPrompt}"
+${outputName}_model = "${config.tsCFselectCustomizableModel}"  # Model to use for generating responses
 
 # Apply the function to generate output for each row
 ${inputName}['${newColumnName}'] = ${inputName}.apply(lambda row: generate_ollama_response(

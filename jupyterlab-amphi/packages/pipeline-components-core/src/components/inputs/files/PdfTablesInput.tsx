@@ -1,31 +1,34 @@
-
 import { filePdfIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class PdfTablesInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { pageNumber: 0, tableNumber: 0 };
+    const defaultConfig = {
+		tsCFinputNumberPageNumber: 0,
+		tsCFinputNumberTableNumber: 0 
+		};
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "file",
           label: "File path",
-          id: "filePath",
+          id: "tsCFfilePath",
           placeholder: "Type file name",
-          tooltip: "This field expects a file path with a csv, tsv or txt extension such as input.csv.",
+          tooltip: "This field expects a file with a pdf extension such as file.pdf.",
           validation: "\\.(pdf)$",
+          allowedExtensions: ["pdf"]
         },
         {
           type: "inputNumber",
           label: "Page number",
-          id: "pageNumber",
+          id: "tsCFinputNumberPageNumber",
           tooltip: "Page number where table is located starting at 0.",
         },
         {
           type: "inputNumber",
           label: "Table number",
-          id: "tableNumber",
+          id: "tsCFinputNumberTableNumber",
           tooltip: "If multiple tables are present on the page, specify the number starting at 0.",
         }
       ],
@@ -42,17 +45,19 @@ export class PdfTablesInput extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    return ["import fitz"];
+    return [
+	"import pandas as pd",
+	"import fitz"];
   }
 
   public generateComponentCode({ config, outputName }): string {
   
     // Generate the Python code
     const code = `
-# Extract tables from ${config.filePath}
-${outputName}_doc = fitz.open("${config.filePath}")
-${outputName}_tabs = ${outputName}_doc[${config.pageNumber}].find_tables() # detect the tables
-${outputName} = ${outputName}_tabs[${config.tableNumber}].to_pandas()
+# Extract tables from ${config.tsCFfilePath}
+${outputName}_doc = fitz.open("${config.tsCFfilePath}")
+${outputName}_tabs = ${outputName}_doc[${config.tsCFinputNumberPageNumber}].find_tables() # detect the tables
+${outputName} = ${outputName}_tabs[${config.tsCFinputNumberTableNumber}].to_pandas().convert_dtypes()
 `;
     return code;
 }

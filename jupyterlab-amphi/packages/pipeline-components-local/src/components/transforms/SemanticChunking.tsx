@@ -1,19 +1,20 @@
-
 import { splitIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
-
-
 export class SemanticChunking extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { type: "nltk", chunkSize: 1000, chunkOverlap: 100 };
+    const defaultConfig = {
+	tsCFselectType: "nltk",
+	tsCFinputNumberChunkSize: 1000,
+	tsCFinputNumberChunkOverlap: 100
+	};
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "select",
           label: "Type",
-          id: "type",
+          id: "tsCFselectType",
           options: [
             { value: "nltk", label: "NLTK" },
             { value: "spacy", label: "spaCy" }
@@ -22,12 +23,12 @@ export class SemanticChunking extends BaseCoreComponent {
         {
           type: "inputNumber",
           label: "Chunk Size",
-          id: "chunkSize",
+          id: "tsCFinputNumberChunkSize",
         },
         {
           type: "inputNumber",
           label: "Chunk Overlap",
-          id: "chunkOverlap",
+          id: "tsCFinputNumberChunkOverlap",
         }
       ],
     };
@@ -37,7 +38,7 @@ export class SemanticChunking extends BaseCoreComponent {
 
   public provideDependencies({config}): string[] {
     let deps: string[] = [];
-    switch (config.type) {
+    switch (config.tsCFselectType) {
       case 'nltk':
         deps.push('nltk');
         break;
@@ -53,7 +54,7 @@ export class SemanticChunking extends BaseCoreComponent {
   public provideImports({config}): string[] {
 
     let imports: string[] = [];
-    switch (config.type) {
+    switch (config.tsCFselectType) {
       case 'nltk':
         imports.push('from langchain_text_splitters import NLTKTextSplitter');
         break;
@@ -70,12 +71,12 @@ export class SemanticChunking extends BaseCoreComponent {
   public generateComponentCode({ config, inputName, outputName }): string {
   
     let splitter: string;
-    switch (config.type) {
+    switch (config.tsCFselectType) {
       case 'nltk':
-        splitter = `${outputName}_text_splitter = NLTKTextSplitter(chunk_size=${config.chunkSize}, chunk_overlap=${config.chunkOverlap})`;
+        splitter = `${outputName}_text_splitter = NLTKTextSplitter(chunk_size=${config.tsCFinputNumberChunkSize}, chunk_overlap=${config.tsCFinputNumberChunkOverlap})`;
         break;
       case 'spacy':
-        splitter = `${outputName}_text_splitter = SpacyTextSplitter(chunk_size=${config.chunkSize}, chunk_overlap=${config.chunkOverlap})`;
+        splitter = `${outputName}_text_splitter = SpacyTextSplitter(chunk_size=${config.tsCFinputNumberChunkSize}, chunk_overlap=${config.tsCFinputNumberChunkOverlap})`;
         break;
       default:
         console.error('Unknown option');

@@ -10,7 +10,7 @@ export class HtmlFileInput extends BaseCoreComponent {
         {
           type: "valuesList",
           label: "URLs",
-          id: "urls",
+          id: "tsCFvaluesListUrls",
           placeholders: "Enter URLs"
         }
       ],
@@ -22,7 +22,6 @@ export class HtmlFileInput extends BaseCoreComponent {
   public provideImports({ config }): string[] {
     let imports: string[] = [];
     imports.push('from langchain_community.document_loaders import AsyncHtmlLoader');
-
     return imports;
   }
 
@@ -32,7 +31,7 @@ export class HtmlFileInput extends BaseCoreComponent {
     // Initial code for loading HTML
     code += `
 # Retrieve HTML from provided URLs
-${outputName}_loader = AsyncHtmlLoader([${config.urls.map(url => `"${url}"`).join(', ')}])
+${outputName}_loader = AsyncHtmlLoader([${config.tsCFvaluesListUrls.map(url => `"${url}"`).join(', ')}])
 ${outputName} = ${outputName}_loader.load()
 `
     return code;

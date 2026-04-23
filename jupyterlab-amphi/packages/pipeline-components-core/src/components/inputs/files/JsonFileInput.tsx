@@ -1,32 +1,38 @@
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { fileJsonIcon } from '../../../icons';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
+import { FTPOptionsHandler } from '../../common/FTPOptionsHandler';
 
 export class JsonFileInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { fileLocation: "local", connectionMethod: "env", jsonOptions: {} };
+    const defaultConfig = { tsCFradioFileLocation: "local",
+	connectionMethod: "env",
+	jsonOptions: {} };
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "radio",
           label: "File Location",
-          id: "fileLocation",
+          id: "tsCFradioFileLocation",
           options: [
             { value: "local", label: "Local" },
             { value: "http", label: "HTTP" },
-            { value: "s3", label: "S3" }
+            { value: "s3", label: "S3" }//,
+            //{ value: "ftp", label: "FTP" }
           ],
           advanced: true
         },
         ...S3OptionsHandler.getAWSFields(),
+        //...FTPOptionsHandler.getFTPFields(),
         {
           type: "file",
           label: "File path",
           id: "filePath",
           placeholder: "Type file name",
           validation: "\.(json|jsonl)$",
-          validationMessage: "This field expects a file with a json extension such as input.json."
+          validationMessage: "This field expects a file with a json extension such as input.json.",
+          allowedExtensions: ["json", "jsonl"]		  
         },
         {
           type: "select",
@@ -66,7 +72,7 @@ export class JsonFileInput extends BaseCoreComponent {
           type: "keyvalue",
           label: "Storage Options",
           id: "jsonOptions.storage_options",
-          condition: { fileLocation: ["http", "s3"] },
+          condition: { tsCFradioFileLocation: ["http", "s3"] },
           advanced: true
         }
       ],
@@ -115,7 +121,7 @@ ${outputName} = pd.read_json("${config.filePath}"${optionsString}).convert_dtype
     }
 
     // Step 2: Always apply S3-specific options (these will override manual entries if needed)
-    if (config.fileLocation === 's3') {
+    if (config.tsCFradioFileLocation === 's3') {
       const s3Options = S3OptionsHandler.handleS3SpecificOptions(config, finalStorageOptions);
       finalStorageOptions = { ...finalStorageOptions, ...s3Options };
     }

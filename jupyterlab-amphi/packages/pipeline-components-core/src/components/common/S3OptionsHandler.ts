@@ -1,5 +1,3 @@
-// S3OptionsHandler.ts
-
 export class S3OptionsHandler {
     
   public static getStorageOptions(config): object {
@@ -17,7 +15,7 @@ export class S3OptionsHandler {
     }
 
     // 2. Inject S3 Credentials if method is 'storage_options'
-    if (config.fileLocation === 's3' && config.connectionMethod === 'storage_options') {
+    if (config.tsCFradioFileLocation === 's3' && config.connectionMethod === 'storage_options') {
       finalOptions.key = config.awsAccessKey;
       finalOptions.secret = config.awsSecretKey;
 
@@ -36,7 +34,7 @@ export class S3OptionsHandler {
   
   // Static method to handle S3-specific options
     public static handleS3SpecificOptions(config, storageOptions): object {
-      if (config.fileLocation === 's3' && config.connectionMethod === 'storage_options') {
+      if (config.tsCFradioFileLocation === 's3' && config.connectionMethod === 'storage_options') {
         const updatedStorageOptions = {
           ...storageOptions, // Preserve any manually added storageOptions
           key: config.awsAccessKey,
@@ -66,7 +64,7 @@ export class S3OptionsHandler {
               { value: "env", label: "Environment Variables (Recommended)", tooltip: "Use AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY variables, using an Env. Variable File is recommended." },
               { value: "storage_options", label: "Pass directly (storage_options)", tooltip: "You can pass credentials using the storage_options parameter. Using Environment Variables for this method is also recommended." }
             ],
-            condition: { fileLocation: "s3" },
+            condition: { tsCFradioFileLocation: "s3" },
             connection: "AWS",
             ignoreConnection: true,
             advanced: true
@@ -79,7 +77,7 @@ export class S3OptionsHandler {
             inputType: "password",
             connection: "AWS",
             connectionVariableName: "AWS_ACCESS_KEY_ID",
-            condition: { fileLocation: "s3", connectionMethod: "storage_options" },
+            condition: { tsCFradioFileLocation: "s3", connectionMethod: "storage_options" },
             advanced: true
           },
           {
@@ -90,7 +88,7 @@ export class S3OptionsHandler {
             inputType: "password",
             connection: "AWS",
             connectionVariableName: "AWS_SECRET_ACCESS_KEY",
-            condition: { fileLocation: "s3", connectionMethod: "storage_options" },
+            condition: { tsCFradioFileLocation: "s3", connectionMethod: "storage_options" },
             advanced: true
           },
           {
@@ -99,7 +97,7 @@ export class S3OptionsHandler {
             id: "useCustomEndpoint",
             placeholder: "Use custom endpoint to connecto Minio for example",
             connection: "AWS",
-            condition: { fileLocation: "s3", connectionMethod: "storage_options" },
+            condition: { tsCFradioFileLocation: "s3", connectionMethod: "storage_options" },
             advanced: true
           },
           {
@@ -109,7 +107,7 @@ export class S3OptionsHandler {
             tooltip: "Connect to a Different SE-Compatible File System (e.g., Minio) Using a Custom Endpoint",
             placeholder: "http://localhost:9000",
             connection: "AWS",
-            condition: { fileLocation: "s3", connectionMethod: "storage_options", useCustomEndpoint: true },
+            condition: { tsCFradioFileLocation: "s3", connectionMethod: "storage_options", useCustomEndpoint: true },
             advanced: true
           },
         ];

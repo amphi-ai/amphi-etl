@@ -1,8 +1,5 @@
-
 import { sortIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
-
-
 
 export class Embed extends BaseCoreComponent {
   constructor() {
@@ -13,7 +10,7 @@ export class Embed extends BaseCoreComponent {
         {
           type: "cascader",
           label: "Embeddings Model",
-          id: "model",
+          id: "tsCFcascaderModel",
           placeholder: "Select ...",
           options: [
             {
@@ -32,14 +29,16 @@ export class Embed extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "from langchain_openai import OpenAIEmbeddings"];
+    return [
+	"import pandas as pd",
+	"from langchain_openai import OpenAIEmbeddings"];
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
 
     const code = `
-# Embed data into embedding using ${config.model}
-${outputName}_embeddings = OpenAIEmbeddings(model="${config.model}")
+# Embed data into embedding using ${config.tsCFcascaderModel}
+${outputName}_embeddings = OpenAIEmbeddings(model="${config.tsCFcascaderModel}")
 ${outputName} = ${outputName}_embeddings.embed_documents(${inputName})
 `;
     return code;

@@ -1,13 +1,13 @@
 import { fileCsvIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
-import { FileUtils } from '../../common/FileUtils'; // Import the FileUtils class
 import { FTPOptionsHandler } from '../../common/FTPOptionsHandler';
+import { FileUtils } from '../../common/FileUtils'; // Import the FileUtils class
 
 export class CsvFileInput extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-      fileLocation: "local",
+      tsCFradioFileLocation: "local",
       connectionMethod: "env",
       csvOptions: {
         sep: ","
@@ -19,7 +19,7 @@ export class CsvFileInput extends BaseCoreComponent {
         {
           type: "radio",
           label: "File Location",
-          id: "fileLocation",
+          id: "tsCFradioFileLocation",
           options: [
             { value: "local", label: "Local" },
             { value: "http", label: "HTTP" },
@@ -157,7 +157,7 @@ export class CsvFileInput extends BaseCoreComponent {
           type: "keyvalue",
           label: "Storage Options",
           id: "csvOptions.storage_options",
-          condition: { fileLocation: ["http", "s3", "ftp"] },
+          condition: { tsCFradioFileLocation: ["http", "s3", "ftp"] },
           advanced: true
         }
       ],
@@ -172,11 +172,11 @@ export class CsvFileInput extends BaseCoreComponent {
     if (config.csvOptions.engine === "pyarrow") {
       deps.push('pyarrow');
     }
-    if (config.fileLocation === "s3") {
+    if (config.tsCFradioFileLocation === "s3") {
       deps.push('s3fs');
     }
     if (FileUtils.isWildcardInput(config.filePath)) {
-      deps.push(config.fileLocation === "s3" ? 's3fs' : 'glob');
+      deps.push(config.tsCFradioFileLocation === "s3" ? 's3fs' : 'glob');
     }
     return deps;
   }
@@ -184,7 +184,7 @@ export class CsvFileInput extends BaseCoreComponent {
   public provideImports({ config }): string[] {
     let imports = ["import pandas as pd"];
     if (FileUtils.isWildcardInput(config.filePath)) {
-      if (config.fileLocation === "s3") {
+      if (config.tsCFradioFileLocation === "s3") {
         imports.push("import s3fs");
       } else {
         imports.push("import glob");
@@ -203,10 +203,10 @@ export class CsvFileInput extends BaseCoreComponent {
 
     let code = '';
     if (FileUtils.isWildcardInput(config.filePath)) {
-      if (config.fileLocation === "s3") {
+      if (config.tsCFradioFileLocation === "s3") {
         code += FileUtils.getS3FilePaths(config.filePath, storageOptionsString, outputName);
         code += FileUtils.generateConcatCode(outputName, "read_csv", optionsString, true);
-      } else if (config.fileLocation === "ftp") {
+      } else if (config.tsCFradioFileLocation === "ftp") {
         code += FileUtils.getFTPFilePaths(config.filePath, storageOptionsString, outputName);
         code += FileUtils.generateConcatCode(outputName, "read_csv", optionsString, true);
       } else {
@@ -259,13 +259,13 @@ ${outputName} = pd.read_csv("${config.filePath}"${optionsString}).convert_dtypes
     }
 
     // Step 2: Always apply S3-specific options (these will override manual entries if needed)
-    if (config.fileLocation === 's3') {
+    if (config.tsCFradioFileLocation === 's3') {
       const s3Options = S3OptionsHandler.handleS3SpecificOptions(config, finalStorageOptions);
       finalStorageOptions = { ...finalStorageOptions, ...s3Options };
     }
 
     // Step 3: Always apply FTP-specific options (these will override manual entries if needed)
-    if (config.fileLocation === 'ftp') {
+    if (config.tsCFradioFileLocation === 'ftp') {
       const ftpOptions = FTPOptionsHandler.handleFTPSpecificOptions(config, finalStorageOptions);
       finalStorageOptions = { ...finalStorageOptions, ...ftpOptions };
     }

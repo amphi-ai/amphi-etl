@@ -1,9 +1,7 @@
-// FTPOptionsHandler.ts
-
 export class FTPOptionsHandler {
     // Static method to handle FTP-specific options
     public static handleFTPSpecificOptions(config, storageOptions): object {
-        if (config.fileLocation === 'ftp') {
+        if (config.tsCFradioFileLocation === 'ftp') {
             const updatedStorageOptions = {
                 ...storageOptions, // Preserve any manually added storageOptions
                 username: config.ftpUsername,
@@ -23,7 +21,7 @@ export class FTPOptionsHandler {
                 label: "Username",
                 id: "ftpUsername",
                 placeholder: "Enter FTP username",
-                condition: { fileLocation: "ftp" },
+                condition: { tsCFradioFileLocation: "ftp" },
                 connection: "FTP",
                 advanced: true
             },
@@ -33,7 +31,7 @@ export class FTPOptionsHandler {
                 id: "ftpPassword",
                 placeholder: "Enter FTP password",
                 inputType: "password",
-                condition: { fileLocation: "ftp" },
+                condition: { tsCFradioFileLocation: "ftp" },
                 connection: "FTP",
                 advanced: true
             }
