@@ -1,11 +1,11 @@
 import { sqlIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
-
-
 export class SQLQuery extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { query: "SELECT * FROM input_df1" };
+    const defaultConfig = {
+		tsCFcodeTextareaQuery: "SELECT * FROM input_df1" 
+		};
     const form = {
       idPrefix: "component__form",
       fields: [
@@ -13,7 +13,7 @@ export class SQLQuery extends BaseCoreComponent {
           type: "codeTextarea",
           label: "SQL",
           mode: "sql",
-          id: "query",
+          id: "tsCFcodeTextareaQuery",
           placeholder: "Enter your SQL Query here. Table is named input_df1.",
           aiInstructions: "Generate a DuckDB SQL script that processes an input table named 'input_df1'.\nIMPORTANT: Ensure the SQL is valid for DuckDB and does not include any display or print statements. Include short comments for clarity.",
           aiGeneration: true,
@@ -32,7 +32,7 @@ export class SQLQuery extends BaseCoreComponent {
   }
 
   private getEffectiveQuery(config: any): string {
-    const rawValue = config.query;
+    const rawValue = config.tsCFcodeTextareaQuery;
     if (!rawValue) return "";
 
     // If already an object
@@ -55,7 +55,9 @@ export class SQLQuery extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "import duckdb"];
+    return [
+	"import pandas as pd",
+	"import duckdb"];
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {

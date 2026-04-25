@@ -1,4 +1,3 @@
-
 import { fileTextIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 
@@ -11,10 +10,10 @@ export class WordFileInput extends BaseCoreComponent {
         {
           type: "file",
           label: "File path",
-          id: "filePath",
+          id: "tsCFfilePath",
           placeholders: "Select or type file",
           validation: "\\.(docx)$",
-          validationMessage: "This field expects a file with a pdf extension such as file.docx."
+          validationMessage: "This field expects a file with an extension such as file.docx."
         }
       ],
     };
@@ -39,13 +38,10 @@ export class WordFileInput extends BaseCoreComponent {
 
     // Initial code for loading HTML
     code += `
-# Read Word file and retrieve text from ${config.filePath}
-${outputName}_loader = Docx2txtLoader("${config.filePath}")
+# Read Word file and retrieve text from ${config.tsCFfilePath}
+${outputName}_loader = Docx2txtLoader("${config.tsCFfilePath}")
 ${outputName} = ${outputName}_loader.load()
 `;
     return code;
   }
-
-
-
 }

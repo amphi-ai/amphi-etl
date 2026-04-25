@@ -621,6 +621,7 @@ const PipelineWrapper: React.FC<IProps> = ({
                   ...defaultConfig,
                   nameId: generateUniqueNodeName(nodeType, nodes),
                   filePath: PipelineService.getRelativePath(context.context.sessionContext.path, filePath), // Relative path
+                  tsCFfilePath: PipelineService.getRelativePath(context.context.sessionContext.path, filePath), // Relative path
                   lastUpdated: Date.now(),
                   customTitle: fileName,
                   ...(nodeDefaults || {}), // Merge nodeDefaults into the data field

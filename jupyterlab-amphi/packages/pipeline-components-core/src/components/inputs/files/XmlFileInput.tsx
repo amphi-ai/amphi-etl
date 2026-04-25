@@ -1,39 +1,47 @@
-
 import { fileXmlIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
+import { FTPOptionsHandler } from '../../common/FTPOptionsHandler';
 
 export class XmlFileInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { fileLocation: "local", connectionMethod: "env",  xmlOptions: { xpath: '', parser: 'lxml' } };
+    const defaultConfig = {
+		tsCFradioFileLocation: "local",
+		connectionMethod: "env",
+		xmlOptions: { xpath: '', parser: 'lxml' }
+		};
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "radio",
           label: "File Location",
-          id: "fileLocation",
+          id: "tsCFradioFileLocation",
           options: [
             { value: "local", label: "Local" },
             { value: "http", label: "HTTP" },
-            { value: "s3", label: "S3" }
+            { value: "s3", label: "S3" }//,
+            //{ value: "ftp", label: "FTP" }
           ],
           advanced: true
         },
         ...S3OptionsHandler.getAWSFields(),
+        //...FTPOptionsHandler.getFTPFields(),
         {
           type: "file",
           label: "File path",
           id: "filePath",
           placeholder: "Type file name",
           validation: "\\.xml$",
-          validationMessage: "This field expects a file with an xml extension such as input.xml."
+          validationMessage: "This field expects a file with an xml extension such as input.xml.",
+          allowedExtensions: ["xml"]
         },
         {
-          type: "text",
+          type: "input",
           label: "XPath Expression",
           id: "xmlOptions.xpath",
-          placeholder: "/root/child"
+          placeholder: "/root/child",
+          advanced: true
         },
         {
           type: "select",
@@ -50,7 +58,7 @@ export class XmlFileInput extends BaseCoreComponent {
           type: "keyvalue",
           label: "Storage Options",
           id: "xmlOptions.storage_options",
-          condition: { fileLocation: ["http", "s3"] },
+          condition: { tsCFradioFileLocation: ["http", "s3"] },
           advanced: true
         }
       ],

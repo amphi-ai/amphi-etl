@@ -6,14 +6,18 @@ import { FTPOptionsHandler } from '../../common/FTPOptionsHandler';
 
 export class CsvFileOutput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { fileLocation: "local", connectionMethod: "env", csvOptions: { sep: ",", header: true, index: false } };
+    const defaultConfig = {
+		tsCFradioFileLocation: "local",
+	connectionMethod: "env",
+	csvOptions: { sep: ",", header: true, index: false }
+	};
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "radio",
           label: "File Location",
-          id: "fileLocation",
+          id: "tsCFradioFileLocation",
           options: [
             { value: "local", label: "Local" },
             { value: "s3", label: "S3" },
@@ -48,7 +52,7 @@ export class CsvFileOutput extends BaseCoreComponent {
           type: "boolean",
           label: "Create folders if don't exist",
           id: "createFoldersIfNotExist",
-          condition: { fileLocation: ["local"] },
+          condition: { tsCFradioFileLocation: ["local"] },
           advanced: true
         },
         {
@@ -93,7 +97,7 @@ export class CsvFileOutput extends BaseCoreComponent {
           type: "keyvalue",
           label: "Storage Options",
           id: "csvOptions.storage_options",
-          condition: { fileLocation: ["s3"] },
+          condition: { tsCFradioFileLocation: ["s3"] },
           advanced: true
         }
       ],

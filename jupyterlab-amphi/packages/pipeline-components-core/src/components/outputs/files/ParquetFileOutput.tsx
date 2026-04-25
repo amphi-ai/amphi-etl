@@ -1,26 +1,30 @@
-
 import { fileParquetIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
-
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
+import { FTPOptionsHandler } from '../../common/FTPOptionsHandler';
 
 export class ParquetFileOutput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { fileLocation: "local", connectionMethod: "env", parquetOptions: { compression: "snappy" } };
+    const defaultConfig = { tsCFradioFileLocation: "local",
+	connectionMethod: "env",
+	parquetOptions: { compression: "snappy" }
+	};
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "radio",
           label: "File Location",
-          id: "fileLocation",
+          id: "tsCFradioFileLocation",
           options: [
             { value: "local", label: "Local" },
-            { value: "s3", label: "S3" }
+            { value: "s3", label: "S3" }//,
+            //{ value: "ftp", label: "FTP" }
           ],
           advanced: true
         },
         ...S3OptionsHandler.getAWSFields(),
+        //...FTPOptionsHandler.getFTPFields(),
         {
           type: "file",
           label: "File path",
@@ -44,7 +48,7 @@ export class ParquetFileOutput extends BaseCoreComponent {
         {
           type: "boolean",
           label: "Create folders if don't exist",
-          condition: { fileLocation: ["local"] },
+          condition: { tsCFradioFileLocation: ["local"] },
           id: "createFoldersIfNotExist",
           advanced: true
         },
@@ -52,7 +56,7 @@ export class ParquetFileOutput extends BaseCoreComponent {
           type: "keyvalue",
           label: "Storage Options",
           id: "csvOptions.storage_options",
-          condition: { fileLocation: ["s3"] },
+          condition: { tsCFradioFileLocation: ["s3"] },
           advanced: true
         }
       ],

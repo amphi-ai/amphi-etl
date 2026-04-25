@@ -1,12 +1,13 @@
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { fileExcelIcon } from '../../../icons';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
+import { FTPOptionsHandler } from '../../common/FTPOptionsHandler';
 import { FileUtils } from '../../common/FileUtils'; // Import the FileUtils class
 
 export class ExcelFileInput extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-      fileLocation: "local",
+      tsCFradioFileLocation: "local",
       connectionMethod: "env",
       excelOptions: { engine: "None", dtype_backend: "numpy_nullable" }
     };
@@ -16,15 +17,17 @@ export class ExcelFileInput extends BaseCoreComponent {
         {
           type: "radio",
           label: "File Location",
-          id: "fileLocation",
+          id: "tsCFradioFileLocation",
           options: [
             { value: "local", label: "Local" },
             { value: "http", label: "HTTP" },
-            { value: "s3", label: "S3" }
+            { value: "s3", label: "S3" }//,
+            //{ value: "ftp", label: "FTP" }
           ],
           advanced: true
         },
         ...S3OptionsHandler.getAWSFields(),
+        //...FTPOptionsHandler.getFTPFields(),
         {
           type: "file",
           label: "File path",
@@ -40,7 +43,7 @@ export class ExcelFileInput extends BaseCoreComponent {
           id: "excelOptions.sheet_name",
           placeholder: "Default: 0 (first sheet)",
           tooltip: "Select one or multiple sheets. If multiple sheets are selected, the sheets are concatenated to output a single dataset.",
-          condition: { fileLocation: "local" }
+          condition: { tsCFradioFileLocation: "local" }
         },
         {
           type: "selectTokenization",
@@ -49,7 +52,7 @@ export class ExcelFileInput extends BaseCoreComponent {
           placeholder: "Default: 0 (first sheet)",
           tooltip: "Type the sheet names to read data from. If multiple sheets are provided, the sheets are concatenated to output a single dataset.",
           options: [],
-          condition: { fileLocation: ["http", "s3"] }
+          condition: { tsCFradioFileLocation: ["http", "s3"] }
         },
         {
           type: "selectCustomizable",
@@ -123,7 +126,7 @@ export class ExcelFileInput extends BaseCoreComponent {
           type: "keyvalue",
           label: "Storage Options",
           id: "excelOptions.storage_options",
-          condition: { fileLocation: ["http", "s3"] },
+          condition: { tsCFradioFileLocation: ["http", "s3"] },
           advanced: true
         }
       ],
@@ -153,7 +156,7 @@ export class ExcelFileInput extends BaseCoreComponent {
       deps.push(config.engine);
     }
     if (FileUtils.isWildcardInput(config.filePath)) {
-      deps.push(config.fileLocation === "s3" ? 's3fs' : '');
+      deps.push(config.tsCFradioFileLocation === "s3" ? 's3fs' : '');
     }
 
     return deps;
@@ -162,7 +165,7 @@ export class ExcelFileInput extends BaseCoreComponent {
   public provideImports({ config }): string[] {
     let imports = ["import pandas as pd"];
     if (FileUtils.isWildcardInput(config.filePath)) {
-      if (config.fileLocation === "s3") {
+      if (config.tsCFradioFileLocation === "s3") {
         imports.push("import s3fs");
       } else {
         imports.push("import glob");
@@ -189,7 +192,7 @@ export class ExcelFileInput extends BaseCoreComponent {
 
     // Check for wildcard input and generate appropriate code
     if (FileUtils.isWildcardInput(config.filePath)) {
-      if (config.fileLocation === "s3") {
+      if (config.tsCFradioFileLocation === "s3") {
         code += FileUtils.getS3FilePaths(config.filePath, storageOptionsString, outputName);
         code += FileUtils.generateConcatCode(outputName, "read_excel", optionsString, true);
       } else {
@@ -233,7 +236,7 @@ export class ExcelFileInput extends BaseCoreComponent {
     }
 
     // Step 2: Always apply S3-specific options (these will override manual entries if needed)
-    if (config.fileLocation === 's3') {
+    if (config.tsCFradioFileLocation === 's3') {
       const s3Options = S3OptionsHandler.handleS3SpecificOptions(config, finalStorageOptions);
       finalStorageOptions = { ...finalStorageOptions, ...s3Options };
     }
