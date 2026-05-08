@@ -107,7 +107,7 @@ export class OracleInput extends BaseCoreComponent {
         }
       ],
     };
-    const description = "Use Oracle Input to retrieve data from an Oracle database by specifying either a table name or a custom SQL query."
+    const description = "Use Oracle Input to retrieve data from an Oracle database by specifying either a table name or a custom SQL query.";
 
     super("Oracle Input", "oracleInput", description, "pandas_df_input", [], "inputs.Databases", oracleIcon, defaultConfig, form);
   }

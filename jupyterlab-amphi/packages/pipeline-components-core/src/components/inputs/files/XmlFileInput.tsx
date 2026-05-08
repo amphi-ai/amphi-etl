@@ -63,7 +63,7 @@ export class XmlFileInput extends BaseCoreComponent {
         }
       ],
     };
-    const description = "Use XML File Input to access data from a XML file locally or remotely (via HTTP or S3)."
+    const description = "Use XML File Input to access data from a XML file locally or remotely (via HTTP or S3).";
 
     super("XML File Input", "xmlFileInput", description, "pandas_df_input", ["xml"], "inputs", fileXmlIcon, defaultConfig, form);
   }

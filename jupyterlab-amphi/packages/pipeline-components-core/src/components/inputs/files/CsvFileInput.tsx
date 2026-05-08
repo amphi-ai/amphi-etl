@@ -162,7 +162,7 @@ export class CsvFileInput extends BaseCoreComponent {
         }
       ],
     };
-    const description = "Use CSV File Input to access data from a CSV file or multiple CSV files using a wildcard, locally or remotely (via HTTP or S3)."
+    const description = "Use CSV File Input to access data from a CSV file or multiple CSV files using a wildcard, locally or remotely (via HTTP or S3).";
 
     super("CSV File Input", "csvFileInput", description, "pandas_df_input", ["csv", "tsv"], "inputs", fileCsvIcon, defaultConfig, form);
   }

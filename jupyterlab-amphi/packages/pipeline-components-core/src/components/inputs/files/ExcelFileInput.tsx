@@ -131,7 +131,7 @@ export class ExcelFileInput extends BaseCoreComponent {
         }
       ],
     };
-    const description = "Use Excel File Input to access data from Excel files (e.g., xlsx, xls, ods) locally or remotely (via HTTP or S3)."
+    const description = "Use Excel File Input to access data from Excel files (e.g., xlsx, xls, ods) locally or remotely (via HTTP or S3).";
 
     super("Excel/ODS File Input", "excelfileInput", description, "pandas_df_input", ["xlsx", "xls", "ods", "xlsb"], "inputs", fileExcelIcon, defaultConfig, form);
   }

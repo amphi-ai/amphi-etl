@@ -61,7 +61,7 @@ export class ParquetFileOutput extends BaseCoreComponent {
         }
       ],
     };
-    const description = "Use Parquet File Output to write or append data to a Parquet file locally or remotely (S3)."
+    const description = "Use Parquet File Output to write or append data to a Parquet file locally or remotely (S3).";
 
     super("Parquet File Output", "parquetFileOutput", "no desc", "pandas_df_output", [], "outputs", fileParquetIcon, defaultConfig, form);
   }

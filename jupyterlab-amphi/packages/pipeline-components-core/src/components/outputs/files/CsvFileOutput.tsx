@@ -102,7 +102,7 @@ export class CsvFileOutput extends BaseCoreComponent {
         }
       ],
     };
-    const description = "Use CSV File Output to write or append data to a CSV file locally or remotely (S3)."
+    const description = "Use CSV File Output to write or append data to a CSV file locally or remotely (S3).";
 
     super("CSV File Output", "csvFileOutput", description, "pandas_df_output", [], "outputs", fileCsvIcon, defaultConfig, form);
   }
