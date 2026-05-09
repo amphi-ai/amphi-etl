@@ -61,7 +61,7 @@ export class Pivot extends BaseCoreComponent {
         }
       ],
     };
-    const description = "Use Pivot Dataset to rearrange and aggregate data in a dataset. It allows you to organize your data into a new table by defining rows, columns, and the values to populate the table. If you're looking to simply swap rows and columns without aggregation, check out the Transpose Dataset component."
+    const description = "Use Pivot Dataset to rearrange and aggregate data in a dataset. It allows you to organize your data into a new table by defining rows, columns, and the values to populate the table. If you're looking to simply swap rows and columns without aggregation, check out the Transpose Dataset component.";
 
     super("Pivot Dataset", "pivot", description, "pandas_df_processor", [], "transforms", pivotIcon, defaultConfig, form);
   }

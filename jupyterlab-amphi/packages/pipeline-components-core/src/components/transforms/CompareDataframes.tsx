@@ -1012,7 +1012,8 @@ def compare_duckdb_data(
     conn.register("df2", df2)
 
     quoted_cols = ", ".join(f'"{c}"' for c in common_cols)
-    #⚠during dev, Amphi added a f right in the middle of the query so we split the  query in two strings
+    #⚠during dev, Amphi added a f before 'left' so we use a var to bypass
+    py_var_quote="'"
     query = f"""
         WITH unioned AS (
             SELECT {quoted_cols}, {origin_col} FROM df1
@@ -1048,7 +1049,7 @@ def compare_duckdb_data(
                    ABS(p.left_count - p.right_count) AS {total_diff_col}
             FROM pivoted p
             CROSS JOIN 
-            (select"""+f""" 'left' AS {origin_col} UNION ALL SELECT 'right' AS {origin_col}) side
+            (select {py_var_quote}left{py_var_quote} AS {origin_col} UNION ALL SELECT 'right' AS {origin_col}) side
             WHERE p.left_count>0 AND p.right_count>0 AND p.left_count<>p.right_count
         )
         SELECT * FROM only_one_side
