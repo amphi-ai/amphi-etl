@@ -82,6 +82,8 @@ import dynamicGenerateCalendarIconSvgStr from '../style/icons/dynamicGenerateCal
 import correlationMatrixIconSvgStr from '../style/icons/correlation_matrix-24.svg';
 import autoColumnPositionIconSvgStr from '../style/icons/columnPosition.svg';
 import chartGeneratorIconSvgStr from '../style/icons/chart_generator-24.svg';
+import markdownToolsIconSvgStr from '../style/icons/markdown.svg';
+import markdownTTMIconSvgStr from '../style/icons/markdown.svg';
 
 export const mongodbIcon = new LabIcon({
   name: 'amphi:mongodb-icon',
@@ -495,4 +497,14 @@ export const autoColumnPositionIcon = new LabIcon({
 export const chartGeneratorIcon = new LabIcon({
   name: 'amphi:chart-generator-icon',
   svgstr: chartGeneratorIconSvgStr
+});
+
+export const markdownToolsIcon = new LabIcon({
+  name: 'amphi:markdown-tools-icon',
+  svgstr: markdownToolsIconSvgStr
+});
+
+export const markdownTTMIcon = new LabIcon({
+  name: 'amphi:markdown-ttm-icon',
+  svgstr: markdownTTMIconSvgStr
 });
