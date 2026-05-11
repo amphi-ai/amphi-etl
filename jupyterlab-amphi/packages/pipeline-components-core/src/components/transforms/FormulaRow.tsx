@@ -20,6 +20,25 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
     public _default = {};
     public _form = {};
 
+    private getEffectiveFormulaCode(rawValue: any): string {
+        if (!rawValue) return '';
+
+        if (typeof rawValue === 'object') {
+            return rawValue.code || '';
+        }
+
+        try {
+            const parsed = JSON.parse(rawValue);
+            if (parsed && typeof parsed === 'object' && 'code' in parsed) {
+                return parsed.code || '';
+            }
+        } catch (e) {
+            return rawValue;
+        }
+
+        return rawValue;
+    }
+
     public static ConfigForm = ({
         nodeId,
         data,
@@ -33,14 +52,15 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
         modalOpen,
         setModalOpen
     }) => {
-        const [formulas, setFormulas] = useState(data.formulas || [{ columns: [], formula: '', type: 'expr' }]);
+        const [formulas, setFormulas] = useState(data.formulas || [{ columns: [], formula: JSON.stringify({ code: '', instructions: '' }), type: 'expr' }]);
 
         useEffect(() => {
         }, [formulas]);
 
         const handleAddFormula = () => {
-            setFormulas([...formulas, { columns: [], formula: '', type: 'expr' }]);
-            handleChange(formulas, 'formulas');
+            const updatedFormulas = [...formulas, { columns: [], formula: JSON.stringify({ code: '', instructions: '' }), type: 'expr' }];
+            setFormulas(updatedFormulas);
+            handleChange(updatedFormulas, 'formulas');
         };
 
         const handleRemoveFormula = (index: number) => {
@@ -290,7 +310,7 @@ export class FormulaRow extends PipelineComponent<ComponentItem>() {
         let functions = [];
         config.formulas.forEach((formula, index) => {
             const functionName = `formula_${index + 1}`;
-            const formulaCode = formula.formula.trim();
+            const formulaCode = this.getEffectiveFormulaCode(formula.formula).trim();
             const formulaType = formula.type;
 
             let code = '';
@@ -320,19 +340,20 @@ ${formulaCode}
             const columnsStr = columns.join(', ');
 
             let applyFunction = '';
+            const formulaCode = this.getEffectiveFormulaCode(formula.formula).trim();
 
             if (formula.type === 'function') {
                 // Extract function name using a regex
-                const functionNameMatch = formula.formula.match(/def\s+(\w+)\s*\(/);
+                const functionNameMatch = formulaCode.match(/def\s+(\w+)\s*\(/);
                 const extractedFunctionName = functionNameMatch ? functionNameMatch[1] : `formula_${index + 1}`;
 
                 applyFunction = extractedFunctionName;
             } else if (formula.type === 'lambda') {
                 // Use lambda expression directly
-                applyFunction = formula.formula.trim();
+                applyFunction = formulaCode;
             } else if (formula.type === 'expr') {
                 // Use Python expression directly inline
-                applyFunction = `(lambda row: ${formula.formula.trim()})`;
+                applyFunction = `(lambda row: ${formulaCode})`;
             }
 
             if (columns.length > 1) {
