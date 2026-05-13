@@ -15,7 +15,7 @@ import {
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
   SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample, UniqueKeyDetector, FileAction, DataframeList, DataframeDelete, HierarchyPath, PackagesList, JSONTools,
   DatabaseInput, DatabaseOutput, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar, CorrelationMatrix,
-  Switch,AutoColumnPosition,ChartGenerator
+  Switch,AutoColumnPosition,ChartGenerator,ComponentsList
 } from './components';
 
 // Export allow the component to be used as a base component in different packages
@@ -26,7 +26,7 @@ export {
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON, ExplodeJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
   SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample, UniqueKeyDetector, FileAction, DataframeList, DataframeDelete, HierarchyPath, PackagesList, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar,
-  Switch, CorrelationMatrix,AutoColumnPosition,ChartGenerator
+  Switch, CorrelationMatrix,AutoColumnPosition,ChartGenerator,ComponentsList
 }
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -132,6 +132,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(DataframeList.getInstance());
     componentService.addComponent(DataframeDelete.getInstance());
     componentService.addComponent(PackagesList.getInstance());
+    componentService.addComponent(ComponentsList.getInstance());
   }
 };
 
