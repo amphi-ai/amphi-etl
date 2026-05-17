@@ -3,26 +3,28 @@ import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { ExpandList } from './ExpandList';
 import { FlattenJSON } from './FlattenJSON';
 import { ExplodeJSON } from './ExplodeJSON';
+import { ValidateJSON } from './ValidateJSON';
 
 export class JSONTools extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
 		tsCFradioToolType: "explodeJSON",
 		tsCFbooleanAllLevels: true,
-        tsCFColumnToExplode:"",
+        tsCFcolumnColumnToExplode:"",
 		tsCFbooleanKeepColumns:true,
-        tsCFInputnumberMaxLevel:"",
+        tsCFinputnumberMaxLevel:"",
 		tsCFselectCustomizableLevelSeparator:".",
         tsCFbooleanPrefixTopLevel:true,
         tsCFbooleanFlattenArraysAsRows:true,
         tsCFbooleanFlattenObjectsAsColumns:true,
 		tsCFbooleanKeepRawJson:true,
-        tsCFSelectoutputEngine:"pandas"
+        tsCFselectoutputEngine:"pandas"
 	};
-	//this tool is actually linked to 3 components
+	//this tool is actually linked to 4 components
 	const explodeJSONComponent = new ExplodeJSON();
     const expandListComponent = new ExpandList();
     const flattenJSONComponent = new FlattenJSON();
+    const validateJSONComponent = new ValidateJSON();
 
     const explodeJSONFields = explodeJSONComponent._form['fields'].map(field => ({
       ...field,
@@ -39,6 +41,11 @@ export class JSONTools extends BaseCoreComponent {
       condition: { tsCFradioToolType: ["flattenJSON"], ...(field.condition || {}) }
     }));
 
+    const validateJSONFields = validateJSONComponent._form['fields'].map(field => ({
+      ...field,
+      condition: { tsCFradioToolType: ["validateJSON"], ...(field.condition || {}) }
+    }));
+	
     const form = {
       idPrefix: "component__form",
       fields: [
@@ -49,17 +56,19 @@ export class JSONTools extends BaseCoreComponent {
           options: [
             { value: "explodeJSON", label: "Explode JSON" },
             { value: "expandList", label: "Expand JSON List" },
-            { value: "flattenJSON", label: "Flatten JSON" }
+            { value: "flattenJSON", label: "Flatten JSON" },
+            { value: "validateJSON", label: "Validate JSON" }
           ]
         },
         ...explodeJSONFields,
         ...expandListFields,
-        ...flattenJSONFields
+        ...flattenJSONFields,
+        ...validateJSONFields
       ]
     };
 
     const description =
-      "JSON Tools lets you choose between exploding, expanding a JSON list into columns or flattening a JSON object column.";
+      "Choose between validating, exploding, expanding a JSON list into columns or flattening a JSON object column.";
 
     super("JSON Tools", "jsonTools", description, "pandas_df_processor", [], "transforms", jsonIcon, defaultConfig, form);
   }
@@ -71,6 +80,8 @@ export class JSONTools extends BaseCoreComponent {
   public provideFunctions({ config }): string[] {
     if (config.tsCFradioToolType === 'explodeJSON' && typeof (ExplodeJSON as any).prototype.provideFunctions === 'function') {
       return new ExplodeJSON().provideFunctions({ config });
+    } else if (config.tsCFradioToolType === 'validateJSON' && typeof (ValidateJSON as any).prototype.provideFunctions === 'function') {
+      return new ValidateJSON().provideFunctions({ config });
     }
     return [];
   }
@@ -88,6 +99,9 @@ export class JSONTools extends BaseCoreComponent {
     } else if (tool === "explodeJSON") {
       const explode = new ExplodeJSON();
       importsSets.push(...explode.provideImports({ config }));
+    } else if (tool === "validateJSON") {
+      const validate = new ValidateJSON();
+      importsSets.push(...validate.provideImports({ config }));
     }
 
     // Deduplicate while preserving order
@@ -108,6 +122,10 @@ export class JSONTools extends BaseCoreComponent {
     if (tool === "flattenJSON") {
       const flatten = new FlattenJSON();
       return flatten.generateComponentCode({ config, inputName, outputName });
+    }
+    if (tool === "validateJSON") {
+      const validate = new ValidateJSON();
+      return validate.generateComponentCode({ config, inputName, outputName });
     }
     return "";
   }
