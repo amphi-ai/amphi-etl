@@ -161,10 +161,14 @@ export abstract class BaseCodeGenerator {
       let code = '';
       let inputName = '';
       let outputName = '';
+	  //Generate a comment with origin node infos : type,nameId,customTitle
+	  const generatedCode = component.generateComponentCode({ config });
+      const needsNewLine = !generatedCode.startsWith('\n');
       if (config.customTitle) {
-        const generatedCode = component.generateComponentCode({ config });
-        const needsNewLine = !generatedCode.startsWith('\n');
-        code += `\n# ${config.customTitle}${needsNewLine ? '\n' : ''}`;
+
+        code += `\n# id : ${node.id} | Type : ${node.type} | Name Id : ${config.nameId} | Custom Title : ${config.customTitle}${needsNewLine ? '\n' : ''}`;
+		} else {
+		code += `\n# id : ${node.id} | Type : ${node.type} | Name Id : ${config.nameId}${needsNewLine ? '\n' : ''}`;	
       }
 
       try {
