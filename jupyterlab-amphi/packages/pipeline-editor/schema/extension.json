@@ -18,8 +18,8 @@
     },
     "enableComponentHeaderFields": {
       "type": "boolean",
-      "title": "Show Component Fields In Header",
-      "description": "When enabled, the non-advanced component fields are displayed in the node header area instead of below the title in the canvas.",
+      "title": "Enable minimized nodes",
+      "description": "When enabled, nodes are shown in a minimized layout on the canvas.",
       "default": false
     },
     "enableDebugMode": {

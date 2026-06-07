@@ -4,7 +4,7 @@
 import { LabIcon } from '@jupyterlab/ui-components';
 import { xIcon } from './icons';
 import React, { useMemo, useState } from 'react';
-import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { useCallback, useEffect } from 'react';
 
@@ -197,12 +197,7 @@ const MemoizedComponentUI = React.memo(
       event.preventDefault();
     }, []);
 
-    const [titleName, setTitleName] = useState(data?.customTitle || name);
-
-    const onTitleChange = useCallback((newTitle: string) => {
-      setTitleName(newTitle);
-      handleChange(newTitle, 'customTitle');
-    }, [handleChange]);
+    const titleName = data?.customTitle || name;
 
     // Modified ConfigForm props to include formState and update handler
     const enhancedConfigFormProps = {
@@ -250,15 +245,7 @@ const MemoizedComponentUI = React.memo(
           <div className={componentClassName} onDoubleClick={handleDoubleClick}>
             <div className="component-card__inner" onDoubleClick={stopPropagation} onDragStart={disableDrag}>
               <Icon.react height="36px" width="36px" color={colorPrimary} marginRight={8} />
-              <Text
-                editable={isSelected ? {
-                  onChange: onTitleChange,
-                  tooltip: false,
-                  icon: <EditOutlined style={{ color: '#5F9B97' }} />
-                } : undefined}
-              >
-                {titleName}
-              </Text>
+              <Text>{titleName}</Text>
             </div>
             {handle}
           </div>
@@ -270,7 +257,7 @@ const MemoizedComponentUI = React.memo(
       return (
         <ConfigProvider theme={theme}>
           <div className={componentClassName} onDoubleClick={handleDoubleClick}>
-            <div className="component__header" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div className="component__header component__header--inline" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <Icon.react
                 height="20px"
                 width="20px"
@@ -279,17 +266,9 @@ const MemoizedComponentUI = React.memo(
               <Text
                 onDoubleClick={stopPropagation}
                 onDragStart={disableDrag}
-                editable={
-                  isSelected
-                    ? {
-                      onChange: onTitleChange,
-                      tooltip: false,
-                      icon: <EditOutlined style={{ color: '#5F9B97' }} />
-                    }
-                    : undefined
-                }
-                className="ant-select-sm"
-                style={{ flex: 1, minWidth: 0 }}
+                ellipsis={{ tooltip: titleName }}
+                className="ant-select-sm component__title component__title--inline"
+                style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}
               >
                 {titleName}
               </Text>
@@ -321,15 +300,6 @@ const MemoizedComponentUI = React.memo(
             <Text
               onDoubleClick={stopPropagation}
               onDragStart={disableDrag}
-              editable={
-                isSelected
-                  ? {
-                    onChange: onTitleChange,
-                    tooltip: false,
-                    icon: <EditOutlined style={{ color: '#5F9B97' }} />
-                  }
-                  : undefined
-              }
               className="ant-select-sm"
             >
               {titleName}
