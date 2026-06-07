@@ -14,7 +14,7 @@ import { Popconfirm, Typography, ConfigProvider } from 'antd';
 // -------------------------------
 // NEW: Variant types for UI mode
 // -------------------------------
-export type ComponentVariant = 'hybrid' | 'card';
+export type ComponentVariant = 'hybrid' | 'card' | 'header-inline';
 
 interface IHandleProps {
   type: string;
@@ -230,10 +230,11 @@ const MemoizedComponentUI = React.memo(
       const baseClass = variant === 'card'
         ? `component-card component${modifier} ${isIbis ? "ibis" : ""}`
         : `component component${modifier} ${isIbis ? "ibis" : ""}`;
+      const variantClass = variant === 'header-inline' ? 'component--header-inline' : '';
 
       return executionStatusClass
-        ? `${baseClass} ${executionStatusClass}`.trim()
-        : baseClass;
+        ? `${baseClass} ${variantClass} ${executionStatusClass}`.trim()
+        : `${baseClass} ${variantClass}`.trim();
     }, [modifier, isIbis, variant, executionStatusClass]);
 
     const { Text } = Typography;
@@ -258,6 +259,53 @@ const MemoizedComponentUI = React.memo(
               >
                 {titleName}
               </Text>
+            </div>
+            {handle}
+          </div>
+        </ConfigProvider>
+      );
+    }
+
+    if (variant === 'header-inline') {
+      return (
+        <ConfigProvider theme={theme}>
+          <div className={componentClassName} onDoubleClick={handleDoubleClick}>
+            <div className="component__header" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Icon.react
+                height="20px"
+                width="20px"
+                color={colorPrimary}
+              />
+              <Text
+                onDoubleClick={stopPropagation}
+                onDragStart={disableDrag}
+                editable={
+                  isSelected
+                    ? {
+                      onChange: onTitleChange,
+                      tooltip: false,
+                      icon: <EditOutlined style={{ color: '#5F9B97' }} />
+                    }
+                    : undefined
+                }
+                className="ant-select-sm"
+                style={{ flex: 1, minWidth: 0 }}
+              >
+                {titleName}
+              </Text>
+              <Popconfirm
+                title="Sure to delete?"
+                placement="right"
+                onConfirm={deleteNode}
+                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+              >
+                <div className="deletebutton">
+                  <xIcon.react className="group-hover:text-primary" />
+                </div>
+              </Popconfirm>
+            </div>
+            <div style={{ display: 'none' }}>
+              <ConfigForm {...enhancedConfigFormProps} />
             </div>
             {handle}
           </div>

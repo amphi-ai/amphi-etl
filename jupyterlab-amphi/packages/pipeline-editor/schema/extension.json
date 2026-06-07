@@ -16,6 +16,12 @@
       "description": "Enabling this option places the component palette at the top of the pipeline canvas.",
       "default": false
     },
+    "enableComponentHeaderFields": {
+      "type": "boolean",
+      "title": "Show Component Fields In Header",
+      "description": "When enabled, the non-advanced component fields are displayed in the node header area instead of below the title in the canvas.",
+      "default": false
+    },
     "enableDebugMode": {
       "type": "boolean",
       "title": "Enable Debug Mode",

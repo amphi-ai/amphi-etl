@@ -43,27 +43,60 @@ export class Switch extends BaseCoreComponent {
         return new Filter().provideImports({ config });
     }
 
-    public generateComponentCode({ config, inputName, outputName }): string {
+    private normalizeFilterConfig(config: any): any {
         const normalizedConfig = { ...config } as any;
-        normalizedConfig.filterType = normalizedConfig.filterType || "basic";
-        if (!normalizedConfig.column && normalizedConfig.column_name) {
-            const col = normalizedConfig.column_name;
-            normalizedConfig.column = typeof col === "object" && col?.value
-                ? col
-                : { value: col, type: "", named: true };
-        }
-        if (!normalizedConfig.condition && normalizedConfig.operator) {
-            normalizedConfig.condition = normalizedConfig.operator;
-        }
-        if (normalizedConfig.conditionValue === undefined && normalizedConfig.compare_value !== undefined) {
-            normalizedConfig.conditionValue = normalizedConfig.compare_value;
-        }
-        if (normalizedConfig.enforceString === undefined) {
-            normalizedConfig.enforceString = false;
+        const genericFilterType = normalizedConfig.filterType || normalizedConfig.tsCFradioFilterType || "basic";
+        const genericColumn = normalizedConfig.column
+            ?? normalizedConfig.column_name
+            ?? normalizedConfig.tsCFcolumnColumntoFilter;
+        const genericCondition = normalizedConfig.condition
+            ?? normalizedConfig.operator
+            ?? normalizedConfig.tsCFselectCondition;
+        const genericConditionValue = normalizedConfig.conditionValue
+            ?? normalizedConfig.compare_value
+            ?? normalizedConfig.tsCFinputConditionValue;
+        const genericEnforceString = normalizedConfig.enforceString
+            ?? normalizedConfig.tsCFbooleanEnforceString
+            ?? false;
+        const genericAdvancedExpression = normalizedConfig.advancedExpression
+            ?? normalizedConfig.advanced_expression
+            ?? normalizedConfig.tsCFcodeTextareaPythonExpression
+            ?? "";
+
+        normalizedConfig.filterType = genericFilterType;
+        normalizedConfig.tsCFradioFilterType = genericFilterType;
+
+        if (genericColumn && !normalizedConfig.tsCFcolumnColumntoFilter) {
+            normalizedConfig.tsCFcolumnColumntoFilter =
+                typeof genericColumn === "object" && genericColumn?.value
+                    ? genericColumn
+                    : { value: genericColumn, type: "", named: true };
         }
 
-        const columnValue = normalizedConfig?.column?.value ?? "";
-        if (normalizedConfig.filterType !== "advanced" && !columnValue) {
+        if (genericCondition !== undefined) {
+            normalizedConfig.condition = genericCondition;
+            normalizedConfig.tsCFselectCondition = genericCondition;
+        }
+
+        if (genericConditionValue !== undefined) {
+            normalizedConfig.conditionValue = genericConditionValue;
+            normalizedConfig.tsCFinputConditionValue = genericConditionValue;
+        }
+
+        normalizedConfig.enforceString = genericEnforceString;
+        normalizedConfig.tsCFbooleanEnforceString = genericEnforceString;
+        normalizedConfig.advancedExpression = genericAdvancedExpression;
+        normalizedConfig.advanced_expression = genericAdvancedExpression;
+        normalizedConfig.tsCFcodeTextareaPythonExpression = genericAdvancedExpression;
+
+        return normalizedConfig;
+    }
+
+    public generateComponentCode({ config, inputName, outputName }): string {
+        const normalizedConfig = this.normalizeFilterConfig(config);
+
+        const columnValue = normalizedConfig?.tsCFcolumnColumntoFilter?.value ?? "";
+        if (normalizedConfig.tsCFradioFilterType !== "advanced" && !columnValue) {
             return `
 # Warning: No column selected for Switch Condition
 ${outputName}_True = ${inputName}.head(0).copy()
