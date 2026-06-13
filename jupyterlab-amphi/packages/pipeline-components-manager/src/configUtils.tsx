@@ -1,4 +1,4 @@
-import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
+import { CheckOutlined, CloseOutlined, EditOutlined } from '@ant-design/icons';
 import { Card, Cascader, Col, Flex, Form, Modal, Drawer, Radio, Row, Switch, Typography, Select, Divider, Space, Button } from 'antd';
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { renderFormItem } from './formUtils'
@@ -538,6 +538,7 @@ export default function ConfigModal({
   setModalOpen
 }: ConfigModalProps) {
   const componentName = data?.customTitle || name;
+  const { Text } = Typography;
 
   const stopPropagation = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -551,7 +552,19 @@ export default function ConfigModal({
   return (
     <>
       <Modal
-        title={componentName}
+        title={
+          <div className="amphi-config-modal-title">
+            <Text
+              editable={{
+                onChange: (newTitle: string) => handleChange(newTitle, 'customTitle'),
+                tooltip: false,
+                icon: <EditOutlined style={{ color: '#5F9B97' }} />
+              }}
+            >
+              {componentName}
+            </Text>
+          </div>
+        }
         centered
         open={modalOpen}
         onOk={() => setModalOpen(false)}
@@ -708,7 +721,7 @@ interface ConfigModalProps {
   componentService: any;
   manager: any
   commands: any;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChange: (value: any, fieldId: string) => void;
   advanced: boolean;
   modalOpen: any;
   setModalOpen: any;

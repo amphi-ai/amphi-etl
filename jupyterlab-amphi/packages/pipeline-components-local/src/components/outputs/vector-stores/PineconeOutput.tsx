@@ -1,39 +1,41 @@
-
 import { pineconeIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 
-
-
 export class PineconeOutput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { createIndex: false, cloudAndRegion: ["aws", "us-east-1"], dimensions: 1536, similarityMetric: "cosine" };
+    const defaultConfig = { 
+	tsCFbooleanCreateIndex: false,
+	tsCFcascaderCloudAndRegion: ["aws", "us-east-1"],
+	tsCFinputNumberIndexDimensions: 1536,
+	tsCFradioSimilarityMetric: "cosine" 
+	};
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "input",
           label: "Index Name",
-          id: "indexName",
+          id: "tsCFinputIndexName",
           placeholder: "Type index name"
         },
         {
           type: "boolean",
           label: "Create index if not exist",
-          id: "createIndex",
+          id: "tsCFbooleanCreateIndex",
           advanced: true
         },
         {
           type: "input",
           inputType: "password",
           label: "Pinecone API Key",
-          id: "pineconeApiKey",
+          id: "tsCFinputPineconeApiKey",
           connection: "Pinecone",
           advanced: true
         },
         {
           type: "cascader",
           label: "Embeddings Model",
-          id: "model",
+          id: "tsCFcascaderModel",
           placeholder: "Select ...",
           options: [
             {
@@ -50,7 +52,7 @@ export class PineconeOutput extends BaseCoreComponent {
         {
           type: "cascader",
           label: "Pinecone Cloud Region",
-          id: "cloudAndRegion",
+          id: "tsCFcascaderCloudAndRegion",
           placeholder: "Select ...",
           options: [
             {
@@ -66,13 +68,13 @@ export class PineconeOutput extends BaseCoreComponent {
         {
           type: "inputNumber",
           label: "Index Dimensions",
-          id: "dimensions",
+          id: "tsCFinputNumberIndexDimensions",
           advanced: true
         },
         {
           type: "radio",
           label: "Vector Similarity metric",
-          id: "similarityMetric",
+          id: "tsCFradioSimilarityMetric",
           options: [
             { value: "cosine", label: "Cosine" },
             { value: "euclidean", label: "Euclidean" },
@@ -84,7 +86,7 @@ export class PineconeOutput extends BaseCoreComponent {
           type: "input",
           inputType: "password",
           label: "OpenAI API Key",
-          id: "openaiApiKey",
+          id: "tsCFinputOpenaiApiKey",
           connection: "OpenAI",
           advanced: true
         }
@@ -100,16 +102,16 @@ export class PineconeOutput extends BaseCoreComponent {
 
   public generateComponentCode({ config, inputName }): string {
     
-    const createIndexCode = config.createIndex ? `
+    const createIndexCode = config.tsCFbooleanCreateIndex ? `
 
 # Check if index already exists
 if (${inputName}_index_name not in ${inputName}_pc.list_indexes().names()):
     # If does not exist, create index
     ${inputName}_pc.create_index(
         ${inputName}_index_name,
-        dimension=${config.dimensions},  # dimensionality of text-embed-3-small
-        metric="${config.similarityMetric}", # cosinus recommended for OpenAI
-        spec=ServerlessSpec(cloud="${config.cloudAndRegion[0]}", region="${config.cloudAndRegion[1]}")
+        dimension=${config.tsCFinputNumberIndexDimensions},  # dimensionality of text-embed-3-small
+        metric="${config.tsCFradioSimilarityMetric}", # cosinus recommended for OpenAI
+        spec=ServerlessSpec(cloud="${config.tsCFcascaderCloudAndRegion[0]}", region="${config.tsCFcascaderCloudAndRegion[1]}")
     )
     # wait for index to be initialized
     while not ${inputName}_pc.describe_index(${inputName}_index_name).status['ready']:
@@ -118,10 +120,10 @@ if (${inputName}_index_name not in ${inputName}_pc.list_indexes().names()):
 
     const code = `
 # Documents to Pinecone with on-the-fly embedding
-${inputName}_pc = Pinecone(api_key="${config.pineconeApiKey}")
-${inputName}_index_name = "${config.indexName}"
+${inputName}_pc = Pinecone(api_key="${config.tsCFinputPineconeApiKey}")
+${inputName}_index_name = "${config.tsCFinputIndexName}"
 ${createIndexCode}
-${inputName}_embeddings = OpenAIEmbeddings(api_key="${config.openaiApiKey}")
+${inputName}_embeddings = OpenAIEmbeddings(api_key="${config.tsCFinputOpenaiApiKey}")
 ${inputName}_to_Pinecone = PineconeVectorStore.from_documents(${inputName}, ${inputName}_embeddings, index_name=${inputName}_index_name)
 `;
     return code;

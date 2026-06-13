@@ -1,8 +1,5 @@
-
 import { htmlLineIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
-
-
 
 export class ParseHTML extends BaseCoreComponent {
   constructor() {
@@ -13,7 +10,7 @@ export class ParseHTML extends BaseCoreComponent {
         {
           type: "selectMultipleCustomizable",
           label: "Tags to extract",
-          id: "tagsToExtract",
+          id: "tsCFselectMultipleCustomizableTagsToExtract",
           tooltip: "A list of tags whose content will be extracted.",
           options: [
             { value: "script", label: "script" },
@@ -53,7 +50,7 @@ export class ParseHTML extends BaseCoreComponent {
         {
           type: "selectMultipleCustomizable",
           label: "Unwanted tags",
-          id: "unwantedTags",
+          id: "tsCFselectMultipleCustomizableUnwantedTags",
           tooltip: "A list of tags to be removed from the HTML.",
           options: [
             { value: "script", label: "script" },
@@ -93,21 +90,21 @@ export class ParseHTML extends BaseCoreComponent {
         {
           type: "valuesList",
           label: "Remove class names",
-          id: "removeClassnames",
+          id: "tsCFvaluesListRemoveClassnames",
           tooltip: "A list of class names to be removed from the HTML.",
           advanced: true
         },
         {
           type: "boolean",
           label: "Remove unnecessary lines",
-          id: "removeLines",
+          id: "tsCFbooleanRemoveLines",
           tooltip: "If set to True, unnecessary lines will be removed.",
           advanced: true
         },
         {
           type: "boolean",
           label: "Remove comments",
-          id: "removeComments",
+          id: "tsCFbooleanRemoveComments",
           tooltip: "If set to True, comments will be removed.",
           advanced: true
         }
@@ -136,11 +133,11 @@ export class ParseHTML extends BaseCoreComponent {
     };
 
     const options = [
-      config.tagsToExtract && config.tagsToExtract.length > 0 ? `tags_to_extract=${formatList(config.tagsToExtract)}` : '',
-      config.unwantedTags && config.unwantedTags.length > 0 ? `unwanted_tags=${formatList(config.unwantedTags)}` : '',
-      config.removeClassnames && config.removeClassnames.length > 0 ? `remove_classnames=${formatList(config.removeClassnames)}` : '',
-      config.removeLines !== undefined && config.removeLines !== false ? `remove_lines=${formatBoolean(config.removeLines)}` : '',
-      config.removeComments !== undefined && config.removeComments !== false ? `remove_comments=${formatBoolean(config.removeComments)}` : ''
+      config.tsCFselectMultipleCustomizableTagsToExtract && config.tsCFselectMultipleCustomizableTagsToExtract.length > 0 ? `tags_to_extract=${formatList(config.tsCFselectMultipleCustomizableTagsToExtract)}` : '',
+      config.tsCFselectMultipleCustomizableUnwantedTags && config.tsCFselectMultipleCustomizableUnwantedTags.length > 0 ? `unwanted_tags=${formatList(config.tsCFselectMultipleCustomizableUnwantedTags)}` : '',
+      config.tsCFvaluesListRemoveClassnames && config.tsCFvaluesListRemoveClassnames.length > 0 ? `remove_classnames=${formatList(config.tsCFvaluesListRemoveClassnames)}` : '',
+      config.tsCFbooleanRemoveLines !== undefined && config.tsCFbooleanRemoveLines !== false ? `remove_lines=${formatBoolean(config.tsCFbooleanRemoveLines)}` : '',
+      config.tsCFbooleanRemoveComments !== undefined && config.tsCFbooleanRemoveComments !== false ? `remove_comments=${formatBoolean(config.tsCFbooleanRemoveComments)}` : ''
     ].filter(option => option).join(',\n  ');
 
     const code = `

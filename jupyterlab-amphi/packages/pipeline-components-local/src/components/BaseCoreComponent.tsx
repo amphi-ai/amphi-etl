@@ -140,6 +140,7 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
     const [modalOpen, setModalOpen] = useState(false);
 
     let enableExecution = settings.get('enableExecution').composite as boolean;
+    const variant = settings.get('enableComponentHeaderFields').composite as boolean ? 'header-inline' : 'hybrid';
 
     return (
       <>
@@ -174,7 +175,8 @@ export class BaseCoreComponent extends PipelineComponent<ComponentItem>() {
           deleteNode: deleteNode,
           setViewport: setViewport,
           handleChange,
-          isSelected
+          isSelected,
+          variant
         })}
         {(showContent || isSelected) && (
           <NodeToolbar isVisible position={Position.Bottom}>

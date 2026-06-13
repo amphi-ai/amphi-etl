@@ -83,6 +83,8 @@ import correlationMatrixIconSvgStr from '../style/icons/correlation_matrix-24.sv
 import autoColumnPositionIconSvgStr from '../style/icons/columnPosition.svg';
 import chartGeneratorIconSvgStr from '../style/icons/chart_generator-24.svg';
 import componentListIconSvgStr from '../style/icons/componentList.svg';
+import markdownToolsIconSvgStr from '../style/icons/markdown.svg';
+import markdownTTMIconSvgStr from '../style/icons/markdown.svg';
 
 export const mongodbIcon = new LabIcon({
   name: 'amphi:mongodb-icon',
@@ -501,4 +503,14 @@ export const chartGeneratorIcon = new LabIcon({
 export const componentListIcon = new LabIcon({
   name: 'amphi:component-list-icon',
   svgstr: componentListIconSvgStr
+});
+
+export const markdownToolsIcon = new LabIcon({
+  name: 'amphi:markdown-tools-icon',
+  svgstr: markdownToolsIconSvgStr
+});
+
+export const markdownTTMIcon = new LabIcon({
+  name: 'amphi:markdown-ttm-icon',
+  svgstr: markdownTTMIconSvgStr
 });

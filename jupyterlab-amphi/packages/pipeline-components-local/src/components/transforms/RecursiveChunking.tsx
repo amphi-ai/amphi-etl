@@ -1,19 +1,22 @@
-
 import { splitIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
-
-
 export class RecursiveChunking extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { separators: ["\n\n", "\n", " ", ""], regex: false, chunkSize: 1000, chunkOverlap: 100, chunkLength: "character" };
+    const defaultConfig = {
+		tsCFselectMultipleCustomizableSeparators: ["\n\n", "\n", " ", ""],
+		tsCFbooleanRegex: false,
+		tsCFinputNumberChunkSize: 1000,
+		tsCFinputNumberChunkOverlap: 100,
+		tsCFselectChunkLength: "character"
+		};
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "selectMultipleCustomizable",
           label: "Separators",
-          id: "separators",
+          id: "tsCFselectMultipleCustomizableSeparators",
           tooltip: "The chunking strategy is parameterized by a list of separators. It tries to split on them in order until the chunks are small enough.",
           options: [
             { value: "\n\n", label: "Double newline (paragraph)" },
@@ -30,24 +33,24 @@ export class RecursiveChunking extends BaseCoreComponent {
         {
           type: "boolean",
           label: "Separator is a regex",
-          id: "regex",
+          id: "tsCFbooleanRegex",
           advanced: true
         },
         {
           type: "inputNumber",
           label: "Chunk Size",
-          id: "chunkSize"
+          id: "tsCFinputNumberChunkSize"
         },
         {
           type: "inputNumber",
           label: "Chunk Overlap",
-          id: "chunkOverlap"
+          id: "tsCFinputNumberChunkOverlap"
         },
         {
           type: "select",
           label: "Chunk length",
           tooltip: "Determine how the length of the chunks are measured. By default, the length of a chunk is measured in characters",
-          id: "chunkLength",
+          id: "tsCFselectChunkLength",
           options: [
             { value: "character", label: "Character" },
             { value: "word", label: "Word" }
@@ -62,7 +65,7 @@ export class RecursiveChunking extends BaseCoreComponent {
 
   public provideFunctions({ config }): string[] {
     let functions: string[] = [];
-    if (config.chunkLength === "word") {
+    if (config.tsCFselectChunkLength === "word") {
       const code = `
 def word_length_function(text):
     return len(text.split())
@@ -83,16 +86,16 @@ def word_length_function(text):
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    const lengthFunction = config.chunkLength === "word" ? ",\n  length_function=word_length_function" : "";
-    const separatorsList = config.separators.map(separator => `"${separator.replace(/\n/g, '\\n').replace(/\n\n/g, '\\n\\n')}"`).join(", ");
+    const lengthFunction = config.tsCFselectChunkLength === "word" ? ",\n  length_function=word_length_function" : "";
+    const separatorsList = config.tsCFselectMultipleCustomizableSeparators.map(separator => `"${separator.replace(/\n/g, '\\n').replace(/\n\n/g, '\\n\\n')}"`).join(", ");
 
     const code = `
 # Recursive chunking (character split)
 ${outputName}_text_splitter = RecursiveCharacterTextSplitter(
   separators=[${separatorsList}],
-  chunk_size = ${config.chunkSize},
-  chunk_overlap  = ${config.chunkOverlap},
-  is_separator_regex = ${config.regex ? "True" : "False"}${lengthFunction}
+  chunk_size = ${config.tsCFinputNumberChunkSize},
+  chunk_overlap  = ${config.tsCFinputNumberChunkOverlap},
+  is_separator_regex = ${config.tsCFbooleanRegex ? "True" : "False"}${lengthFunction}
 )
 ${outputName} = ${outputName}_text_splitter.split_documents(${inputName})
 `;

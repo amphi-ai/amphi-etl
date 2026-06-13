@@ -161,6 +161,68 @@ Editor components styles
   background-color: #F2F4F7;
 }
 
+.component.component--header-inline {
+  min-height: 0;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.component.component--header-inline .component__header {
+  border-bottom: none;
+  min-height: 0;
+  flex-wrap: nowrap;
+  width: 100%;
+}
+
+.component.component--header-inline .component__body {
+  display: none;
+}
+
+.component.component--header-inline .component__title--inline {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.component.component--header-inline .component__title--inline .ant-typography-edit-content,
+.component.component--header-inline .component__title--inline .ant-typography-expand,
+.component.component--header-inline .component__title--inline .ant-typography-edit {
+  white-space: nowrap;
+}
+
+.component.component--header-inline .component__title--inline .ant-typography-edit {
+  flex: 0 0 auto;
+}
+
+.component.component--header-inline .component__title--inline .ant-typography-ellipsis-single-line {
+  white-space: nowrap;
+}
+
+.component.component--header-inline .handle-right {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.component.component--header-inline .handle-left {
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.component.component--header-inline .second-handle-left {
+  top: calc(50% + 2px);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
 .component__header--default {
   border-bottom-color: #e2e8f0;
 }

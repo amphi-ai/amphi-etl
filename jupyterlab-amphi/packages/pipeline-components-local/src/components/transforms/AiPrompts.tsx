@@ -5,19 +5,21 @@ import { OllamaLookUp } from './OllamaLookUp';
 
 export class AIPrompts extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { provider: "openai" };
+    const defaultConfig = {
+		tsCFradioProvider: "openai" 
+		};
 
     const openaiComp = new OpenAILookUp();
     const ollamaComp = new OllamaLookUp();
 
     const openaiFields = openaiComp._form["fields"].map((field: any) => ({
       ...field,
-      condition: { provider: ["openai"], ...(field.condition || {}) },
+      condition: { tsCFradioProvider: ["openai"], ...(field.condition || {}) },
     }));
 
     const ollamaFields = ollamaComp._form["fields"].map((field: any) => ({
       ...field,
-      condition: { provider: ["ollama"], ...(field.condition || {}) },
+      condition: { tsCFradioProvider: ["ollama"], ...(field.condition || {}) },
     }));
 
     const form = {
@@ -26,7 +28,7 @@ export class AIPrompts extends BaseCoreComponent {
         {
           type: "radio",
           label: "Provider",
-          id: "provider",
+          id: "tsCFradioProvider",
           options: [
             { value: "openai", label: "OpenAI" },
             { value: "ollama", label: "Ollama" },
@@ -45,17 +47,17 @@ export class AIPrompts extends BaseCoreComponent {
   }
 
   public provideDependencies({ config }): string[] {
-    if (config.provider === "ollama") return ["ollama"];
-    if (config.provider === "openai") return ["openai"];
+    if (config.tsCFradioProvider === "ollama") return ["ollama"];
+    if (config.tsCFradioProvider === "openai") return ["openai"];
     return [];
   }
 
   public provideImports({ config }): string[] {
     const imports: string[] = [];
-    if (config.provider === "openai") {
+    if (config.tsCFradioProvider === "openai") {
       const openaiComp = new OpenAILookUp();
       imports.push(...openaiComp.provideImports({ config }));
-    } else if (config.provider === "ollama") {
+    } else if (config.tsCFradioProvider === "ollama") {
       const ollamaComp = new OllamaLookUp();
       imports.push(...ollamaComp.provideImports({ config }));
     }
@@ -64,11 +66,11 @@ export class AIPrompts extends BaseCoreComponent {
   }
 
   public provideFunctions({ config }): string[] {
-    if (config.provider === "openai") {
+    if (config.tsCFradioProvider === "openai") {
       const openaiComp = new OpenAILookUp();
       return openaiComp.provideFunctions({ config });
     }
-    if (config.provider === "ollama") {
+    if (config.tsCFradioProvider === "ollama") {
       const ollamaComp = new OllamaLookUp();
       return ollamaComp.provideFunctions({ config });
     }
@@ -76,11 +78,11 @@ export class AIPrompts extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    if (config.provider === "openai") {
+    if (config.tsCFradioProvider === "openai") {
       const openaiComp = new OpenAILookUp();
       return openaiComp.generateComponentCode({ config, inputName, outputName });
     }
-    if (config.provider === "ollama") {
+    if (config.tsCFradioProvider === "ollama") {
       const ollamaComp = new OllamaLookUp();
       return ollamaComp.generateComponentCode({ config, inputName, outputName });
     }

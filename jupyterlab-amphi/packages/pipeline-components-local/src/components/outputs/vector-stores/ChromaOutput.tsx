@@ -1,8 +1,5 @@
-
 import { chromaIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
-
-
 
 export class ChromaOutput extends BaseCoreComponent {
   constructor() {
@@ -13,20 +10,21 @@ export class ChromaOutput extends BaseCoreComponent {
         {
           type: "input",
           label: "Collection name",
-          id: "collection",
+          id: "tsCFinputCollection",
           placeholder: "Type collection name"
         },
         {
           type: "input",
           label: "Directory to persist",
-          id: "persistDirectory",
+          id: "tsCFinputPersistDirectory",
           placeholder: "./chroma_db",
           advanced: true
         },
+		//to do : is it used somewhere??
         {
           type: "cascader",
           label: "Embeddings Model",
-          id: "model",
+          id: "tsCFcascaderModel",
           placeholder: "Select ...",
           options: [
             {
@@ -44,7 +42,7 @@ export class ChromaOutput extends BaseCoreComponent {
           type: "input",
           inputType: "password",
           label: "OpenAI API Key",
-          id: "openaiApiKey",
+          id: "tsCFinputOpenaiApiKey",
           connection: "OpenAI",
           advanced: true
         }
@@ -60,12 +58,12 @@ export class ChromaOutput extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName }): string {
-    const persistDirectory = config.persistDirectory ? `persist_directory="${config.persistDirectory}", ` : '';
+    const persistDirectory = config.tsCFinputPersistDirectory ? `persist_directory="${config.tsCFinputPersistDirectory}", ` : '';
 
     const code = `
 # Documents to Chroma with on-the-fly embedding
-${inputName}_collection_name = "${config.collection}"
-${inputName}_embeddings = OpenAIEmbeddings(api_key="${config.openaiApiKey}")
+${inputName}_collection_name = "${config.tsCFinputCollection}"
+${inputName}_embeddings = OpenAIEmbeddings(api_key="${config.tsCFinputOpenaiApiKey}")
 ${inputName}_to_Chroma = Chroma.from_documents(${inputName}, ${inputName}_embeddings, ${persistDirectory}collection_name=${inputName}_collection_name)
 `;
     return code;

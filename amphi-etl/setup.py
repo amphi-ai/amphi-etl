@@ -51,7 +51,8 @@ setup(
             'cx_Oracle',
             'oracledb',
             'openpyxl',
-            'xlsxwriter'            
+            'xlsxwriter',
+            'tabulate'              
         ]
     },
     keywords=[],  # Added an empty list for keywords to resolve the dynamic 'keywords' issue.

@@ -16,6 +16,12 @@
       "description": "Enabling this option places the component palette at the top of the pipeline canvas.",
       "default": false
     },
+    "enableComponentHeaderFields": {
+      "type": "boolean",
+      "title": "Enable minimized nodes",
+      "description": "When enabled, nodes are shown in a minimized layout on the canvas.",
+      "default": false
+    },
     "enableDebugMode": {
       "type": "boolean",
       "title": "Enable Debug Mode",

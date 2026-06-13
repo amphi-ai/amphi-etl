@@ -1,8 +1,6 @@
-// SFTPOptionsHandler.ts
-
 export class SFTPOptionsHandler {
     public static handleSFTPSpecificOptions(config, connectionOptions): object {
-      if (config.fileLocation === 'sftp') {
+      if (config.tsCFradioFileLocation === 'sftp') {
         const updatedConnectionOptions = {
           ...connectionOptions,
           hostname: config.sftpHostname,
@@ -29,7 +27,7 @@ export class SFTPOptionsHandler {
           label: 'Hostname',
           id: 'sftpHostname',
           placeholder: 'Enter SFTP server hostname',
-          condition: { fileLocation: 'sftp' },
+          condition: { tsCFradioFileLocation: 'sftp' },
           required: true,
         },
         {
@@ -37,7 +35,7 @@ export class SFTPOptionsHandler {
           label: 'Port',
           id: 'sftpPort',
           placeholder: 'Default: 22',
-          condition: { fileLocation: 'sftp' },
+          condition: { tsCFradioFileLocation: 'sftp' },
           advanced: true,
         },
         {
@@ -45,7 +43,7 @@ export class SFTPOptionsHandler {
           label: 'Username',
           id: 'sftpUsername',
           placeholder: 'Enter SFTP username',
-          condition: { fileLocation: 'sftp' },
+          condition: { tsCFradioFileLocation: 'sftp' },
           required: true,
         },
         {
@@ -56,7 +54,7 @@ export class SFTPOptionsHandler {
             { value: 'password', label: 'Password' },
             { value: 'key', label: 'Private Key File' },
           ],
-          condition: { fileLocation: 'sftp' },
+          condition: { tsCFradioFileLocation: 'sftp' },
           required: true,
         },
         {
@@ -65,7 +63,7 @@ export class SFTPOptionsHandler {
           id: 'sftpPassword',
           placeholder: 'Enter password',
           inputType: 'password',
-          condition: { fileLocation: 'sftp', sftpAuthMethod: 'password' },
+          condition: { tsCFradioFileLocation: 'sftp', sftpAuthMethod: 'password' },
           required: true,
         },
         {
@@ -73,7 +71,7 @@ export class SFTPOptionsHandler {
           label: 'Private Key File',
           id: 'sftpKeyFile',
           placeholder: 'Select private key file',
-          condition: { fileLocation: 'sftp', sftpAuthMethod: 'key' },
+          condition: { tsCFradioFileLocation: 'sftp', sftpAuthMethod: 'key' },
           required: true,
         },
       ];

@@ -1,19 +1,18 @@
-
 import { markdownIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
-
-
 export class HtmlToMarkdown extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { stripOrConvert: "strip", tags: ["<script>"] };
+    const defaultConfig = {
+		tsCFradioStripOrConvert: "strip",
+		tsCFselectMultipleCustomizableTags: ["<script>"] };
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "radio",
           label: "Tags processing",
-          id: "stripOrConvert",
+          id: "tsCFradioStripOrConvert",
           options: [
             { value: "strip", label: "Strip" },
             { value: "convert", label: "Convert" }
@@ -22,7 +21,7 @@ export class HtmlToMarkdown extends BaseCoreComponent {
         {
           type: "selectMultipleCustomizable",
           label: "Tags",
-          id: "tags",
+          id: "tsCFselectMultipleCustomizableTags",
           tooltip: "List of tags to strip or convert to Markdown equivalent.",
           options: [
             { value: "script", label: "script" },
@@ -62,7 +61,7 @@ export class HtmlToMarkdown extends BaseCoreComponent {
         {
           type: "boolean",
           label: "Autolinks",
-          id: "autolinks",
+          id: "tsCFbooleanAutolinks",
           tooltip: "Indicating whether the “automatic link” style should be used when a tag's contents match its href. Defaults to True.",
           advanced: true
         }
@@ -83,10 +82,10 @@ export class HtmlToMarkdown extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    const lengthFunction = config.chunkLength === "word" ? ",\n  length_function=word_length_function" : "";
-    const tags = config.tags.map(tag => `"${tag}"`).join(", ");
-    const stripOrConvert = config.stripOrConvert === "strip" ? "strip_tags" : "convert_tags";
-    const autolinks = config.autolinks ? ",\n  autolinks=True" : "";
+    //const lengthFunction = config.chunkLength === "word" ? ",\n  length_function=word_length_function" : "";
+    const tags = config.tsCFselectMultipleCustomizableTags.map(tag => `"${tag}"`).join(", ");
+    const stripOrConvert = config.tsCFradioStripOrConvert === "strip" ? "strip_tags" : "convert_tags";
+    const autolinks = config.tsCFbooleanAutolinks ? ",\n  autolinks=True" : "";
 
     const code = `
 # Convert HTML to Markdown  

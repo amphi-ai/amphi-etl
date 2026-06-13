@@ -40,7 +40,7 @@ export class RequestService {
           const dataframeVar = nameId || refNodeId;
           let codeToFetchContent = "";
           if (refNode.type === "conditionalSwitch") {
-            codeToFetchContent = `print(_amphi_metadatapanel_getcontentof(${dataframeVar}_path_a if not ${dataframeVar}_path_a.empty else ${dataframeVar}_path_b))`;
+            codeToFetchContent = `print(_amphi_metadatapanel_getcontentof(${dataframeVar}_True if not ${dataframeVar}_True.empty else ${dataframeVar}_False))`;
           } else {
             codeToFetchContent = `print(_amphi_metadatapanel_getcontentof(${dataframeVar}))`;
           }

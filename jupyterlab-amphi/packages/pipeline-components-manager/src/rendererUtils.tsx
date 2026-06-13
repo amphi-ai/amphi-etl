@@ -4,7 +4,7 @@
 import { LabIcon } from '@jupyterlab/ui-components';
 import { xIcon } from './icons';
 import React, { useMemo, useState } from 'react';
-import { QuestionCircleOutlined, EditOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { useCallback, useEffect } from 'react';
 
@@ -14,7 +14,7 @@ import { Popconfirm, Typography, ConfigProvider } from 'antd';
 // -------------------------------
 // NEW: Variant types for UI mode
 // -------------------------------
-export type ComponentVariant = 'hybrid' | 'card';
+export type ComponentVariant = 'hybrid' | 'card' | 'header-inline';
 
 interface IHandleProps {
   type: string;
@@ -197,12 +197,7 @@ const MemoizedComponentUI = React.memo(
       event.preventDefault();
     }, []);
 
-    const [titleName, setTitleName] = useState(data?.customTitle || name);
-
-    const onTitleChange = useCallback((newTitle: string) => {
-      setTitleName(newTitle);
-      handleChange(newTitle, 'customTitle');
-    }, [handleChange]);
+    const titleName = data?.customTitle || name;
 
     // Modified ConfigForm props to include formState and update handler
     const enhancedConfigFormProps = {
@@ -230,10 +225,11 @@ const MemoizedComponentUI = React.memo(
       const baseClass = variant === 'card'
         ? `component-card component${modifier} ${isIbis ? "ibis" : ""}`
         : `component component${modifier} ${isIbis ? "ibis" : ""}`;
+      const variantClass = variant === 'header-inline' ? 'component--header-inline' : '';
 
       return executionStatusClass
-        ? `${baseClass} ${executionStatusClass}`.trim()
-        : baseClass;
+        ? `${baseClass} ${variantClass} ${executionStatusClass}`.trim()
+        : `${baseClass} ${variantClass}`.trim();
     }, [modifier, isIbis, variant, executionStatusClass]);
 
     const { Text } = Typography;
@@ -249,15 +245,46 @@ const MemoizedComponentUI = React.memo(
           <div className={componentClassName} onDoubleClick={handleDoubleClick}>
             <div className="component-card__inner" onDoubleClick={stopPropagation} onDragStart={disableDrag}>
               <Icon.react height="36px" width="36px" color={colorPrimary} marginRight={8} />
+              <Text>{titleName}</Text>
+            </div>
+            {handle}
+          </div>
+        </ConfigProvider>
+      );
+    }
+
+    if (variant === 'header-inline') {
+      return (
+        <ConfigProvider theme={theme}>
+          <div className={componentClassName} onDoubleClick={handleDoubleClick}>
+            <div className="component__header component__header--inline" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Icon.react
+                height="20px"
+                width="20px"
+                color={colorPrimary}
+              />
               <Text
-                editable={isSelected ? {
-                  onChange: onTitleChange,
-                  tooltip: false,
-                  icon: <EditOutlined style={{ color: '#5F9B97' }} />
-                } : undefined}
+                onDoubleClick={stopPropagation}
+                onDragStart={disableDrag}
+                ellipsis={{ tooltip: titleName }}
+                className="ant-select-sm component__title component__title--inline"
+                style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}
               >
                 {titleName}
               </Text>
+              <Popconfirm
+                title="Sure to delete?"
+                placement="right"
+                onConfirm={deleteNode}
+                icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+              >
+                <div className="deletebutton">
+                  <xIcon.react className="group-hover:text-primary" />
+                </div>
+              </Popconfirm>
+            </div>
+            <div style={{ display: 'none' }}>
+              <ConfigForm {...enhancedConfigFormProps} />
             </div>
             {handle}
           </div>
@@ -273,15 +300,6 @@ const MemoizedComponentUI = React.memo(
             <Text
               onDoubleClick={stopPropagation}
               onDragStart={disableDrag}
-              editable={
-                isSelected
-                  ? {
-                    onChange: onTitleChange,
-                    tooltip: false,
-                    icon: <EditOutlined style={{ color: '#5F9B97' }} />
-                  }
-                  : undefined
-              }
               className="ant-select-sm"
             >
               {titleName}

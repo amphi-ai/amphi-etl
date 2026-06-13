@@ -458,7 +458,7 @@ export class Connection extends PipelineComponent<ComponentItem>() {
     );
   }
 
-  public UIComponent({ id, data, context, componentService, manager, commands, rendermimeRegistry }) {
+  public UIComponent({ id, data, context, componentService, manager, commands, rendermimeRegistry, settings }) {
     const { setNodes, deleteElements, setViewport } = useReactFlow();
     const store = useStoreApi();
 
@@ -491,6 +491,7 @@ export class Connection extends PipelineComponent<ComponentItem>() {
 
     const isSelected = useStore((state) => !!state.nodeInternals.get(id)?.selected);
     const [modalOpen, setModalOpen] = useState(false);
+    const variant = settings.get('enableComponentHeaderFields').composite as boolean ? 'header-inline' : 'hybrid';
 
     return (
       <>
@@ -521,7 +522,8 @@ export class Connection extends PipelineComponent<ComponentItem>() {
           deleteNode: deleteNode,
           setViewport: setViewport,
           handleChange,
-          isSelected
+          isSelected,
+          variant
         })}
         {showContent && (
           <NodeToolbar isVisible position={Position.Bottom}>

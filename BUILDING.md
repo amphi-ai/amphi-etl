@@ -54,17 +54,19 @@ cd jupyterlab-amphi
 
 **On macOS/Linux:**
 ```bash
-pip install -r requirements.txt
+pip install jupyterlab
 jlpm install
 jlpm run build
+pip install -r requirements.txt
 python3 -m pip install .
 ```
 
 **On Windows:**
 ```bash
-pip install -r requirements.txt
+pip install jupyterlab
 jlpm install
 jlpm run build
+pip install -r requirements.txt
 python -m pip install .
 ```
 pip install -r requirements.txt may come after

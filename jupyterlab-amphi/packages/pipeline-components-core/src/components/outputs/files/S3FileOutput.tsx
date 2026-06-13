@@ -9,7 +9,10 @@ import { XmlFileOutput } from './XmlFileOutput';
 
 export class S3FileOutput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { fileType: "csv", fileLocation: "s3", connectionMethod: "env" };
+    const defaultConfig = {
+	tsCFradioFileType: "csv",
+	tsCFradioFileLocation: "s3",
+	connectionMethod: "env" };
 
     const csvComponent = new CsvFileOutput();
     const jsonComponent = new JsonFileOutput();
@@ -17,7 +20,7 @@ export class S3FileOutput extends BaseCoreComponent {
     const parquetComponent = new ParquetFileOutput();
     const xmlComponent = new XmlFileOutput();
 
-    const fieldsToRemove = ["fileLocation"]; // Fields to remove from all components
+    const fieldsToRemove = ["tsCFradioFileLocation"]; // Fields to remove from all components
 
     const filteredCsvFields = csvComponent._form['fields'].filter(field => !fieldsToRemove.includes(field.id));
     const filteredJsonFields = jsonComponent._form['fields'].filter(field => !fieldsToRemove.includes(field.id));
@@ -31,7 +34,7 @@ export class S3FileOutput extends BaseCoreComponent {
         {
           type: "radio",
           label: "File Type",
-          id: "fileType",
+          id: "tsCFradioFileType",
           options: [
             { value: "csv", label: "CSV" },
             { value: "json", label: "JSON" },
@@ -43,23 +46,23 @@ export class S3FileOutput extends BaseCoreComponent {
         // Conditionally display filtered fields based on selected file type
         ...filteredCsvFields.map(field => ({
           ...field,
-          condition: { fileType: ["csv"], ...(field.condition || {}) }
+          condition: { tsCFradioFileType: ["csv"], ...(field.condition || {}) }
         })),
         ...filteredJsonFields.map(field => ({
           ...field,
-          condition: { fileType: ["json"], ...(field.condition || {}) }
+          condition: { tsCFradioFileType: ["json"], ...(field.condition || {}) }
         })),
         ...filteredExcelFields.map(field => ({
           ...field,
-          condition: { fileType: ["excel"], ...(field.condition || {}) }
+          condition: { tsCFradioFileType: ["excel"], ...(field.condition || {}) }
         })),
         ...filteredParquetFields.map(field => ({
           ...field,
-          condition: { fileType: ["parquet"], ...(field.condition || {}) }
+          condition: { tsCFradioFileType: ["parquet"], ...(field.condition || {}) }
         })),
         ...filteredXmlFields.map(field => ({
           ...field,
-          condition: { fileType: ["xml"], ...(field.condition || {}) }
+          condition: { tsCFradioFileType: ["xml"], ...(field.condition || {}) }
         }))
       ]
     };
@@ -78,19 +81,19 @@ export class S3FileOutput extends BaseCoreComponent {
   }
 
   public generateComponentCode({ config, inputName }): string {
-    if (config.fileType === "csv") {
+    if (config.tsCFradioFileType === "csv") {
       const csvComponent = new CsvFileOutput();
       return csvComponent.generateComponentCode({ config, inputName });
-    } else if (config.fileType === "json") {
+    } else if (config.tsCFradioFileType === "json") {
       const jsonComponent = new JsonFileOutput();
       return jsonComponent.generateComponentCode({ config, inputName });
-    } else if (config.fileType === "excel") {
+    } else if (config.tsCFradioFileType === "excel") {
       const excelComponent = new ExcelFileOutput();
       return excelComponent.generateComponentCode({ config, inputName });
-    } else if (config.fileType === "parquet") {
+    } else if (config.tsCFradioFileType === "parquet") {
       const parquetComponent = new ParquetFileOutput();
       return parquetComponent.generateComponentCode({ config, inputName });
-    } else if (config.fileType === "xml") {
+    } else if (config.tsCFradioFileType === "xml") {
       const xmlComponent = new XmlFileOutput();
       return xmlComponent.generateComponentCode({ config, inputName });
     }

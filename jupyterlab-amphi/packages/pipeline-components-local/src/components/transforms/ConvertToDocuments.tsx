@@ -1,8 +1,5 @@
-
 import { changeCircleIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
-
-
 
 export class ConvertToDocuments extends BaseCoreComponent {
   constructor() {
@@ -13,7 +10,7 @@ export class ConvertToDocuments extends BaseCoreComponent {
         {
           type: "column",
           label: "Select main column",
-          id: "pageContent",
+          id: "tsCFcolumnPageContent",
           placeholder: "Select ..."
         }
       ],
@@ -23,14 +20,17 @@ export class ConvertToDocuments extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "from langchain_community.document_loaders import DataFrameLoader"];
+    return [
+	"import pandas as pd",
+	"from langchain_community.document_loaders import DataFrameLoader"
+	];
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
 
     const code = `
 # Convert dataframe to documents
-${outputName}_loader = DataFrameLoader(${inputName}, page_content_column="${config.pageContent.value}")
+${outputName}_loader = DataFrameLoader(${inputName}, page_content_column="${config.tsCFcolumnPageContent.value}")
 ${outputName} = ${outputName}_loader.load()
 `;
     return code;

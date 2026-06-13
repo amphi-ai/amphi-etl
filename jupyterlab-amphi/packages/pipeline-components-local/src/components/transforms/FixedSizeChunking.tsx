@@ -1,19 +1,21 @@
-
 import { splitIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
-
-
 export class FixedSizeChunking extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { separator: "\n\n", regex: false, chunkSize: 1000, chunkOverlap: 100, chunkLength: "character" };
+    const defaultConfig = {
+		tsCFselectCustomizableSeparator: "\n\n",
+		tsCFbooleanRegex: false,
+		tsCFinputNumberChunkSize: 1000,
+		tsCFinputNumberChunkOverlap: 100,
+		tsCFselectChunkLength: "character" };
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "selectCustomizable",
           label: "Separator",
-          id: "separator",
+          id: "tsCFselectCustomizableSeparator",
           options: [
             { value: "\n\n", label: "Double newline (paragraph)" },
             { value: "\n", label: "Single newline" },
@@ -28,24 +30,24 @@ export class FixedSizeChunking extends BaseCoreComponent {
         {
           type: "boolean",
           label: "Separator is a regex",
-          id: "regex",
+          id: "tsCFbooleanRegex",
           advanced: true
         },
         {
           type: "inputNumber",
           label: "Chunk Size",
-          id: "chunkSize",
+          id: "tsCFinputNumberChunkSize",
         },
         {
           type: "inputNumber",
           label: "Chunk Overlap",
-          id: "chunkOverlap",
+          id: "tsCFinputNumberChunkOverlap",
         },
         {
           type: "select",
           label: "Chunk length",
           tooltip: "Determine how the length of the chunks are measured. By default, the length of a chunk is measured in characters",
-          id: "chunkLength",
+          id: "tsCFselectChunkLength",
           options: [
             { value: "character", label: "Character" },
             { value: "word", label: "Word" }
@@ -60,7 +62,7 @@ export class FixedSizeChunking extends BaseCoreComponent {
 
   public provideFunctions({ config }): string[] {
     let functions: string[] = [];
-    if (config.chunkLength === "word") {
+    if (config.tsCFselectChunkLength === "word") {
       const code = `
 def word_length_function(text):
     return len(text.split())
@@ -81,15 +83,15 @@ def word_length_function(text):
   }
 
   public generateComponentCode({ config, inputName, outputName }): string {
-    const lengthFunction = config.chunkLength === "word" ? ",\n  length_function=word_length_function" : "";
+    const lengthFunction = config.tsCFselectChunkLength === "word" ? ",\n  length_function=word_length_function" : "";
 
     const code = `
 # Fixed-based chunking (character split)
 ${outputName}_text_splitter = CharacterTextSplitter(
-  separator = "${config.separator}",
-  chunk_size = ${config.chunkSize},
-  chunk_overlap  = ${config.chunkOverlap},
-  is_separator_regex = ${config.regex ? "True" : "False"}${lengthFunction}
+  separator = "${config.tsCFselectCustomizableSeparator}",
+  chunk_size = ${config.tsCFinputNumberChunkSize},
+  chunk_overlap  = ${config.tsCFinputNumberChunkOverlap},
+  is_separator_regex = ${config.tsCFbooleanRegex ? "True" : "False"}${lengthFunction}
 )
 ${outputName} = ${outputName}_text_splitter.split_documents(${inputName})
 `;

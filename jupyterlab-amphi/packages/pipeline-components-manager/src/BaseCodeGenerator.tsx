@@ -161,10 +161,14 @@ export abstract class BaseCodeGenerator {
       let code = '';
       let inputName = '';
       let outputName = '';
+	  //Generate a comment with origin node infos : type,nameId,customTitle
+	  const generatedCode = component.generateComponentCode({ config });
+      const needsNewLine = !generatedCode.startsWith('\n');
       if (config.customTitle) {
-        const generatedCode = component.generateComponentCode({ config });
-        const needsNewLine = !generatedCode.startsWith('\n');
-        code += `\n# ${config.customTitle}${needsNewLine ? '\n' : ''}`;
+
+        code += `\n# id : ${node.id} | Type : ${node.type} | Name Id : ${config.nameId} | Custom Title : ${config.customTitle}${needsNewLine ? '\n' : ''}`;
+		} else {
+		code += `\n# id : ${node.id} | Type : ${node.type} | Name Id : ${config.nameId}${needsNewLine ? '\n' : ''}`;	
       }
 
       try {
@@ -270,10 +274,10 @@ export abstract class BaseCodeGenerator {
               const previousComponent = componentService.getComponent(previousNode.type); 
               if (previousComponent &&  previousComponent._type === 'pandas_df_switch') {
                 const edge = flow.edges.find(e => e.source === previousNodeId && e.target === nodeId);
-                if (edge?.sourceHandle === 'path_a') {
-                  inputName += '_path_a';
-                } else if (edge?.sourceHandle === 'path_b') {
-                  inputName += '_path_b';
+                if (edge?.sourceHandle === 'true') {
+                  inputName += '_True';
+                } else if (edge?.sourceHandle === 'false') {
+                  inputName += '_False';
                 }
               }
             }

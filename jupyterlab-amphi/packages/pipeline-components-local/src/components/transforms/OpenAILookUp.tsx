@@ -1,17 +1,15 @@
 import { openAiIcon } from '../../icons';
 import { BaseCoreComponent } from '../BaseCoreComponent';
 
-
-
 export class OpenAILookUp extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-      maxToken: 256,
-      temperature: 0.3,
-      model: "gpt-3.5-turbo",
-      endpoint: "openai",
-      systemPrompt: "You are part of a Python data pipeline using Pandas. Your task is to generate responses for each row of a DataFrame. Just provide the response as short as possible, don't write any sentence.",
-      verbose: false
+      tsCFinputNumberMaxToken: 256,
+      tsCFinputNumberTemperature: 0.3,
+      tsCFselectCustomizableModel: "gpt-3.5-turbo",
+      tsCFradioEndpoint: "openai",
+      tsCFtextareaSystemPrompt: "You are part of a Python data pipeline using Pandas. Your task is to generate responses for each row of a DataFrame. Just provide the response as short as possible, don't write any sentence.",
+      tsCFbooleanVerbose: false
     };
     const form = {
       idPrefix: "component__form",
@@ -19,24 +17,24 @@ export class OpenAILookUp extends BaseCoreComponent {
         {
           type: "textarea",
           label: "Prompt",
-          id: "prompt"
+          id: "tsCFtextareaPrompt"
         },
         {
           type: "columns",
           label: "Columns",
           tooltip: "Columns data to send with Prompt",
-          id: "columns"
+          id: "tsCFcolumnsColumnsToSend"
         },
         {
           type: "textarea",
           label: "System Prompt",
-          id: "systemPrompt",
+          id: "tsCFtextareaSystemPrompt",
           advanced: true
         },
         {
           type: "radio",
           label: "Endpoint",
-          id: "endpoint",
+          id: "tsCFradioEndpoint",
           options: [
             { value: "openai", label: "OpenAI" },
             { value: "custom", label: "Custom Base URL" }
@@ -46,23 +44,23 @@ export class OpenAILookUp extends BaseCoreComponent {
         {
           type: "input",
           label: "Custom Base Url",
-          id: "customEndpoint",
+          id: "tsCFinputCustomEndpoint",
           placeholder: "http://custom.url",
           connection: "OpenAI",
-          condition: { endpoint: "custom"}, 
+          condition: { tsCFradioEndpoint: "custom"}, 
           advanced: true
         },
         {
           type: "input",
           label: "Open API Key",
-          id: "openaiApiKey",
+          id: "tsCFinputOpenaiApiKey",
           connection: "OpenAI",
           advanced: true
         },
         {
           type: "selectCustomizable",
           label: "Model",
-          id: "model",
+          id: "tsCFselectCustomizableModel",
           options: [
             { value: "gpt-3.5-turbo", label: "gpt-3.5-turbo" },
             { value: "gpt-3.5-turbo-16k", label: "gpt-3.5-turbo-16k" },
@@ -74,20 +72,20 @@ export class OpenAILookUp extends BaseCoreComponent {
         {
           type: "boolean",
           label: "JSON Mode",
-          id: "jsonMode",
+          id: "tsCFbooleanJsonMode",
           advanced: true
         },
         {
           type: "inputNumber",
           label: "Max Token",
-          id: "maxToken",
+          id: "tsCFinputNumberMaxToken",
           min: 1,
           advanced: true
         },
         {
           type: "inputNumber",
           label: "Temperature",
-          id: "temperature",
+          id: "tsCFinputNumberTemperature",
           min: 0,
           max: 1,
           advanced: true
@@ -95,7 +93,7 @@ export class OpenAILookUp extends BaseCoreComponent {
         {
           type: "input",
           label: "New column name",
-          id: "newColumnName",
+          id: "tsCFinputNewColumnName",
           placeholder: "Type new column name",
           advanced: true
         },
@@ -103,7 +101,7 @@ export class OpenAILookUp extends BaseCoreComponent {
           type: "boolean",
           label: "View prompts",
           tooltip: "Enable the option to view prompts for debugging or optimization purposes.",
-          id: "verbose",
+          id: "tsCFbooleanVerbose",
           advanced: true
         },
       ],
@@ -120,7 +118,9 @@ export class OpenAILookUp extends BaseCoreComponent {
   }
 
   public provideImports({ config }): string[] {
-    return ["import pandas as pd", "from openai import OpenAI"];
+    return [
+	"import pandas as pd",
+	"from openai import OpenAI"];
   }
 
   public provideFunctions({ config }): string[] {
@@ -168,25 +168,25 @@ def generate_gpt_response(
 
   public generateComponentCode({ config, inputName, outputName }): string {
     // Extract the column names from the config object
-    const columnNames = config.columns.map((col) => col.value);
+    const columnNames = config.tsCFcolumnsColumnsToSend.map((col) => col.value);
 
     // Determine the column name to use
-    const newColumnName = config.newColumnName && config.newColumnName.trim() ? config.newColumnName : `gpt_${outputName}`;
+    const newColumnName = config.tsCFinputNewColumnName && config.tsCFinputNewColumnName.trim() ? config.tsCFinputNewColumnName : `gpt_${outputName}`;
 
     // Generate Python code to configure OpenAI API and process data
     const code = `
 # Set the OpenAI API key for authentication
 ${outputName}_client = OpenAI(
-  api_key="${config.openaiApiKey}"${config.endpoint === 'custom' ? `, base_url="${config.customEndpoint}"` : ''}
+  api_key="${config.tsCFinputOpenaiApiKey}"${config.tsCFradioEndpoint === 'custom' ? `, base_url="${config.tsCFinputCustomEndpoint}"` : ''}
 )
 
 # OpenAI request parameters
-${outputName}_user_prompt = """${config.prompt}"""
-${outputName}_system_prompt = "${config.systemPrompt}"
-${outputName}_model = "${config.model}"  # Model to use for generating responses
-${outputName}_max_tokens = ${config.maxToken}  # Maximum number of tokens for the generated response
-${outputName}_temperature = ${config.temperature}  # Response variability based on the specified temperature
-${outputName}_verbose = ${config.verbose ? "True" : "False"}
+${outputName}_user_prompt = """${config.tsCFtextareaPrompt}"""
+${outputName}_system_prompt = "${config.tsCFtextareaSystemPrompt}"
+${outputName}_model = "${config.tsCFselectCustomizableModel}"  # Model to use for generating responses
+${outputName}_max_tokens = ${config.tsCFinputNumberMaxToken}  # Maximum number of tokens for the generated response
+${outputName}_temperature = ${config.tsCFinputNumberTemperature}  # Response variability based on the specified temperature
+${outputName}_verbose = ${config.tsCFbooleanVerbose ? "True" : "False"}
 
 
 # Apply the function to generate output for each row

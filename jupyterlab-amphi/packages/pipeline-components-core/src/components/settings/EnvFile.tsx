@@ -382,6 +382,7 @@ export class EnvFile extends PipelineComponent<ComponentItem>() {
     const isSelected = useStore((state) => !!state.nodeInternals.get(id)?.selected);
 
     const [modalOpen, setModalOpen] = useState(false);
+    const variant = settings.get('enableComponentHeaderFields').composite as boolean ? 'header-inline' : 'hybrid';
 
     return (
       <>
@@ -412,7 +413,8 @@ export class EnvFile extends PipelineComponent<ComponentItem>() {
           deleteNode: deleteNode,
           setViewport: setViewport,
           handleChange,
-          isSelected
+          isSelected,
+          variant
         })}
         {showContent && (
           <NodeToolbar isVisible position={Position.Bottom}>
