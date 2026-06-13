@@ -7,15 +7,15 @@ export class ExplodeJSON extends BaseCoreComponent {
   constructor() {
     const defaultConfig =
         {
-        tsCFColumnToExplode:"",
+        tsCFcolumnColumnToExplode:"",
 		tsCFbooleanKeepColumns:true,
-        tsCFInputnumberMaxLevel:"",
+        tsCFinputnumberMaxLevel:"",
 		tsCFselectCustomizableLevelSeparator:".",
         tsCFbooleanPrefixTopLevel:true,
         tsCFbooleanFlattenArraysAsRows:true,
         tsCFbooleanFlattenObjectsAsColumns:true,
 		tsCFbooleanKeepRawJson:true,
-        tsCFSelectoutputEngine:"pandas"		 
+        tsCFselectoutputEngine:"pandas"		 
 		};
     const form = {
       idPrefix: "component__form",
@@ -29,7 +29,7 @@ export class ExplodeJSON extends BaseCoreComponent {
         {
           type: "column",
           label: "Column to explode",
-          id: "tsCFColumnToExplode",
+          id: "tsCFcolumnColumnToExplode",
           placeholder: "Select column",
 		  advanced:false
         },
@@ -43,7 +43,7 @@ export class ExplodeJSON extends BaseCoreComponent {
           type: "inputNumber",
           tooltip: "Max Level to flatten",
           label: "Level (index 0, empty all)",
-          id: "tsCFInputnumberMaxLevel",
+          id: "tsCFinputnumberMaxLevel",
           min: 0,
           advanced: true
         },
@@ -88,7 +88,7 @@ export class ExplodeJSON extends BaseCoreComponent {
 		{
           type: "select",
           label: "Output Engine",
-          id: "tsCFSelectoutputEngine",
+          id: "tsCFselectoutputEngine",
 		  options: [
             { value: "pandas", label: "Pandas", tooltip: "Mature, easy-to-use, great for small-to-medium datasets." }//,
 //            { value: "polars", label: "Polars", tooltip: "Fast, memory-efficient, great for large-scale in-memory analytics." },
@@ -279,9 +279,9 @@ def py_fn_explode_json_column(
   
   public generateComponentCode({ config, inputName, outputName }): string {
 	let tsConstJSONColumnToExplode = 'None';
-	if (config.tsCFColumnToExplode && config.tsCFColumnToExplode.value.trim() !== '' 
+	if (config.tsCFcolumnColumnToExplode && config.tsCFcolumnColumnToExplode.value.trim() !== '' 
 	) {
-      tsConstJSONColumnToExplode = '"' + config.tsCFColumnToExplode.value+ '"';
+      tsConstJSONColumnToExplode = '"' + config.tsCFcolumnColumnToExplode.value+ '"';
     }
 	
     let tsConstKeepColumns = config.tsCFbooleanKeepColumns ? 'True' : 'False';
@@ -291,9 +291,9 @@ def py_fn_explode_json_column(
     let tsConstKeepRawJson = config.tsCFbooleanKeepRawJson ? 'True' : 'False';
 	
 	let tsConstMaxLevel = 'None';
-    if (config.tsCFInputnumberMaxLevel && config.tsCFInputnumberMaxLevel.toString().trim() !== ''
+    if (config.tsCFinputnumberMaxLevel && config.tsCFinputnumberMaxLevel.toString().trim() !== ''
 	) {
-      tsConstMaxLevel =  config.tsCFInputnumberMaxLevel;
+      tsConstMaxLevel =  config.tsCFinputnumberMaxLevel;
     }	
    let tsConstLevelSeparator = 'None';
     if (config.tsCFselectCustomizableLevelSeparator && config.tsCFselectCustomizableLevelSeparator.trim() !== '' 
@@ -305,7 +305,7 @@ def py_fn_explode_json_column(
 ${outputName}=py_fn_explode_json_column(
     df=${inputName},
     py_arg_json_col=${tsConstJSONColumnToExplode},
-    py_arg_output_engine= '${config.tsCFSelectoutputEngine}',
+    py_arg_output_engine= '${config.tsCFselectoutputEngine}',
     py_arg_keep_columns= ${tsConstKeepColumns},
     py_arg_max_level = ${tsConstMaxLevel},
     py_arg_sep= ${tsConstLevelSeparator},
