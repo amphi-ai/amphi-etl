@@ -41,6 +41,8 @@ export { ExpandList } from './transforms/JSON/ExpandList';
 export { FlattenJSON } from './transforms/JSON/FlattenJSON';
 export { ExplodeJSON } from './transforms/JSON/ExplodeJSON';
 export { JSONTools } from './transforms/JSON/JSONTools';
+export { TableToMarkdown } from './transforms/Markdown/TableToMarkdown';
+export { MarkdownTools } from './transforms/Markdown/MarkdownTools';
 export { Sample } from './transforms/Sample';
 export { Sort } from './transforms/Sort';
 export { RenameColumns } from './transforms/RenameColumns/RenameColumns';
