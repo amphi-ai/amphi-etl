@@ -81,7 +81,7 @@ export class BigQueryInput extends BaseCoreComponent {
                 }
             ]
         };
-        const description = "Use BigQuery Input to retrieve data from Google BigQuery by specifying either a table name or a custom SQL query."
+        const description = "Use BigQuery Input to retrieve data from Google BigQuery by specifying either a table name or a custom SQL query.";
 
         super("BigQuery Input", "bigQueryInput", description, "pandas_df_input", [], "inputs.Databases", bigQueryIcon, defaultConfig, form);
     }

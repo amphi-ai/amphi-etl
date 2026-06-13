@@ -105,7 +105,7 @@ export class ODBCInput extends BaseCoreComponent {
         },
             ],
         };
-        const description = "Use ODBC Input to retrieve data from various databases using an ODBC connection string, along with either a table name or a custom SQL query."
+        const description = "Use ODBC Input to retrieve data from various databases using an ODBC connection string, along with either a table name or a custom SQL query.";
 
         super("ODBC Input", "odbcInput", description, "pandas_df_input", [], "inputs.Databases", databaseIcon, defaultConfig, form);
     }

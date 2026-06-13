@@ -1,25 +1,27 @@
-
 import { filePdfIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 
 export class PdfFileInput extends BaseCoreComponent {
   constructor() {
-    const defaultConfig = { library: "PyPDF" };
+    const defaultConfig = { 
+	tsCFselectlibrary: "PyPDF"
+	};
     const form = {
       idPrefix: "component__form",
       fields: [
         {
           type: "file",
           label: "File path",
-          id: "filePath",
+          id: "tsCFfilePath",
           placeholders: "Select or type file",
           validation: "\\.(pdf)$",
-          validationMessage: "This field expects a file with a pdf extension such as file.pdf."
+          validationMessage: "This field expects a file with a pdf extension such as file.pdf.",
+          allowedExtensions: ["pdf"]
         },
         {
           type: "select",
           label: "Library",
-          id: "library",
+          id: "tsCFselectLibrary",
           options: [
             { value: "PyPDF", label: "PyPDF" },
             { value: "PyMuPDF", label: "PyMuPDF" }
@@ -34,7 +36,7 @@ export class PdfFileInput extends BaseCoreComponent {
 
   public provideDependencies({ config }): string[] {
     let deps: string[] = [];
-    switch (config.library) {
+    switch (config.tsCFselectlibrary) {
       case 'PyPDF':
         deps.push('pypdf');
         break;
@@ -50,7 +52,7 @@ export class PdfFileInput extends BaseCoreComponent {
 
   public provideImports({ config }): string[] {
     let imports: string[] = [];
-    switch (config.library) {
+    switch (config.tsCFselectlibrary) {
       case 'PyPDF':
         imports.push('from langchain_community.document_loaders import PyPDFLoader');
         break;
@@ -69,26 +71,32 @@ export class PdfFileInput extends BaseCoreComponent {
   
     // Initial code for loading HTML
     code += `
-# Read PDF and retrieve text from ${config.filePath}
+# Read PDF and retrieve text from ${config.tsCFfilePath}
 `;
   
-    switch (config.library) {
+    switch (config.tsCFselectlibrary) {
       case 'PyPDF':
-        code += `${outputName}_loader = PyPDFLoader("${config.filePath}")\n`;
+        code += `
+${outputName}_loader = PyPDFLoader("${config.tsCFfilePath}")\n
+`;
         break;
       case 'PyMuPDF':
-        code += `${outputName}_loader = PyMuPDFLoader("${config.filePath}")\n`;
+        code += `
+${outputName}_loader = PyMuPDFLoader("${config.tsCFfilePath}")\n
+`;
         break;
       default:
         console.error('Unknown option');
-        code += `# Unknown library option\n`;
+        code += `
+# Unknown library option\n
+`;
     }
   
-  code += `${outputName} = ${outputName}_loader.load()\n`;
+  code += `
+${outputName} = ${outputName}_loader.load()\n
+`;
   
     return code;
   }
-
-
 
 }

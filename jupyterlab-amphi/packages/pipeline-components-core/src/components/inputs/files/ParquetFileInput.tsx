@@ -1,14 +1,15 @@
 import { fileParquetIcon } from '../../../icons';
 import { BaseCoreComponent } from '../../BaseCoreComponent';
 import { S3OptionsHandler } from '../../common/S3OptionsHandler';
+import { FTPOptionsHandler } from '../../common/FTPOptionsHandler';
 import { FileUtils } from '../../common/FileUtils'; // Import the FileUtils class
 
 export class ParquetFileInput extends BaseCoreComponent {
   constructor() {
     const defaultConfig = {
-		fileLocation: "local",
+		tsCFradioFileLocation: "local",
 	    connectionMethod: "env",
-        parquetOptions: { engine: "auto"}//, dtype_backend: "pyarrow" }
+        parquetOptions: { engine: "auto"}
 		};
     const form = {
       idPrefix: "component__form",
@@ -16,22 +17,25 @@ export class ParquetFileInput extends BaseCoreComponent {
         {
           type: "radio",
           label: "File Location",
-          id: "fileLocation",
+          id: "tsCFradioFileLocation",
           options: [
             { value: "local", label: "Local" },
             { value: "http", label: "HTTP" },
-            { value: "s3", label: "S3" }
+            { value: "s3", label: "S3" }//,
+            //{ value: "ftp", label: "FTP" }
           ],
           advanced: true
         },
         ...S3OptionsHandler.getAWSFields(),
+        //...FTPOptionsHandler.getFTPFields(),
         {
           type: "file",
           label: "File path",
           id: "filePath",
           placeholder: "Type file name or use '*' for patterns",
           validation: "\\.(parquet)$|^(.*\\*)$",
-          tooltip: "This field expects a file with a .parquet extension or a wildcard pattern such as input*.parquet."
+          tooltip: "This field expects a file with a .parquet extension or a wildcard pattern such as input*.parquet.",
+          allowedExtensions: ["parquet"]	
         },
         {
           type: "select",
@@ -49,7 +53,7 @@ export class ParquetFileInput extends BaseCoreComponent {
           type: "keyvalue",
           label: "Storage Options",
           id: "parquetOptions.storage_options",
-          condition: { fileLocation: ["http", "s3"] },
+          condition: { tsCFradioFileLocation: ["http", "s3"] },
           advanced: true
         }
       ],
@@ -65,7 +69,7 @@ export class ParquetFileInput extends BaseCoreComponent {
       deps.push('fastparquet');
     }
     if (FileUtils.isWildcardInput(config.filePath)) {
-      deps.push(config.fileLocation === "s3" ? 's3fs' : 'glob');
+      deps.push(config.tsCFradioFileLocation === "s3" ? 's3fs' : 'glob');
     }
     return deps;
   }
@@ -76,7 +80,7 @@ export class ParquetFileInput extends BaseCoreComponent {
       imports.push("import fastparquet");
     }
     if (FileUtils.isWildcardInput(config.filePath)) {
-      if (config.fileLocation === "s3") {
+      if (config.tsCFradioFileLocation === "s3") {
         imports.push("import s3fs");
       } else {
         imports.push("import glob");
@@ -94,7 +98,7 @@ export class ParquetFileInput extends BaseCoreComponent {
 
     // Check for wildcard input and generate appropriate code
     if (FileUtils.isWildcardInput(config.filePath)) {
-      if (config.fileLocation === "s3") {
+      if (config.tsCFradioFileLocation === "s3") {
         code += FileUtils.getS3FilePaths(config.filePath, storageOptionsString, outputName);
         code += FileUtils.generateConcatCode(outputName, "read_parquet", optionsString, true);
       } else {
@@ -131,7 +135,7 @@ export class ParquetFileInput extends BaseCoreComponent {
     }
 
     // Step 2: Always apply S3-specific options (these will override manual entries if needed)
-    if (config.fileLocation === 's3') {
+    if (config.tsCFradioFileLocation === 's3') {
       const s3Options = S3OptionsHandler.handleS3SpecificOptions(config, finalStorageOptions);
       finalStorageOptions = { ...finalStorageOptions, ...s3Options };
     }
