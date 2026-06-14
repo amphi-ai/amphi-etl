@@ -52,7 +52,8 @@ setup(
             'oracledb',
             'openpyxl',
             'xlsxwriter',
-            'tabulate'              
+            'tabulate',
+            'markdown_it '          
         ]
     },
     keywords=[],  # Added an empty list for keywords to resolve the dynamic 'keywords' issue.

@@ -43,6 +43,8 @@ export { ExplodeJSON } from './transforms/JSON/ExplodeJSON';
 export { ValidateJSON } from './transforms/JSON/ValidateJSON';
 export { JSONTools } from './transforms/JSON/JSONTools';
 export { TableToMarkdown } from './transforms/Markdown/TableToMarkdown';
+export { AddMarkdownStyle } from './transforms/Markdown/AddMarkdownStyle';
+export { ValidateMarkdown } from './transforms/Markdown/ValidateMarkdown';
 export { MarkdownTools } from './transforms/Markdown/MarkdownTools';
 export { Sample } from './transforms/Sample';
 export { Sort } from './transforms/Sort';
