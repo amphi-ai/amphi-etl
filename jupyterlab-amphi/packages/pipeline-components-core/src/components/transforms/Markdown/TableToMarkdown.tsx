@@ -16,11 +16,13 @@ export class TableToMarkdown extends BaseCoreComponent {
           type: "columns",
           label: "Select Group Columns",
           id: "tsCFcolumnsGroupColumns",
+          advanced: true
         },
         {
           type: "columns",
           label: "Select Markdown Columns",
           id: "tsCFcolumnsMarkdownColumns",
+          advanced: true
         },
         {
           type: "input",
@@ -32,7 +34,7 @@ export class TableToMarkdown extends BaseCoreComponent {
       ],
     };
 
-    const description = "Dynamically rename columns based on selected transformations such as case conversion, special character handling, and prefix/suffix modifications.";
+    const description = "Create table in Markdown";
 
     super("Table To Markdown", "TableToMarkdown", description, "pandas_df_processor", [], "transforms", markdownTTMIcon, defaultConfig, form);
   }
@@ -53,7 +55,6 @@ export class TableToMarkdown extends BaseCoreComponent {
 
   public provideFunctions({ config }): string[] {
     const prefix = config?.backend?.prefix ?? "pd";
-    // Function to perform frequency analysis
     const GroupToMarkdownFunction = `
 def py_fn_group_to_markdown(
     py_arg_df: pd.DataFrame,
