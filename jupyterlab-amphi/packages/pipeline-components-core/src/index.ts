@@ -15,7 +15,7 @@ import {
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
   SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample, UniqueKeyDetector, FileAction, DataframeList, DataframeDelete, HierarchyPath, PackagesList, JSONTools,
   DatabaseInput, DatabaseOutput, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar, CorrelationMatrix,
-  Switch, AutoColumnPosition, ChartGenerator, ComponentsList, MarkdownTools, TableToMarkdown
+  Switch, AutoColumnPosition, ChartGenerator, ComponentsList, MarkdownTools, TableToMarkdown,CreateJSONfromTable
 } from './components';
 
 // Export allow the component to be used as a base component in different packages
@@ -26,7 +26,7 @@ export {
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON, ExplodeJSON, ValidateJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
   SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample, UniqueKeyDetector, FileAction, DataframeList, DataframeDelete, HierarchyPath, PackagesList, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar,
-  Switch, CorrelationMatrix, AutoColumnPosition, ChartGenerator,ComponentsList, MarkdownTools, TableToMarkdown
+  Switch, CorrelationMatrix, AutoColumnPosition, ChartGenerator,ComponentsList, MarkdownTools, TableToMarkdown,CreateJSONfromTable
 }
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -91,7 +91,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(CompareDataframes.getInstance());
     componentService.addComponent(DynamicGenerateCalendar.getInstance());
     componentService.addComponent(Switch.getInstance());
-    componentService.addComponent(AutoColumnPosition.getInstance());	
+    componentService.addComponent(AutoColumnPosition.getInstance());
 
     // Outputs
     componentService.addComponent(CsvFileOutput.getInstance());

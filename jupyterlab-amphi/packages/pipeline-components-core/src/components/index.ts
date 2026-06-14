@@ -41,6 +41,7 @@ export { ExpandList } from './transforms/JSON/ExpandList';
 export { FlattenJSON } from './transforms/JSON/FlattenJSON';
 export { ExplodeJSON } from './transforms/JSON/ExplodeJSON';
 export { ValidateJSON } from './transforms/JSON/ValidateJSON';
+export { CreateJSONfromTable } from './transforms/JSON/CreateJSONfromTable';
 export { JSONTools } from './transforms/JSON/JSONTools';
 export { TableToMarkdown } from './transforms/Markdown/TableToMarkdown';
 export { MarkdownTools } from './transforms/Markdown/MarkdownTools';
