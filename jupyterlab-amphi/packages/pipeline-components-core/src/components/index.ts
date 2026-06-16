@@ -1,3 +1,4 @@
+//⚠ Order does not matter but try to keep it ordered
 // Inputs
 export { CsvFileInput } from './inputs/files/CsvFileInput';
 export { ExcelFileInput } from './inputs/files/ExcelFileInput';
@@ -71,6 +72,7 @@ export { CorrelationMatrix } from './transforms/CorrelationMatrix';
 export { Switch } from './transforms/Switch';
 export { AutoColumnPosition } from './transforms/AutoColumnPosition';
 export { ChartGenerator } from './transforms/ChartGenerator';
+export { ConcatenateColumns } from './transforms/ConcatenateColumns';
 
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';

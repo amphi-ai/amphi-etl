@@ -15,7 +15,7 @@ import {
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
   SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample, UniqueKeyDetector, FileAction, DataframeList, DataframeDelete, HierarchyPath, PackagesList, JSONTools,
   DatabaseInput, DatabaseOutput, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar, CorrelationMatrix,
-  Switch, AutoColumnPosition, ChartGenerator, ComponentsList, MarkdownTools, TableToMarkdown,CreateJSONfromTable
+  Switch, AutoColumnPosition, ChartGenerator, ComponentsList, MarkdownTools, TableToMarkdown,CreateJSONfromTable,ConcatenateColumns
 } from './components';
 
 // Export allow the component to be used as a base component in different packages
@@ -26,7 +26,7 @@ export {
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON, ExplodeJSON, ValidateJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
   SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample, UniqueKeyDetector, FileAction, DataframeList, DataframeDelete, HierarchyPath, PackagesList, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar,
-  Switch, CorrelationMatrix, AutoColumnPosition, ChartGenerator,ComponentsList, MarkdownTools, TableToMarkdown,CreateJSONfromTable
+  Switch, CorrelationMatrix, AutoColumnPosition, ChartGenerator,ComponentsList, MarkdownTools, TableToMarkdown,CreateJSONfromTable,ConcatenateColumns
 }
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -41,6 +41,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     const g: any = globalThis as any;
     g.Amphi = g.Amphi || {};
     g.Amphi.BaseCoreComponent = BaseCoreComponent;
+//⚠ Order does matter
 
     // Input
     componentService.addComponent(InlineInput.getInstance());
@@ -53,12 +54,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(S3FileInput.getInstance());
     componentService.addComponent(RestInput.getInstance());
     componentService.addComponent(GoogleSheetsInput.getInstance());
-    // componentService.addComponent(MySQLInput.getInstance())
-    // componentService.addComponent(PostgresInput.getInstance())
-    // componentService.addComponent(OracleInput.getInstance())
-    // componentService.addComponent(SqlServerInput.getInstance())
-    // componentService.addComponent(SnowflakeInput.getInstance())
-    // componentService.addComponent(ODBCInput.getInstance())
     componentService.addComponent(DatabaseInput.getInstance());
     componentService.addComponent(CustomInput.getInstance());
     componentService.addComponent(GenerateCalendar.getInstance());
@@ -73,6 +68,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(SplitColumn.getInstance());
     componentService.addComponent(Extract.getInstance());
     componentService.addComponent(FormulaRow.getInstance());
+    componentService.addComponent(ConcatenateColumns.getInstance());
     componentService.addComponent(CombinedJoin.getInstance());
     componentService.addComponent(Unite.getInstance());
     componentService.addComponent(Aggregate.getInstance());
