@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="24"
+   height="24"
+   viewBox="0 0 24 24"
+   fill="none"
+   stroke="currentColor"
+   stroke-width="2"
+   stroke-linecap="round"
+   stroke-linejoin="round"
+   version="1.1"
+   id="svg5"
+   sodipodi:docname="repository_icon.svg"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs5" />
+  <sodipodi:namedview
+     id="namedview5"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="31.125"
+     inkscape:cx="12"
+     inkscape:cy="12"
+     inkscape:window-width="1920"
+     inkscape:window-height="986"
+     inkscape:window-x="-11"
+     inkscape:window-y="-11"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg5" />
+  <path
+     d="m 16.001111,18.97893 h -1.2573 v -1.241776 c -0.920989,1.014117 -1.981673,1.521176 -3.182063,1.521176 -1.200384,0 -2.230025,-0.439799 -3.0889239,-1.319391 C 7.6242747,17.048998 7.2,15.993489 7.2,14.772406 7.2,13.540974 7.6294494,12.490633 8.4883483,11.621391 9.3472414,10.741799 10.392407,10.302 11.623839,10.302 c 1.241776,0 2.281767,0.501884 3.119972,1.505657 v -1.288348 h 1.2573 z m -4.346229,-0.915809 c 0.858899,0 1.59879,-0.310443 2.219681,-0.931334 0.620891,-0.62089 0.931334,-1.391831 0.931334,-2.312814 0,-0.93134 -0.305268,-1.707449 -0.91581,-2.32834 -0.610541,-0.63124 -1.360782,-0.946857 -2.250724,-0.946857 -0.879592,0 -1.624664,0.325967 -2.2352054,0.977906 -0.6105415,0.641584 -0.9158093,1.402174 -0.9158093,2.281766 0,0.879592 0.3104425,1.645358 0.9313333,2.297291 0.6208904,0.64159 1.3659574,0.962382 2.2352004,0.962382 z"
+     fill="currentColor"
+     stroke="none"
+     id="path5"
+     inkscape:label="path5"
+     style="stroke-width:4.4" />
+  <path
+     stroke="none"
+     d="M0 0h24v24H0z"
+     fill="none"
+     id="path1" />
+  <!-- Database -->
+  <path
+     d="M4 6a8 3 0 1 0 16 0a8 3 0 1 0 -16 0"
+     id="path2" />
+  <path
+     d="M 3.935743,6.3453815 4,18 c 0.022053,3.999937 16,3.999998 16,0 V 6.6024096"
+     id="path4"
+     sodipodi:nodetypes="cssc" />
+  <!-- Amphi A -->
+  <g
+     transform="translate(7.2 7.2) scale(2.2)"
+     id="g5" />
+</svg>
