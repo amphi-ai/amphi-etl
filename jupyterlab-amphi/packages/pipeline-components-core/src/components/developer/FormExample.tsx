@@ -554,10 +554,10 @@ def py_fn_example_python_function(
 	) {
       tsConstRemoveUnwantedCharacters = JSON.stringify(config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters);
     }	
-	let tsConsDateType = 'None';
+	let tsConstDateType = 'None';
     if (config.tsCFselectMultipleDateType && config.tsCFselectMultipleDateType.length > 0
 	) {
-      tsConsDateType = JSON.stringify(config.tsCFselectMultipleDateType);
+      tsConstDateType = JSON.stringify(config.tsCFselectMultipleDateType);
     }	
 	let tsConsselectTokenization = 'None';
     if (config.tsCFselectTokenizationCSVOptionsNames && config.tsConsselectTokenization[0].length !== 0 
@@ -690,8 +690,8 @@ print("10 config.tsCFselectCustomizableCSVOptionsSep : ")
 print("${config.tsCFselectCustomizableCSVOptionsSep}")
 print("11 config.tsCFselectMultipleDateType : ")
 print("${config.tsCFselectMultipleDateType}")
-print("tsConsDateType : ")
-print('${tsConsDateType}')
+print("tsConstDateType : ")
+print('${tsConstDateType}')
 print("12 config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters : ")
 print("${config.tsCFselectMultipleCustomizableRemoveUnwantedCharacters}")
 print("tsConstRemoveUnwantedCharacters : ")
@@ -839,8 +839,8 @@ console.log("23 config.tsCFdataMappingmapping : ");
 console.log(config.tsCFdataMappingmapping);
 console.log("24 config.tsCFcascaderDataType : ");
 console.log(config.tsCFcascaderDataType);
-console.log("tsConsDateType : ");
-console.log(tsConsDateType);
+console.log("tsConstDateType : ");
+console.log(tsConstDateType);
 console.log("tsConstDataTypeStep1 : ");
 console.log(tsConstDataTypeStep1);
 console.log("tsConstDataType : ");
