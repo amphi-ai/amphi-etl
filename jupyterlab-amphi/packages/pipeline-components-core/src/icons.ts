@@ -1,5 +1,5 @@
 import { LabIcon } from '@jupyterlab/ui-components';
-
+//⚠ Order does not matter, we just put component one after one in creation order
 import fileTextIconSvgStr from '../style/icons/file-txt.svg';
 import filePlusIconSvgStr from '../style/icons/file-plus-24.svg';
 import consoleIconSvgStr from '../style/icons/console-message.svg';
@@ -88,6 +88,7 @@ import markdownTTMIconSvgStr from '../style/icons/markdown.svg';
 import internalRepositoryIconSvgStr from '../style/icons/repository_icon.svg';
 import jsonToTOONIconSvgStr from '../style/icons/toon-logo.svg';
 import toonToolsIconSvgStr from '../style/icons/toon-logo.svg';
+import concatenateColumnsIconSvgStr from '../style/icons/concatenate-columns.svg';
 
 export const mongodbIcon = new LabIcon({
   name: 'amphi:mongodb-icon',
@@ -532,3 +533,7 @@ export const jsonToTOONIcon = new LabIcon({
   svgstr: jsonToTOONIconSvgStr
 });
 
+export const concatenateColumnsIcon = new LabIcon({
+  name: 'amphi:concatenate-columns',
+  svgstr: concatenateColumnsIconSvgStr
+});

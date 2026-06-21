@@ -1,3 +1,4 @@
+//⚠ Order does not matter but try to keep it ordered
 // Inputs
 export { CsvFileInput } from './inputs/files/CsvFileInput';
 export { ExcelFileInput } from './inputs/files/ExcelFileInput';
@@ -41,8 +42,11 @@ export { ExpandList } from './transforms/JSON/ExpandList';
 export { FlattenJSON } from './transforms/JSON/FlattenJSON';
 export { ExplodeJSON } from './transforms/JSON/ExplodeJSON';
 export { ValidateJSON } from './transforms/JSON/ValidateJSON';
+export { CreateJSONfromTable } from './transforms/JSON/CreateJSONfromTable';
 export { JSONTools } from './transforms/JSON/JSONTools';
 export { TableToMarkdown } from './transforms/Markdown/TableToMarkdown';
+export { AddMarkdownStyle } from './transforms/Markdown/AddMarkdownStyle';
+export { ValidateMarkdown } from './transforms/Markdown/ValidateMarkdown';
 export { MarkdownTools } from './transforms/Markdown/MarkdownTools';
 export { TOONTools } from './transforms/TOON/TOONTools';
 export { JSONToTOON } from './transforms/TOON/JSONToTOON';
@@ -72,6 +76,7 @@ export { CorrelationMatrix } from './transforms/CorrelationMatrix';
 export { Switch } from './transforms/Switch';
 export { AutoColumnPosition } from './transforms/AutoColumnPosition';
 export { ChartGenerator } from './transforms/ChartGenerator';
+export { ConcatenateColumns } from './transforms/ConcatenateColumns';
 
 // Outputs
 export { ExcelFileOutput } from './outputs/files/ExcelFileOutput';
