@@ -85,6 +85,9 @@ import chartGeneratorIconSvgStr from '../style/icons/chart_generator-24.svg';
 import componentListIconSvgStr from '../style/icons/componentList.svg';
 import markdownToolsIconSvgStr from '../style/icons/markdown.svg';
 import markdownTTMIconSvgStr from '../style/icons/markdown.svg';
+import internalRepositoryIconSvgStr from '../style/icons/repository_icon.svg';
+import jsonToTOONIconSvgStr from '../style/icons/toon-logo.svg';
+import toonToolsIconSvgStr from '../style/icons/toon-logo.svg';
 import concatenateColumnsIconSvgStr from '../style/icons/concatenate-columns.svg';
 
 export const mongodbIcon = new LabIcon({
@@ -514,6 +517,20 @@ export const markdownToolsIcon = new LabIcon({
 export const markdownTTMIcon = new LabIcon({
   name: 'amphi:markdown-ttm-icon',
   svgstr: markdownTTMIconSvgStr
+});
+
+export const internalRepositoryIcon = new LabIcon({
+  name: 'amphi:internal-repository-icon',
+  svgstr: internalRepositoryIconSvgStr
+});
+
+export const toonToolsIcon = new LabIcon({
+  name: 'amphi:toon-tools-icon',
+  svgstr: toonToolsIconSvgStr
+});
+export const jsonToTOONIcon = new LabIcon({
+  name: 'amphi:json-to-toon-icon',
+  svgstr: jsonToTOONIconSvgStr
 });
 
 export const concatenateColumnsIcon = new LabIcon({

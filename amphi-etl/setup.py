@@ -53,6 +53,7 @@ setup(
             'openpyxl',
             'xlsxwriter',
             'tabulate',
+            'python-toon',
             'markdown_it '          
         ]
     },
