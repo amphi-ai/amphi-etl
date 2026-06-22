@@ -159,7 +159,11 @@ def py_fn_add_markdown_styles_to_columns(
             py_var_left_tags += py_var_style_map[py_var_style]["left"]
             py_var_right_tags = py_var_style_map[py_var_style]["right"] + py_var_right_tags
 
-    for py_var_column in py_arg_columns:
+    if py_arg_columns :
+        py_var_columns = py_arg_columns
+    else :
+        py_var_columns = []
+    for py_var_column in py_var_columns:
         if py_var_column not in py_df_output.columns:
             continue
 

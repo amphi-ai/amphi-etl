@@ -76,6 +76,12 @@ def py_fn_validate_markdown_columns(
         If one or more columns in py_arg_columns_to_validate are missing in
         the input dataframe.
     """
+
+    if py_arg_columns_to_validate is None:
+        raise ValueError(
+            f"No column to validate"
+        )
+
     py_var_missing_columns: list[str] = [
         py_var_column
         for py_var_column in py_arg_columns_to_validate
@@ -99,7 +105,7 @@ def py_fn_validate_markdown_columns(
         except Exception:
             return False
 
-    for py_var_column in py_arg_columns_to_validate:
+    for py_var_column in py_arg_columns_to_validate or []:
         py_var_output_column_name = f"is_{py_var_column}_valid_markdown"
         py_df_output[py_var_output_column_name] = (
             py_df_output[py_var_column].apply(py_fn_is_valid_markdown)

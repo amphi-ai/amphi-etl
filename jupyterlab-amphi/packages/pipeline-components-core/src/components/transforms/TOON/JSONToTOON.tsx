@@ -85,13 +85,18 @@ def py_fn_json_string_to_toon_string(
     """
  
     # --- Guard: check source column exists ---
+    if py_arg_json_column_name is None:
+        raise ValueError(
+            f"No JSON column to transform"
+        ) 
     if py_arg_json_column_name not in py_arg_dataframe.columns:
         raise ValueError(
             f"Column '{py_arg_json_column_name}' does not exist in the input dataframe. "
             f"Available columns: {list(py_arg_dataframe.columns)}"
         )
- 
+
     # --- Work on a copy to avoid mutating the original dataframe ---
+
     py_df_result = py_arg_dataframe.copy()
  
     def py_fn_convert_single_value(py_arg_raw_value: object) -> Optional[str]:
