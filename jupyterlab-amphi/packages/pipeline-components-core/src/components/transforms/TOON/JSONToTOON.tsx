@@ -144,10 +144,11 @@ def py_fn_json_string_to_toon_string(
   public generateComponentCode({ config, inputName, outputName }: { config: any; inputName: string; outputName: string }): string {
 
     let tsConstJSONColumnName = "None";
+//only one column here so not a list
     if (config.tsCFcolumnsJSONColumnName?.length > 0) {
-      tsConstJSONColumnName = `[${config.tsCFcolumnsJSONColumnName
+      tsConstJSONColumnName = `${config.tsCFcolumnsJSONColumnName
         .map((item: any) => (item.named ? `"${item.value}"` : item.value))
-        .join(", ")}]`;
+        .join(", ")}`;
     }
 
     let tsConstNewTOONColumnName = 'None';
