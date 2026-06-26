@@ -15,12 +15,14 @@ export class TableToMarkdown extends BaseCoreComponent {
         {
           type: "columns",
           label: "Select Group Columns",
+          placeholder : "Default : None",
           id: "tsCFcolumnsGroupColumns",
           advanced: true
         },
         {
           type: "columns",
           label: "Select Markdown Columns",
+          placeholder : "Default : All",
           id: "tsCFcolumnsMarkdownColumns",
           advanced: true
         },
@@ -96,8 +98,11 @@ def py_fn_group_to_markdown(
         """
         Internal helper to convert a DataFrame slice to Markdown.
         """
-        py_sub = py_arg_sub_df[py_arg_markdown_cols].copy()
-
+        if py_arg_markdown_cols : 
+            py_sub = py_arg_sub_df[py_arg_markdown_cols].copy()
+        else :
+            py_sub = py_arg_sub_df.copy()
+		
         if py_arg_round_digits is not None:
             py_sub = py_sub.round(py_arg_round_digits)
 

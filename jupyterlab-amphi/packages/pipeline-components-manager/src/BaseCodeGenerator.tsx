@@ -323,7 +323,7 @@ export abstract class BaseCodeGenerator {
 
   static formatVariables(code: string): string {
     const lines = code.split('\n');
-
+    //existing raw strings and f strings are not modified
     const transformed = lines.map(line => {
       if (/r(['"]).*\1/.test(line) || /f(['"])/.test(line) || /f("""|''')/.test(line)) {
         return line;
@@ -331,6 +331,7 @@ export abstract class BaseCodeGenerator {
       return line
         .replace(/(['"])\{(os\.[^}]+)\}\1/g, '$2')
         .replace(/(['"])\{(\w+)\}\1/g, '$2')
+        //conversion in f string if string contains braces
         .replace(/(['"])(.*\{.*\}.*)\1/g, 'f$1$2$1')
         .replace(/(f?"""\s*)(.*\{.*\}.*)(\s*""")/g, 'f"""$2"""');
     });

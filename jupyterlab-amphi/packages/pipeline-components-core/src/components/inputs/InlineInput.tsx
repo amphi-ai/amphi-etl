@@ -362,10 +362,21 @@ def _py_fn_apply_type_mode_duckdb(
         // 2. Escape triple quotes in case the user's data contains them
         const escapedData = effectiveData.replace(/"""/g, '\\"""');
 
-        // 3. Generate the Pandas loading code
-        // We wrap the raw string in triple quotes and pass it to StringIO
+        // 3. The code generation put f string if the string contains braces, so we need to double braces for raw and json
+        let bracedData = escapedData;
+        console.log(tsConstInputFormat);
+        if (tsConstInputFormat ==='"raw"' || tsConstInputFormat === '"json"'){
+            console.log("double brace for raw and json");
+            bracedData = escapedData
+            .replace(/(?<!{){(?!{)/g, "{{")
+            .replace(/(?<!})}(?!})/g, "}}");
+           }
+
+console.log(bracedData);
+
+        // 4. We wrap the raw string in triple quotes and pass it to StringIO
         const code = `
-${outputName}_data = """${escapedData}
+${outputName}_data = """${bracedData}
 """
 
 ${outputName} = py_fn_string_to_dataframe(

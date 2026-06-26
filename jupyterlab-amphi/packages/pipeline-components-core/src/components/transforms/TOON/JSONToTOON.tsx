@@ -85,13 +85,18 @@ def py_fn_json_string_to_toon_string(
     """
  
     # --- Guard: check source column exists ---
+    if py_arg_json_column_name is None:
+        raise ValueError(
+            f"No JSON column to transform"
+        ) 
     if py_arg_json_column_name not in py_arg_dataframe.columns:
         raise ValueError(
             f"Column '{py_arg_json_column_name}' does not exist in the input dataframe. "
             f"Available columns: {list(py_arg_dataframe.columns)}"
         )
- 
+
     # --- Work on a copy to avoid mutating the original dataframe ---
+
     py_df_result = py_arg_dataframe.copy()
  
     def py_fn_convert_single_value(py_arg_raw_value: object) -> Optional[str]:
@@ -139,10 +144,11 @@ def py_fn_json_string_to_toon_string(
   public generateComponentCode({ config, inputName, outputName }: { config: any; inputName: string; outputName: string }): string {
 
     let tsConstJSONColumnName = "None";
+//only one column here so not a list
     if (config.tsCFcolumnsJSONColumnName?.length > 0) {
-      tsConstJSONColumnName = `[${config.tsCFcolumnsJSONColumnName
+      tsConstJSONColumnName = `${config.tsCFcolumnsJSONColumnName
         .map((item: any) => (item.named ? `"${item.value}"` : item.value))
-        .join(", ")}]`;
+        .join(", ")}`;
     }
 
     let tsConstNewTOONColumnName = 'None';

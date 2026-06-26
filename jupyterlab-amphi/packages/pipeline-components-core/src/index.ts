@@ -6,7 +6,7 @@ import {
 import { ComponentManager } from "@amphi/pipeline-components-manager";
 import { BaseCoreComponent } from "./components/BaseCoreComponent";
 
-// Import allow to add the component to the palette
+// Import allow to add the component to the palette. Order does not matter.
 import {
   Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
   SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join, CombinedJoin,
@@ -15,10 +15,10 @@ import {
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
   SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample, UniqueKeyDetector, FileAction, DataframeList, DataframeDelete, HierarchyPath, PackagesList, JSONTools,
   DatabaseInput, DatabaseOutput, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar, CorrelationMatrix,
-  Switch, AutoColumnPosition, ChartGenerator, ComponentsList, MarkdownTools, TableToMarkdown, InternalRepositoryConnector, TOONTools, JSONToTOON, CreateJSONfromTable, ConcatenateColumns, AddMarkdownStyle, ValidateMarkdown
+  Switch, AutoColumnPosition, ChartGenerator, ComponentsList, MarkdownTools, TableToMarkdown, InternalRepositoryConnector, TOONTools, JSONToTOON, CreateJSONfromTable, ConcatenateColumns, AddMarkdownStyle, ValidateMarkdown,PackagesAction
 } from './components';
 
-// Export allow the component to be used as a base component in different packages
+// Export allow the component to be used as a base component in different packages. Order does not matter.
 export {
   Aggregate, Console, ExcelFileOutput, CsvFileInput, JsonFileInput, JsonFileOutput, ExcelFileInput, CsvFileOutput, CustomTransformations, Filter, RestInput,
   SplitColumn, Deduplicate, ExpandList, Sample, Sort, RenameColumns, TypeConverter, Extract, GoogleSheetsInput, GoogleSheetsOutput, FilterColumns, Join, CombinedJoin,
@@ -26,7 +26,7 @@ export {
   EnvVariables, EnvFile, Transpose, Unite, Pivot, Annotation, ODBCInput, PdfTablesInput, Summary, LocalFileInput, FlattenJSON, ExplodeJSON, ValidateJSON,
   DataCleansing, GenerateIDColumn, SqlServerInput, OracleInput, Connection, SnowflakeInput, FormulaRow, InlineInput, S3FileOutput, S3FileInput,
   SnowflakeOutput, SqlServerOutput, OracleOutput, CustomInput, CustomOutput, FileUtils, FrequencyAnalysis, FormExample, UniqueKeyDetector, FileAction, DataframeList, DataframeDelete, HierarchyPath, PackagesList, CompareDataframes, GenerateCalendar, DynamicGenerateCalendar,
-  Switch, CorrelationMatrix, AutoColumnPosition, ChartGenerator,ComponentsList, MarkdownTools, TableToMarkdown, InternalRepositoryConnector,TOONTools,JSONToTOON,CreateJSONfromTable, ConcatenateColumns, AddMarkdownStyle, ValidateMarkdown
+  Switch, CorrelationMatrix, AutoColumnPosition, ChartGenerator,ComponentsList, MarkdownTools, TableToMarkdown, InternalRepositoryConnector,TOONTools,JSONToTOON,CreateJSONfromTable, ConcatenateColumns, AddMarkdownStyle, ValidateMarkdown,PackagesAction
 }
 
 const plugin: JupyterFrontEndPlugin<void> = {
@@ -131,6 +131,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     componentService.addComponent(DataframeList.getInstance());
     componentService.addComponent(DataframeDelete.getInstance());
     componentService.addComponent(PackagesList.getInstance());
+    componentService.addComponent(PackagesAction.getInstance());
     componentService.addComponent(ComponentsList.getInstance());
     componentService.addComponent(InternalRepositoryConnector.getInstance());
   }
