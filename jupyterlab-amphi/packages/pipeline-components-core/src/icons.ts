@@ -89,6 +89,8 @@ import internalRepositoryIconSvgStr from '../style/icons/repository_icon.svg';
 import jsonToTOONIconSvgStr from '../style/icons/toon-logo.svg';
 import toonToolsIconSvgStr from '../style/icons/toon-logo.svg';
 import concatenateColumnsIconSvgStr from '../style/icons/concatenate-columns.svg';
+import packagesActionIconSvgStr from '../style/icons/packages.svg';
+
 
 export const mongodbIcon = new LabIcon({
   name: 'amphi:mongodb-icon',
@@ -536,4 +538,9 @@ export const jsonToTOONIcon = new LabIcon({
 export const concatenateColumnsIcon = new LabIcon({
   name: 'amphi:concatenate-columns',
   svgstr: concatenateColumnsIconSvgStr
+});
+
+export const packagesActionIcon = new LabIcon({
+  name: 'amphi:packages-action',
+  svgstr: packagesActionIconSvgStr
 });

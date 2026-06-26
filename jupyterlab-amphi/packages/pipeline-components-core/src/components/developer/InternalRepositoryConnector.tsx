@@ -10,12 +10,18 @@ export class InternalRepositoryConnector extends BaseCoreComponent {
     const defaultConfig = {
         tsCFselectTableName: "scheduler_runs",
         tsCFinputNumberLimit: ""
-	};
+};
 
     // Define the form structure
     const form = {
       idPrefix: "component__form",
       fields: [
+        {
+          type: "info",
+          id: "tsCFinfoPath",
+          text: "⚠️Right now, it requires that your pipeline is in the root path.",
+          advanced: false
+        },
         {
           type: "select",
           label: "Table Name",

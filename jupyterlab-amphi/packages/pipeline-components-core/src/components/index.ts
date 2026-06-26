@@ -108,5 +108,6 @@ export { FormExample } from './developer/FormExample';
 export { DataframeList } from './developer/DataframeList';
 export { DataframeDelete } from './developer/DataframeDelete';
 export { PackagesList } from './developer/PackagesList';
+export { PackagesAction } from './developer/PackagesAction';
 export { ComponentsList } from './developer/ComponentsList';
 export { InternalRepositoryConnector } from './developer/InternalRepositoryConnector';
