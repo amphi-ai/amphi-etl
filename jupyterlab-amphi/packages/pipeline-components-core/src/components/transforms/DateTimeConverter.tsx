@@ -68,12 +68,13 @@ export class DateTimeConverter extends BaseCoreComponent {
                     id: "tsCFselectCustomizableDateTimeFormat",
                     tooltip: "Select pre-defined format or provide a custom format (either yyyy-MM-dd or %Y-%m-%d style)",
                     options: [
+                        { value: "auto", label: "auto" },
                         { value: "day, dd Month, yyyy", label: "day, dd Month, yyyy" },
                         { value: "dd-MM-yyyy", label: "dd-MM-yyyy" },
                         { value: "dd/MM/yyyy", label: "dd/MM/yyyy" },
                         { value: "yyyy-MM-dd", label: "yyyy-MM-dd" },
                         { value: "yyyy/MM/dd", label: "yyyy/MM/dd" },
-                        { value: "%Month dd, yyyy", label: "Month dd, yyyy" },
+                        { value: "Month dd, yyyy", label: "Month dd, yyyy" },
                         { value: "MM/dd/yyyy", label: "MM/dd/yyyy" },
                         { value: "MM-dd-yyyy", label: "MM-dd-yyyy" },
                         { value: "dd Mon yyyy", label: "dd Mon yyyy" },
@@ -295,7 +296,11 @@ def py_fn_datetime_conversion(
                 else:
                     converted=pd.to_datetime(py_result_dataframe[col],format=fmt,errors=errors)
             else:
-                converted=pd.to_datetime(py_result_dataframe[col],errors=errors).dt.strftime(fmt)
+                if fmt=="auto":
+                    converted=pd.to_datetime(py_result_dataframe[col],errors=errors).astype('string')
+                else:
+                    converted=pd.to_datetime(py_result_dataframe[col],errors=errors).dt.strftime(fmt).astype('string')
+                converted=converted.where(converted.notna(), pd.NA)
             py_result_dataframe[destination]=converted
             if py_arg_error_handling=="warning":
                 after_na=py_result_dataframe[destination].isna().sum()
