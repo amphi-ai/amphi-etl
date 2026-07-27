@@ -128,7 +128,8 @@ export class DateTimeConverter extends BaseCoreComponent {
         "import warnings",
         "from contextlib import contextmanager",
         "import pandas as pd",
-        "import re"
+        "import re",
+        "import platform"
         ];
     }
 
@@ -207,6 +208,33 @@ def py_fn_datetime_conversion(
         "Greek (Greece)": "el_GR.UTF-8",
     }
 
+    #Equivalence table between Linux/macOS and Windows locales
+    LINUXMACOS_WINDOWS_LOCALE_MAPPING= {
+        "en_US.UTF-8": "English_United States",
+        "en_GB.UTF-8": "English_United Kingdom",
+        "fr_FR.UTF-8": "French_France",
+        "de_DE.UTF-8": "German_Germany",
+        "es_ES.UTF-8": "Spanish_Spain",
+        "it_IT.UTF-8": "Italian_Italy",
+        "pt_PT.UTF-8": "Portuguese_Portugal",
+        "pt_BR.UTF-8": "Portuguese_Brazil",
+        "ja_JP.UTF-8": "Japanese_Japan",
+        "ko_KR.UTF-8": "Korean_Korea",
+        "zh_CN.UTF-8": "Chinese_People's Republic of China",
+        "zh_TW.UTF-8": "Chinese_Taiwan",
+        "nl_NL.UTF-8": "Dutch_Netherlands",
+        "ru_RU.UTF-8": "Russian_Russia",
+        "sv_SE.UTF-8": "Swedish_Sweden",
+        "da_DK.UTF-8": "Danish_Denmark",
+        "fi_FI.UTF-8": "Finnish_Finland",
+        "nb_NO.UTF-8": "Norwegian_Norway",
+        "pl_PL.UTF-8": "Polish_Poland",
+        "tr_TR.UTF-8": "Turkish_Turkey",
+        "cs_CZ.UTF-8": "Czech_Czech Republic",
+        "hu_HU.UTF-8": "Hungarian_Hungary",
+        "el_GR.UTF-8": "Greek_Greece"
+    }
+
     FORMAT_MAPPING = {
         "auto":"auto",
         "day, dd Month, yyyy":"%A, %B %d, %Y",
@@ -283,7 +311,11 @@ def py_fn_datetime_conversion(
 
 ##TODO allow to pass custom locale
     locale_name = LANGUAGE_MAPPING.get(py_arg_language, py_arg_language)
+    if platform.system() == "Windows":
+        locale_name=LINUXMACOS_WINDOWS_LOCALE_MAPPING.get(locale_name,locale_name)
+
     fmt = _to_python_datetime_format(FORMAT_MAPPING.get(py_arg_datetime_format, py_arg_datetime_format))
+
     errors="raise" if py_arg_error_handling=="error" else "coerce"
     py_result_dataframe=py_arg_dataframe.copy()
     with _py_fn_locale(locale_name):
