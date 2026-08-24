@@ -18,7 +18,7 @@ export class FormExample extends BaseCoreComponent {
 						   tsCFfileFilePath : "",
 						   tsCFselectCustomizableCSVOptionsSep: ";",
                            tsCFinputNumberCSVOptionsNRowsWithDefaultValue : "18",
-						   //tsCFselectTokenizationCSVOptionsNames :
+						   tsCFselectTokenizationCSVOptionsNames :[], 
 						   tsCFinputCSVOptionsQuoteChar : ",", 
 						   tsCFselectCSVOptionsOnBadLines : "",
                            tsCFcolumnDefaultValueColumn : [],
@@ -559,11 +559,11 @@ def py_fn_example_python_function(
 	) {
       tsConstDateType = JSON.stringify(config.tsCFselectMultipleDateType);
     }	
-	let tsConsselectTokenization = 'None';
-    if (config.tsCFselectTokenizationCSVOptionsNames && config.tsConsselectTokenization[0].length !== 0 
+	let tsConstselectTokenization = 'None';
+    if (config.tsCFselectTokenizationCSVOptionsNames && config.tsCFselectTokenizationCSVOptionsNames.length > 0 
 	) {
-      tsConsselectTokenization = JSON.stringify(config.tsCFselectTokenizationCSVOptionsNames);
-    }		
+      tsConstselectTokenization = JSON.stringify(config.tsCFselectTokenizationCSVOptionsNames);
+    }
 
 	//for boolean
 	let tsConstAutoCommit = config.tsCFbooleanAutoCommit ? 'True' : 'False';
@@ -676,8 +676,8 @@ print("tsConstCSVOptionsNRowsWithDefaultValue : ")
 print("${tsConstCSVOptionsNRowsWithDefaultValue}")
 print("6 config.tsCFselectTokenizationCSVOptionsNames : ")
 print("${config.tsCFselectTokenizationCSVOptionsNames}")
-print("tsConsselectTokenization : ")
-print('${tsConsselectTokenization}') #single quote because we have quotes inside
+print("tsConstselectTokenization : ")
+print('${tsConstselectTokenization}') #single quote because we have quotes inside
 print("7 config.tsCFinputCSVOptionsQuoteChar : ")
 print("${config.tsCFinputCSVOptionsQuoteChar}")
 print("8 config.tsCFinputPassword : ")
@@ -791,8 +791,8 @@ console.log("tsConstCSVOptionsNRowsWithDefaultValue : ");
 console.log(tsConstCSVOptionsNRowsWithDefaultValue);
 console.log("6 config.tsCFselectTokenizationCSVOptionsNames : ");
 console.log(config.tsCFselectTokenizationCSVOptionsNames);
-console.log("6 tsConsselectTokenization : ");
-console.log(tsConsselectTokenization);
+console.log("6 tsConstselectTokenization : ");
+console.log(tsConstselectTokenization);
 console.log("7 config.tsCFinputCSVOptionsQuoteChar : ");
 console.log(config.tsCFinputCSVOptionsQuoteChar);
 console.log("8 config.tsCFinputPassword : ");
